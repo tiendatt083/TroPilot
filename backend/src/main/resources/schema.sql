@@ -4,10 +4,21 @@ USE rentalhub;
 CREATE TABLE IF NOT EXISTS users (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     full_name VARCHAR(100) NOT NULL,
-    email_or_phone VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    phone VARCHAR(20),
     password VARCHAR(255) NOT NULL,
     role VARCHAR(20) NOT NULL,
+    auth_provider VARCHAR(20) NOT NULL DEFAULT 'LOCAL',
     created_at DATETIME,
     updated_at DATETIME,
-    UNIQUE (email_or_phone, role)
+    UNIQUE (email),
+    UNIQUE (phone)
+);
+
+CREATE TABLE IF NOT EXISTS otp_tokens (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(100) NOT NULL,
+    otp_code VARCHAR(10) NOT NULL,
+    expiry_date DATETIME NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );

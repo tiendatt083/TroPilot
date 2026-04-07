@@ -5,8 +5,12 @@ export const validateRegisterForm = (formData) => {
     errors.fullName = 'Full Name is required';
   }
 
-  if (!formData.emailOrPhone.trim()) {
-    errors.emailOrPhone = 'Email or Phone is required';
+  if (!formData.email.trim()) {
+    errors.email = 'Email is required';
+  }
+
+  if (!formData.phone.trim()) {
+    errors.phone = 'Phone is required';
   }
 
   if (!formData.password) {
@@ -25,8 +29,8 @@ export const validateRegisterForm = (formData) => {
 export const validateLoginForm = (formData) => {
   const errors = {};
 
-  if (!formData.emailOrPhone.trim()) {
-    errors.emailOrPhone = 'Email or Phone is required';
+  if (!formData.email.trim()) {
+    errors.email = 'Email is required';
   }
 
   if (!formData.password) {

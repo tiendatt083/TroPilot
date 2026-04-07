@@ -4,13 +4,14 @@ import InputField from '../components/InputField';
 import PrimaryButton from '../components/PrimaryButton';
 import { validateLoginForm } from '../utils/validators';
 import { authApi } from '../api/auth';
+import { GoogleLogin } from '@react-oauth/google';
 
 const LoginPage = () => {
   const navigate = useNavigate();
   const [role, setRole] = useState('');
   
   const [formData, setFormData] = useState({
-    emailOrPhone: '',
+    email: '',
     password: ''
   });
   
@@ -60,7 +61,11 @@ const LoginPage = () => {
       
       if (response.success) {
         localStorage.setItem('user', JSON.stringify(response.data));
-        navigate('/home');
+        if (response.data.role === 'LANDLORD') {
+          navigate('/landlord-home');
+        } else {
+          navigate('/tenant-home');
+        }
       } else {
         setApiError(response.message || 'Login failed');
       }
@@ -95,12 +100,12 @@ const LoginPage = () => {
 
         <form onSubmit={handleSubmit}>
           <InputField
-            label="Email or Phone"
-            name="emailOrPhone"
-            value={formData.emailOrPhone}
+            label="Email"
+            name="email"
+            value={formData.email}
             onChange={handleChange}
-            error={errors.emailOrPhone}
-            placeholder="Enter your email or phone"
+            error={errors.email}
+            placeholder="Enter your email"
           />
 
           <InputField
@@ -120,7 +125,41 @@ const LoginPage = () => {
           </div>
         </form>
 
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1.5rem', marginBottom: '1rem' }}>
+          <GoogleLogin
+            onSuccess={async (credentialResponse) => {
+              setIsLoading(true);
+              setApiError('');
+              try {
+                const response = await authApi.googleLogin({
+                  credential: credentialResponse.credential,
+                  role: role
+                });
+                if (response.success) {
+                  localStorage.setItem('user', JSON.stringify(response.data));
+                  if (response.data.role === 'LANDLORD') {
+                    navigate('/landlord-home');
+                  } else {
+                    navigate('/tenant-home');
+                  }
+                } else {
+                  setApiError(response.message || 'Google Login failed');
+                }
+              } catch (error) {
+                setApiError(error.message || 'An error occurred during Google Login');
+              } finally {
+                setIsLoading(false);
+              }
+            }}
+            onError={() => {
+              setApiError('Google Login Failed');
+            }}
+          />
+        </div>
+
         <div className="text-center mt-4" style={{ fontSize: '0.875rem' }}>
+          <Link to="/forgot-password" style={{ color: 'var(--primary-color)', fontWeight: '500' }}>Forgot password?</Link>
+          <br /><br />
           Don't have an account? <Link to="/register">Register here</Link>
           <br /><br />
           <Link to="/" style={{ color: 'var(--text-muted)' }}>Change Role</Link>

@@ -13,7 +13,7 @@ const RoleSelectionPage = () => {
   return (
     <div className="page-container">
       <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-        <h1 style={{ fontSize: '2.5rem', color: 'var(--primary-color)' }}>Rental Hub</h1>
+        <h1 style={{ fontSize: '2.5rem', color: 'var(--primary-color)' }}>HomeNest</h1>
         <p style={{ fontSize: '1.25rem', color: 'var(--text-muted)' }}>Choose your account type to continue</p>
       </div>
 

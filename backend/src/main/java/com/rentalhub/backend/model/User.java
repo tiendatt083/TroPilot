@@ -16,7 +16,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 @Table(name = "users", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"email_or_phone", "role"})
+    @UniqueConstraint(columnNames = {"email"}),
+    @UniqueConstraint(columnNames = {"phone"})
 })
 public class User {
 
@@ -27,8 +28,11 @@ public class User {
     @Column(name = "full_name", nullable = false, length = 100)
     private String fullName;
 
-    @Column(name = "email_or_phone", nullable = false, length = 100)
-    private String emailOrPhone;
+    @Column(name = "email", nullable = false, length = 100)
+    private String email;
+
+    @Column(name = "phone", length = 20)
+    private String phone;
 
     @Column(nullable = false)
     private String password;
@@ -36,6 +40,11 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private UserRole role;
+
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    @Column(name = "auth_provider", nullable = false, length = 20)
+    private AuthProvider authProvider = AuthProvider.LOCAL;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

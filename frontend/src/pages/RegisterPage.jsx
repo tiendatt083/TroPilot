@@ -8,16 +8,20 @@ import { authApi } from '../api/auth';
 const RegisterPage = () => {
   const navigate = useNavigate();
   const [role, setRole] = useState('');
+  const [step, setStep] = useState(1); // 1: Info, 2: OTP
   
   const [formData, setFormData] = useState({
     fullName: '',
-    emailOrPhone: '',
+    email: '',
+    phone: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    otp: ''
   });
   
   const [errors, setErrors] = useState({});
   const [apiError, setApiError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -38,7 +42,7 @@ const RegisterPage = () => {
     setApiError('');
   };
 
-  const handleSubmit = async (e) => {
+  const handleSendOtp = async (e) => {
     e.preventDefault();
     const validationErrors = validateRegisterForm(formData);
     
@@ -51,6 +55,47 @@ const RegisterPage = () => {
     setApiError('');
 
     try {
+      const response = await authApi.sendRegisterOtp({ email: formData.email.trim(), role });
+      setSuccessMessage(response.message || 'OTP sent! Please check your email.');
+      setStep(2);
+    } catch (error) {
+      if (error.data && typeof error.data === 'object' && Object.keys(error.data).length > 0) {
+        setErrors(error.data);
+      } else {
+        setApiError(error.message || 'Failed to send OTP.');
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    setIsLoading(true);
+    setApiError('');
+    setSuccessMessage('');
+
+    try {
+      const response = await authApi.sendRegisterOtp({ email: formData.email.trim(), role });
+      setSuccessMessage('New OTP sent! Please check your email.');
+    } catch (error) {
+      setApiError(error.message || 'Failed to resend OTP.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    if (!formData.otp.trim()) {
+      setErrors({ otp: 'OTP is required' });
+      return;
+    }
+
+    setIsLoading(true);
+    setApiError('');
+    setSuccessMessage('');
+
+    try {
       const response = await authApi.register({ ...formData, role });
       
       if (response.success) {
@@ -61,7 +106,6 @@ const RegisterPage = () => {
       }
     } catch (error) {
       if (error.data && typeof error.data === 'object') {
-        // Set validation errors from backend
         setErrors(error.data);
       } else {
         setApiError(error.message || 'An error occurred during registration');
@@ -82,52 +126,52 @@ const RegisterPage = () => {
         </div>
 
         {apiError && <div className="alert-error">{apiError}</div>}
+        {successMessage && <div className="alert-success">{successMessage}</div>}
 
-        <form onSubmit={handleSubmit}>
-          <InputField
-            label="Full Name"
-            name="fullName"
-            value={formData.fullName}
-            onChange={handleChange}
-            error={errors.fullName}
-            placeholder="John Doe"
-          />
-
-          <InputField
-            label="Email or Phone"
-            name="emailOrPhone"
-            value={formData.emailOrPhone}
-            onChange={handleChange}
-            error={errors.emailOrPhone}
-            placeholder="email@example.com or 0123456789"
-          />
-
-          <InputField
-            label="Password"
-            name="password"
-            type="password"
-            value={formData.password}
-            onChange={handleChange}
-            error={errors.password}
-            placeholder="At least 6 characters"
-          />
-
-          <InputField
-            label="Confirm Password"
-            name="confirmPassword"
-            type="password"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-            error={errors.confirmPassword}
-            placeholder="Type your password again"
-          />
-
-          <div className="mt-4">
-            <PrimaryButton type="submit" disabled={isLoading}>
-              {isLoading ? 'Creating account...' : 'Register'}
-            </PrimaryButton>
-          </div>
-        </form>
+        {step === 1 ? (
+          <form onSubmit={handleSendOtp}>
+            <InputField label="Full Name" name="fullName" value={formData.fullName} onChange={handleChange} error={errors.fullName} placeholder="John Doe" />
+            <InputField label="Email" name="email" value={formData.email} onChange={handleChange} error={errors.email} placeholder="email@example.com" />
+            <InputField label="Phone" name="phone" value={formData.phone} onChange={handleChange} error={errors.phone} placeholder="0123456789" />
+            <InputField label="Password" name="password" type="password" value={formData.password} onChange={handleChange} error={errors.password} placeholder="At least 6 characters" />
+            <InputField label="Confirm Password" name="confirmPassword" type="password" value={formData.confirmPassword} onChange={handleChange} error={errors.confirmPassword} placeholder="Type your password again" />
+            
+            <div className="mt-4">
+              <PrimaryButton type="submit" disabled={isLoading}>
+                {isLoading ? 'Sending OTP...' : 'Next'}
+              </PrimaryButton>
+            </div>
+          </form>
+        ) : (
+          <form onSubmit={handleRegister}>
+            <InputField label="Email (Verification)" name="email" value={formData.email} disabled={true} onChange={() => {}} />
+            <InputField label="OTP Code" name="otp" value={formData.otp} onChange={handleChange} error={errors.otp} placeholder="Enter 6-digit code" />
+            
+            <div className="mt-4">
+              <PrimaryButton type="submit" disabled={isLoading}>
+                {isLoading ? 'Creating account...' : 'Verify & Register'}
+              </PrimaryButton>
+            </div>
+            
+            <div className="text-center mt-3" style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem' }}>
+               <button 
+                 type="button" 
+                 onClick={() => { setStep(1); setSuccessMessage(''); }}
+                 style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}
+               >
+                 &larr; Back to edit details
+               </button>
+               <button 
+                 type="button" 
+                 onClick={handleResendOtp}
+                 disabled={isLoading}
+                 style={{ background: 'none', border: 'none', color: 'var(--primary-color)', cursor: isLoading ? 'not-allowed' : 'pointer', fontWeight: 'bold' }}
+               >
+                 Resend OTP
+               </button>
+            </div>
+          </form>
+        )}
 
         <div className="text-center mt-4" style={{ fontSize: '0.875rem' }}>
           Already have an account? <Link to="/login">Login here</Link>

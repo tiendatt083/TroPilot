@@ -7,27 +7,17 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public class RegisterRequest {
-
-    @NotBlank(message = "Full Name is required")
-    private String fullName;
-
+public class ResetPasswordRequest {
     @NotBlank(message = "Email is required")
     private String email;
-
-    @NotBlank(message = "Phone is required")
-    private String phone;
-
-    @NotBlank(message = "Password is required")
-    @Size(min = 6, message = "Password must be at least 6 characters")
-    private String password;
-
-    @NotBlank(message = "Confirm Password is required")
-    private String confirmPassword;
 
     @NotNull(message = "Role is required")
     private UserRole role;
 
     @NotBlank(message = "OTP is required")
     private String otp;
+
+    @NotBlank(message = "New Password is required")
+    @Size(min = 6, message = "Password must be at least 6 characters long")
+    private String newPassword;
 }

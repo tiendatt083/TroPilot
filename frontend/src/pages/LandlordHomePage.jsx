@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PrimaryButton from '../components/PrimaryButton';
 
-const HomePage = () => {
+const LandlordHomePage = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
 
@@ -14,7 +14,12 @@ const HomePage = () => {
     }
     
     try {
-      setUser(JSON.parse(userDataStr));
+      const parsedUser = JSON.parse(userDataStr);
+      if (parsedUser.role !== 'LANDLORD') {
+        navigate('/tenant-home');
+        return;
+      }
+      setUser(parsedUser);
     } catch (e) {
       localStorage.removeItem('user');
       navigate('/');
@@ -23,9 +28,6 @@ const HomePage = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('user');
-    // We intentionally keep 'selectedRole' so they can log back in easily, 
-    // or we could remove it to force them to select a role again.
-    // Let's remove it for a completely fresh start.
     localStorage.removeItem('selectedRole');
     navigate('/');
   };
@@ -43,7 +45,7 @@ const HomePage = () => {
         borderBottom: '1px solid var(--border-color)',
         marginBottom: '2rem'
       }}>
-        <h1 style={{ margin: 0, color: 'var(--primary-color)' }}>HomeNest</h1>
+        <h1 style={{ margin: 0, color: 'var(--primary-color)' }}>HomeNest - Landlord Portal</h1>
         <div style={{ width: '120px' }}>
           <PrimaryButton onClick={handleLogout}>Logout</PrimaryButton>
         </div>
@@ -51,7 +53,7 @@ const HomePage = () => {
 
       <main style={{ width: '100%', maxWidth: '800px', margin: '0 auto' }}>
         <div className="card" style={{ maxWidth: '100%' }}>
-          <h2>Welcome, {user.fullName}!</h2>
+          <h2>Welcome Admin (Landlord), {user.fullName}!</h2>
           <div style={{ 
             display: 'inline-block',
             padding: '0.25rem 0.75rem',
@@ -66,9 +68,7 @@ const HomePage = () => {
           </div>
           
           <p style={{ marginTop: '2rem', color: 'var(--text-muted)' }}>
-            You have successfully complete the authentication process.
-            <br /><br />
-            (Future features like property management, rent payment, and room bookings will appear here.)
+            This is the Landlord Admin Dashboard. Here you can start managing your properties, viewing tenant lists, and tracking revenue.
           </p>
         </div>
       </main>
@@ -76,4 +76,4 @@ const HomePage = () => {
   );
 };
 
-export default HomePage;
+export default LandlordHomePage;
