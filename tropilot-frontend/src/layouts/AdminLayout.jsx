@@ -1,0 +1,29 @@
+import { NavLink, Outlet } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext.jsx';
+
+export default function AdminLayout() {
+  const { logout, user } = useAuth();
+
+  return (
+    <div className="app-shell">
+      <aside className="sidebar">
+        <strong>Tropilot</strong>
+        <div className="sidebar-user">
+          <span>{user?.fullName}</span>
+          <small>Administrator</small>
+        </div>
+        <nav aria-label="Admin navigation">
+          <NavLink to="/admin/dashboard">Dashboard</NavLink>
+          <NavLink to="/admin/users">Users</NavLink>
+          <NavLink to="/admin/buildings">Buildings</NavLink>
+        </nav>
+        <button className="secondary-button" type="button" onClick={logout}>
+          Sign out
+        </button>
+      </aside>
+      <main className="main-panel">
+        <Outlet />
+      </main>
+    </div>
+  );
+}
