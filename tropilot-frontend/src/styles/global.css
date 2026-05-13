@@ -278,6 +278,8 @@ textarea {
 }
 
 .panel-form label {
+  display: block;
+  margin-bottom: 0.35rem;
   font-weight: 700;
 }
 
@@ -290,6 +292,19 @@ textarea {
   grid-template-columns: minmax(220px, 1fr) auto auto;
   gap: 0.75rem;
   margin-bottom: 1rem;
+}
+
+.filter-row {
+  display: grid;
+  grid-template-columns: minmax(220px, 1.2fr) minmax(180px, 1fr) minmax(150px, 0.8fr) auto auto;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
 }
 
 .inline-button {
@@ -358,6 +373,26 @@ textarea {
 .status-inactive {
   color: #5d6470;
   background: #e6e9ed;
+}
+
+.room-status-empty {
+  color: #155844;
+  background: #dff3eb;
+}
+
+.room-status-occupied {
+  color: #1d4d7a;
+  background: #dcecff;
+}
+
+.room-status-maintenance {
+  color: #8a241e;
+  background: #ffe2df;
+}
+
+.room-status-reserved {
+  color: #7a4c00;
+  background: #fff3cc;
 }
 
 .password-state {
@@ -471,6 +506,8 @@ textarea {
   }
 
   .search-row,
+  .filter-row,
+  .form-grid,
   .detail-panel {
     grid-template-columns: 1fr;
   }

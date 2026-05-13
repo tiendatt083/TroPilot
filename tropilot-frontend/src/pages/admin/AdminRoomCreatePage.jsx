@@ -1,0 +1,84 @@
+import { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import * as buildingApi from '../../api/buildingApi.js';
+import * as roomApi from '../../api/roomApi.js';
+import PageHeader from '../../components/PageHeader.jsx';
+import RoomForm from '../../components/RoomForm.jsx';
+
+export default function AdminRoomCreatePage() {
+  const navigate = useNavigate();
+  const [buildings, setBuildings] = useState([]);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [loadingBuildings, setLoadingBuildings] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+
+    buildingApi
+      .getAdminBuildings()
+      .then((response) => {
+        if (active) {
+          setBuildings(response.data);
+        }
+      })
+      .catch((apiError) => {
+        if (active) {
+          setError(apiError.response?.data?.message || 'Buildings could not be loaded');
+        }
+      })
+      .finally(() => {
+        if (active) {
+          setLoadingBuildings(false);
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const handleSubmit = async (payload) => {
+    setError('');
+    setLoading(true);
+
+    try {
+      const response = await roomApi.createAdminRoom(payload);
+      navigate(`/admin/rooms/${response.data.id}`, {
+        replace: true,
+        state: { message: 'Room created successfully.' }
+      });
+    } catch (apiError) {
+      setError(apiError.response?.data?.message || 'Room could not be created');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <section className="content-section narrow-section">
+      <div className="page-title-row">
+        <PageHeader eyebrow="Administrator" title="Create room" />
+        <Link className="secondary-link" to="/admin/rooms">
+          Back to rooms
+        </Link>
+      </div>
+
+      {error && <div className="alert error-alert">{error}</div>}
+      {!loadingBuildings && buildings.length === 0 && (
+        <div className="alert error-alert">Create a building before creating rooms.</div>
+      )}
+
+      {loadingBuildings ? (
+        <div className="empty-state">Loading buildings...</div>
+      ) : (
+        <RoomForm
+          buildingOptions={buildings}
+          loading={loading}
+          submitLabel="Create room"
+          onSubmit={handleSubmit}
+        />
+      )}
+    </section>
+  );
+}

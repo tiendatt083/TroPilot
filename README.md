@@ -133,6 +133,15 @@ Building management:
 - Head residents cannot access building management pages.
 - A building cannot be deleted when related rooms exist.
 
+Room management:
+
+- Admin users can open `/admin/rooms`.
+- Admin users can create, view, edit, filter, search, and delete rooms.
+- Staff users can open `/staff/rooms` with read-only access.
+- Rooms are connected to buildings.
+- Head residents cannot access the all-room list in this phase.
+- A room cannot be deleted when related head resident, contract, invoice, utility reading, vehicle, or maintenance data exists.
+
 Protected backend APIs:
 
 ```text
@@ -153,6 +162,13 @@ PUT /api/admin/buildings/{id}
 DELETE /api/admin/buildings/{id}
 GET /api/staff/buildings
 GET /api/staff/buildings/{id}
+POST /api/admin/rooms
+GET /api/admin/rooms
+GET /api/admin/rooms/{id}
+PUT /api/admin/rooms/{id}
+DELETE /api/admin/rooms/{id}
+GET /api/staff/rooms
+GET /api/staff/rooms/{id}
 ```
 
 ## Environment
