@@ -473,6 +473,21 @@ textarea {
   background: #ffe2df;
 }
 
+.expense-status-valid {
+  color: #155844;
+  background: #dff3eb;
+}
+
+.expense-status-pending {
+  color: #7a4c00;
+  background: #fff3cc;
+}
+
+.expense-status-cancelled {
+  color: #8a241e;
+  background: #ffe2df;
+}
+
 .vehicle-status-pending {
   color: #7a4c00;
   background: #fff3cc;
@@ -644,7 +659,9 @@ textarea {
 }
 
 .resident-invoice-workspace,
-.receipt-workspace {
+.receipt-workspace,
+.expense-workspace,
+.cashflow-workspace {
   display: grid;
   gap: 1rem;
 }
@@ -695,7 +712,8 @@ textarea {
 }
 
 .payment-table,
-.receipt-table {
+.receipt-table,
+.expense-table {
   min-width: 1180px;
 }
 
@@ -733,6 +751,40 @@ textarea {
   max-width: 620px;
 }
 
+.month-filter-row {
+  display: grid;
+  grid-template-columns: minmax(220px, 280px) auto;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.cashflow-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.cashflow-summary div {
+  display: grid;
+  gap: 0.35rem;
+  border: 1px solid #dfe4df;
+  border-radius: 8px;
+  padding: 1rem;
+  background: #ffffff;
+}
+
+.cashflow-summary span {
+  color: #66727d;
+  font-size: 0.82rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.cashflow-summary strong {
+  color: #1f2933;
+  font-size: 1.2rem;
+}
+
 .contract-actions {
   justify-content: flex-start;
   margin-top: 1rem;
@@ -764,6 +816,8 @@ textarea {
 
   .search-row,
   .filter-row,
+  .month-filter-row,
+  .cashflow-summary,
   .form-grid,
   .member-workspace,
   .vehicle-workspace,

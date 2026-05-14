@@ -8,7 +8,9 @@ import AdminBuildingEditPage from '../pages/admin/AdminBuildingEditPage.jsx';
 import AdminBuildingListPage from '../pages/admin/AdminBuildingListPage.jsx';
 import AdminContractDetailPage from '../pages/admin/AdminContractDetailPage.jsx';
 import AdminContractListPage from '../pages/admin/AdminContractListPage.jsx';
+import AdminCashFlowPage from '../pages/admin/AdminCashFlowPage.jsx';
 import AdminDashboardPage from '../pages/admin/AdminDashboardPage.jsx';
+import AdminExpenseListPage from '../pages/admin/AdminExpenseListPage.jsx';
 import AdminInvoiceListPage from '../pages/admin/AdminInvoiceListPage.jsx';
 import AdminPendingMembersPage from '../pages/admin/AdminPendingMembersPage.jsx';
 import AdminPendingVehiclesPage from '../pages/admin/AdminPendingVehiclesPage.jsx';
@@ -37,6 +39,8 @@ import ResidentVehiclePage from '../pages/resident/ResidentVehiclePage.jsx';
 import StaffBuildingDetailPage from '../pages/staff/StaffBuildingDetailPage.jsx';
 import StaffBuildingListPage from '../pages/staff/StaffBuildingListPage.jsx';
 import StaffDashboardPage from '../pages/staff/StaffDashboardPage.jsx';
+import StaffExpenseCreatePage from '../pages/staff/StaffExpenseCreatePage.jsx';
+import StaffExpenseListPage from '../pages/staff/StaffExpenseListPage.jsx';
 import StaffInvoiceGeneratePage from '../pages/staff/StaffInvoiceGeneratePage.jsx';
 import StaffInvoiceListPage from '../pages/staff/StaffInvoiceListPage.jsx';
 import StaffPendingPaymentsPage from '../pages/staff/StaffPendingPaymentsPage.jsx';
@@ -71,6 +75,8 @@ export default function AppRoutes() {
               <Route path="contracts/:id" element={<AdminContractDetailPage />} />
               <Route path="invoices" element={<AdminInvoiceListPage />} />
               <Route path="receipts" element={<AdminReceiptListPage />} />
+              <Route path="expenses" element={<AdminExpenseListPage />} />
+              <Route path="cashflow" element={<AdminCashFlowPage />} />
               <Route path="vehicles" element={<AdminVehicleListPage />} />
               <Route path="vehicles/pending" element={<AdminPendingVehiclesPage />} />
               <Route path="service-fees" element={<AdminServiceFeeListPage />} />
@@ -96,6 +102,8 @@ export default function AppRoutes() {
               <Route path="invoices" element={<StaffInvoiceListPage />} />
               <Route path="invoices/generate" element={<StaffInvoiceGeneratePage />} />
               <Route path="payments/pending" element={<StaffPendingPaymentsPage />} />
+              <Route path="expenses" element={<StaffExpenseListPage />} />
+              <Route path="expenses/create" element={<StaffExpenseCreatePage />} />
               <Route path="buildings" element={<StaffBuildingListPage />} />
               <Route path="buildings/:id" element={<StaffBuildingDetailPage />} />
               <Route path="rooms" element={<StaffRoomListPage />} />

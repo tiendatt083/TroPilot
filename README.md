@@ -251,6 +251,21 @@ Payment confirmation and receipts:
 - Admin users can view receipts at `/admin/receipts`.
 - One invoice can have only one valid receipt.
 
+Expenses and cash flow:
+
+- Staff users can create expenses at `/staff/expenses/create`.
+- Staff users can view expenses and basic cash flow at `/staff/expenses`.
+- Admin users can view expenses at `/admin/expenses`.
+- Admin users can view full cash flow at `/admin/cashflow`.
+- Expense proof images are stored in `uploads/expenses`.
+- Uploaded expense proof images are served through `/uploads/expenses/{fileName}`.
+- Expense proof image upload is optional.
+- Allowed expense proof image types are jpg, jpeg, and png.
+- Cancelled expenses do not count toward total expense.
+- Cancelled receipts do not count toward total income.
+- Remaining cash equals total income minus total expense.
+- Unpaid amount is calculated from unpaid invoices for the selected month.
+
 Protected backend APIs:
 
 ```text
@@ -333,6 +348,12 @@ PUT /api/staff/payments/{id}/approve
 PUT /api/staff/payments/{id}/reject
 GET /api/admin/receipts
 GET /api/admin/receipts/{id}
+POST /api/staff/expenses
+GET /api/staff/expenses
+GET /api/staff/cashflow
+GET /api/admin/expenses
+GET /api/admin/cashflow
+PUT /api/admin/expenses/{id}/cancel
 ```
 
 ## Environment

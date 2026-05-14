@@ -1,0 +1,70 @@
+import { useEffect, useState } from 'react';
+import * as expenseApi from '../../api/expenseApi.js';
+import CashFlowSummary from '../../components/CashFlowSummary.jsx';
+import ExpenseTable from '../../components/ExpenseTable.jsx';
+import PageHeader from '../../components/PageHeader.jsx';
+import ReceiptTable from '../../components/ReceiptTable.jsx';
+
+function currentMonth() {
+  return new Date().toISOString().slice(0, 7);
+}
+
+export default function AdminCashFlowPage() {
+  const [cashFlow, setCashFlow] = useState(null);
+  const [month, setMonth] = useState(currentMonth());
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  const loadCashFlow = async (targetMonth) => {
+    setError('');
+
+    try {
+      const response = await expenseApi.getAdminCashFlow(targetMonth);
+      setCashFlow(response.data);
+    } catch (apiError) {
+      setError(apiError.response?.data?.message || 'Cash flow could not be loaded');
+    }
+  };
+
+  useEffect(() => {
+    loadCashFlow(month).finally(() => setLoading(false));
+  }, []);
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    loadCashFlow(month);
+  };
+
+  return (
+    <section className="content-section">
+      <PageHeader eyebrow="Administrator" title="Cash flow" />
+
+      {error && <div className="alert error-alert">{error}</div>}
+
+      <form className="month-filter-row" onSubmit={handleSubmit}>
+        <input type="month" value={month} onChange={(event) => setMonth(event.target.value)} required />
+        <button className="inline-button" type="submit">
+          View cash flow
+        </button>
+      </form>
+
+      {loading ? (
+        <div className="empty-state">Loading cash flow...</div>
+      ) : (
+        <section className="cashflow-workspace">
+          <CashFlowSummary cashFlow={cashFlow} />
+
+          <div>
+            <PageHeader eyebrow="Income" title="Valid receipts" />
+            <ReceiptTable receipts={cashFlow?.receipts || []} />
+          </div>
+
+          <div>
+            <PageHeader eyebrow="Outgoing money" title="Valid expenses" />
+            <ExpenseTable expenses={cashFlow?.expenses || []} />
+          </div>
+        </section>
+      )}
+    </section>
+  );
+}
