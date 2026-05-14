@@ -237,6 +237,20 @@ Invoice generation:
 - Invoice total amount is the sum of invoice items.
 - Head residents can view invoices for their own active room only.
 
+Payment confirmation and receipts:
+
+- Head residents can upload payment proof from their invoice detail page.
+- Payment proof files are stored in `uploads/payments`.
+- Uploaded payment proof files are served through `/uploads/payments/{fileName}`.
+- Allowed payment proof image types are jpg, jpeg, and png.
+- Uploading payment proof changes the invoice status to `PENDING_CONFIRMATION`.
+- Staff and Admin users can review pending payments at `/staff/payments/pending`.
+- Approving payment changes the invoice status to `PAID`.
+- Approving payment creates a valid receipt automatically.
+- Rejecting payment changes the invoice status to `REJECTED`.
+- Admin users can view receipts at `/admin/receipts`.
+- One invoice can have only one valid receipt.
+
 Protected backend APIs:
 
 ```text
@@ -312,6 +326,13 @@ GET /api/admin/invoices
 GET /api/admin/invoices/{id}
 GET /api/resident/invoices
 GET /api/resident/invoices/{id}
+POST /api/resident/payments/upload
+GET /api/resident/payments
+GET /api/staff/payments/pending
+PUT /api/staff/payments/{id}/approve
+PUT /api/staff/payments/{id}/reject
+GET /api/admin/receipts
+GET /api/admin/receipts/{id}
 ```
 
 ## Environment

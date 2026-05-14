@@ -1,11 +1,13 @@
 package com.tropilot.repository;
 
 import com.tropilot.entity.Invoice;
+import com.tropilot.enums.InvoiceStatus;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -48,4 +50,15 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
             order by invoice.month desc, invoice.createdAt desc
             """)
     List<Invoice> findByRoomIdWithDetails(@Param("roomId") Long roomId);
+
+    @Query("""
+            select coalesce(sum(invoice.totalAmount), 0)
+            from Invoice invoice
+            where invoice.month = :month
+              and invoice.status <> :paidStatus
+            """)
+    BigDecimal sumUnpaidAmountByMonth(
+            @Param("month") LocalDate month,
+            @Param("paidStatus") InvoiceStatus paidStatus
+    );
 }

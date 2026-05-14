@@ -12,6 +12,7 @@ import AdminDashboardPage from '../pages/admin/AdminDashboardPage.jsx';
 import AdminInvoiceListPage from '../pages/admin/AdminInvoiceListPage.jsx';
 import AdminPendingMembersPage from '../pages/admin/AdminPendingMembersPage.jsx';
 import AdminPendingVehiclesPage from '../pages/admin/AdminPendingVehiclesPage.jsx';
+import AdminReceiptListPage from '../pages/admin/AdminReceiptListPage.jsx';
 import AdminRoomCreatePage from '../pages/admin/AdminRoomCreatePage.jsx';
 import AdminRoomDetailPage from '../pages/admin/AdminRoomDetailPage.jsx';
 import AdminRoomEditPage from '../pages/admin/AdminRoomEditPage.jsx';
@@ -38,6 +39,7 @@ import StaffBuildingListPage from '../pages/staff/StaffBuildingListPage.jsx';
 import StaffDashboardPage from '../pages/staff/StaffDashboardPage.jsx';
 import StaffInvoiceGeneratePage from '../pages/staff/StaffInvoiceGeneratePage.jsx';
 import StaffInvoiceListPage from '../pages/staff/StaffInvoiceListPage.jsx';
+import StaffPendingPaymentsPage from '../pages/staff/StaffPendingPaymentsPage.jsx';
 import StaffRoomDetailPage from '../pages/staff/StaffRoomDetailPage.jsx';
 import StaffRoomListPage from '../pages/staff/StaffRoomListPage.jsx';
 import StaffServiceFeeListPage from '../pages/staff/StaffServiceFeeListPage.jsx';
@@ -68,6 +70,7 @@ export default function AppRoutes() {
               <Route path="contracts" element={<AdminContractListPage />} />
               <Route path="contracts/:id" element={<AdminContractDetailPage />} />
               <Route path="invoices" element={<AdminInvoiceListPage />} />
+              <Route path="receipts" element={<AdminReceiptListPage />} />
               <Route path="vehicles" element={<AdminVehicleListPage />} />
               <Route path="vehicles/pending" element={<AdminPendingVehiclesPage />} />
               <Route path="service-fees" element={<AdminServiceFeeListPage />} />
@@ -92,6 +95,7 @@ export default function AppRoutes() {
               <Route path="dashboard" element={<StaffDashboardPage />} />
               <Route path="invoices" element={<StaffInvoiceListPage />} />
               <Route path="invoices/generate" element={<StaffInvoiceGeneratePage />} />
+              <Route path="payments/pending" element={<StaffPendingPaymentsPage />} />
               <Route path="buildings" element={<StaffBuildingListPage />} />
               <Route path="buildings/:id" element={<StaffBuildingDetailPage />} />
               <Route path="rooms" element={<StaffRoomListPage />} />

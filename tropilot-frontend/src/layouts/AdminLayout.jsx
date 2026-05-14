@@ -18,6 +18,7 @@ export default function AdminLayout() {
           <NavLink to="/admin/members/pending">Pending members</NavLink>
           <NavLink to="/admin/contracts">Contracts</NavLink>
           <NavLink to="/admin/invoices">Invoices</NavLink>
+          <NavLink to="/admin/receipts">Receipts</NavLink>
           <NavLink to="/admin/vehicles">Vehicles</NavLink>
           <NavLink to="/admin/service-fees">Service fees</NavLink>
           <NavLink to="/admin/utility-readings">Utility readings</NavLink>
