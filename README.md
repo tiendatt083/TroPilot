@@ -220,6 +220,23 @@ Utility reading management:
 - Allowed utility reading image types are jpg, jpeg, and png.
 - Admin edits require an edit reason.
 
+Invoice generation:
+
+- Staff users can open `/staff/invoices`.
+- Staff users can generate invoices at `/staff/invoices/generate`.
+- Admin users can open `/admin/invoices` to view and generate invoices.
+- Head resident users can open `/resident/invoices` and `/resident/invoices/{id}`.
+- Invoices are generated for one room and one month.
+- A room must have an active Head Resident before an invoice can be generated.
+- Duplicate invoices for the same room and month are blocked.
+- Invoice generation requires a utility reading for the same room and month.
+- Electricity and water invoice items use active BY_USAGE service fees.
+- Fixed service fees, BY_PERSON fees, and active vehicle parking fees are included.
+- BY_PERSON fees count one active Head Resident plus approved room members.
+- Parking fees count ACTIVE vehicles only.
+- Invoice total amount is the sum of invoice items.
+- Head residents can view invoices for their own active room only.
+
 Protected backend APIs:
 
 ```text
@@ -288,6 +305,13 @@ GET /api/staff/utility-readings/{id}
 GET /api/admin/utility-readings
 PUT /api/admin/utility-readings/{id}
 GET /api/resident/utility-readings/current-room
+POST /api/staff/invoices/generate
+GET /api/staff/invoices
+GET /api/staff/invoices/{id}
+GET /api/admin/invoices
+GET /api/admin/invoices/{id}
+GET /api/resident/invoices
+GET /api/resident/invoices/{id}
 ```
 
 ## Environment

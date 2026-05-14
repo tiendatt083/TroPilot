@@ -12,5 +12,7 @@ public interface ServiceFeeRepository extends JpaRepository<ServiceFee, Long> {
 
     Optional<ServiceFee> findByFeeCode(String feeCode);
 
+    List<ServiceFee> findByIsActiveTrueOrderByCreatedAtDesc();
+
     List<ServiceFee> findAllByOrderByCreatedAtDesc();
 }

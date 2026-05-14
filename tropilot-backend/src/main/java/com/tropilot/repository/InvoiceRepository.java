@@ -1,0 +1,51 @@
+package com.tropilot.repository;
+
+import com.tropilot.entity.Invoice;
+import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+
+public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
+
+    boolean existsByRoom_IdAndMonth(Long roomId, LocalDate month);
+
+    @EntityGraph(attributePaths = {
+            "room",
+            "room.building",
+            "residentHead",
+            "createdBy",
+            "items",
+            "items.serviceFee"
+    })
+    Optional<Invoice> findById(Long id);
+
+    @Query("""
+            select distinct invoice from Invoice invoice
+            join fetch invoice.room room
+            join fetch room.building building
+            join fetch invoice.residentHead residentHead
+            join fetch invoice.createdBy createdBy
+            left join fetch invoice.items items
+            left join fetch items.serviceFee serviceFee
+            order by invoice.month desc, invoice.createdAt desc
+            """)
+    List<Invoice> findAllWithDetails();
+
+    @Query("""
+            select distinct invoice from Invoice invoice
+            join fetch invoice.room room
+            join fetch room.building building
+            join fetch invoice.residentHead residentHead
+            join fetch invoice.createdBy createdBy
+            left join fetch invoice.items items
+            left join fetch items.serviceFee serviceFee
+            where room.id = :roomId
+            order by invoice.month desc, invoice.createdAt desc
+            """)
+    List<Invoice> findByRoomIdWithDetails(@Param("roomId") Long roomId);
+}

@@ -20,6 +20,19 @@ public interface UtilityReadingRepository extends JpaRepository<UtilityReading, 
             join fetch reading.room room
             join fetch room.building building
             join fetch reading.createdBy createdBy
+            where room.id = :roomId
+              and reading.month = :month
+            """)
+    Optional<UtilityReading> findByRoomIdAndMonthWithDetails(
+            @Param("roomId") Long roomId,
+            @Param("month") LocalDate month
+    );
+
+    @Query("""
+            select reading from UtilityReading reading
+            join fetch reading.room room
+            join fetch room.building building
+            join fetch reading.createdBy createdBy
             where reading.id = :id
             """)
     Optional<UtilityReading> findByIdWithDetails(@Param("id") Long id);

@@ -9,6 +9,7 @@ import AdminBuildingListPage from '../pages/admin/AdminBuildingListPage.jsx';
 import AdminContractDetailPage from '../pages/admin/AdminContractDetailPage.jsx';
 import AdminContractListPage from '../pages/admin/AdminContractListPage.jsx';
 import AdminDashboardPage from '../pages/admin/AdminDashboardPage.jsx';
+import AdminInvoiceListPage from '../pages/admin/AdminInvoiceListPage.jsx';
 import AdminPendingMembersPage from '../pages/admin/AdminPendingMembersPage.jsx';
 import AdminPendingVehiclesPage from '../pages/admin/AdminPendingVehiclesPage.jsx';
 import AdminRoomCreatePage from '../pages/admin/AdminRoomCreatePage.jsx';
@@ -27,12 +28,16 @@ import ChangePasswordPage from '../pages/auth/ChangePasswordPage.jsx';
 import LoginPage from '../pages/auth/LoginPage.jsx';
 import ResidentContractPage from '../pages/resident/ResidentContractPage.jsx';
 import ResidentDashboardPage from '../pages/resident/ResidentDashboardPage.jsx';
+import ResidentInvoiceDetailPage from '../pages/resident/ResidentInvoiceDetailPage.jsx';
+import ResidentInvoiceListPage from '../pages/resident/ResidentInvoiceListPage.jsx';
 import ResidentMemberPage from '../pages/resident/ResidentMemberPage.jsx';
 import ResidentUtilityReadingPage from '../pages/resident/ResidentUtilityReadingPage.jsx';
 import ResidentVehiclePage from '../pages/resident/ResidentVehiclePage.jsx';
 import StaffBuildingDetailPage from '../pages/staff/StaffBuildingDetailPage.jsx';
 import StaffBuildingListPage from '../pages/staff/StaffBuildingListPage.jsx';
 import StaffDashboardPage from '../pages/staff/StaffDashboardPage.jsx';
+import StaffInvoiceGeneratePage from '../pages/staff/StaffInvoiceGeneratePage.jsx';
+import StaffInvoiceListPage from '../pages/staff/StaffInvoiceListPage.jsx';
 import StaffRoomDetailPage from '../pages/staff/StaffRoomDetailPage.jsx';
 import StaffRoomListPage from '../pages/staff/StaffRoomListPage.jsx';
 import StaffServiceFeeListPage from '../pages/staff/StaffServiceFeeListPage.jsx';
@@ -62,6 +67,7 @@ export default function AppRoutes() {
               <Route path="members/pending" element={<AdminPendingMembersPage />} />
               <Route path="contracts" element={<AdminContractListPage />} />
               <Route path="contracts/:id" element={<AdminContractDetailPage />} />
+              <Route path="invoices" element={<AdminInvoiceListPage />} />
               <Route path="vehicles" element={<AdminVehicleListPage />} />
               <Route path="vehicles/pending" element={<AdminPendingVehiclesPage />} />
               <Route path="service-fees" element={<AdminServiceFeeListPage />} />
@@ -84,6 +90,8 @@ export default function AppRoutes() {
             <Route path="/staff" element={<StaffLayout />}>
               <Route index element={<Navigate to="/staff/dashboard" replace />} />
               <Route path="dashboard" element={<StaffDashboardPage />} />
+              <Route path="invoices" element={<StaffInvoiceListPage />} />
+              <Route path="invoices/generate" element={<StaffInvoiceGeneratePage />} />
               <Route path="buildings" element={<StaffBuildingListPage />} />
               <Route path="buildings/:id" element={<StaffBuildingDetailPage />} />
               <Route path="rooms" element={<StaffRoomListPage />} />
@@ -99,6 +107,8 @@ export default function AppRoutes() {
             <Route path="/resident" element={<ResidentLayout />}>
               <Route index element={<Navigate to="/resident/dashboard" replace />} />
               <Route path="dashboard" element={<ResidentDashboardPage />} />
+              <Route path="invoices" element={<ResidentInvoiceListPage />} />
+              <Route path="invoices/:id" element={<ResidentInvoiceDetailPage />} />
               <Route path="members" element={<ResidentMemberPage />} />
               <Route path="contract" element={<ResidentContractPage />} />
               <Route path="vehicles" element={<ResidentVehiclePage />} />
