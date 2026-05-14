@@ -142,6 +142,16 @@ Room management:
 - Head residents cannot access the all-room list in this phase.
 - A room cannot be deleted when related head resident, contract, invoice, utility reading, vehicle, or maintenance data exists.
 
+Head Resident assignment:
+
+- Admin users can assign one active Head Resident account to one room from the room detail page.
+- Assigning a Head Resident creates a room assignment and an initial rental contract in one transaction.
+- Assigned rooms are moved to `OCCUPIED` status.
+- Rooms in `MAINTENANCE` status cannot receive a Head Resident.
+- A room can have only one active Head Resident.
+- A Head Resident can represent only one active room.
+- Head resident users can view their assigned room on the resident dashboard.
+
 Protected backend APIs:
 
 ```text
@@ -169,6 +179,10 @@ PUT /api/admin/rooms/{id}
 DELETE /api/admin/rooms/{id}
 GET /api/staff/rooms
 GET /api/staff/rooms/{id}
+POST /api/admin/rooms/{roomId}/assign-head
+GET /api/admin/rooms/{roomId}/head
+PUT /api/admin/rooms/{roomId}/remove-head
+GET /api/resident/room
 ```
 
 ## Environment

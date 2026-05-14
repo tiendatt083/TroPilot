@@ -481,6 +481,20 @@ textarea {
   grid-column: 1 / -1;
 }
 
+.assignment-panel {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+
+.assignment-form {
+  max-width: 620px;
+}
+
+.compact-title-row {
+  margin-bottom: 0;
+}
+
 @media (max-width: 760px) {
   .app-shell {
     grid-template-columns: 1fr;

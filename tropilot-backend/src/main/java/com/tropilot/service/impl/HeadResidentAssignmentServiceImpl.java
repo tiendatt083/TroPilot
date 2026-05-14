@@ -1,0 +1,241 @@
+package com.tropilot.service.impl;
+
+import com.tropilot.dto.request.AssignHeadResidentRequest;
+import com.tropilot.dto.response.RoomHeadResponse;
+import com.tropilot.entity.Building;
+import com.tropilot.entity.RentalContract;
+import com.tropilot.entity.Room;
+import com.tropilot.entity.RoomAssignment;
+import com.tropilot.entity.User;
+import com.tropilot.enums.ContractStatus;
+import com.tropilot.enums.RentalStatus;
+import com.tropilot.enums.RoomAssignmentStatus;
+import com.tropilot.enums.RoomStatus;
+import com.tropilot.enums.UserRole;
+import com.tropilot.enums.UserStatus;
+import com.tropilot.exception.BadRequestException;
+import com.tropilot.exception.ResourceNotFoundException;
+import com.tropilot.repository.RentalContractRepository;
+import com.tropilot.repository.RoomAssignmentRepository;
+import com.tropilot.repository.RoomRepository;
+import com.tropilot.repository.UserRepository;
+import com.tropilot.service.HeadResidentAssignmentService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+
+@Service
+@RequiredArgsConstructor
+public class HeadResidentAssignmentServiceImpl implements HeadResidentAssignmentService {
+
+    private final RoomRepository roomRepository;
+    private final UserRepository userRepository;
+    private final RoomAssignmentRepository roomAssignmentRepository;
+    private final RentalContractRepository rentalContractRepository;
+
+    @Override
+    @Transactional
+    public RoomHeadResponse assignHeadResident(Long roomId, AssignHeadResidentRequest request) {
+        Room room = findRoom(roomId);
+        User residentHead = findUser(request.getResidentHeadId());
+
+        validateResidentHead(residentHead);
+        validateAssignmentDates(request);
+
+        if (room.getStatus() == RoomStatus.MAINTENANCE) {
+            throw new BadRequestException("Room in maintenance status cannot receive a Head Resident");
+        }
+
+        if (roomAssignmentRepository.existsByRoom_IdAndStatus(roomId, RoomAssignmentStatus.ACTIVE)) {
+            throw new BadRequestException("Room already has an active Head Resident");
+        }
+
+        if (roomAssignmentRepository.existsByResidentHead_IdAndStatus(
+                residentHead.getId(),
+                RoomAssignmentStatus.ACTIVE
+        )) {
+            throw new BadRequestException("Head Resident is already assigned to another active room");
+        }
+
+        RoomAssignment assignment = RoomAssignment.builder()
+                .room(room)
+                .residentHead(residentHead)
+                .startDate(request.getStartDate())
+                .endDate(request.getEndDate())
+                .status(RoomAssignmentStatus.ACTIVE)
+                .build();
+
+        RentalContract contract = RentalContract.builder()
+                .room(room)
+                .residentHead(residentHead)
+                .startDate(request.getStartDate())
+                .endDate(request.getEndDate())
+                .depositAmount(request.getDepositAmount())
+                .rentalStatus(RentalStatus.ACTIVE)
+                .contractStatus(ContractStatus.NOT_UPLOADED)
+                .build();
+
+        room.setStatus(RoomStatus.OCCUPIED);
+
+        Room savedRoom = roomRepository.save(room);
+        RoomAssignment savedAssignment = roomAssignmentRepository.save(assignment);
+        RentalContract savedContract = rentalContractRepository.save(contract);
+
+        return toAssignedResponse(savedRoom, savedAssignment, savedContract);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public RoomHeadResponse getRoomHead(Long roomId) {
+        Room room = findRoom(roomId);
+
+        return roomAssignmentRepository.findByRoomIdAndStatus(roomId, RoomAssignmentStatus.ACTIVE)
+                .map(assignment -> toAssignedResponse(
+                        assignment.getRoom(),
+                        assignment,
+                        findActiveOrLatestContract(assignment)
+                ))
+                .orElseGet(() -> toUnassignedResponse(room));
+    }
+
+    @Override
+    @Transactional
+    public RoomHeadResponse removeHeadResident(Long roomId) {
+        Room room = findRoom(roomId);
+        RoomAssignment assignment = roomAssignmentRepository
+                .findByRoomIdAndStatus(roomId, RoomAssignmentStatus.ACTIVE)
+                .orElseThrow(() -> new BadRequestException("Room does not have an active Head Resident"));
+
+        LocalDate removalDate = LocalDate.now();
+        assignment.setStatus(RoomAssignmentStatus.ENDED);
+        if (assignment.getEndDate().isAfter(removalDate)) {
+            assignment.setEndDate(removalDate);
+        }
+
+        RentalContract contract = findActiveOrLatestContract(assignment);
+        if (contract != null && contract.getRentalStatus() == RentalStatus.ACTIVE) {
+            contract.setRentalStatus(RentalStatus.ENDED);
+            if (contract.getEndDate().isAfter(removalDate)) {
+                contract.setEndDate(removalDate);
+            }
+            rentalContractRepository.save(contract);
+        }
+
+        room.setStatus(RoomStatus.EMPTY);
+        roomRepository.save(room);
+        roomAssignmentRepository.save(assignment);
+
+        return toUnassignedResponse(room);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public RoomHeadResponse getResidentAssignedRoom(Long residentHeadId) {
+        return roomAssignmentRepository
+                .findByResidentHeadIdAndStatus(residentHeadId, RoomAssignmentStatus.ACTIVE)
+                .map(assignment -> toAssignedResponse(
+                        assignment.getRoom(),
+                        assignment,
+                        findActiveOrLatestContract(assignment)
+                ))
+                .orElseGet(() -> RoomHeadResponse.builder().assigned(false).build());
+    }
+
+    private Room findRoom(Long roomId) {
+        return roomRepository.findById(roomId)
+                .orElseThrow(() -> new ResourceNotFoundException("Room not found"));
+    }
+
+    private User findUser(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    }
+
+    private void validateResidentHead(User user) {
+        if (user.getRole() != UserRole.RESIDENT_HEAD) {
+            throw new BadRequestException("Selected user must be a Head Resident");
+        }
+
+        if (user.getStatus() != UserStatus.ACTIVE) {
+            throw new BadRequestException("Head Resident account must be active");
+        }
+    }
+
+    private void validateAssignmentDates(AssignHeadResidentRequest request) {
+        if (!request.getStartDate().isBefore(request.getEndDate())) {
+            throw new BadRequestException("Start date must be before end date");
+        }
+    }
+
+    private RentalContract findActiveOrLatestContract(RoomAssignment assignment) {
+        Long roomId = assignment.getRoom().getId();
+        Long residentHeadId = assignment.getResidentHead().getId();
+
+        return rentalContractRepository
+                .findFirstByRoom_IdAndResidentHead_IdAndRentalStatusOrderByCreatedAtDesc(
+                        roomId,
+                        residentHeadId,
+                        RentalStatus.ACTIVE
+                )
+                .or(() -> rentalContractRepository.findFirstByRoom_IdAndResidentHead_IdOrderByCreatedAtDesc(
+                        roomId,
+                        residentHeadId
+                ))
+                .orElse(null);
+    }
+
+    private RoomHeadResponse toAssignedResponse(
+            Room room,
+            RoomAssignment assignment,
+            RentalContract contract
+    ) {
+        Building building = room.getBuilding();
+        User residentHead = assignment.getResidentHead();
+        RoomHeadResponse.RoomHeadResponseBuilder builder = RoomHeadResponse.builder()
+                .assigned(true)
+                .roomId(room.getId())
+                .roomCode(room.getRoomCode())
+                .roomName(room.getRoomName())
+                .roomStatus(room.getStatus())
+                .buildingId(building.getId())
+                .buildingCode(building.getBuildingCode())
+                .buildingName(building.getName())
+                .residentHeadId(residentHead.getId())
+                .residentHeadName(residentHead.getFullName())
+                .residentHeadEmail(residentHead.getEmail())
+                .residentHeadPhone(residentHead.getPhone())
+                .assignmentId(assignment.getId())
+                .assignmentStartDate(assignment.getStartDate())
+                .assignmentEndDate(assignment.getEndDate())
+                .assignmentStatus(assignment.getStatus());
+
+        if (contract != null) {
+            builder.contractId(contract.getId())
+                    .contractStartDate(contract.getStartDate())
+                    .contractEndDate(contract.getEndDate())
+                    .depositAmount(contract.getDepositAmount())
+                    .rentalStatus(contract.getRentalStatus())
+                    .contractFileUrl(contract.getContractFileUrl())
+                    .contractStatus(contract.getContractStatus());
+        }
+
+        return builder.build();
+    }
+
+    private RoomHeadResponse toUnassignedResponse(Room room) {
+        Building building = room.getBuilding();
+
+        return RoomHeadResponse.builder()
+                .assigned(false)
+                .roomId(room.getId())
+                .roomCode(room.getRoomCode())
+                .roomName(room.getRoomName())
+                .roomStatus(room.getStatus())
+                .buildingId(building.getId())
+                .buildingCode(building.getBuildingCode())
+                .buildingName(building.getName())
+                .build();
+    }
+}
