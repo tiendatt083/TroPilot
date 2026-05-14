@@ -168,6 +168,9 @@ export default function AdminRoomDetailPage() {
           <Link className="button-link" to={`/admin/rooms/${room.id}/edit`}>
             Edit
           </Link>
+          <Link className="secondary-link" to={`/admin/rooms/${room.id}/members`}>
+            Members
+          </Link>
           <button className="secondary-button inline-button" type="button" disabled={deleting} onClick={handleDelete}>
             Delete
           </button>

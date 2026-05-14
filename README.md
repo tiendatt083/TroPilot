@@ -152,6 +152,74 @@ Head Resident assignment:
 - A Head Resident can represent only one active room.
 - Head resident users can view their assigned room on the resident dashboard.
 
+Room member management:
+
+- Head resident users can open `/resident/members`.
+- Head resident users can add, view, edit, and mark members as left for their own active room.
+- Room members do not have login accounts.
+- New room members start with `PENDING` status.
+- Admin users can open `/admin/members/pending` to approve or reject pending room members.
+- Admin users can open `/admin/rooms/{roomId}/members` to view all members in a room.
+- Only `APPROVED` members count as active occupants.
+- Active occupants are calculated as one active Head Resident plus approved room members.
+- Pending, rejected, and left members do not count as active occupants.
+- Approval is blocked when the room maximum occupants would be exceeded.
+
+Rental contract upload and confirmation:
+
+- Admin users can open `/admin/contracts`.
+- Admin users can view rental contracts and upload signed contract files.
+- Contract files are stored in `uploads/contracts`.
+- Uploaded contract files are served through `/uploads/contracts/{fileName}`.
+- Allowed contract file types are jpg, jpeg, png, and pdf.
+- Uploading a new contract file sets contract status to `UPLOADED`.
+- Admin users can mark a contract as `NEED_UPDATE`.
+- Head resident users can open `/resident/contract`.
+- Head resident users can view their current contract, confirm it, or report an issue.
+- Confirming requires an uploaded contract file and sets status to `CONFIRMED`.
+- Reporting an issue sets status to `NEED_UPDATE`.
+
+Vehicle management:
+
+- Head resident users can open `/resident/vehicles`.
+- Head resident users can request vehicle registration for their own active room.
+- Vehicles can belong to the Head Resident or an approved room member.
+- Room member vehicle owners must match an approved member in the same room.
+- New vehicle requests start with `PENDING` status.
+- Admin users can open `/admin/vehicles` to review all vehicles.
+- Admin users can open `/admin/vehicles/pending` to approve or reject pending vehicles.
+- Staff users can open `/staff/vehicles` with read-only access.
+- Only `ACTIVE` vehicles are marked as billable for future parking fee calculations.
+- `PENDING`, `INACTIVE`, and `REJECTED` vehicles are not billable.
+- License plates must be unique among active vehicles.
+
+Service fee management:
+
+- Admin users can open `/admin/service-fees`.
+- Admin users can create, edit, activate, deactivate, and delete service fees.
+- Staff users can open `/staff/service-fees` with read-only access.
+- Head residents cannot access service fee management pages or APIs.
+- Service fee codes are unique.
+- Unit price must be greater than or equal to zero.
+- Parking fees calculated by quantity require a vehicle type.
+- Inactive service fees must not be used in future invoice generation.
+- Deleting a service fee that is already used by invoice items deactivates it instead of hard deleting it.
+
+Utility reading management:
+
+- Staff users can open `/staff/utility-readings`.
+- Staff users can record monthly utility readings at `/staff/utility-readings/create`.
+- Admin users can open `/admin/utility-readings` to view, record, and edit readings.
+- Head resident users can open `/resident/utility-readings` to view readings for their own active room only.
+- Each room can have only one utility reading per month.
+- New electricity reading must be greater than or equal to old electricity reading.
+- New water reading must be greater than or equal to old water reading.
+- All utility reading values must be greater than or equal to zero.
+- Electricity and water evidence images are stored in `uploads/utility-readings`.
+- Uploaded utility reading images are served through `/uploads/utility-readings/{fileName}`.
+- Allowed utility reading image types are jpg, jpeg, and png.
+- Admin edits require an edit reason.
+
 Protected backend APIs:
 
 ```text
@@ -183,6 +251,43 @@ POST /api/admin/rooms/{roomId}/assign-head
 GET /api/admin/rooms/{roomId}/head
 PUT /api/admin/rooms/{roomId}/remove-head
 GET /api/resident/room
+POST /api/resident/members
+GET /api/resident/members
+PUT /api/resident/members/{id}
+PUT /api/resident/members/{id}/leave
+GET /api/admin/members/pending
+GET /api/admin/rooms/{roomId}/members
+PUT /api/admin/members/{id}/approve
+PUT /api/admin/members/{id}/reject
+GET /api/admin/contracts
+GET /api/admin/contracts/{id}
+POST /api/admin/contracts/{id}/upload
+PUT /api/admin/contracts/{id}/mark-need-update
+GET /api/resident/contracts/current
+PUT /api/resident/contracts/{id}/confirm
+POST /api/resident/contracts/{id}/report-error
+POST /api/resident/vehicles/request
+GET /api/resident/vehicles
+PUT /api/resident/vehicles/{id}/request-cancel
+GET /api/admin/vehicles
+GET /api/admin/vehicles/pending
+PUT /api/admin/vehicles/{id}/approve
+PUT /api/admin/vehicles/{id}/reject
+PUT /api/admin/vehicles/{id}/deactivate
+GET /api/staff/vehicles
+POST /api/admin/service-fees
+GET /api/admin/service-fees
+GET /api/admin/service-fees/{id}
+PUT /api/admin/service-fees/{id}
+DELETE /api/admin/service-fees/{id}
+PUT /api/admin/service-fees/{id}/toggle
+GET /api/staff/service-fees
+POST /api/staff/utility-readings
+GET /api/staff/utility-readings
+GET /api/staff/utility-readings/{id}
+GET /api/admin/utility-readings
+PUT /api/admin/utility-readings/{id}
+GET /api/resident/utility-readings/current-room
 ```
 
 ## Environment

@@ -16,6 +16,7 @@ public class RoomDeletionGuard {
         return hasAnyRoomReference(roomId, List.of(
                 new RelatedTable("room_assignments", "room_id", "status", "ACTIVE"),
                 new RelatedTable("rental_contracts", "room_id", null, null),
+                new RelatedTable("room_members", "room_id", null, null),
                 new RelatedTable("invoices", "room_id", null, null),
                 new RelatedTable("utility_readings", "room_id", null, null),
                 new RelatedTable("vehicles", "room_id", null, null),

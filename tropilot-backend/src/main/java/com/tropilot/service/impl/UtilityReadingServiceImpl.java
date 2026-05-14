@@ -1,0 +1,179 @@
+package com.tropilot.service.impl;
+
+import com.tropilot.dto.request.UtilityReadingCreateRequest;
+import com.tropilot.dto.request.UtilityReadingUpdateRequest;
+import com.tropilot.dto.response.UtilityReadingResponse;
+import com.tropilot.entity.Room;
+import com.tropilot.entity.RoomAssignment;
+import com.tropilot.entity.User;
+import com.tropilot.entity.UtilityReading;
+import com.tropilot.enums.RoomAssignmentStatus;
+import com.tropilot.exception.BadRequestException;
+import com.tropilot.exception.ResourceNotFoundException;
+import com.tropilot.repository.RoomAssignmentRepository;
+import com.tropilot.repository.RoomRepository;
+import com.tropilot.repository.UserRepository;
+import com.tropilot.repository.UtilityReadingRepository;
+import com.tropilot.service.UtilityReadingService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class UtilityReadingServiceImpl implements UtilityReadingService {
+
+    private final UtilityReadingRepository utilityReadingRepository;
+    private final RoomRepository roomRepository;
+    private final UserRepository userRepository;
+    private final RoomAssignmentRepository roomAssignmentRepository;
+    private final UtilityReadingMapper utilityReadingMapper;
+    private final UtilityReadingImageStorageService imageStorageService;
+
+    @Override
+    @Transactional
+    public UtilityReadingResponse createReading(UtilityReadingCreateRequest request, Long createdById) {
+        Room room = findRoom(request.getRoomId());
+        User createdBy = findUser(createdById);
+        LocalDate month = parseMonth(request.getMonth());
+
+        validateReadings(
+                request.getOldElectricity(),
+                request.getNewElectricity(),
+                request.getOldWater(),
+                request.getNewWater()
+        );
+
+        if (utilityReadingRepository.existsByRoom_IdAndMonth(room.getId(), month)) {
+            throw new BadRequestException("Utility reading already exists for this room and month");
+        }
+
+        UtilityReading reading = UtilityReading.builder()
+                .room(room)
+                .month(month)
+                .oldElectricity(request.getOldElectricity())
+                .newElectricity(request.getNewElectricity())
+                .electricityImageUrl(imageStorageService.store(
+                        request.getElectricityImage(),
+                        "Electricity evidence image"
+                ))
+                .oldWater(request.getOldWater())
+                .newWater(request.getNewWater())
+                .waterImageUrl(imageStorageService.store(request.getWaterImage(), "Water evidence image"))
+                .createdBy(createdBy)
+                .build();
+
+        return utilityReadingMapper.toResponse(utilityReadingRepository.save(reading));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<UtilityReadingResponse> getReadings() {
+        return utilityReadingRepository.findAllWithDetails()
+                .stream()
+                .map(utilityReadingMapper::toResponse)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UtilityReadingResponse getReading(Long id) {
+        return utilityReadingMapper.toResponse(findReading(id));
+    }
+
+    @Override
+    @Transactional
+    public UtilityReadingResponse updateReading(Long id, UtilityReadingUpdateRequest request) {
+        UtilityReading reading = findReading(id);
+        Room room = findRoom(request.getRoomId());
+        LocalDate month = parseMonth(request.getMonth());
+
+        validateReadings(
+                request.getOldElectricity(),
+                request.getNewElectricity(),
+                request.getOldWater(),
+                request.getNewWater()
+        );
+
+        if (utilityReadingRepository.existsByRoom_IdAndMonthAndIdNot(room.getId(), month, id)) {
+            throw new BadRequestException("Utility reading already exists for this room and month");
+        }
+
+        reading.setRoom(room);
+        reading.setMonth(month);
+        reading.setOldElectricity(request.getOldElectricity());
+        reading.setNewElectricity(request.getNewElectricity());
+        reading.setOldWater(request.getOldWater());
+        reading.setNewWater(request.getNewWater());
+        reading.setEditReason(request.getEditReason().trim());
+
+        if (request.getElectricityImage() != null && !request.getElectricityImage().isEmpty()) {
+            reading.setElectricityImageUrl(imageStorageService.store(
+                    request.getElectricityImage(),
+                    "Electricity evidence image"
+            ));
+        }
+
+        if (request.getWaterImage() != null && !request.getWaterImage().isEmpty()) {
+            reading.setWaterImageUrl(imageStorageService.store(request.getWaterImage(), "Water evidence image"));
+        }
+
+        return utilityReadingMapper.toResponse(utilityReadingRepository.save(reading));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<UtilityReadingResponse> getCurrentResidentRoomReadings(Long residentHeadId) {
+        RoomAssignment assignment = roomAssignmentRepository
+                .findByResidentHeadIdAndStatus(residentHeadId, RoomAssignmentStatus.ACTIVE)
+                .orElseThrow(() -> new BadRequestException("Head Resident must have an active room"));
+
+        return utilityReadingRepository.findByRoomIdWithDetails(assignment.getRoom().getId())
+                .stream()
+                .map(utilityReadingMapper::toResponse)
+                .toList();
+    }
+
+    private UtilityReading findReading(Long id) {
+        return utilityReadingRepository.findByIdWithDetails(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Utility reading not found"));
+    }
+
+    private Room findRoom(Long roomId) {
+        return roomRepository.findById(roomId)
+                .orElseThrow(() -> new ResourceNotFoundException("Room not found"));
+    }
+
+    private User findUser(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    }
+
+    private LocalDate parseMonth(String month) {
+        try {
+            return YearMonth.parse(month.trim()).atDay(1);
+        } catch (RuntimeException exception) {
+            throw new BadRequestException("Reading month must use YYYY-MM format");
+        }
+    }
+
+    private void validateReadings(
+            BigDecimal oldElectricity,
+            BigDecimal newElectricity,
+            BigDecimal oldWater,
+            BigDecimal newWater
+    ) {
+        if (newElectricity.compareTo(oldElectricity) < 0) {
+            throw new BadRequestException("New electricity reading must be greater than or equal to old electricity reading");
+        }
+
+        if (newWater.compareTo(oldWater) < 0) {
+            throw new BadRequestException("New water reading must be greater than or equal to old water reading");
+        }
+    }
+}

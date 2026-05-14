@@ -16,6 +16,9 @@ export default function StaffLayout() {
           <NavLink to="/staff/dashboard">Dashboard</NavLink>
           <NavLink to="/staff/buildings">Buildings</NavLink>
           <NavLink to="/staff/rooms">Rooms</NavLink>
+          <NavLink to="/staff/vehicles">Vehicles</NavLink>
+          <NavLink to="/staff/service-fees">Service fees</NavLink>
+          <NavLink to="/staff/utility-readings">Utility readings</NavLink>
         </nav>
         <button className="secondary-button" type="button" onClick={logout}>
           Sign out

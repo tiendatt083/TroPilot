@@ -15,6 +15,11 @@ export default function AdminLayout() {
         <nav aria-label="Admin navigation">
           <NavLink to="/admin/dashboard">Dashboard</NavLink>
           <NavLink to="/admin/users">Users</NavLink>
+          <NavLink to="/admin/members/pending">Pending members</NavLink>
+          <NavLink to="/admin/contracts">Contracts</NavLink>
+          <NavLink to="/admin/vehicles">Vehicles</NavLink>
+          <NavLink to="/admin/service-fees">Service fees</NavLink>
+          <NavLink to="/admin/utility-readings">Utility readings</NavLink>
           <NavLink to="/admin/buildings">Buildings</NavLink>
           <NavLink to="/admin/rooms">Rooms</NavLink>
         </nav>

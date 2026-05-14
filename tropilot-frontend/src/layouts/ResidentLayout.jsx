@@ -14,6 +14,10 @@ export default function ResidentLayout() {
         </div>
         <nav aria-label="Resident navigation">
           <NavLink to="/resident/dashboard">Dashboard</NavLink>
+          <NavLink to="/resident/members">Members</NavLink>
+          <NavLink to="/resident/contract">Contract</NavLink>
+          <NavLink to="/resident/vehicles">Vehicles</NavLink>
+          <NavLink to="/resident/utility-readings">Utility readings</NavLink>
         </nav>
         <button className="secondary-button" type="button" onClick={logout}>
           Sign out

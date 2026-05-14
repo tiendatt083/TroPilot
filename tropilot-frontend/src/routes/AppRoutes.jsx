@@ -6,21 +6,39 @@ import AdminBuildingCreatePage from '../pages/admin/AdminBuildingCreatePage.jsx'
 import AdminBuildingDetailPage from '../pages/admin/AdminBuildingDetailPage.jsx';
 import AdminBuildingEditPage from '../pages/admin/AdminBuildingEditPage.jsx';
 import AdminBuildingListPage from '../pages/admin/AdminBuildingListPage.jsx';
+import AdminContractDetailPage from '../pages/admin/AdminContractDetailPage.jsx';
+import AdminContractListPage from '../pages/admin/AdminContractListPage.jsx';
 import AdminDashboardPage from '../pages/admin/AdminDashboardPage.jsx';
+import AdminPendingMembersPage from '../pages/admin/AdminPendingMembersPage.jsx';
+import AdminPendingVehiclesPage from '../pages/admin/AdminPendingVehiclesPage.jsx';
 import AdminRoomCreatePage from '../pages/admin/AdminRoomCreatePage.jsx';
 import AdminRoomDetailPage from '../pages/admin/AdminRoomDetailPage.jsx';
 import AdminRoomEditPage from '../pages/admin/AdminRoomEditPage.jsx';
 import AdminRoomListPage from '../pages/admin/AdminRoomListPage.jsx';
+import AdminRoomMembersPage from '../pages/admin/AdminRoomMembersPage.jsx';
+import AdminServiceFeeCreatePage from '../pages/admin/AdminServiceFeeCreatePage.jsx';
+import AdminServiceFeeEditPage from '../pages/admin/AdminServiceFeeEditPage.jsx';
+import AdminServiceFeeListPage from '../pages/admin/AdminServiceFeeListPage.jsx';
 import AdminUserCreatePage from '../pages/admin/AdminUserCreatePage.jsx';
 import AdminUserListPage from '../pages/admin/AdminUserListPage.jsx';
+import AdminUtilityReadingPage from '../pages/admin/AdminUtilityReadingPage.jsx';
+import AdminVehicleListPage from '../pages/admin/AdminVehicleListPage.jsx';
 import ChangePasswordPage from '../pages/auth/ChangePasswordPage.jsx';
 import LoginPage from '../pages/auth/LoginPage.jsx';
+import ResidentContractPage from '../pages/resident/ResidentContractPage.jsx';
 import ResidentDashboardPage from '../pages/resident/ResidentDashboardPage.jsx';
+import ResidentMemberPage from '../pages/resident/ResidentMemberPage.jsx';
+import ResidentUtilityReadingPage from '../pages/resident/ResidentUtilityReadingPage.jsx';
+import ResidentVehiclePage from '../pages/resident/ResidentVehiclePage.jsx';
 import StaffBuildingDetailPage from '../pages/staff/StaffBuildingDetailPage.jsx';
 import StaffBuildingListPage from '../pages/staff/StaffBuildingListPage.jsx';
 import StaffDashboardPage from '../pages/staff/StaffDashboardPage.jsx';
 import StaffRoomDetailPage from '../pages/staff/StaffRoomDetailPage.jsx';
 import StaffRoomListPage from '../pages/staff/StaffRoomListPage.jsx';
+import StaffServiceFeeListPage from '../pages/staff/StaffServiceFeeListPage.jsx';
+import StaffUtilityReadingCreatePage from '../pages/staff/StaffUtilityReadingCreatePage.jsx';
+import StaffUtilityReadingListPage from '../pages/staff/StaffUtilityReadingListPage.jsx';
+import StaffVehicleListPage from '../pages/staff/StaffVehicleListPage.jsx';
 import HomeRedirect from './HomeRedirect.jsx';
 import ProtectedRoute from './ProtectedRoute.jsx';
 import RoleBasedRoute from './RoleBasedRoute.jsx';
@@ -41,12 +59,22 @@ export default function AppRoutes() {
               <Route path="dashboard" element={<AdminDashboardPage />} />
               <Route path="users" element={<AdminUserListPage />} />
               <Route path="users/create" element={<AdminUserCreatePage />} />
+              <Route path="members/pending" element={<AdminPendingMembersPage />} />
+              <Route path="contracts" element={<AdminContractListPage />} />
+              <Route path="contracts/:id" element={<AdminContractDetailPage />} />
+              <Route path="vehicles" element={<AdminVehicleListPage />} />
+              <Route path="vehicles/pending" element={<AdminPendingVehiclesPage />} />
+              <Route path="service-fees" element={<AdminServiceFeeListPage />} />
+              <Route path="service-fees/create" element={<AdminServiceFeeCreatePage />} />
+              <Route path="service-fees/:id/edit" element={<AdminServiceFeeEditPage />} />
+              <Route path="utility-readings" element={<AdminUtilityReadingPage />} />
               <Route path="buildings" element={<AdminBuildingListPage />} />
               <Route path="buildings/create" element={<AdminBuildingCreatePage />} />
               <Route path="buildings/:id" element={<AdminBuildingDetailPage />} />
               <Route path="buildings/:id/edit" element={<AdminBuildingEditPage />} />
               <Route path="rooms" element={<AdminRoomListPage />} />
               <Route path="rooms/create" element={<AdminRoomCreatePage />} />
+              <Route path="rooms/:id/members" element={<AdminRoomMembersPage />} />
               <Route path="rooms/:id" element={<AdminRoomDetailPage />} />
               <Route path="rooms/:id/edit" element={<AdminRoomEditPage />} />
             </Route>
@@ -60,6 +88,10 @@ export default function AppRoutes() {
               <Route path="buildings/:id" element={<StaffBuildingDetailPage />} />
               <Route path="rooms" element={<StaffRoomListPage />} />
               <Route path="rooms/:id" element={<StaffRoomDetailPage />} />
+              <Route path="vehicles" element={<StaffVehicleListPage />} />
+              <Route path="service-fees" element={<StaffServiceFeeListPage />} />
+              <Route path="utility-readings" element={<StaffUtilityReadingListPage />} />
+              <Route path="utility-readings/create" element={<StaffUtilityReadingCreatePage />} />
             </Route>
           </Route>
 
@@ -67,6 +99,10 @@ export default function AppRoutes() {
             <Route path="/resident" element={<ResidentLayout />}>
               <Route index element={<Navigate to="/resident/dashboard" replace />} />
               <Route path="dashboard" element={<ResidentDashboardPage />} />
+              <Route path="members" element={<ResidentMemberPage />} />
+              <Route path="contract" element={<ResidentContractPage />} />
+              <Route path="vehicles" element={<ResidentVehiclePage />} />
+              <Route path="utility-readings" element={<ResidentUtilityReadingPage />} />
             </Route>
           </Route>
         </Route>

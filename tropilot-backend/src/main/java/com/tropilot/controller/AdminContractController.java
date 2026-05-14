@@ -1,0 +1,55 @@
+package com.tropilot.controller;
+
+import com.tropilot.dto.response.ApiResponse;
+import com.tropilot.dto.response.RentalContractResponse;
+import com.tropilot.service.RentalContractService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/admin/contracts")
+@RequiredArgsConstructor
+@PreAuthorize("hasRole('ADMIN')")
+public class AdminContractController {
+
+    private final RentalContractService rentalContractService;
+
+    @GetMapping
+    public ApiResponse<List<RentalContractResponse>> getContracts() {
+        return ApiResponse.success("Rental contracts loaded successfully", rentalContractService.getContracts());
+    }
+
+    @GetMapping("/{id}")
+    public ApiResponse<RentalContractResponse> getContract(@PathVariable Long id) {
+        return ApiResponse.success("Rental contract loaded successfully", rentalContractService.getContract(id));
+    }
+
+    @PostMapping("/{id}/upload")
+    public ApiResponse<RentalContractResponse> uploadContract(
+            @PathVariable Long id,
+            @RequestParam("file") MultipartFile file
+    ) {
+        return ApiResponse.success(
+                "Rental contract uploaded successfully",
+                rentalContractService.uploadContract(id, file)
+        );
+    }
+
+    @PutMapping("/{id}/mark-need-update")
+    public ApiResponse<RentalContractResponse> markNeedUpdate(@PathVariable Long id) {
+        return ApiResponse.success(
+                "Rental contract marked as needing update successfully",
+                rentalContractService.markNeedUpdate(id)
+        );
+    }
+}

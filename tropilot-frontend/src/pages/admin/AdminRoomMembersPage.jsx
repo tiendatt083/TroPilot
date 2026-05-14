@@ -1,0 +1,161 @@
+import { useEffect, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import * as roomApi from '../../api/roomApi.js';
+import * as memberApi from '../../api/memberApi.js';
+import PageHeader from '../../components/PageHeader.jsx';
+import { getMemberStatusLabel } from '../../utils/memberStatusOptions.js';
+
+function statusClass(status) {
+  return `status-pill member-status-${status.toLowerCase()}`;
+}
+
+function countText(member, room) {
+  if (member) {
+    return `${member.totalOccupants} of ${member.maxOccupants} active occupants`;
+  }
+
+  if (room) {
+    return `0 of ${room.maxOccupants} active occupants`;
+  }
+
+  return 'Occupants are not available.';
+}
+
+export default function AdminRoomMembersPage() {
+  const { id } = useParams();
+  const [room, setRoom] = useState(null);
+  const [members, setMembers] = useState([]);
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [processingId, setProcessingId] = useState(null);
+
+  const loadData = async () => {
+    setError('');
+
+    try {
+      const [roomResponse, membersResponse] = await Promise.all([
+        roomApi.getAdminRoom(id),
+        memberApi.getAdminRoomMembers(id)
+      ]);
+      setRoom(roomResponse.data);
+      setMembers(membersResponse.data);
+    } catch (apiError) {
+      setError(apiError.response?.data?.message || 'Room members could not be loaded');
+    }
+  };
+
+  useEffect(() => {
+    loadData().finally(() => setLoading(false));
+  }, [id]);
+
+  const handleApprove = async (member) => {
+    setProcessingId(member.id);
+    setMessage('');
+    setError('');
+
+    try {
+      await memberApi.approveMember(member.id);
+      setMessage('Room member approved successfully.');
+      await loadData();
+    } catch (apiError) {
+      setError(apiError.response?.data?.message || 'Room member could not be approved');
+    } finally {
+      setProcessingId(null);
+    }
+  };
+
+  const handleReject = async (member) => {
+    setProcessingId(member.id);
+    setMessage('');
+    setError('');
+
+    try {
+      await memberApi.rejectMember(member.id);
+      setMessage('Room member rejected successfully.');
+      await loadData();
+    } catch (apiError) {
+      setError(apiError.response?.data?.message || 'Room member could not be rejected');
+    } finally {
+      setProcessingId(null);
+    }
+  };
+
+  const firstMember = members[0];
+
+  if (loading) {
+    return <div className="empty-state">Loading room members...</div>;
+  }
+
+  return (
+    <section className="content-section">
+      <div className="page-title-row">
+        <PageHeader eyebrow={room?.roomCode || 'Room'} title="Room members" />
+        <div className="button-row">
+          <Link className="secondary-link" to={`/admin/rooms/${id}`}>
+            Back to room
+          </Link>
+          <div className="count-summary">{countText(firstMember, room)}</div>
+        </div>
+      </div>
+
+      {message && <div className="alert success-alert">{message}</div>}
+      {error && <div className="alert error-alert">{error}</div>}
+
+      <div className="table-wrap">
+        <table className="data-table">
+          <thead>
+            <tr>
+              <th>Member</th>
+              <th>Phone</th>
+              <th>Relationship</th>
+              <th>Move-in</th>
+              <th>Move-out</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {members.map((member) => (
+              <tr key={member.id}>
+                <td>{member.fullName}</td>
+                <td>{member.phone}</td>
+                <td>{member.relationship || 'Not provided'}</td>
+                <td>{member.moveInDate}</td>
+                <td>{member.moveOutDate || 'Not set'}</td>
+                <td>
+                  <span className={statusClass(member.status)}>{getMemberStatusLabel(member.status)}</span>
+                </td>
+                <td>
+                  {member.status === 'PENDING' ? (
+                    <div className="table-actions">
+                      <button
+                        className="secondary-button compact-button"
+                        type="button"
+                        disabled={processingId === member.id}
+                        onClick={() => handleApprove(member)}
+                      >
+                        Approve
+                      </button>
+                      <button
+                        className="secondary-button compact-button"
+                        type="button"
+                        disabled={processingId === member.id}
+                        onClick={() => handleReject(member)}
+                      >
+                        Reject
+                      </button>
+                    </div>
+                  ) : (
+                    <span className="muted-text">No action</span>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {members.length === 0 && <div className="empty-state flat-empty-state">No room members found.</div>}
+      </div>
+    </section>
+  );
+}
