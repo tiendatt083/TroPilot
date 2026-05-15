@@ -266,6 +266,19 @@ Expenses and cash flow:
 - Remaining cash equals total income minus total expense.
 - Unpaid amount is calculated from unpaid invoices for the selected month.
 
+Staff task assignment:
+
+- Admin users can open `/admin/tasks` and `/admin/tasks/create`.
+- Admin users can create tasks, assign them to active staff users, link tasks to rooms, and update task details.
+- Staff users can open `/staff/tasks` to view only tasks assigned to their own account.
+- Staff users can start, complete, or reject their own assigned tasks from the task detail page.
+- Completing a task requires a result note.
+- Result image upload is optional.
+- Task result images are stored in `uploads/tasks`.
+- Uploaded task result images are served through `/uploads/tasks/{fileName}`.
+- Allowed task result image types are jpg, jpeg, and png.
+- Head residents cannot access staff task pages or task APIs.
+
 Protected backend APIs:
 
 ```text
@@ -354,6 +367,15 @@ GET /api/staff/cashflow
 GET /api/admin/expenses
 GET /api/admin/cashflow
 PUT /api/admin/expenses/{id}/cancel
+POST /api/admin/tasks
+GET /api/admin/tasks
+GET /api/admin/tasks/{id}
+PUT /api/admin/tasks/{id}
+GET /api/staff/tasks
+GET /api/staff/tasks/{id}
+PUT /api/staff/tasks/{id}/start
+PUT /api/staff/tasks/{id}/complete
+PUT /api/staff/tasks/{id}/reject
 ```
 
 ## Environment

@@ -488,6 +488,58 @@ textarea {
   background: #ffe2df;
 }
 
+.task-status-new {
+  color: #1d4d7a;
+  background: #dcecff;
+}
+
+.task-status-in-progress {
+  color: #7a4c00;
+  background: #fff3cc;
+}
+
+.task-status-completed {
+  color: #155844;
+  background: #dff3eb;
+}
+
+.task-status-rejected,
+.task-status-overdue {
+  color: #8a241e;
+  background: #ffe2df;
+}
+
+.priority-pill {
+  display: inline-flex;
+  align-items: center;
+  min-width: 72px;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.task-priority-low {
+  color: #155844;
+  background: #dff3eb;
+}
+
+.task-priority-medium {
+  color: #1d4d7a;
+  background: #dcecff;
+}
+
+.task-priority-high {
+  color: #7a4c00;
+  background: #fff3cc;
+}
+
+.task-priority-urgent {
+  color: #8a241e;
+  background: #ffe2df;
+}
+
 .vehicle-status-pending {
   color: #7a4c00;
   background: #fff3cc;
@@ -658,6 +710,19 @@ textarea {
   align-items: start;
 }
 
+.task-workspace {
+  display: grid;
+  grid-template-columns: minmax(320px, 0.9fr) minmax(0, 1.1fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.task-detail-panel,
+.task-actions-panel {
+  display: grid;
+  gap: 1rem;
+}
+
 .resident-invoice-workspace,
 .receipt-workspace,
 .expense-workspace,
@@ -714,6 +779,10 @@ textarea {
 .payment-table,
 .receipt-table,
 .expense-table {
+  min-width: 1180px;
+}
+
+.task-table {
   min-width: 1180px;
 }
 
@@ -823,6 +892,7 @@ textarea {
   .vehicle-workspace,
   .utility-reading-workspace,
   .invoice-workspace,
+  .task-workspace,
   .detail-panel {
     grid-template-columns: 1fr;
   }
