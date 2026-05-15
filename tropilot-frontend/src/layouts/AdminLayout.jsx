@@ -22,6 +22,7 @@ export default function AdminLayout() {
           <NavLink to="/admin/expenses">Expenses</NavLink>
           <NavLink to="/admin/cashflow">Cash flow</NavLink>
           <NavLink to="/admin/tasks">Tasks</NavLink>
+          <NavLink to="/admin/maintenance">Maintenance</NavLink>
           <NavLink to="/admin/vehicles">Vehicles</NavLink>
           <NavLink to="/admin/service-fees">Service fees</NavLink>
           <NavLink to="/admin/utility-readings">Utility readings</NavLink>

@@ -18,6 +18,7 @@ export default function StaffLayout() {
           <NavLink to="/staff/payments/pending">Pending payments</NavLink>
           <NavLink to="/staff/expenses">Expenses</NavLink>
           <NavLink to="/staff/tasks">Tasks</NavLink>
+          <NavLink to="/staff/maintenance">Maintenance</NavLink>
           <NavLink to="/staff/buildings">Buildings</NavLink>
           <NavLink to="/staff/rooms">Rooms</NavLink>
           <NavLink to="/staff/vehicles">Vehicles</NavLink>

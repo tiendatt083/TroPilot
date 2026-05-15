@@ -279,6 +279,23 @@ Staff task assignment:
 - Allowed task result image types are jpg, jpeg, and png.
 - Head residents cannot access staff task pages or task APIs.
 
+Maintenance request management:
+
+- Head resident users can open `/resident/maintenance` and `/resident/maintenance/create`.
+- Head resident users can create maintenance requests for their own active room only.
+- Maintenance request images are stored in `uploads/maintenance`.
+- Uploaded maintenance images are served through `/uploads/maintenance/{fileName}`.
+- New maintenance requests start with `PENDING` status.
+- Admin users can open `/admin/maintenance` and assign requests to active staff users.
+- Assigning a request changes the status to `ASSIGNED`.
+- Staff users can open `/staff/maintenance` to view only assigned maintenance requests.
+- Staff users can start assigned requests, complete them with a result note, reject them, and upload optional result images.
+- Starting a request changes the status to `IN_PROGRESS`.
+- Completing a request changes the status to `COMPLETED`.
+- Rejecting a request changes the status to `REJECTED`.
+- Staff users can create expenses linked to assigned maintenance requests.
+- Allowed maintenance image types are jpg, jpeg, and png.
+
 Protected backend APIs:
 
 ```text
@@ -376,6 +393,15 @@ GET /api/staff/tasks/{id}
 PUT /api/staff/tasks/{id}/start
 PUT /api/staff/tasks/{id}/complete
 PUT /api/staff/tasks/{id}/reject
+POST /api/resident/maintenance-requests
+GET /api/resident/maintenance-requests
+GET /api/resident/maintenance-requests/{id}
+GET /api/admin/maintenance-requests
+PUT /api/admin/maintenance-requests/{id}/assign
+GET /api/staff/maintenance-requests
+PUT /api/staff/maintenance-requests/{id}/start
+PUT /api/staff/maintenance-requests/{id}/complete
+PUT /api/staff/maintenance-requests/{id}/reject
 ```
 
 ## Environment

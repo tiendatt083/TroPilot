@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import * as expenseApi from '../../api/expenseApi.js';
 import * as roomApi from '../../api/roomApi.js';
 import ExpenseForm from '../../components/ExpenseForm.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
 
 export default function StaffExpenseCreatePage() {
+  const location = useLocation();
   const navigate = useNavigate();
   const [rooms, setRooms] = useState([]);
   const [error, setError] = useState('');
@@ -50,7 +51,12 @@ export default function StaffExpenseCreatePage() {
 
       {error && <div className="alert error-alert">{error}</div>}
 
-      <ExpenseForm rooms={rooms} loading={creating} onSubmit={handleSubmit} />
+      <ExpenseForm
+        initialValues={location.state}
+        rooms={rooms}
+        loading={creating}
+        onSubmit={handleSubmit}
+      />
     </section>
   );
 }

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { EXPENSE_TYPE_OPTIONS } from '../utils/expenseOptions.js';
 
 const emptyForm = {
@@ -11,8 +11,21 @@ const emptyForm = {
   proofImage: null
 };
 
-export default function ExpenseForm({ rooms, loading, onSubmit }) {
+export default function ExpenseForm({ initialValues, rooms, loading, onSubmit }) {
   const [form, setForm] = useState(emptyForm);
+
+  useEffect(() => {
+    setForm({
+      ...emptyForm,
+      ...initialValues,
+      roomId: initialValues?.roomId || '',
+      taskId: initialValues?.taskId || '',
+      maintenanceRequestId: initialValues?.maintenanceRequestId || '',
+      amount: initialValues?.amount || '',
+      expenseType: initialValues?.expenseType || 'OPERATION',
+      proofImage: null
+    });
+  }, [initialValues]);
 
   const handleChange = (event) => {
     const { name, value, files } = event.target;

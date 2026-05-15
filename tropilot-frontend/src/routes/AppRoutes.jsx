@@ -12,6 +12,7 @@ import AdminCashFlowPage from '../pages/admin/AdminCashFlowPage.jsx';
 import AdminDashboardPage from '../pages/admin/AdminDashboardPage.jsx';
 import AdminExpenseListPage from '../pages/admin/AdminExpenseListPage.jsx';
 import AdminInvoiceListPage from '../pages/admin/AdminInvoiceListPage.jsx';
+import AdminMaintenancePage from '../pages/admin/AdminMaintenancePage.jsx';
 import AdminPendingMembersPage from '../pages/admin/AdminPendingMembersPage.jsx';
 import AdminPendingVehiclesPage from '../pages/admin/AdminPendingVehiclesPage.jsx';
 import AdminReceiptListPage from '../pages/admin/AdminReceiptListPage.jsx';
@@ -36,6 +37,8 @@ import ResidentContractPage from '../pages/resident/ResidentContractPage.jsx';
 import ResidentDashboardPage from '../pages/resident/ResidentDashboardPage.jsx';
 import ResidentInvoiceDetailPage from '../pages/resident/ResidentInvoiceDetailPage.jsx';
 import ResidentInvoiceListPage from '../pages/resident/ResidentInvoiceListPage.jsx';
+import ResidentMaintenanceCreatePage from '../pages/resident/ResidentMaintenanceCreatePage.jsx';
+import ResidentMaintenanceListPage from '../pages/resident/ResidentMaintenanceListPage.jsx';
 import ResidentMemberPage from '../pages/resident/ResidentMemberPage.jsx';
 import ResidentUtilityReadingPage from '../pages/resident/ResidentUtilityReadingPage.jsx';
 import ResidentVehiclePage from '../pages/resident/ResidentVehiclePage.jsx';
@@ -46,6 +49,7 @@ import StaffExpenseCreatePage from '../pages/staff/StaffExpenseCreatePage.jsx';
 import StaffExpenseListPage from '../pages/staff/StaffExpenseListPage.jsx';
 import StaffInvoiceGeneratePage from '../pages/staff/StaffInvoiceGeneratePage.jsx';
 import StaffInvoiceListPage from '../pages/staff/StaffInvoiceListPage.jsx';
+import StaffMaintenancePage from '../pages/staff/StaffMaintenancePage.jsx';
 import StaffPendingPaymentsPage from '../pages/staff/StaffPendingPaymentsPage.jsx';
 import StaffRoomDetailPage from '../pages/staff/StaffRoomDetailPage.jsx';
 import StaffRoomListPage from '../pages/staff/StaffRoomListPage.jsx';
@@ -85,6 +89,7 @@ export default function AppRoutes() {
               <Route path="tasks" element={<AdminTaskListPage />} />
               <Route path="tasks/create" element={<AdminTaskCreatePage />} />
               <Route path="tasks/:id" element={<AdminTaskDetailPage />} />
+              <Route path="maintenance" element={<AdminMaintenancePage />} />
               <Route path="vehicles" element={<AdminVehicleListPage />} />
               <Route path="vehicles/pending" element={<AdminPendingVehiclesPage />} />
               <Route path="service-fees" element={<AdminServiceFeeListPage />} />
@@ -114,6 +119,7 @@ export default function AppRoutes() {
               <Route path="expenses/create" element={<StaffExpenseCreatePage />} />
               <Route path="tasks" element={<StaffTaskListPage />} />
               <Route path="tasks/:id" element={<StaffTaskDetailPage />} />
+              <Route path="maintenance" element={<StaffMaintenancePage />} />
               <Route path="buildings" element={<StaffBuildingListPage />} />
               <Route path="buildings/:id" element={<StaffBuildingDetailPage />} />
               <Route path="rooms" element={<StaffRoomListPage />} />
@@ -132,6 +138,8 @@ export default function AppRoutes() {
               <Route path="invoices" element={<ResidentInvoiceListPage />} />
               <Route path="invoices/:id" element={<ResidentInvoiceDetailPage />} />
               <Route path="members" element={<ResidentMemberPage />} />
+              <Route path="maintenance" element={<ResidentMaintenanceListPage />} />
+              <Route path="maintenance/create" element={<ResidentMaintenanceCreatePage />} />
               <Route path="contract" element={<ResidentContractPage />} />
               <Route path="vehicles" element={<ResidentVehiclePage />} />
               <Route path="utility-readings" element={<ResidentUtilityReadingPage />} />

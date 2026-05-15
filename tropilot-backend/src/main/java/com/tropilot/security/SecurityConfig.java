@@ -50,6 +50,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/staff/payments/**").hasAnyRole("STAFF", "ADMIN")
                         .requestMatchers("/api/staff/expenses/**").hasAnyRole("STAFF", "ADMIN")
                         .requestMatchers("/api/staff/tasks/**").hasRole("STAFF")
+                        .requestMatchers("/api/staff/maintenance-requests/**").hasRole("STAFF")
                         .requestMatchers("/api/staff/**").hasRole("STAFF")
                         .requestMatchers("/api/resident/**").hasRole("RESIDENT_HEAD")
                         .anyRequest().authenticated()

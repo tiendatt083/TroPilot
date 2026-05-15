@@ -3,13 +3,17 @@ package com.tropilot.service.impl;
 import com.tropilot.dto.request.ExpenseRequest;
 import com.tropilot.dto.response.ExpenseResponse;
 import com.tropilot.entity.Expense;
+import com.tropilot.entity.MaintenanceRequest;
 import com.tropilot.entity.Room;
 import com.tropilot.entity.User;
 import com.tropilot.enums.ExpenseStatus;
 import com.tropilot.enums.ExpenseType;
+import com.tropilot.enums.UserRole;
 import com.tropilot.exception.BadRequestException;
+import com.tropilot.exception.ForbiddenException;
 import com.tropilot.exception.ResourceNotFoundException;
 import com.tropilot.repository.ExpenseRepository;
+import com.tropilot.repository.MaintenanceRequestRepository;
 import com.tropilot.repository.RoomRepository;
 import com.tropilot.repository.UserRepository;
 import com.tropilot.service.ExpenseService;
@@ -32,6 +36,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     private final ExpenseRepository expenseRepository;
     private final RoomRepository roomRepository;
     private final UserRepository userRepository;
+    private final MaintenanceRequestRepository maintenanceRequestRepository;
     private final ExpenseProofStorageService expenseProofStorageService;
     private final ExpenseMapper expenseMapper;
 
@@ -40,6 +45,12 @@ public class ExpenseServiceImpl implements ExpenseService {
     public ExpenseResponse createExpense(ExpenseRequest request, Long createdById) {
         User createdBy = findUser(createdById);
         Room room = request.getRoomId() == null ? null : findRoom(request.getRoomId());
+        MaintenanceRequest maintenanceRequest = resolveMaintenanceRequest(request.getMaintenanceRequestId(), createdBy, room);
+
+        if (maintenanceRequest != null && room == null) {
+            room = maintenanceRequest.getRoom();
+        }
+
         ExpenseType expenseType = parseExpenseType(request.getExpenseType());
         String proofImageUrl = expenseProofStorageService.store(request.getProofImage());
 
@@ -107,5 +118,28 @@ public class ExpenseServiceImpl implements ExpenseService {
     private User findUser(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    }
+
+    private MaintenanceRequest resolveMaintenanceRequest(Long maintenanceRequestId, User createdBy, Room room) {
+        if (maintenanceRequestId == null) {
+            return null;
+        }
+
+        MaintenanceRequest maintenanceRequest = maintenanceRequestRepository.findById(maintenanceRequestId)
+                .orElseThrow(() -> new ResourceNotFoundException("Maintenance request not found"));
+
+        if (room != null && !maintenanceRequest.getRoom().getId().equals(room.getId())) {
+            throw new BadRequestException("Expense room must match the linked maintenance request room");
+        }
+
+        if (createdBy.getRole() == UserRole.STAFF) {
+            User assignedTo = maintenanceRequest.getAssignedTo();
+
+            if (assignedTo == null || !assignedTo.getId().equals(createdBy.getId())) {
+                throw new ForbiddenException("Staff can only create expenses for assigned maintenance requests");
+            }
+        }
+
+        return maintenanceRequest;
     }
 }

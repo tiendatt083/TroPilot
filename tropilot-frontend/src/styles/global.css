@@ -509,6 +509,31 @@ textarea {
   background: #ffe2df;
 }
 
+.maintenance-status-pending {
+  color: #7a4c00;
+  background: #fff3cc;
+}
+
+.maintenance-status-assigned {
+  color: #1d4d7a;
+  background: #dcecff;
+}
+
+.maintenance-status-in-progress {
+  color: #654f00;
+  background: #f7edc7;
+}
+
+.maintenance-status-completed {
+  color: #155844;
+  background: #dff3eb;
+}
+
+.maintenance-status-rejected {
+  color: #8a241e;
+  background: #ffe2df;
+}
+
 .priority-pill {
   display: inline-flex;
   align-items: center;
@@ -717,10 +742,33 @@ textarea {
   align-items: start;
 }
 
+.maintenance-workspace {
+  display: grid;
+  grid-template-columns: minmax(360px, 1.05fr) minmax(320px, 0.95fr);
+  gap: 1rem;
+  align-items: start;
+}
+
 .task-detail-panel,
-.task-actions-panel {
+.task-actions-panel,
+.maintenance-detail-panel,
+.maintenance-actions-panel {
   display: grid;
   gap: 1rem;
+}
+
+.assignment-action-row {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) auto;
+  gap: 0.5rem;
+}
+
+.selected-row {
+  background: #f2f7f4;
+}
+
+.maintenance-table tbody tr {
+  cursor: pointer;
 }
 
 .resident-invoice-workspace,
@@ -784,6 +832,10 @@ textarea {
 
 .task-table {
   min-width: 1180px;
+}
+
+.maintenance-table {
+  min-width: 1280px;
 }
 
 .invoice-item-table {
@@ -893,6 +945,8 @@ textarea {
   .utility-reading-workspace,
   .invoice-workspace,
   .task-workspace,
+  .maintenance-workspace,
+  .assignment-action-row,
   .detail-panel {
     grid-template-columns: 1fr;
   }

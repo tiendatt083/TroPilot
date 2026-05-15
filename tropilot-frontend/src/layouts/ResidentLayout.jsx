@@ -16,6 +16,7 @@ export default function ResidentLayout() {
           <NavLink to="/resident/dashboard">Dashboard</NavLink>
           <NavLink to="/resident/invoices">Invoices</NavLink>
           <NavLink to="/resident/members">Members</NavLink>
+          <NavLink to="/resident/maintenance">Maintenance</NavLink>
           <NavLink to="/resident/contract">Contract</NavLink>
           <NavLink to="/resident/vehicles">Vehicles</NavLink>
           <NavLink to="/resident/utility-readings">Utility readings</NavLink>
