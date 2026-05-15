@@ -14,6 +14,8 @@ public interface RoomAssignmentRepository extends JpaRepository<RoomAssignment, 
 
     boolean existsByResidentHead_IdAndStatus(Long residentHeadId, RoomAssignmentStatus status);
 
+    long countByStatus(RoomAssignmentStatus status);
+
     @Query("""
             select assignment from RoomAssignment assignment
             join fetch assignment.room room

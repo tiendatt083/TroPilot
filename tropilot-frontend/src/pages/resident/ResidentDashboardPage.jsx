@@ -1,7 +1,12 @@
 import { useEffect, useState } from 'react';
-import * as residentApi from '../../api/residentApi.js';
+import * as dashboardApi from '../../api/dashboardApi.js';
+import DashboardMetricGrid from '../../components/DashboardMetricGrid.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
+import { getContractStatusLabel } from '../../utils/contractStatusOptions.js';
+import { getInvoiceStatusClass, getInvoiceStatusLabel } from '../../utils/invoiceStatusOptions.js';
+import { getMaintenanceStatusClass, getMaintenanceStatusLabel } from '../../utils/maintenanceOptions.js';
 import { getRoomStatusLabel } from '../../utils/roomStatusOptions.js';
+import { getVehicleTypeLabel } from '../../utils/vehicleOptions.js';
 
 function formatNumber(value) {
   const numberValue = Number(value);
@@ -27,23 +32,23 @@ function statusClass(status) {
 }
 
 export default function ResidentDashboardPage() {
-  const [assignedRoom, setAssignedRoom] = useState(null);
+  const [dashboard, setDashboard] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let active = true;
 
-    residentApi
-      .getAssignedRoom()
+    dashboardApi
+      .getResidentDashboard()
       .then((response) => {
         if (active) {
-          setAssignedRoom(response.data);
+          setDashboard(response.data);
         }
       })
       .catch((apiError) => {
         if (active) {
-          setError(apiError.response?.data?.message || 'Assigned room could not be loaded');
+          setError(apiError.response?.data?.message || 'Resident dashboard could not be loaded');
         }
       })
       .finally(() => {
@@ -57,6 +62,20 @@ export default function ResidentDashboardPage() {
     };
   }, []);
 
+  const currentRoom = dashboard?.currentRoom;
+  const latestInvoice = dashboard?.latestInvoice;
+  const currentContract = dashboard?.currentContract;
+  const activeVehicles = dashboard?.activeVehicles || [];
+  const recentMaintenanceRequests = dashboard?.recentMaintenanceRequests || [];
+  const metrics = dashboard
+    ? [
+        { label: 'Approved members', value: formatNumber(dashboard.approvedMemberCount) },
+        { label: 'Active vehicles', value: formatNumber(activeVehicles.length) },
+        { label: 'Unread notifications', value: formatNumber(dashboard.unreadNotifications) },
+        { label: 'Recent maintenance requests', value: formatNumber(recentMaintenanceRequests.length) }
+      ]
+    : [];
+
   return (
     <section className="content-section">
       <PageHeader eyebrow="Head resident" title="Dashboard" />
@@ -64,44 +83,142 @@ export default function ResidentDashboardPage() {
       {error && <div className="alert error-alert">{error}</div>}
 
       {loading ? (
-        <div className="empty-state">Loading assigned room...</div>
-      ) : assignedRoom?.assigned ? (
-        <div className="detail-panel">
-          <div>
-            <span>Assigned room</span>
-            <strong>
-              {assignedRoom.roomCode} - {assignedRoom.roomName}
-            </strong>
+        <div className="empty-state">Loading dashboard...</div>
+      ) : currentRoom?.assigned ? (
+        <section className="resident-dashboard-workspace">
+          <DashboardMetricGrid metrics={metrics} />
+
+          <div className="detail-panel">
+            <div>
+              <span>Assigned room</span>
+              <strong>
+                {currentRoom.roomCode} - {currentRoom.roomName}
+              </strong>
+            </div>
+            <div>
+              <span>Building</span>
+              <strong>
+                {currentRoom.buildingCode} - {currentRoom.buildingName}
+              </strong>
+            </div>
+            <div>
+              <span>Room status</span>
+              <strong>
+                <span className={statusClass(currentRoom.roomStatus)}>
+                  {getRoomStatusLabel(currentRoom.roomStatus)}
+                </span>
+              </strong>
+            </div>
+            <div>
+              <span>Assignment period</span>
+              <strong>
+                {currentRoom.assignmentStartDate} to {currentRoom.assignmentEndDate}
+              </strong>
+            </div>
+            <div>
+              <span>Deposit amount</span>
+              <strong>{formatNumber(currentRoom.depositAmount)}</strong>
+            </div>
+            <div>
+              <span>Contract status</span>
+              <strong>{getContractStatusLabel(currentRoom.contractStatus)}</strong>
+            </div>
           </div>
-          <div>
-            <span>Building</span>
-            <strong>
-              {assignedRoom.buildingCode} - {assignedRoom.buildingName}
-            </strong>
+
+          <div className="dashboard-two-column">
+            <article className="dashboard-panel">
+              <h2>Current contract</h2>
+              {currentContract ? (
+                <dl>
+                  <div>
+                    <dt>Period</dt>
+                    <dd>
+                      {currentContract.startDate} to {currentContract.endDate}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Status</dt>
+                    <dd>{formatEnumLabel(currentContract.rentalStatus)}</dd>
+                  </div>
+                  <div>
+                    <dt>Contract file</dt>
+                    <dd>{getContractStatusLabel(currentContract.contractStatus)}</dd>
+                  </div>
+                </dl>
+              ) : (
+                <div className="empty-state flat-empty-state">No active contract is available.</div>
+              )}
+            </article>
+
+            <article className="dashboard-panel">
+              <h2>Latest invoice</h2>
+              {latestInvoice ? (
+                <dl>
+                  <div>
+                    <dt>Month</dt>
+                    <dd>{latestInvoice.month}</dd>
+                  </div>
+                  <div>
+                    <dt>Due date</dt>
+                    <dd>{dashboard.paymentDueDate || latestInvoice.dueDate}</dd>
+                  </div>
+                  <div>
+                    <dt>Total amount</dt>
+                    <dd>{formatNumber(latestInvoice.totalAmount)}</dd>
+                  </div>
+                  <div>
+                    <dt>Status</dt>
+                    <dd>
+                      <span className={getInvoiceStatusClass(latestInvoice.status)}>
+                        {getInvoiceStatusLabel(latestInvoice.status)}
+                      </span>
+                    </dd>
+                  </div>
+                </dl>
+              ) : (
+                <div className="empty-state flat-empty-state">No invoice is available.</div>
+              )}
+            </article>
           </div>
-          <div>
-            <span>Room status</span>
-            <strong>
-              <span className={statusClass(assignedRoom.roomStatus)}>
-                {getRoomStatusLabel(assignedRoom.roomStatus)}
-              </span>
-            </strong>
+
+          <div className="dashboard-two-column">
+            <article className="dashboard-panel">
+              <h2>Active vehicles</h2>
+              {activeVehicles.length > 0 ? (
+                <ul className="dashboard-list">
+                  {activeVehicles.map((vehicle) => (
+                    <li key={vehicle.id}>
+                      <strong>{vehicle.licensePlate}</strong>
+                      <span>
+                        {getVehicleTypeLabel(vehicle.vehicleType)} - {vehicle.ownerName}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div className="empty-state flat-empty-state">No active vehicle is registered.</div>
+              )}
+            </article>
+
+            <article className="dashboard-panel">
+              <h2>Recent maintenance requests</h2>
+              {recentMaintenanceRequests.length > 0 ? (
+                <ul className="dashboard-list">
+                  {recentMaintenanceRequests.map((request) => (
+                    <li key={request.id}>
+                      <strong>{request.title}</strong>
+                      <span className={getMaintenanceStatusClass(request.status)}>
+                        {getMaintenanceStatusLabel(request.status)}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div className="empty-state flat-empty-state">No maintenance request is available.</div>
+              )}
+            </article>
           </div>
-          <div>
-            <span>Assignment period</span>
-            <strong>
-              {assignedRoom.assignmentStartDate} to {assignedRoom.assignmentEndDate}
-            </strong>
-          </div>
-          <div>
-            <span>Deposit amount</span>
-            <strong>{formatNumber(assignedRoom.depositAmount)}</strong>
-          </div>
-          <div>
-            <span>Contract status</span>
-            <strong>{formatEnumLabel(assignedRoom.contractStatus)}</strong>
-          </div>
-        </div>
+        </section>
       ) : (
         <div className="empty-state">No room is assigned to your account.</div>
       )}

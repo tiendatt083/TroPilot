@@ -6,10 +6,22 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
 public interface TaskRepository extends JpaRepository<Task, Long> {
+
+    long countByStatus(com.tropilot.enums.TaskStatus status);
+
+    long countByAssignedTo_IdAndStatusIn(Long assignedToId, Collection<com.tropilot.enums.TaskStatus> statuses);
+
+    long countByAssignedTo_IdAndDeadlineBeforeAndStatusIn(
+            Long assignedToId,
+            LocalDateTime deadline,
+            Collection<com.tropilot.enums.TaskStatus> statuses
+    );
 
     @EntityGraph(attributePaths = {
             "room",

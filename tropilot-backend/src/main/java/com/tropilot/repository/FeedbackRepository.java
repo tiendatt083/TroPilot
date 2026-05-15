@@ -9,8 +9,11 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Collection;
 
 public interface FeedbackRepository extends JpaRepository<Feedback, Long> {
+
+    long countByStatusIn(Collection<com.tropilot.enums.FeedbackStatus> statuses);
 
     @EntityGraph(attributePaths = {
             "residentHead",

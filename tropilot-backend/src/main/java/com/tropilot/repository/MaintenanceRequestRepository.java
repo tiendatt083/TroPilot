@@ -6,10 +6,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
 public interface MaintenanceRequestRepository extends JpaRepository<MaintenanceRequest, Long> {
+
+    long countByStatus(com.tropilot.enums.MaintenanceStatus status);
+
+    long countByAssignedTo_IdAndStatusIn(Long assignedToId, Collection<com.tropilot.enums.MaintenanceStatus> statuses);
 
     @EntityGraph(attributePaths = {
             "room",

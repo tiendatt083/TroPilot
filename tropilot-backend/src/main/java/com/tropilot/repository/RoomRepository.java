@@ -15,7 +15,25 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
 
     boolean existsByRoomCode(String roomCode);
 
+    long countByStatus(RoomStatus status);
+
     long countByBuilding_Id(Long buildingId);
+
+    @Query("""
+            select count(room)
+            from Room room
+            where room.status = :status
+              and not exists (
+                    select reading.id
+                    from UtilityReading reading
+                    where reading.room = room
+                      and reading.month = :month
+              )
+            """)
+    long countByStatusWithoutUtilityReadingForMonth(
+            @Param("status") RoomStatus status,
+            @Param("month") java.time.LocalDate month
+    );
 
     @Query("""
             select room from Room room

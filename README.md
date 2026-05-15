@@ -309,6 +309,14 @@ Notifications, feedback, and invoice complaints:
 - Admin users can open `/admin/invoice-complaints` to process invoice complaints.
 - Notification and feedback responses use the standard API response format.
 
+Role-based dashboards:
+
+- Admin users can open `/admin/dashboard` to view live operational totals from the database.
+- Staff users can open `/staff/dashboard` to view assigned work, overdue work, pending payment confirmations, rooms needing current-month utility readings, active maintenance requests, and created expenses.
+- Head resident users can open `/resident/dashboard` to view their assigned room, current contract, latest invoice, active vehicles, unread notifications, and recent maintenance requests.
+- Dashboard numbers are calculated from persisted records and do not use hard-coded sample values.
+- Empty database states return zero counts, null detail sections, or empty lists without crashing the dashboard.
+
 Protected backend APIs:
 
 ```text
@@ -425,6 +433,9 @@ PUT /api/admin/feedbacks/{id}/reply
 PUT /api/admin/feedbacks/{id}/status
 POST /api/resident/invoices/{id}/complaint
 GET /api/admin/invoice-complaints
+GET /api/admin/dashboard
+GET /api/staff/dashboard
+GET /api/resident/dashboard
 ```
 
 ## Environment

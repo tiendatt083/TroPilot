@@ -15,6 +15,8 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 
     boolean existsByLicensePlateAndStatusAndIdNot(String licensePlate, VehicleStatus status, Long id);
 
+    long countByStatus(VehicleStatus status);
+
     @Query("""
             select vehicle from Vehicle vehicle
             join fetch vehicle.room room

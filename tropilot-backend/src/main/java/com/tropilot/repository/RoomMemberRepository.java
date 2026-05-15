@@ -13,6 +13,8 @@ public interface RoomMemberRepository extends JpaRepository<RoomMember, Long> {
 
     long countByRoom_IdAndStatus(Long roomId, RoomMemberStatus status);
 
+    long countByStatus(RoomMemberStatus status);
+
     boolean existsByRoom_IdAndStatusAndFullNameIgnoreCase(
             Long roomId,
             RoomMemberStatus status,

@@ -16,6 +16,13 @@ public interface ReceiptRepository extends JpaRepository<Receipt, Long> {
 
     boolean existsByInvoice_IdAndStatus(Long invoiceId, ReceiptStatus status);
 
+    @Query("""
+            select coalesce(sum(receipt.amount), 0)
+            from Receipt receipt
+            where receipt.status = :status
+            """)
+    BigDecimal sumAmountByStatus(@Param("status") ReceiptStatus status);
+
     @EntityGraph(attributePaths = {
             "invoice",
             "room",

@@ -942,6 +942,106 @@ textarea {
   font-size: 1.2rem;
 }
 
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.dashboard-card,
+.dashboard-panel {
+  border: 1px solid #dfe4df;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.dashboard-card {
+  display: grid;
+  min-height: 112px;
+  gap: 0.25rem;
+  align-content: start;
+  padding: 1rem;
+}
+
+.dashboard-card span,
+.dashboard-panel dt {
+  color: #66727d;
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.dashboard-card strong {
+  color: #1f2933;
+  font-size: 1.55rem;
+  line-height: 1.15;
+}
+
+.dashboard-card small {
+  color: #66727d;
+  font-weight: 700;
+}
+
+.resident-dashboard-workspace {
+  display: grid;
+  gap: 1rem;
+}
+
+.dashboard-two-column {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.dashboard-panel {
+  padding: 1.25rem;
+}
+
+.dashboard-panel h2 {
+  margin: 0 0 1rem;
+  font-size: 1.05rem;
+}
+
+.dashboard-panel dl {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+}
+
+.dashboard-panel dl div {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.dashboard-panel dd {
+  margin: 0;
+  font-weight: 700;
+}
+
+.dashboard-list {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dashboard-list li {
+  display: grid;
+  gap: 0.25rem;
+  border-bottom: 1px solid #edf0ed;
+  padding-bottom: 0.75rem;
+}
+
+.dashboard-list li:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.dashboard-list span:not(.status-pill) {
+  color: #66727d;
+}
+
 .contract-actions {
   justify-content: flex-start;
   margin-top: 1rem;
@@ -981,9 +1081,11 @@ textarea {
   .utility-reading-workspace,
   .invoice-workspace,
   .task-workspace,
-  .maintenance-workspace,
-  .assignment-action-row,
-  .detail-panel {
+    .maintenance-workspace,
+    .assignment-action-row,
+    .dashboard-grid,
+    .dashboard-two-column,
+    .detail-panel {
     grid-template-columns: 1fr;
   }
 

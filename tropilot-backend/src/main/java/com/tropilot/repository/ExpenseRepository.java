@@ -14,6 +14,15 @@ import java.util.Optional;
 
 public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 
+    long countByCreatedBy_Id(Long createdById);
+
+    @Query("""
+            select coalesce(sum(expense.amount), 0)
+            from Expense expense
+            where expense.status = :status
+            """)
+    BigDecimal sumAmountByStatus(@Param("status") ExpenseStatus status);
+
     @EntityGraph(attributePaths = {
             "room",
             "room.building",

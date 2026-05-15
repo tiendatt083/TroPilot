@@ -16,6 +16,10 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
 
     boolean existsByRoom_IdAndMonth(Long roomId, LocalDate month);
 
+    long countByStatus(InvoiceStatus status);
+
+    long countByDueDateBeforeAndStatusNot(LocalDate dueDate, InvoiceStatus status);
+
     @EntityGraph(attributePaths = {
             "room",
             "room.building",
@@ -25,6 +29,16 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
             "items.serviceFee"
     })
     Optional<Invoice> findById(Long id);
+
+    @EntityGraph(attributePaths = {
+            "room",
+            "room.building",
+            "residentHead",
+            "createdBy",
+            "items",
+            "items.serviceFee"
+    })
+    Optional<Invoice> findFirstByRoom_IdOrderByMonthDescCreatedAtDesc(Long roomId);
 
     @Query("""
             select distinct invoice from Invoice invoice
@@ -61,4 +75,11 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
             @Param("month") LocalDate month,
             @Param("paidStatus") InvoiceStatus paidStatus
     );
+
+    @Query("""
+            select coalesce(sum(invoice.totalAmount), 0)
+            from Invoice invoice
+            where invoice.status <> :paidStatus
+            """)
+    BigDecimal sumUnpaidAmount(@Param("paidStatus") InvoiceStatus paidStatus);
 }
