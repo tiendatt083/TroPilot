@@ -14,6 +14,8 @@ export default function ResidentLayout() {
         </div>
         <nav aria-label="Resident navigation">
           <NavLink to="/resident/dashboard">Dashboard</NavLink>
+          <NavLink to="/resident/notifications">Notifications</NavLink>
+          <NavLink to="/resident/feedbacks">Feedbacks</NavLink>
           <NavLink to="/resident/invoices">Invoices</NavLink>
           <NavLink to="/resident/members">Members</NavLink>
           <NavLink to="/resident/maintenance">Maintenance</NavLink>

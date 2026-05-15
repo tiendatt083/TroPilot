@@ -534,6 +534,28 @@ textarea {
   background: #ffe2df;
 }
 
+.feedback-status-pending,
+.read-status-unread {
+  color: #7a4c00;
+  background: #fff3cc;
+}
+
+.feedback-status-in-progress {
+  color: #1d4d7a;
+  background: #dcecff;
+}
+
+.feedback-status-resolved,
+.read-status-read {
+  color: #155844;
+  background: #dff3eb;
+}
+
+.feedback-status-rejected {
+  color: #8a241e;
+  background: #ffe2df;
+}
+
 .priority-pill {
   display: inline-flex;
   align-items: center;
@@ -763,6 +785,12 @@ textarea {
   gap: 0.5rem;
 }
 
+.feedback-action-panel {
+  display: grid;
+  min-width: 260px;
+  gap: 0.5rem;
+}
+
 .selected-row {
   background: #f2f7f4;
 }
@@ -836,6 +864,14 @@ textarea {
 
 .maintenance-table {
   min-width: 1280px;
+}
+
+.notification-table {
+  min-width: 980px;
+}
+
+.feedback-table {
+  min-width: 1500px;
 }
 
 .invoice-item-table {

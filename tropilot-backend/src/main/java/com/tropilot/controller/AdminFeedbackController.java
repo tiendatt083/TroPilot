@@ -1,20 +1,19 @@
 package com.tropilot.controller;
 
-import com.tropilot.dto.request.InvoiceComplaintRequest;
+import com.tropilot.dto.request.FeedbackReplyRequest;
+import com.tropilot.dto.request.FeedbackStatusUpdateRequest;
 import com.tropilot.dto.response.ApiResponse;
 import com.tropilot.dto.response.FeedbackResponse;
-import com.tropilot.dto.response.InvoiceResponse;
 import com.tropilot.exception.UnauthorizedException;
 import com.tropilot.security.AuthenticatedUser;
 import com.tropilot.service.FeedbackService;
-import com.tropilot.service.InvoiceService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,37 +21,33 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/resident/invoices")
+@RequestMapping("/api/admin/feedbacks")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('RESIDENT_HEAD')")
-public class ResidentInvoiceController {
+@PreAuthorize("hasRole('ADMIN')")
+public class AdminFeedbackController {
 
-    private final InvoiceService invoiceService;
     private final FeedbackService feedbackService;
 
     @GetMapping
-    public ApiResponse<List<InvoiceResponse>> getInvoices(@AuthenticationPrincipal AuthenticatedUser user) {
-        return ApiResponse.success("Invoices loaded successfully", invoiceService.getResidentInvoices(getUserId(user)));
+    public ApiResponse<List<FeedbackResponse>> getFeedbacks() {
+        return ApiResponse.success("Feedbacks loaded successfully", feedbackService.getFeedbacks());
     }
 
-    @GetMapping("/{id}")
-    public ApiResponse<InvoiceResponse> getInvoice(
-            @AuthenticationPrincipal AuthenticatedUser user,
-            @PathVariable Long id
-    ) {
-        return ApiResponse.success("Invoice loaded successfully", invoiceService.getResidentInvoice(getUserId(user), id));
-    }
-
-    @PostMapping("/{id}/complaint")
-    public ApiResponse<FeedbackResponse> createComplaint(
+    @PutMapping("/{id}/reply")
+    public ApiResponse<FeedbackResponse> replyFeedback(
             @AuthenticationPrincipal AuthenticatedUser user,
             @PathVariable Long id,
-            @Valid @RequestBody InvoiceComplaintRequest request
+            @Valid @RequestBody FeedbackReplyRequest request
     ) {
-        return ApiResponse.success(
-                "Invoice complaint submitted successfully",
-                feedbackService.createInvoiceComplaint(getUserId(user), id, request)
-        );
+        return ApiResponse.success("Feedback replied successfully", feedbackService.replyFeedback(id, getUserId(user), request));
+    }
+
+    @PutMapping("/{id}/status")
+    public ApiResponse<FeedbackResponse> updateStatus(
+            @PathVariable Long id,
+            @Valid @RequestBody FeedbackStatusUpdateRequest request
+    ) {
+        return ApiResponse.success("Feedback status updated successfully", feedbackService.updateFeedbackStatus(id, request));
     }
 
     private Long getUserId(AuthenticatedUser user) {

@@ -14,6 +14,7 @@ export default function StaffLayout() {
         </div>
         <nav aria-label="Staff navigation">
           <NavLink to="/staff/dashboard">Dashboard</NavLink>
+          <NavLink to="/staff/notifications">Notifications</NavLink>
           <NavLink to="/staff/invoices">Invoices</NavLink>
           <NavLink to="/staff/payments/pending">Pending payments</NavLink>
           <NavLink to="/staff/expenses">Expenses</NavLink>

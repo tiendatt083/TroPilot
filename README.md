@@ -296,6 +296,19 @@ Maintenance request management:
 - Staff users can create expenses linked to assigned maintenance requests.
 - Allowed maintenance image types are jpg, jpeg, and png.
 
+Notifications, feedback, and invoice complaints:
+
+- Admin users can open `/admin/notifications` to send notifications.
+- Notifications can target all Head Residents, one room, one user, all Staff, or all users.
+- Head resident users can open `/resident/notifications` to view and mark visible notifications as read.
+- Staff users can open `/staff/notifications` to view and mark visible notifications as read.
+- Head resident users can open `/resident/feedbacks` to submit feedback for their active room.
+- Invoice complaints are submitted from the resident invoice detail page.
+- Head resident users can only complain about invoices for their own active room.
+- Admin users can open `/admin/feedbacks` to reply to feedback and update feedback status.
+- Admin users can open `/admin/invoice-complaints` to process invoice complaints.
+- Notification and feedback responses use the standard API response format.
+
 Protected backend APIs:
 
 ```text
@@ -402,6 +415,16 @@ GET /api/staff/maintenance-requests
 PUT /api/staff/maintenance-requests/{id}/start
 PUT /api/staff/maintenance-requests/{id}/complete
 PUT /api/staff/maintenance-requests/{id}/reject
+POST /api/admin/notifications
+GET /api/resident/notifications
+GET /api/staff/notifications
+PUT /api/notifications/{id}/read
+POST /api/resident/feedbacks
+GET /api/admin/feedbacks
+PUT /api/admin/feedbacks/{id}/reply
+PUT /api/admin/feedbacks/{id}/status
+POST /api/resident/invoices/{id}/complaint
+GET /api/admin/invoice-complaints
 ```
 
 ## Environment

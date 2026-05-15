@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import * as feedbackApi from '../../api/feedbackApi.js';
 import { Link, useParams } from 'react-router-dom';
 import * as invoiceApi from '../../api/invoiceApi.js';
 import * as paymentApi from '../../api/paymentApi.js';
@@ -15,6 +16,12 @@ export default function ResidentInvoiceDetailPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [complaintOpen, setComplaintOpen] = useState(false);
+  const [complaining, setComplaining] = useState(false);
+  const [complaintForm, setComplaintForm] = useState({
+    title: '',
+    content: ''
+  });
 
   const loadData = async () => {
     const [invoiceResponse, paymentsResponse] = await Promise.all([
@@ -68,6 +75,32 @@ export default function ResidentInvoiceDetailPage() {
     }
   };
 
+  const handleComplaintChange = (event) => {
+    const { name, value } = event.target;
+    setComplaintForm((current) => ({
+      ...current,
+      [name]: value
+    }));
+  };
+
+  const handleComplaintSubmit = async (event) => {
+    event.preventDefault();
+    setComplaining(true);
+    setMessage('');
+    setError('');
+
+    try {
+      await feedbackApi.createInvoiceComplaint(invoice.id, complaintForm);
+      setComplaintForm({ title: '', content: '' });
+      setComplaintOpen(false);
+      setMessage('Invoice complaint submitted successfully.');
+    } catch (apiError) {
+      setError(apiError.response?.data?.message || 'Invoice complaint could not be submitted');
+    } finally {
+      setComplaining(false);
+    }
+  };
+
   if (loading) {
     return <div className="empty-state">Loading invoice...</div>;
   }
@@ -88,6 +121,49 @@ export default function ResidentInvoiceDetailPage() {
 
       <section className="resident-invoice-workspace">
         <InvoiceDetail invoice={invoice} />
+
+        {invoice && (
+          <div className="payment-panel">
+            <div className="page-title-row compact-title-row">
+              <PageHeader eyebrow="Complaint" title="Invoice complaint" />
+              <button
+                className="secondary-button inline-button"
+                type="button"
+                onClick={() => setComplaintOpen((current) => !current)}
+              >
+                {complaintOpen ? 'Close complaint form' : 'Complain about invoice'}
+              </button>
+            </div>
+
+            {complaintOpen && (
+              <form className="panel-form" onSubmit={handleComplaintSubmit}>
+                <label htmlFor="complaintTitle">Complaint title</label>
+                <input
+                  id="complaintTitle"
+                  name="title"
+                  value={complaintForm.title}
+                  onChange={handleComplaintChange}
+                  maxLength={160}
+                  required
+                />
+
+                <label htmlFor="complaintContent">Complaint content</label>
+                <textarea
+                  id="complaintContent"
+                  name="content"
+                  rows="5"
+                  value={complaintForm.content}
+                  onChange={handleComplaintChange}
+                  required
+                />
+
+                <button type="submit" disabled={complaining}>
+                  {complaining ? 'Submitting...' : 'Submit complaint'}
+                </button>
+              </form>
+            )}
+          </div>
+        )}
 
         {invoice && (
           <div className="payment-panel">
