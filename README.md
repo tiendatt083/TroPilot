@@ -1,13 +1,94 @@
-# Tropilot
+# Tropilot - Modern Rental Property Operation Management System
 
-Tropilot is a rental property operation management system for administrators, operations staff, and head residents.
+Tropilot is a full-stack rental property operation management system for property administrators, operations staff, and Head Residents. It centralizes daily rental operations including buildings, rooms, resident accounts, room members, contracts, utility readings, invoices, payments, vehicles, maintenance requests, staff tasks, receipts, expenses, cash flow, notifications, feedback, dashboards, and activity logs.
 
-This repository contains the Tropilot full-stack application foundation and authentication module:
+The system is designed for an academic demonstration while still following production-oriented practices such as JWT authentication, role-based authorization, DTO-based API responses, password hashing, file upload validation, and clear service-layer business logic.
 
-- `tropilot-backend`: Spring Boot 3.2.4 backend using Java 17 and Maven.
-- `tropilot-frontend`: React 18.2.0 frontend using Vite 5.2.0.
+## Technology Stack
 
-## Backend
+### Frontend
+
+- ReactJS 18.2.0
+- Vite 5.2.0
+- JavaScript
+- React Router DOM
+- Axios
+- CSS
+
+### Backend
+
+- Java 17
+- Spring Boot 3.2.4
+- Spring Web
+- Spring Data JPA
+- Spring Security
+- Spring Boot Mail
+- Maven
+- Lombok
+
+### Database
+
+- MySQL
+
+## User Roles
+
+- `ADMIN`: Property Administrator with full system control.
+- `STAFF`: Operations or technical staff with operational permissions.
+- `RESIDENT_HEAD`: Head Resident who represents one active room.
+
+## Main Features
+
+- User management
+- Building management
+- Room management
+- Head Resident assignment
+- Room member management
+- Rental contract management
+- Vehicle management
+- Service fee management
+- Utility reading with evidence images
+- Invoice generation
+- Payment confirmation
+- Receipt management
+- Expense management
+- Cash flow management
+- Staff task assignment
+- Maintenance request management
+- Notification management
+- Feedback management
+- Role-based dashboards
+- Activity logs
+
+## Project Structure
+
+```text
+tropilot-backend/
+  src/main/java/com/tropilot/
+    config/
+    controller/
+    dto/
+    entity/
+    enums/
+    exception/
+    repository/
+    security/
+    service/
+    util/
+
+tropilot-frontend/
+  src/
+    api/
+    assets/
+    components/
+    contexts/
+    layouts/
+    pages/
+    routes/
+    styles/
+    utils/
+```
+
+## Backend Setup
 
 ### Requirements
 
@@ -16,9 +97,9 @@ This repository contains the Tropilot full-stack application foundation and auth
 - MySQL Server
 - MySQL Workbench or another MySQL client
 
-### Database Setup
+### MySQL Setup
 
-Create the application database in MySQL before starting the backend:
+Create the Tropilot database before starting the backend:
 
 ```sql
 CREATE DATABASE IF NOT EXISTS tropilot
@@ -26,32 +107,49 @@ CHARACTER SET utf8mb4
 COLLATE utf8mb4_unicode_ci;
 ```
 
-The backend uses this local database connection by default:
+### Backend Configuration
 
-```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/tropilot
-spring.datasource.username=root
-spring.datasource.password=root
+The backend configuration is stored in:
+
+```text
+tropilot-backend/src/main/resources/application.properties
 ```
 
-If your MySQL username or password is different, update `tropilot-backend/src/main/resources/application.properties` or set these environment variables:
+For a local demo, configure the database connection using environment variables or your local `application.properties` values:
 
 ```bash
+SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/tropilot?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
 SPRING_DATASOURCE_USERNAME=your_mysql_username
 SPRING_DATASOURCE_PASSWORD=your_mysql_password
+APP_CORS_ALLOWED_ORIGINS=http://localhost:5173
+APP_UPLOAD_BASE_PATH=uploads
+APP_JWT_SECRET=change_this_demo_secret
+APP_TEMPORARY_PASSWORD_ENCRYPTION_SECRET=change_this_demo_encryption_secret
+```
+
+Do not commit real production credentials or private secrets.
+
+### Build Backend
+
+```bash
+cd tropilot-backend
+mvn clean package
 ```
 
 ### Run Backend
 
 ```bash
 cd tropilot-backend
-mvn clean package
 mvn spring-boot:run
 ```
 
-The backend runs on `http://localhost:8080` by default.
+The backend runs on:
 
-When the backend starts and connects to MySQL successfully, the console prints a status block similar to this:
+```text
+http://localhost:8080
+```
+
+When the backend starts successfully and connects to MySQL, the console prints a status block similar to:
 
 ```text
 ------------------------------------------------------------
@@ -63,392 +161,200 @@ Database version: 8.0.x
 ------------------------------------------------------------
 ```
 
-If the database credentials are invalid, the backend prints a database connection failure message. A running web server with `Database connection: failed` is not a complete setup. Check that MySQL Server is running and that `spring.datasource.username` and `spring.datasource.password` match the MySQL user credentials.
-
 If port `8080` is already in use, stop the process using that port or run the backend on another port:
 
 ```bash
 mvn spring-boot:run "-Dspring-boot.run.arguments=--server.port=8081"
 ```
 
-## Frontend
+## Frontend Setup
 
 ### Requirements
 
 - Node.js
 - npm
 
-### Run Frontend
+### Install Dependencies
 
 ```bash
 cd tropilot-frontend
 npm install
+```
+
+### Run Frontend
+
+```bash
+cd tropilot-frontend
 npm run dev
 ```
 
-The frontend runs on `http://localhost:5173` by default.
-
-Open the application in the browser:
+The frontend runs on:
 
 ```text
 http://localhost:5173
 ```
 
-## Authentication
+### Build Frontend
 
-The backend creates the default administrator account only when no `ADMIN` account exists:
+```bash
+cd tropilot-frontend
+npm run build
+```
+
+## Default Admin Account
+
+The backend creates this account only if no `ADMIN` account exists:
 
 ```text
 Email: admin@tropilot.com
 Password: Admin@123
 Role: ADMIN
+Status: ACTIVE
+Must change password: false
 ```
 
-Login flow:
+Use this account for the first demo login.
 
-- The login page is available at `http://localhost:5173/login`.
-- Users sign in with email and password.
-- JWT is stored in browser local storage after successful login.
-- Axios attaches `Authorization: Bearer <token>` for protected API calls.
-- Users with `mustChangePassword=true` are redirected to `/change-password`.
-- Admin users are redirected to `/admin/dashboard`.
-- Staff users are redirected to `/staff/dashboard`.
-- Head residents are redirected to `/resident/dashboard`.
+## Authentication and Routing
 
-Admin user management:
+- Login page: `http://localhost:5173/login`
+- Admin dashboard: `/admin/dashboard`
+- Staff dashboard: `/staff/dashboard`
+- Head Resident dashboard: `/resident/dashboard`
+- First-time password change page: `/change-password`
 
-- Admin users can open `/admin/users`.
-- Admin users can create `STAFF` and `RESIDENT_HEAD` accounts.
-- The backend automatically generates a temporary password when an admin creates a user.
-- Admin users can see the generated temporary password in the user list while `mustChangePassword=true`.
-- Admin users cannot see the real password after the user changes the temporary password.
-- The encrypted temporary-password display value is cleared after the user changes password successfully.
-- Admin users can lock, unlock, and reset passwords for non-admin accounts.
-
-Building management:
-
-- Admin users can open `/admin/buildings`.
-- Admin users can create, view, edit, search, and delete buildings.
-- Staff users can open `/staff/buildings` with read-only access.
-- Head residents cannot access building management pages.
-- A building cannot be deleted when related rooms exist.
-
-Room management:
-
-- Admin users can open `/admin/rooms`.
-- Admin users can create, view, edit, filter, search, and delete rooms.
-- Staff users can open `/staff/rooms` with read-only access.
-- Rooms are connected to buildings.
-- Head residents cannot access the all-room list in this phase.
-- A room cannot be deleted when related head resident, contract, invoice, utility reading, vehicle, or maintenance data exists.
-
-Head Resident assignment:
-
-- Admin users can assign one active Head Resident account to one room from the room detail page.
-- Assigning a Head Resident creates a room assignment and an initial rental contract in one transaction.
-- Assigned rooms are moved to `OCCUPIED` status.
-- Rooms in `MAINTENANCE` status cannot receive a Head Resident.
-- A room can have only one active Head Resident.
-- A Head Resident can represent only one active room.
-- Head resident users can view their assigned room on the resident dashboard.
-
-Room member management:
-
-- Head resident users can open `/resident/members`.
-- Head resident users can add, view, edit, and mark members as left for their own active room.
-- Room members do not have login accounts.
-- New room members start with `PENDING` status.
-- Admin users can open `/admin/members/pending` to approve or reject pending room members.
-- Admin users can open `/admin/rooms/{roomId}/members` to view all members in a room.
-- Only `APPROVED` members count as active occupants.
-- Active occupants are calculated as one active Head Resident plus approved room members.
-- Pending, rejected, and left members do not count as active occupants.
-- Approval is blocked when the room maximum occupants would be exceeded.
-
-Rental contract upload and confirmation:
-
-- Admin users can open `/admin/contracts`.
-- Admin users can view rental contracts and upload signed contract files.
-- Contract files are stored in `uploads/contracts`.
-- Uploaded contract files are served through `/uploads/contracts/{fileName}`.
-- Allowed contract file types are jpg, jpeg, png, and pdf.
-- Uploading a new contract file sets contract status to `UPLOADED`.
-- Admin users can mark a contract as `NEED_UPDATE`.
-- Head resident users can open `/resident/contract`.
-- Head resident users can view their current contract, confirm it, or report an issue.
-- Confirming requires an uploaded contract file and sets status to `CONFIRMED`.
-- Reporting an issue sets status to `NEED_UPDATE`.
-
-Vehicle management:
-
-- Head resident users can open `/resident/vehicles`.
-- Head resident users can request vehicle registration for their own active room.
-- Vehicles can belong to the Head Resident or an approved room member.
-- Room member vehicle owners must match an approved member in the same room.
-- New vehicle requests start with `PENDING` status.
-- Admin users can open `/admin/vehicles` to review all vehicles.
-- Admin users can open `/admin/vehicles/pending` to approve or reject pending vehicles.
-- Staff users can open `/staff/vehicles` with read-only access.
-- Only `ACTIVE` vehicles are marked as billable for future parking fee calculations.
-- `PENDING`, `INACTIVE`, and `REJECTED` vehicles are not billable.
-- License plates must be unique among active vehicles.
-
-Service fee management:
-
-- Admin users can open `/admin/service-fees`.
-- Admin users can create, edit, activate, deactivate, and delete service fees.
-- Staff users can open `/staff/service-fees` with read-only access.
-- Head residents cannot access service fee management pages or APIs.
-- Service fee codes are unique.
-- Unit price must be greater than or equal to zero.
-- Parking fees calculated by quantity require a vehicle type.
-- Inactive service fees must not be used in future invoice generation.
-- Deleting a service fee that is already used by invoice items deactivates it instead of hard deleting it.
-
-Utility reading management:
-
-- Staff users can open `/staff/utility-readings`.
-- Staff users can record monthly utility readings at `/staff/utility-readings/create`.
-- Admin users can open `/admin/utility-readings` to view, record, and edit readings.
-- Head resident users can open `/resident/utility-readings` to view readings for their own active room only.
-- Each room can have only one utility reading per month.
-- New electricity reading must be greater than or equal to old electricity reading.
-- New water reading must be greater than or equal to old water reading.
-- All utility reading values must be greater than or equal to zero.
-- Electricity and water evidence images are stored in `uploads/utility-readings`.
-- Uploaded utility reading images are served through `/uploads/utility-readings/{fileName}`.
-- Allowed utility reading image types are jpg, jpeg, and png.
-- Admin edits require an edit reason.
-
-Invoice generation:
-
-- Staff users can open `/staff/invoices`.
-- Staff users can generate invoices at `/staff/invoices/generate`.
-- Admin users can open `/admin/invoices` to view and generate invoices.
-- Head resident users can open `/resident/invoices` and `/resident/invoices/{id}`.
-- Invoices are generated for one room and one month.
-- A room must have an active Head Resident before an invoice can be generated.
-- Duplicate invoices for the same room and month are blocked.
-- Invoice generation requires a utility reading for the same room and month.
-- Electricity and water invoice items use active BY_USAGE service fees.
-- Fixed service fees, BY_PERSON fees, and active vehicle parking fees are included.
-- BY_PERSON fees count one active Head Resident plus approved room members.
-- Parking fees count ACTIVE vehicles only.
-- Invoice total amount is the sum of invoice items.
-- Head residents can view invoices for their own active room only.
-
-Payment confirmation and receipts:
-
-- Head residents can upload payment proof from their invoice detail page.
-- Payment proof files are stored in `uploads/payments`.
-- Uploaded payment proof files are served through `/uploads/payments/{fileName}`.
-- Allowed payment proof image types are jpg, jpeg, and png.
-- Uploading payment proof changes the invoice status to `PENDING_CONFIRMATION`.
-- Staff and Admin users can review pending payments at `/staff/payments/pending`.
-- Approving payment changes the invoice status to `PAID`.
-- Approving payment creates a valid receipt automatically.
-- Rejecting payment changes the invoice status to `REJECTED`.
-- Admin users can view receipts at `/admin/receipts`.
-- One invoice can have only one valid receipt.
-
-Expenses and cash flow:
-
-- Staff users can create expenses at `/staff/expenses/create`.
-- Staff users can view expenses and basic cash flow at `/staff/expenses`.
-- Admin users can view expenses at `/admin/expenses`.
-- Admin users can view full cash flow at `/admin/cashflow`.
-- Expense proof images are stored in `uploads/expenses`.
-- Uploaded expense proof images are served through `/uploads/expenses/{fileName}`.
-- Expense proof image upload is optional.
-- Allowed expense proof image types are jpg, jpeg, and png.
-- Cancelled expenses do not count toward total expense.
-- Cancelled receipts do not count toward total income.
-- Remaining cash equals total income minus total expense.
-- Unpaid amount is calculated from unpaid invoices for the selected month.
-
-Staff task assignment:
-
-- Admin users can open `/admin/tasks` and `/admin/tasks/create`.
-- Admin users can create tasks, assign them to active staff users, link tasks to rooms, and update task details.
-- Staff users can open `/staff/tasks` to view only tasks assigned to their own account.
-- Staff users can start, complete, or reject their own assigned tasks from the task detail page.
-- Completing a task requires a result note.
-- Result image upload is optional.
-- Task result images are stored in `uploads/tasks`.
-- Uploaded task result images are served through `/uploads/tasks/{fileName}`.
-- Allowed task result image types are jpg, jpeg, and png.
-- Head residents cannot access staff task pages or task APIs.
-
-Maintenance request management:
-
-- Head resident users can open `/resident/maintenance` and `/resident/maintenance/create`.
-- Head resident users can create maintenance requests for their own active room only.
-- Maintenance request images are stored in `uploads/maintenance`.
-- Uploaded maintenance images are served through `/uploads/maintenance/{fileName}`.
-- New maintenance requests start with `PENDING` status.
-- Admin users can open `/admin/maintenance` and assign requests to active staff users.
-- Assigning a request changes the status to `ASSIGNED`.
-- Staff users can open `/staff/maintenance` to view only assigned maintenance requests.
-- Staff users can start assigned requests, complete them with a result note, reject them, and upload optional result images.
-- Starting a request changes the status to `IN_PROGRESS`.
-- Completing a request changes the status to `COMPLETED`.
-- Rejecting a request changes the status to `REJECTED`.
-- Staff users can create expenses linked to assigned maintenance requests.
-- Allowed maintenance image types are jpg, jpeg, and png.
-
-Notifications, feedback, and invoice complaints:
-
-- Admin users can open `/admin/notifications` to send notifications.
-- Notifications can target all Head Residents, one room, one user, all Staff, or all users.
-- Head resident users can open `/resident/notifications` to view and mark visible notifications as read.
-- Staff users can open `/staff/notifications` to view and mark visible notifications as read.
-- Head resident users can open `/resident/feedbacks` to submit feedback for their active room.
-- Invoice complaints are submitted from the resident invoice detail page.
-- Head resident users can only complain about invoices for their own active room.
-- Admin users can open `/admin/feedbacks` to reply to feedback and update feedback status.
-- Admin users can open `/admin/invoice-complaints` to process invoice complaints.
-- Notification and feedback responses use the standard API response format.
-
-Role-based dashboards:
-
-- Admin users can open `/admin/dashboard` to view live operational totals from the database.
-- Staff users can open `/staff/dashboard` to view assigned work, overdue work, pending payment confirmations, rooms needing current-month utility readings, active maintenance requests, and created expenses.
-- Head resident users can open `/resident/dashboard` to view their assigned room, current contract, latest invoice, active vehicles, unread notifications, and recent maintenance requests.
-- Dashboard numbers are calculated from persisted records and do not use hard-coded sample values.
-- Empty database states return zero counts, null detail sections, or empty lists without crashing the dashboard.
-
-Activity logs:
-
-- Important actions are written to `activity_logs`.
-- Admin users can open `/admin/activity-logs` to view all activity logs.
-- Admin users can filter activity logs by action.
-- Staff users can call `/api/staff/activity-logs/my` to view their own activity logs.
-- Resident Head users do not have activity log access.
-- Passwords, temporary passwords, and JWT tokens are never written to activity log descriptions.
-
-Protected backend APIs:
+After successful login, the frontend stores the JWT in browser local storage and Axios attaches:
 
 ```text
-POST /api/auth/login
-GET /api/auth/me
-POST /api/auth/change-password-first-time
-POST /api/admin/users
-GET /api/admin/users
-GET /api/admin/users/{id}
-PUT /api/admin/users/{id}
-PUT /api/admin/users/{id}/lock
-PUT /api/admin/users/{id}/unlock
-PUT /api/admin/users/{id}/reset-password
-POST /api/admin/buildings
-GET /api/admin/buildings
-GET /api/admin/buildings/{id}
-PUT /api/admin/buildings/{id}
-DELETE /api/admin/buildings/{id}
-GET /api/staff/buildings
-GET /api/staff/buildings/{id}
-POST /api/admin/rooms
-GET /api/admin/rooms
-GET /api/admin/rooms/{id}
-PUT /api/admin/rooms/{id}
-DELETE /api/admin/rooms/{id}
-GET /api/staff/rooms
-GET /api/staff/rooms/{id}
-POST /api/admin/rooms/{roomId}/assign-head
-GET /api/admin/rooms/{roomId}/head
-PUT /api/admin/rooms/{roomId}/remove-head
-GET /api/resident/room
-POST /api/resident/members
-GET /api/resident/members
-PUT /api/resident/members/{id}
-PUT /api/resident/members/{id}/leave
-GET /api/admin/members/pending
-GET /api/admin/rooms/{roomId}/members
-PUT /api/admin/members/{id}/approve
-PUT /api/admin/members/{id}/reject
-GET /api/admin/contracts
-GET /api/admin/contracts/{id}
-POST /api/admin/contracts/{id}/upload
-PUT /api/admin/contracts/{id}/mark-need-update
-GET /api/resident/contracts/current
-PUT /api/resident/contracts/{id}/confirm
-POST /api/resident/contracts/{id}/report-error
-POST /api/resident/vehicles/request
-GET /api/resident/vehicles
-PUT /api/resident/vehicles/{id}/request-cancel
-GET /api/admin/vehicles
-GET /api/admin/vehicles/pending
-PUT /api/admin/vehicles/{id}/approve
-PUT /api/admin/vehicles/{id}/reject
-PUT /api/admin/vehicles/{id}/deactivate
-GET /api/staff/vehicles
-POST /api/admin/service-fees
-GET /api/admin/service-fees
-GET /api/admin/service-fees/{id}
-PUT /api/admin/service-fees/{id}
-DELETE /api/admin/service-fees/{id}
-PUT /api/admin/service-fees/{id}/toggle
-GET /api/staff/service-fees
-POST /api/staff/utility-readings
-GET /api/staff/utility-readings
-GET /api/staff/utility-readings/{id}
-GET /api/admin/utility-readings
-PUT /api/admin/utility-readings/{id}
-GET /api/resident/utility-readings/current-room
-POST /api/staff/invoices/generate
-GET /api/staff/invoices
-GET /api/staff/invoices/{id}
-GET /api/admin/invoices
-GET /api/admin/invoices/{id}
-GET /api/resident/invoices
-GET /api/resident/invoices/{id}
-POST /api/resident/payments/upload
-GET /api/resident/payments
-GET /api/staff/payments/pending
-PUT /api/staff/payments/{id}/approve
-PUT /api/staff/payments/{id}/reject
-GET /api/admin/receipts
-GET /api/admin/receipts/{id}
-POST /api/staff/expenses
-GET /api/staff/expenses
-GET /api/staff/cashflow
-GET /api/admin/expenses
-GET /api/admin/cashflow
-PUT /api/admin/expenses/{id}/cancel
-POST /api/admin/tasks
-GET /api/admin/tasks
-GET /api/admin/tasks/{id}
-PUT /api/admin/tasks/{id}
-GET /api/staff/tasks
-GET /api/staff/tasks/{id}
-PUT /api/staff/tasks/{id}/start
-PUT /api/staff/tasks/{id}/complete
-PUT /api/staff/tasks/{id}/reject
-POST /api/resident/maintenance-requests
-GET /api/resident/maintenance-requests
-GET /api/resident/maintenance-requests/{id}
-GET /api/admin/maintenance-requests
-PUT /api/admin/maintenance-requests/{id}/assign
-GET /api/staff/maintenance-requests
-PUT /api/staff/maintenance-requests/{id}/start
-PUT /api/staff/maintenance-requests/{id}/complete
-PUT /api/staff/maintenance-requests/{id}/reject
-POST /api/admin/notifications
-GET /api/resident/notifications
-GET /api/staff/notifications
-PUT /api/notifications/{id}/read
-POST /api/resident/feedbacks
-GET /api/admin/feedbacks
-PUT /api/admin/feedbacks/{id}/reply
-PUT /api/admin/feedbacks/{id}/status
-POST /api/resident/invoices/{id}/complaint
-GET /api/admin/invoice-complaints
-GET /api/admin/dashboard
-GET /api/staff/dashboard
-GET /api/resident/dashboard
-GET /api/admin/activity-logs
-GET /api/staff/activity-logs/my
+Authorization: Bearer <token>
 ```
 
-## Environment
+Protected frontend routes and backend role permissions are both enforced.
 
-Backend configuration supports environment variable overrides for database, mail, CORS, and upload settings. The default database URL points to a local MySQL database named `tropilot`.
+## Demo Flow
+
+Use clean demo data only. Do not use real personal information in names, phone numbers, identity numbers, contract files, proof images, or notes.
+
+1. Log in as Admin using the default Admin account.
+2. Create a Staff account.
+3. Create a Head Resident account.
+4. Log in with each temporary account and complete the first-login password change.
+5. Create a building.
+6. Create a room under that building.
+7. Assign the Head Resident to the room.
+8. Add room members from the Head Resident account.
+9. Approve room members from the Admin account.
+10. Upload the signed rental contract from the Admin account.
+11. Confirm or report the contract from the Head Resident account.
+12. Request a vehicle registration from the Head Resident account.
+13. Approve the vehicle from the Admin account.
+14. Configure service fees for electricity, water, cleaning, parking, and other charges.
+15. Record monthly utility readings with evidence images from the Staff or Admin account.
+16. Generate an invoice for the room and month.
+17. View the invoice from the Head Resident account.
+18. Upload payment proof from the Head Resident account.
+19. Confirm the payment from the Staff or Admin account.
+20. Verify that a receipt is generated automatically.
+21. Create a maintenance request from the Head Resident account.
+22. Assign the maintenance request to Staff from the Admin account.
+23. Start and complete the maintenance request from the Staff account.
+24. Create an expense, optionally linked to the maintenance request.
+25. View cash flow from the Admin account.
+26. View role-based dashboards for Admin, Staff, and Head Resident.
+27. Review activity logs from the Admin account.
+
+## Security Notes
+
+- Public registration is not allowed.
+- Only Admin can create Staff and Head Resident accounts.
+- Admin-created accounts receive temporary passwords.
+- Users must change temporary passwords on first login.
+- Passwords are hashed with BCrypt.
+- JWT authentication protects backend APIs.
+- Backend role-based access control is enforced with Spring Security.
+- Frontend routes are protected by authentication and role checks.
+- JPA entities are not exposed directly to the frontend.
+- API responses use the standard `ApiResponse<T>` format.
+- Sensitive data such as passwords and raw JWT tokens must not be logged.
+- Demo secrets must be replaced before any real deployment.
+
+## File Uploads
+
+Uploaded files are stored under the configured upload base path and served by the backend.
+
+Default upload folders:
+
+```text
+uploads/contracts
+uploads/utility-readings
+uploads/payments
+uploads/maintenance
+uploads/expenses
+uploads/tasks
+```
+
+Supported upload examples:
+
+- Rental contract files: jpg, jpeg, png, pdf
+- Utility evidence images: jpg, jpeg, png
+- Payment proof images: jpg, jpeg, png
+- Maintenance images: jpg, jpeg, png
+- Expense proof images: jpg, jpeg, png
+- Task result images: jpg, jpeg, png
+
+## Standard API Response Format
+
+Successful response:
+
+```json
+{
+  "success": true,
+  "message": "Operation completed successfully",
+  "data": {}
+}
+```
+
+Error response:
+
+```json
+{
+  "success": false,
+  "message": "Clear English error message",
+  "errors": []
+}
+```
+
+## Final Build Check
+
+Run these commands before demonstration:
+
+```bash
+cd tropilot-backend
+mvn clean package
+```
+
+```bash
+cd tropilot-frontend
+npm run build
+```
+
+Both commands must finish successfully before the final demo.
+
+## Demo Preparation Checklist
+
+- MySQL Server is running.
+- The `tropilot` database exists.
+- Backend configuration uses the correct local MySQL username and password.
+- Backend starts on `http://localhost:8080`.
+- Frontend starts on `http://localhost:5173`.
+- Default Admin login works.
+- Demo Staff and Head Resident accounts are created through Admin.
+- Temporary passwords are changed on first login.
+- Upload folders exist or can be created by the backend.
+- Demo files contain no private or real personal information.
+- Browser local storage is cleared if switching between demo users on the same browser.
+- Backend and frontend builds pass.
+
+## Notes for Academic Demonstration
+
+Tropilot is prepared as an academic full-stack project. The default Admin seed account exists for demonstration startup only. Before any production use, replace all demo secrets, configure production-grade database credentials, review mail settings, harden deployment configuration, and use secure infrastructure for file storage and backups.
