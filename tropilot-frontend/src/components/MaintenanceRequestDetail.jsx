@@ -3,6 +3,7 @@ import {
   getMaintenanceStatusClass,
   getMaintenanceStatusLabel
 } from '../utils/maintenanceOptions.js';
+import { resolveFileUrl } from '../utils/fileUrl.js';
 
 export default function MaintenanceRequestDetail({ request }) {
   if (!request) {
@@ -64,12 +65,12 @@ export default function MaintenanceRequestDetail({ request }) {
           <span>Images</span>
           <div className="evidence-links">
             {request.imageUrl && (
-              <a href={request.imageUrl} target="_blank" rel="noreferrer">
+              <a href={resolveFileUrl(request.imageUrl)} target="_blank" rel="noreferrer">
                 Issue image
               </a>
             )}
             {request.resultImageUrl && (
-              <a href={request.resultImageUrl} target="_blank" rel="noreferrer">
+              <a href={resolveFileUrl(request.resultImageUrl)} target="_blank" rel="noreferrer">
                 Result image
               </a>
             )}

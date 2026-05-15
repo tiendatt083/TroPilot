@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import * as contractApi from '../../api/contractApi.js';
 import PageHeader from '../../components/PageHeader.jsx';
 import { getContractStatusClass, getContractStatusLabel } from '../../utils/contractStatusOptions.js';
+import { resolveFileUrl } from '../../utils/fileUrl.js';
 
 function formatNumber(value) {
   const numberValue = Number(value);
@@ -116,7 +117,7 @@ export default function ResidentContractPage() {
 
           <div className="button-row contract-actions">
             {contract.contractFileUrl ? (
-              <a className="button-link" href={contract.contractFileUrl} target="_blank" rel="noreferrer">
+              <a className="button-link" href={resolveFileUrl(contract.contractFileUrl)} target="_blank" rel="noreferrer">
                 Open contract
               </a>
             ) : (

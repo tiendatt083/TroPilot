@@ -874,6 +874,10 @@ textarea {
   min-width: 1500px;
 }
 
+.activity-log-table {
+  min-width: 1100px;
+}
+
 .invoice-item-table {
   min-width: 760px;
 }

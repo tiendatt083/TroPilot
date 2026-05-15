@@ -1,3 +1,5 @@
+import { resolveFileUrl } from '../utils/fileUrl.js';
+
 function formatNumber(value) {
   const numberValue = Number(value);
   return Number.isFinite(numberValue)
@@ -8,10 +10,10 @@ function formatNumber(value) {
 function evidenceLinks(reading) {
   return (
     <div className="evidence-links">
-      <a href={reading.electricityImageUrl} target="_blank" rel="noreferrer">
+      <a href={resolveFileUrl(reading.electricityImageUrl)} target="_blank" rel="noreferrer">
         Electricity
       </a>
-      <a href={reading.waterImageUrl} target="_blank" rel="noreferrer">
+      <a href={resolveFileUrl(reading.waterImageUrl)} target="_blank" rel="noreferrer">
         Water
       </a>
     </div>

@@ -6,6 +6,7 @@ import AdminBuildingCreatePage from '../pages/admin/AdminBuildingCreatePage.jsx'
 import AdminBuildingDetailPage from '../pages/admin/AdminBuildingDetailPage.jsx';
 import AdminBuildingEditPage from '../pages/admin/AdminBuildingEditPage.jsx';
 import AdminBuildingListPage from '../pages/admin/AdminBuildingListPage.jsx';
+import AdminActivityLogPage from '../pages/admin/AdminActivityLogPage.jsx';
 import AdminContractDetailPage from '../pages/admin/AdminContractDetailPage.jsx';
 import AdminContractListPage from '../pages/admin/AdminContractListPage.jsx';
 import AdminCashFlowPage from '../pages/admin/AdminCashFlowPage.jsx';
@@ -84,6 +85,7 @@ export default function AppRoutes() {
               <Route index element={<Navigate to="/admin/dashboard" replace />} />
               <Route path="dashboard" element={<AdminDashboardPage />} />
               <Route path="notifications" element={<AdminNotificationPage />} />
+              <Route path="activity-logs" element={<AdminActivityLogPage />} />
               <Route path="feedbacks" element={<AdminFeedbackPage />} />
               <Route path="invoice-complaints" element={<AdminInvoiceComplaintPage />} />
               <Route path="users" element={<AdminUserListPage />} />

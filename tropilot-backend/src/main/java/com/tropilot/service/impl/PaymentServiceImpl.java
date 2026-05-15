@@ -20,6 +20,7 @@ import com.tropilot.repository.PaymentRepository;
 import com.tropilot.repository.ReceiptRepository;
 import com.tropilot.repository.RoomAssignmentRepository;
 import com.tropilot.repository.UserRepository;
+import com.tropilot.service.ActivityLogService;
 import com.tropilot.service.PaymentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -44,6 +45,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final UserRepository userRepository;
     private final PaymentProofStorageService paymentProofStorageService;
     private final PaymentMapper paymentMapper;
+    private final ActivityLogService activityLogService;
 
     @Override
     @Transactional
@@ -66,7 +68,14 @@ public class PaymentServiceImpl implements PaymentService {
         invoice.setStatus(InvoiceStatus.PENDING_CONFIRMATION);
         invoiceRepository.save(invoice);
 
-        return paymentMapper.toResponse(paymentRepository.save(payment));
+        Payment savedPayment = paymentRepository.save(payment);
+        activityLogService.record(
+                assignment.getResidentHead(),
+                "PAYMENT_PROOF_UPLOADED",
+                "Uploaded payment proof for invoice " + invoice.getId()
+        );
+
+        return paymentMapper.toResponse(savedPayment);
     }
 
     @Override
@@ -109,7 +118,17 @@ public class PaymentServiceImpl implements PaymentService {
 
         invoice.setStatus(InvoiceStatus.PAID);
         invoiceRepository.save(invoice);
-        receiptRepository.save(createReceipt(invoice, confirmedBy, now));
+        Receipt receipt = receiptRepository.save(createReceipt(invoice, confirmedBy, now));
+        activityLogService.record(
+                confirmedBy,
+                "PAYMENT_APPROVED",
+                "Approved payment for invoice " + invoice.getId()
+        );
+        activityLogService.record(
+                confirmedBy,
+                "RECEIPT_CREATED",
+                "System created receipt " + receipt.getReceiptCode() + " for invoice " + invoice.getId()
+        );
 
         return paymentMapper.toResponse(paymentRepository.save(payment));
     }
@@ -131,6 +150,11 @@ public class PaymentServiceImpl implements PaymentService {
 
         invoice.setStatus(InvoiceStatus.REJECTED);
         invoiceRepository.save(invoice);
+        activityLogService.record(
+                confirmedBy,
+                "PAYMENT_REJECTED",
+                "Rejected payment for invoice " + invoice.getId()
+        );
 
         return paymentMapper.toResponse(paymentRepository.save(payment));
     }

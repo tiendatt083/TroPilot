@@ -19,6 +19,7 @@ import com.tropilot.repository.RentalContractRepository;
 import com.tropilot.repository.RoomAssignmentRepository;
 import com.tropilot.repository.RoomRepository;
 import com.tropilot.repository.UserRepository;
+import com.tropilot.service.ActivityLogService;
 import com.tropilot.service.HeadResidentAssignmentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,7 @@ public class HeadResidentAssignmentServiceImpl implements HeadResidentAssignment
     private final UserRepository userRepository;
     private final RoomAssignmentRepository roomAssignmentRepository;
     private final RentalContractRepository rentalContractRepository;
+    private final ActivityLogService activityLogService;
 
     @Override
     @Transactional
@@ -82,6 +84,10 @@ public class HeadResidentAssignmentServiceImpl implements HeadResidentAssignment
         Room savedRoom = roomRepository.save(room);
         RoomAssignment savedAssignment = roomAssignmentRepository.save(assignment);
         RentalContract savedContract = rentalContractRepository.save(contract);
+        activityLogService.recordCurrentUser(
+                "HEAD_RESIDENT_ASSIGNED",
+                "Assigned Head Resident " + residentHead.getEmail() + " to room " + savedRoom.getRoomCode()
+        );
 
         return toAssignedResponse(savedRoom, savedAssignment, savedContract);
     }

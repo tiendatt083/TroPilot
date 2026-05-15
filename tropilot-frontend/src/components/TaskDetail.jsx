@@ -6,6 +6,7 @@ import {
   getTaskStatusLabel,
   getTaskTypeLabel
 } from '../utils/taskOptions.js';
+import { resolveFileUrl } from '../utils/fileUrl.js';
 
 function roomText(task) {
   if (!task.roomCode) {
@@ -80,7 +81,7 @@ export default function TaskDetail({ task }) {
         {task.resultImageUrl && (
           <div className="detail-wide">
             <span>Result image</span>
-            <a className="secondary-link compact-link" href={task.resultImageUrl} target="_blank" rel="noreferrer">
+            <a className="secondary-link compact-link" href={resolveFileUrl(task.resultImageUrl)} target="_blank" rel="noreferrer">
               View image
             </a>
           </div>

@@ -14,6 +14,7 @@ import com.tropilot.repository.RoomAssignmentRepository;
 import com.tropilot.repository.RoomRepository;
 import com.tropilot.repository.UserRepository;
 import com.tropilot.repository.UtilityReadingRepository;
+import com.tropilot.service.ActivityLogService;
 import com.tropilot.service.UtilityReadingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,7 @@ public class UtilityReadingServiceImpl implements UtilityReadingService {
     private final RoomAssignmentRepository roomAssignmentRepository;
     private final UtilityReadingMapper utilityReadingMapper;
     private final UtilityReadingImageStorageService imageStorageService;
+    private final ActivityLogService activityLogService;
 
     @Override
     @Transactional
@@ -68,7 +70,14 @@ public class UtilityReadingServiceImpl implements UtilityReadingService {
                 .createdBy(createdBy)
                 .build();
 
-        return utilityReadingMapper.toResponse(utilityReadingRepository.save(reading));
+        UtilityReading savedReading = utilityReadingRepository.save(reading);
+        activityLogService.record(
+                createdBy,
+                "UTILITY_READING_RECORDED",
+                "Recorded utility reading for room " + room.getRoomCode() + " and month " + month
+        );
+
+        return utilityReadingMapper.toResponse(savedReading);
     }
 
     @Override

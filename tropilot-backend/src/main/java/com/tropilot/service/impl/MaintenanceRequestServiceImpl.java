@@ -18,6 +18,7 @@ import com.tropilot.exception.ResourceNotFoundException;
 import com.tropilot.repository.MaintenanceRequestRepository;
 import com.tropilot.repository.RoomAssignmentRepository;
 import com.tropilot.repository.UserRepository;
+import com.tropilot.service.ActivityLogService;
 import com.tropilot.service.MaintenanceRequestService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,7 @@ public class MaintenanceRequestServiceImpl implements MaintenanceRequestService 
     private final UserRepository userRepository;
     private final MaintenanceImageStorageService maintenanceImageStorageService;
     private final MaintenanceRequestMapper maintenanceRequestMapper;
+    private final ActivityLogService activityLogService;
 
     @Override
     @Transactional
@@ -53,7 +55,15 @@ public class MaintenanceRequestServiceImpl implements MaintenanceRequestService 
                 .status(MaintenanceStatus.PENDING)
                 .build();
 
-        return maintenanceRequestMapper.toResponse(maintenanceRequestRepository.save(maintenanceRequest));
+        MaintenanceRequest savedRequest = maintenanceRequestRepository.save(maintenanceRequest);
+        activityLogService.record(
+                assignment.getResidentHead(),
+                "MAINTENANCE_REQUEST_CREATED",
+                "Created maintenance request " + savedRequest.getTitle()
+                        + " for room " + assignment.getRoom().getRoomCode()
+        );
+
+        return maintenanceRequestMapper.toResponse(savedRequest);
     }
 
     @Override
@@ -142,7 +152,15 @@ public class MaintenanceRequestServiceImpl implements MaintenanceRequestService 
             maintenanceRequest.setResultImageUrl(resultImageUrl);
         }
 
-        return maintenanceRequestMapper.toResponse(maintenanceRequestRepository.save(maintenanceRequest));
+        MaintenanceRequest savedRequest = maintenanceRequestRepository.save(maintenanceRequest);
+        activityLogService.record(
+                savedRequest.getAssignedTo(),
+                "MAINTENANCE_REQUEST_COMPLETED",
+                "Completed maintenance request " + savedRequest.getTitle()
+                        + " for room " + savedRequest.getRoom().getRoomCode()
+        );
+
+        return maintenanceRequestMapper.toResponse(savedRequest);
     }
 
     @Override

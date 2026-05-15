@@ -3,6 +3,7 @@ import {
   getMaintenanceStatusClass,
   getMaintenanceStatusLabel
 } from '../utils/maintenanceOptions.js';
+import { resolveFileUrl } from '../utils/fileUrl.js';
 
 function roomText(request) {
   return `${request.roomCode} - ${request.roomName}`;
@@ -63,13 +64,13 @@ export default function MaintenanceRequestTable({ requests, renderActions, onSel
               <td>
                 <div className="evidence-links">
                   {request.imageUrl && (
-                    <a href={request.imageUrl} target="_blank" rel="noreferrer" onClick={(event) => event.stopPropagation()}>
+                    <a href={resolveFileUrl(request.imageUrl)} target="_blank" rel="noreferrer" onClick={(event) => event.stopPropagation()}>
                       Issue
                     </a>
                   )}
                   {request.resultImageUrl && (
                     <a
-                      href={request.resultImageUrl}
+                      href={resolveFileUrl(request.resultImageUrl)}
                       target="_blank"
                       rel="noreferrer"
                       onClick={(event) => event.stopPropagation()}

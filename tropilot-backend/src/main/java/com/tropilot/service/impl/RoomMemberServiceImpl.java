@@ -13,6 +13,7 @@ import com.tropilot.exception.ResourceNotFoundException;
 import com.tropilot.repository.RoomAssignmentRepository;
 import com.tropilot.repository.RoomMemberRepository;
 import com.tropilot.repository.RoomRepository;
+import com.tropilot.service.ActivityLogService;
 import com.tropilot.service.RoomMemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,7 @@ public class RoomMemberServiceImpl implements RoomMemberService {
     private final RoomAssignmentRepository roomAssignmentRepository;
     private final RoomRepository roomRepository;
     private final RoomMemberMapper roomMemberMapper;
+    private final ActivityLogService activityLogService;
 
     @Override
     @Transactional
@@ -48,7 +50,15 @@ public class RoomMemberServiceImpl implements RoomMemberService {
                 .note(normalizeOptionalText(request.getNote()))
                 .build();
 
-        return roomMemberMapper.toResponse(roomMemberRepository.save(member));
+        RoomMember savedMember = roomMemberRepository.save(member);
+        activityLogService.record(
+                assignment.getResidentHead(),
+                "ROOM_MEMBER_ADDED",
+                "Added room member request for " + savedMember.getFullName()
+                        + " in room " + assignment.getRoom().getRoomCode()
+        );
+
+        return roomMemberMapper.toResponse(savedMember);
     }
 
     @Override
@@ -139,7 +149,14 @@ public class RoomMemberServiceImpl implements RoomMemberService {
         member.setStatus(RoomMemberStatus.APPROVED);
         member.setMoveOutDate(null);
 
-        return roomMemberMapper.toResponse(roomMemberRepository.save(member));
+        RoomMember savedMember = roomMemberRepository.save(member);
+        activityLogService.recordCurrentUser(
+                "ROOM_MEMBER_APPROVED",
+                "Approved room member " + savedMember.getFullName()
+                        + " in room " + savedMember.getRoom().getRoomCode()
+        );
+
+        return roomMemberMapper.toResponse(savedMember);
     }
 
     @Override
@@ -153,7 +170,14 @@ public class RoomMemberServiceImpl implements RoomMemberService {
 
         member.setStatus(RoomMemberStatus.REJECTED);
 
-        return roomMemberMapper.toResponse(roomMemberRepository.save(member));
+        RoomMember savedMember = roomMemberRepository.save(member);
+        activityLogService.recordCurrentUser(
+                "ROOM_MEMBER_REJECTED",
+                "Rejected room member " + savedMember.getFullName()
+                        + " in room " + savedMember.getRoom().getRoomCode()
+        );
+
+        return roomMemberMapper.toResponse(savedMember);
     }
 
     private RoomAssignment findActiveAssignment(Long residentHeadId) {

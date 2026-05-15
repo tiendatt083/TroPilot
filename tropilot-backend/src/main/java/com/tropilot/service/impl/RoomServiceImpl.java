@@ -9,6 +9,7 @@ import com.tropilot.exception.BadRequestException;
 import com.tropilot.exception.ResourceNotFoundException;
 import com.tropilot.repository.BuildingRepository;
 import com.tropilot.repository.RoomRepository;
+import com.tropilot.service.ActivityLogService;
 import com.tropilot.service.RoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ public class RoomServiceImpl implements RoomService {
     private final BuildingRepository buildingRepository;
     private final RoomMapper roomMapper;
     private final RoomDeletionGuard roomDeletionGuard;
+    private final ActivityLogService activityLogService;
 
     @Override
     @Transactional
@@ -50,7 +52,13 @@ public class RoomServiceImpl implements RoomService {
                 .description(normalizeOptionalText(request.getDescription()))
                 .build();
 
-        return roomMapper.toResponse(roomRepository.save(room));
+        Room savedRoom = roomRepository.save(room);
+        activityLogService.recordCurrentUser(
+                "ROOM_CREATED",
+                "Created room " + savedRoom.getRoomCode() + " in building " + building.getBuildingCode()
+        );
+
+        return roomMapper.toResponse(savedRoom);
     }
 
     @Override

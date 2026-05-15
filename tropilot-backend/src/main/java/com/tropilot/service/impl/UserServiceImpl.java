@@ -10,6 +10,7 @@ import com.tropilot.enums.UserStatus;
 import com.tropilot.exception.BadRequestException;
 import com.tropilot.exception.ResourceNotFoundException;
 import com.tropilot.repository.UserRepository;
+import com.tropilot.service.ActivityLogService;
 import com.tropilot.service.UserService;
 import com.tropilot.util.TemporaryPasswordCipher;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
     private final TemporaryPasswordCipher temporaryPasswordCipher;
+    private final ActivityLogService activityLogService;
     private final SecureRandom secureRandom = new SecureRandom();
 
     @Override
@@ -57,7 +59,13 @@ public class UserServiceImpl implements UserService {
                 .mustChangePassword(true)
                 .build();
 
-        return userMapper.toAdminResponse(userRepository.save(user));
+        User savedUser = userRepository.save(user);
+        activityLogService.recordCurrentUser(
+                "USER_CREATED",
+                "Created " + savedUser.getRole().name() + " account for " + savedUser.getEmail()
+        );
+
+        return userMapper.toAdminResponse(savedUser);
     }
 
     @Override
@@ -142,6 +150,7 @@ public class UserServiceImpl implements UserService {
         user.setMustChangePassword(true);
         user.setStatus(UserStatus.ACTIVE);
         userRepository.save(user);
+        activityLogService.recordCurrentUser("USER_PASSWORD_RESET", "Reset temporary password for " + user.getEmail());
 
         return PasswordResetResponse.builder()
                 .userId(user.getId())

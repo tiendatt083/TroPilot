@@ -3,6 +3,7 @@ import {
   getExpenseStatusLabel,
   getExpenseTypeLabel
 } from '../utils/expenseOptions.js';
+import { resolveFileUrl } from '../utils/fileUrl.js';
 
 function formatNumber(value) {
   const numberValue = Number(value);
@@ -58,7 +59,7 @@ export default function ExpenseTable({ expenses, renderActions }) {
               </td>
               <td>
                 {expense.proofImageUrl ? (
-                  <a className="secondary-link compact-link" href={expense.proofImageUrl} target="_blank" rel="noreferrer">
+                  <a className="secondary-link compact-link" href={resolveFileUrl(expense.proofImageUrl)} target="_blank" rel="noreferrer">
                     View
                   </a>
                 ) : (

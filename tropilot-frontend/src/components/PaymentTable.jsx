@@ -1,4 +1,5 @@
 import { getPaymentStatusClass, getPaymentStatusLabel } from '../utils/paymentStatusOptions.js';
+import { resolveFileUrl } from '../utils/fileUrl.js';
 
 function formatNumber(value) {
   const numberValue = Number(value);
@@ -48,7 +49,7 @@ export default function PaymentTable({ payments, renderActions }) {
                 </span>
               </td>
               <td>
-                <a className="secondary-link compact-link" href={payment.proofImageUrl} target="_blank" rel="noreferrer">
+                <a className="secondary-link compact-link" href={resolveFileUrl(payment.proofImageUrl)} target="_blank" rel="noreferrer">
                   View
                 </a>
               </td>

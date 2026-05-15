@@ -4,6 +4,7 @@ import * as contractApi from '../../api/contractApi.js';
 import ContractUploadForm from '../../components/ContractUploadForm.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
 import { getContractStatusClass, getContractStatusLabel } from '../../utils/contractStatusOptions.js';
+import { resolveFileUrl } from '../../utils/fileUrl.js';
 
 function formatNumber(value) {
   const numberValue = Number(value);
@@ -85,7 +86,7 @@ export default function AdminContractDetailPage() {
             Back
           </Link>
           {contract.contractFileUrl && (
-            <a className="button-link" href={contract.contractFileUrl} target="_blank" rel="noreferrer">
+            <a className="button-link" href={resolveFileUrl(contract.contractFileUrl)} target="_blank" rel="noreferrer">
               Open file
             </a>
           )}

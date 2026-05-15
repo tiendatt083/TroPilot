@@ -16,6 +16,7 @@ import com.tropilot.repository.ExpenseRepository;
 import com.tropilot.repository.MaintenanceRequestRepository;
 import com.tropilot.repository.RoomRepository;
 import com.tropilot.repository.UserRepository;
+import com.tropilot.service.ActivityLogService;
 import com.tropilot.service.ExpenseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -39,6 +40,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     private final MaintenanceRequestRepository maintenanceRequestRepository;
     private final ExpenseProofStorageService expenseProofStorageService;
     private final ExpenseMapper expenseMapper;
+    private final ActivityLogService activityLogService;
 
     @Override
     @Transactional
@@ -67,7 +69,14 @@ public class ExpenseServiceImpl implements ExpenseService {
                 .status(ExpenseStatus.VALID)
                 .build();
 
-        return expenseMapper.toResponse(expenseRepository.save(expense));
+        Expense savedExpense = expenseRepository.save(expense);
+        activityLogService.record(
+                createdBy,
+                "EXPENSE_CREATED",
+                "Created expense " + savedExpense.getExpenseCode()
+        );
+
+        return expenseMapper.toResponse(savedExpense);
     }
 
     @Override

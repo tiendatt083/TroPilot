@@ -27,6 +27,7 @@ import com.tropilot.repository.ServiceFeeRepository;
 import com.tropilot.repository.UserRepository;
 import com.tropilot.repository.UtilityReadingRepository;
 import com.tropilot.repository.VehicleRepository;
+import com.tropilot.service.ActivityLogService;
 import com.tropilot.service.InvoiceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -53,6 +54,7 @@ public class InvoiceServiceImpl implements InvoiceService {
     private final RoomMemberRepository roomMemberRepository;
     private final VehicleRepository vehicleRepository;
     private final InvoiceMapper invoiceMapper;
+    private final ActivityLogService activityLogService;
 
     @Override
     @Transactional
@@ -106,7 +108,14 @@ public class InvoiceServiceImpl implements InvoiceService {
 
         invoice.setTotalAmount(totalAmount);
 
-        return invoiceMapper.toResponse(invoiceRepository.save(invoice), utilityReading);
+        Invoice savedInvoice = invoiceRepository.save(invoice);
+        activityLogService.record(
+                createdBy,
+                "INVOICE_GENERATED",
+                "Generated invoice for room " + room.getRoomCode() + " and month " + month
+        );
+
+        return invoiceMapper.toResponse(savedInvoice, utilityReading);
     }
 
     @Override

@@ -11,6 +11,7 @@ import com.tropilot.exception.ResourceNotFoundException;
 import com.tropilot.exception.UnauthorizedException;
 import com.tropilot.repository.UserRepository;
 import com.tropilot.security.JwtService;
+import com.tropilot.service.ActivityLogService;
 import com.tropilot.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,6 +26,7 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final UserMapper userMapper;
+    private final ActivityLogService activityLogService;
 
     @Override
     @Transactional(readOnly = true)
@@ -83,7 +85,10 @@ public class AuthServiceImpl implements AuthService {
         user.setMustChangePassword(false);
         user.setTemporaryPasswordEncrypted(null);
 
-        return userMapper.toResponse(userRepository.save(user));
+        User savedUser = userRepository.save(user);
+        activityLogService.record(savedUser, "FIRST_TIME_PASSWORD_CHANGED", "Changed first-time password");
+
+        return userMapper.toResponse(savedUser);
     }
 
     private User findUser(Long userId) {

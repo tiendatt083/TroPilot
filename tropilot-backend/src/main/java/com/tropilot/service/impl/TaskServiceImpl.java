@@ -19,6 +19,7 @@ import com.tropilot.exception.ResourceNotFoundException;
 import com.tropilot.repository.RoomRepository;
 import com.tropilot.repository.TaskRepository;
 import com.tropilot.repository.UserRepository;
+import com.tropilot.service.ActivityLogService;
 import com.tropilot.service.TaskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,7 @@ public class TaskServiceImpl implements TaskService {
     private final RoomRepository roomRepository;
     private final TaskResultImageStorageService taskResultImageStorageService;
     private final TaskMapper taskMapper;
+    private final ActivityLogService activityLogService;
 
     @Override
     @Transactional
@@ -56,7 +58,14 @@ public class TaskServiceImpl implements TaskService {
                 .createdBy(createdBy)
                 .build();
 
-        return taskMapper.toResponse(taskRepository.save(task));
+        Task savedTask = taskRepository.save(task);
+        activityLogService.record(
+                createdBy,
+                "TASK_CREATED",
+                "Created task " + savedTask.getTitle() + " for " + assignedTo.getEmail()
+        );
+
+        return taskMapper.toResponse(savedTask);
     }
 
     @Override
@@ -138,7 +147,14 @@ public class TaskServiceImpl implements TaskService {
             task.setResultImageUrl(resultImageUrl);
         }
 
-        return taskMapper.toResponse(taskRepository.save(task));
+        Task savedTask = taskRepository.save(task);
+        activityLogService.record(
+                savedTask.getAssignedTo(),
+                "TASK_COMPLETED",
+                "Completed task " + savedTask.getTitle()
+        );
+
+        return taskMapper.toResponse(savedTask);
     }
 
     @Override

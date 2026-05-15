@@ -1,4 +1,5 @@
 import { getInvoiceStatusClass, getInvoiceStatusLabel } from '../utils/invoiceStatusOptions.js';
+import { resolveFileUrl } from '../utils/fileUrl.js';
 
 function formatNumber(value) {
   const numberValue = Number(value);
@@ -59,12 +60,12 @@ export default function InvoiceDetail({ invoice }) {
 
       <div className="invoice-evidence-row">
         {invoice.electricityImageUrl && (
-          <a className="secondary-link compact-link" href={invoice.electricityImageUrl} target="_blank" rel="noreferrer">
+          <a className="secondary-link compact-link" href={resolveFileUrl(invoice.electricityImageUrl)} target="_blank" rel="noreferrer">
             Electricity evidence
           </a>
         )}
         {invoice.waterImageUrl && (
-          <a className="secondary-link compact-link" href={invoice.waterImageUrl} target="_blank" rel="noreferrer">
+          <a className="secondary-link compact-link" href={resolveFileUrl(invoice.waterImageUrl)} target="_blank" rel="noreferrer">
             Water evidence
           </a>
         )}

@@ -8,6 +8,7 @@ import com.tropilot.exception.BadRequestException;
 import com.tropilot.exception.ForbiddenException;
 import com.tropilot.exception.ResourceNotFoundException;
 import com.tropilot.repository.RentalContractRepository;
+import com.tropilot.service.ActivityLogService;
 import com.tropilot.service.RentalContractService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ public class RentalContractServiceImpl implements RentalContractService {
     private final RentalContractRepository rentalContractRepository;
     private final RentalContractMapper rentalContractMapper;
     private final ContractFileStorageService contractFileStorageService;
+    private final ActivityLogService activityLogService;
 
     @Override
     @Transactional(readOnly = true)
@@ -48,7 +50,13 @@ public class RentalContractServiceImpl implements RentalContractService {
         contract.setContractFileUrl(fileUrl);
         contract.setContractStatus(ContractStatus.UPLOADED);
 
-        return rentalContractMapper.toResponse(rentalContractRepository.save(contract));
+        RentalContract savedContract = rentalContractRepository.save(contract);
+        activityLogService.recordCurrentUser(
+                "CONTRACT_UPLOADED",
+                "Uploaded contract for room " + savedContract.getRoom().getRoomCode()
+        );
+
+        return rentalContractMapper.toResponse(savedContract);
     }
 
     @Override
@@ -75,7 +83,14 @@ public class RentalContractServiceImpl implements RentalContractService {
         }
 
         contract.setContractStatus(ContractStatus.CONFIRMED);
-        return rentalContractMapper.toResponse(rentalContractRepository.save(contract));
+        RentalContract savedContract = rentalContractRepository.save(contract);
+        activityLogService.record(
+                savedContract.getResidentHead(),
+                "CONTRACT_CONFIRMED",
+                "Confirmed contract for room " + savedContract.getRoom().getRoomCode()
+        );
+
+        return rentalContractMapper.toResponse(savedContract);
     }
 
     @Override

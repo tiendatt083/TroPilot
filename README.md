@@ -317,6 +317,15 @@ Role-based dashboards:
 - Dashboard numbers are calculated from persisted records and do not use hard-coded sample values.
 - Empty database states return zero counts, null detail sections, or empty lists without crashing the dashboard.
 
+Activity logs:
+
+- Important actions are written to `activity_logs`.
+- Admin users can open `/admin/activity-logs` to view all activity logs.
+- Admin users can filter activity logs by action.
+- Staff users can call `/api/staff/activity-logs/my` to view their own activity logs.
+- Resident Head users do not have activity log access.
+- Passwords, temporary passwords, and JWT tokens are never written to activity log descriptions.
+
 Protected backend APIs:
 
 ```text
@@ -436,6 +445,8 @@ GET /api/admin/invoice-complaints
 GET /api/admin/dashboard
 GET /api/staff/dashboard
 GET /api/resident/dashboard
+GET /api/admin/activity-logs
+GET /api/staff/activity-logs/my
 ```
 
 ## Environment
