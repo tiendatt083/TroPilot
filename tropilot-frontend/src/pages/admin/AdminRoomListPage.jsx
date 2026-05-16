@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import * as buildingApi from '../../api/buildingApi.js';
 import * as roomApi from '../../api/roomApi.js';
 import PageHeader from '../../components/PageHeader.jsx';
@@ -22,11 +22,39 @@ function statusClass(status) {
   return `status-pill room-status-${status.toLowerCase()}`;
 }
 
+function filtersFromSearchParams(searchParams) {
+  return {
+    search: searchParams.get('search') || '',
+    buildingId: searchParams.get('buildingId') || '',
+    status: searchParams.get('status') || ''
+  };
+}
+
+function toSearchParams(filters) {
+  const params = new URLSearchParams();
+
+  if (filters.search) {
+    params.set('search', filters.search);
+  }
+
+  if (filters.buildingId) {
+    params.set('buildingId', filters.buildingId);
+  }
+
+  if (filters.status) {
+    params.set('status', filters.status);
+  }
+
+  return params;
+}
+
 export default function AdminRoomListPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialFilters = filtersFromSearchParams(searchParams);
   const [rooms, setRooms] = useState([]);
   const [buildings, setBuildings] = useState([]);
-  const [filters, setFilters] = useState(emptyFilters);
-  const [appliedFilters, setAppliedFilters] = useState(emptyFilters);
+  const [filters, setFilters] = useState(initialFilters);
+  const [appliedFilters, setAppliedFilters] = useState(initialFilters);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
@@ -51,7 +79,7 @@ export default function AdminRoomListPage() {
       .getAdminBuildings()
       .then((response) => setBuildings(response.data))
       .catch((apiError) => setError(apiError.response?.data?.message || 'Buildings could not be loaded'));
-    loadRooms(emptyFilters);
+    loadRooms(initialFilters);
   }, []);
 
   const handleFilterChange = (event) => {
@@ -69,12 +97,14 @@ export default function AdminRoomListPage() {
       search: filters.search.trim()
     };
     setAppliedFilters(nextFilters);
+    setSearchParams(toSearchParams(nextFilters));
     loadRooms(nextFilters);
   };
 
   const handleClearFilters = () => {
     setFilters(emptyFilters);
     setAppliedFilters(emptyFilters);
+    setSearchParams(new URLSearchParams());
     loadRooms(emptyFilters);
   };
 

@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import * as buildingApi from '../../api/buildingApi.js';
 import * as roomApi from '../../api/roomApi.js';
 import PageHeader from '../../components/PageHeader.jsx';
@@ -7,6 +7,8 @@ import RoomForm from '../../components/RoomForm.jsx';
 
 export default function AdminRoomCreatePage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const selectedBuildingId = searchParams.get('buildingId') || '';
   const [buildings, setBuildings] = useState([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -55,11 +57,16 @@ export default function AdminRoomCreatePage() {
     }
   };
 
+  const initialRoomValues = useMemo(
+    () => (selectedBuildingId ? { buildingId: selectedBuildingId } : undefined),
+    [selectedBuildingId]
+  );
+
   return (
     <section className="content-section narrow-section">
       <div className="page-title-row">
         <PageHeader eyebrow="Administrator" title="Create room" />
-        <Link className="secondary-link" to="/admin/rooms">
+        <Link className="secondary-link" to={selectedBuildingId ? `/admin/buildings/${selectedBuildingId}` : '/admin/rooms'}>
           Back to rooms
         </Link>
       </div>
@@ -74,6 +81,7 @@ export default function AdminRoomCreatePage() {
       ) : (
         <RoomForm
           buildingOptions={buildings}
+          initialValues={initialRoomValues}
           loading={loading}
           submitLabel="Create room"
           onSubmit={handleSubmit}

@@ -1,8 +1,10 @@
 import { NavLink, Outlet } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext.jsx';
 
 export default function StaffLayout() {
   const { logout, user } = useAuth();
+  const { t } = useTranslation();
 
   return (
     <div className="app-shell">
@@ -25,6 +27,7 @@ export default function StaffLayout() {
           <NavLink to="/staff/vehicles">Vehicles</NavLink>
           <NavLink to="/staff/service-fees">Service fees</NavLink>
           <NavLink to="/staff/utility-readings">Utility readings</NavLink>
+          <NavLink to="/staff/settings">{t('settings')}</NavLink>
         </nav>
         <button className="secondary-button" type="button" onClick={logout}>
           Sign out

@@ -112,7 +112,7 @@ export default function AdminBuildingListPage() {
                   <td>
                     <div className="table-actions">
                       <Link className="secondary-link compact-link" to={`/admin/buildings/${building.id}`}>
-                        View
+                        Manage
                       </Link>
                       <Link className="secondary-link compact-link" to={`/admin/buildings/${building.id}/edit`}>
                         Edit

@@ -946,6 +946,35 @@ a:focus-visible {
   gap: 0.85rem;
 }
 
+.building-workspace {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.building-summary-grid {
+  margin-top: 0;
+}
+
+.building-section {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.building-section .page-header {
+  margin-bottom: 0;
+}
+
+.building-section .page-header h1 {
+  font-size: 1.35rem;
+}
+
+.building-section-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
 .dashboard-card,
 .dashboard-panel {
   border: 1px solid var(--color-border-soft);
@@ -1046,6 +1075,39 @@ a:focus-visible {
   margin-top: 1rem;
 }
 
+.settings-panel {
+  display: grid;
+  gap: 1rem;
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-md);
+  padding: 1.15rem;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.settings-language-summary {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.settings-language-summary span {
+  color: var(--color-text-muted);
+  font-size: 0.76rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.settings-language-summary strong {
+  color: var(--color-text);
+  font-size: 1.2rem;
+}
+
+.settings-language-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
 @media (max-width: 1180px) {
   .filter-row {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1102,6 +1164,11 @@ a:focus-visible {
   }
 
   .page-title-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .building-section-header {
     align-items: stretch;
     flex-direction: column;
   }

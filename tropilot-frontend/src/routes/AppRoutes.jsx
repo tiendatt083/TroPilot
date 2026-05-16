@@ -66,6 +66,7 @@ import StaffTaskListPage from '../pages/staff/StaffTaskListPage.jsx';
 import StaffUtilityReadingCreatePage from '../pages/staff/StaffUtilityReadingCreatePage.jsx';
 import StaffUtilityReadingListPage from '../pages/staff/StaffUtilityReadingListPage.jsx';
 import StaffVehicleListPage from '../pages/staff/StaffVehicleListPage.jsx';
+import Settings from '../pages/Settings.jsx';
 import HomeRedirect from './HomeRedirect.jsx';
 import ProtectedRoute from './ProtectedRoute.jsx';
 import RoleBasedRoute from './RoleBasedRoute.jsx';
@@ -79,11 +80,13 @@ export default function AppRoutes() {
 
         <Route element={<ProtectedRoute />}>
           <Route path="/change-password" element={<ChangePasswordPage />} />
+          <Route path="/settings" element={<HomeRedirect />} />
 
           <Route element={<RoleBasedRoute allowedRoles={['ADMIN']} />}>
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<Navigate to="/admin/dashboard" replace />} />
               <Route path="dashboard" element={<AdminDashboardPage />} />
+              <Route path="settings" element={<Settings />} />
               <Route path="notifications" element={<AdminNotificationPage />} />
               <Route path="activity-logs" element={<AdminActivityLogPage />} />
               <Route path="feedbacks" element={<AdminFeedbackPage />} />
@@ -123,6 +126,7 @@ export default function AppRoutes() {
             <Route path="/staff" element={<StaffLayout />}>
               <Route index element={<Navigate to="/staff/dashboard" replace />} />
               <Route path="dashboard" element={<StaffDashboardPage />} />
+              <Route path="settings" element={<Settings />} />
               <Route path="notifications" element={<StaffNotificationPage />} />
               <Route path="invoices" element={<StaffInvoiceListPage />} />
               <Route path="invoices/generate" element={<StaffInvoiceGeneratePage />} />
@@ -147,6 +151,7 @@ export default function AppRoutes() {
             <Route path="/resident" element={<ResidentLayout />}>
               <Route index element={<Navigate to="/resident/dashboard" replace />} />
               <Route path="dashboard" element={<ResidentDashboardPage />} />
+              <Route path="settings" element={<Settings />} />
               <Route path="notifications" element={<ResidentNotificationPage />} />
               <Route path="feedbacks" element={<ResidentFeedbackPage />} />
               <Route path="invoices" element={<ResidentInvoiceListPage />} />

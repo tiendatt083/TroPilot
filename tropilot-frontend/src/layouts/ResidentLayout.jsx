@@ -1,8 +1,10 @@
 import { NavLink, Outlet } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext.jsx';
 
 export default function ResidentLayout() {
   const { logout, user } = useAuth();
+  const { t } = useTranslation();
 
   return (
     <div className="app-shell">
@@ -22,6 +24,7 @@ export default function ResidentLayout() {
           <NavLink to="/resident/contract">Contract</NavLink>
           <NavLink to="/resident/vehicles">Vehicles</NavLink>
           <NavLink to="/resident/utility-readings">Utility readings</NavLink>
+          <NavLink to="/resident/settings">{t('settings')}</NavLink>
         </nav>
         <button className="secondary-button" type="button" onClick={logout}>
           Sign out
