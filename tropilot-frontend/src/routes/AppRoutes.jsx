@@ -1,4 +1,5 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import AdminBuildingWorkspaceLayout from '../layouts/AdminBuildingWorkspaceLayout.jsx';
 import AdminLayout from '../layouts/AdminLayout.jsx';
 import ResidentLayout from '../layouts/ResidentLayout.jsx';
 import StaffLayout from '../layouts/StaffLayout.jsx';
@@ -6,6 +7,7 @@ import AdminBuildingCreatePage from '../pages/admin/AdminBuildingCreatePage.jsx'
 import AdminBuildingDetailPage from '../pages/admin/AdminBuildingDetailPage.jsx';
 import AdminBuildingEditPage from '../pages/admin/AdminBuildingEditPage.jsx';
 import AdminBuildingListPage from '../pages/admin/AdminBuildingListPage.jsx';
+import AdminBuildingRoomsPage from '../pages/admin/AdminBuildingRoomsPage.jsx';
 import AdminActivityLogPage from '../pages/admin/AdminActivityLogPage.jsx';
 import AdminContractDetailPage from '../pages/admin/AdminContractDetailPage.jsx';
 import AdminContractListPage from '../pages/admin/AdminContractListPage.jsx';
@@ -112,7 +114,10 @@ export default function AppRoutes() {
               <Route path="utility-readings" element={<AdminUtilityReadingPage />} />
               <Route path="buildings" element={<AdminBuildingListPage />} />
               <Route path="buildings/create" element={<AdminBuildingCreatePage />} />
-              <Route path="buildings/:id" element={<AdminBuildingDetailPage />} />
+              <Route path="buildings/:id" element={<AdminBuildingWorkspaceLayout />}>
+                <Route index element={<AdminBuildingDetailPage />} />
+                <Route path="rooms" element={<AdminBuildingRoomsPage />} />
+              </Route>
               <Route path="buildings/:id/edit" element={<AdminBuildingEditPage />} />
               <Route path="rooms" element={<AdminRoomListPage />} />
               <Route path="rooms/create" element={<AdminRoomCreatePage />} />

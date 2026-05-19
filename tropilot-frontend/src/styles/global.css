@@ -946,6 +946,37 @@ a:focus-visible {
   gap: 0.85rem;
 }
 
+.building-workspace-shell {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.workspace-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--color-border-soft);
+  padding-bottom: 0.75rem;
+}
+
+.workspace-tabs a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 0.48rem 0.8rem;
+  color: var(--color-text);
+  background: var(--color-surface);
+  font-weight: 800;
+}
+
+.workspace-tabs a.active {
+  border-color: var(--color-primary);
+  color: #ffffff;
+  background: var(--color-primary);
+}
+
 .building-workspace {
   display: grid;
   gap: 1.25rem;
@@ -973,6 +1004,12 @@ a:focus-visible {
   align-items: flex-start;
   justify-content: space-between;
   gap: 1rem;
+}
+
+.building-filter-row {
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) minmax(180px, 0.35fr) auto auto;
+  gap: 0.75rem;
 }
 
 .dashboard-card,
@@ -1113,6 +1150,10 @@ a:focus-visible {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .building-filter-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .filter-row button {
     width: 100%;
   }
@@ -1173,14 +1214,16 @@ a:focus-visible {
     flex-direction: column;
   }
 
-  .button-link,
-  .secondary-link {
+    .button-link,
+  .secondary-link,
+  .workspace-tabs a {
     width: 100%;
   }
 
-  .search-row,
-  .filter-row,
-  .month-filter-row,
+    .search-row,
+    .filter-row,
+  .building-filter-row,
+    .month-filter-row,
   .cashflow-summary,
   .form-grid,
   .assignment-action-row,

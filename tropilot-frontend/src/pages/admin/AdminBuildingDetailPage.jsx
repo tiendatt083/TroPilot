@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
-import * as buildingApi from '../../api/buildingApi.js';
+import { Link, useOutletContext, useParams } from 'react-router-dom';
 import * as contractApi from '../../api/contractApi.js';
 import * as expenseApi from '../../api/expenseApi.js';
 import * as invoiceApi from '../../api/invoiceApi.js';
@@ -45,14 +44,10 @@ function filterByBuilding(items, buildingId, roomIds) {
 
 export default function AdminBuildingDetailPage() {
   const { id } = useParams();
-  const location = useLocation();
-  const navigate = useNavigate();
-  const [building, setBuilding] = useState(null);
+  const { building } = useOutletContext();
   const [operations, setOperations] = useState(emptyBuildingOperations);
-  const [message, setMessage] = useState(location.state?.message || '');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
-  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -64,7 +59,6 @@ export default function AdminBuildingDetailPage() {
 
       try {
         const [
-          buildingResponse,
           roomsResponse,
           contractsResponse,
           invoicesResponse,
@@ -72,7 +66,6 @@ export default function AdminBuildingDetailPage() {
           maintenanceResponse,
           expensesResponse
         ] = await Promise.all([
-          buildingApi.getAdminBuilding(id),
           roomApi.getAdminRooms({ buildingId }),
           contractApi.getAdminContracts(),
           invoiceApi.getAdminInvoices(),
@@ -88,7 +81,6 @@ export default function AdminBuildingDetailPage() {
         const rooms = roomsResponse.data || [];
         const roomIds = new Set(rooms.map((room) => Number(room.id)));
 
-        setBuilding(buildingResponse.data);
         setOperations({
           rooms,
           contracts: filterByBuilding(contractsResponse.data || [], buildingId, roomIds),
@@ -115,32 +107,8 @@ export default function AdminBuildingDetailPage() {
     };
   }, [id]);
 
-  const handleDelete = async () => {
-    const confirmed = window.confirm(`Delete building ${building.buildingCode}?`);
-    if (!confirmed) {
-      return;
-    }
-
-    setDeleting(true);
-    setMessage('');
-    setError('');
-
-    try {
-      await buildingApi.deleteAdminBuilding(building.id);
-      navigate('/admin/buildings', { replace: true });
-    } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Building could not be deleted');
-    } finally {
-      setDeleting(false);
-    }
-  };
-
   if (loading) {
     return <div className="empty-state">Loading building workspace...</div>;
-  }
-
-  if (!building) {
-    return <div className="empty-state">{error || 'Building not found.'}</div>;
   }
 
   const occupiedRooms = operations.rooms.filter((room) => room.status === 'OCCUPIED').length;
@@ -156,29 +124,7 @@ export default function AdminBuildingDetailPage() {
   const totalExpenseAmount = sumAmounts(validExpenses, 'amount');
 
   return (
-    <section className="content-section building-workspace">
-      <div className="page-title-row">
-        <PageHeader eyebrow="Building workspace" title={`${building.buildingCode} - ${building.name}`} />
-        <div className="button-row">
-          <Link className="secondary-link" to="/admin/buildings">
-            All buildings
-          </Link>
-          <Link className="secondary-link" to={`/admin/rooms?buildingId=${building.id}`}>
-            Rooms in this building
-          </Link>
-          <Link className="button-link" to={`/admin/rooms/create?buildingId=${building.id}`}>
-            Create room
-          </Link>
-          <Link className="secondary-link" to={`/admin/buildings/${building.id}/edit`}>
-            Edit
-          </Link>
-          <button className="secondary-button inline-button" type="button" disabled={deleting} onClick={handleDelete}>
-            Delete
-          </button>
-        </div>
-      </div>
-
-      {message && <div className="alert success-alert">{message}</div>}
+    <div className="building-workspace">
       {error && <div className="alert error-alert">{error}</div>}
 
       <div className="detail-panel">
@@ -246,7 +192,7 @@ export default function AdminBuildingDetailPage() {
       <section className="building-section">
         <div className="building-section-header">
           <PageHeader eyebrow="Building rooms" title="Rooms in this building" />
-          <Link className="secondary-link" to={`/admin/rooms?buildingId=${building.id}`}>
+          <Link className="secondary-link" to={`/admin/buildings/${building.id}/rooms`}>
             Manage rooms
           </Link>
         </div>
@@ -356,6 +302,6 @@ export default function AdminBuildingDetailPage() {
         <PageHeader eyebrow="Expenses" title="Expenses in this building" />
         <ExpenseTable expenses={operations.expenses} />
       </section>
-    </section>
+    </div>
   );
 }

@@ -46,7 +46,7 @@ export default function AdminRoomCreatePage() {
 
     try {
       const response = await roomApi.createAdminRoom(payload);
-      navigate(`/admin/rooms/${response.data.id}`, {
+      navigate(selectedBuildingId ? `/admin/buildings/${selectedBuildingId}/rooms` : `/admin/rooms/${response.data.id}`, {
         replace: true,
         state: { message: 'Room created successfully.' }
       });
@@ -66,7 +66,7 @@ export default function AdminRoomCreatePage() {
     <section className="content-section narrow-section">
       <div className="page-title-row">
         <PageHeader eyebrow="Administrator" title="Create room" />
-        <Link className="secondary-link" to={selectedBuildingId ? `/admin/buildings/${selectedBuildingId}` : '/admin/rooms'}>
+        <Link className="secondary-link" to={selectedBuildingId ? `/admin/buildings/${selectedBuildingId}/rooms` : '/admin/rooms'}>
           Back to rooms
         </Link>
       </div>
