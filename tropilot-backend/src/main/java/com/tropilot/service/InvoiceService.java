@@ -9,9 +9,9 @@ public interface InvoiceService {
 
     InvoiceResponse generateInvoice(InvoiceGenerateRequest request, Long createdById);
 
-    List<InvoiceResponse> getInvoices();
+    List<InvoiceResponse> getInvoices(Long buildingId);
 
-    InvoiceResponse getInvoice(Long id);
+    InvoiceResponse getInvoice(Long id, Long buildingId);
 
     List<InvoiceResponse> getResidentInvoices(Long residentHeadId);
 

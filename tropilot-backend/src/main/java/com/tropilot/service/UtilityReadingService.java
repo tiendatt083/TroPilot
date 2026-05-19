@@ -10,7 +10,7 @@ public interface UtilityReadingService {
 
     UtilityReadingResponse createReading(UtilityReadingCreateRequest request, Long createdById);
 
-    List<UtilityReadingResponse> getReadings();
+    List<UtilityReadingResponse> getReadings(Long buildingId);
 
     UtilityReadingResponse getReading(Long id);
 

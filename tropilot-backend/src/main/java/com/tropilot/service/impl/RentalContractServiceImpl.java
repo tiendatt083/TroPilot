@@ -7,6 +7,7 @@ import com.tropilot.enums.RentalStatus;
 import com.tropilot.exception.BadRequestException;
 import com.tropilot.exception.ForbiddenException;
 import com.tropilot.exception.ResourceNotFoundException;
+import com.tropilot.repository.BuildingRepository;
 import com.tropilot.repository.RentalContractRepository;
 import com.tropilot.service.ActivityLogService;
 import com.tropilot.service.RentalContractService;
@@ -16,20 +17,26 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
 public class RentalContractServiceImpl implements RentalContractService {
 
     private final RentalContractRepository rentalContractRepository;
+    private final BuildingRepository buildingRepository;
     private final RentalContractMapper rentalContractMapper;
     private final ContractFileStorageService contractFileStorageService;
     private final ActivityLogService activityLogService;
 
     @Override
     @Transactional(readOnly = true)
-    public List<RentalContractResponse> getContracts() {
-        return rentalContractRepository.findAllWithDetails()
+    public List<RentalContractResponse> getContracts(Long buildingId) {
+        List<RentalContract> contracts = buildingId == null
+                ? rentalContractRepository.findAllWithDetails()
+                : getBuildingContracts(buildingId);
+
+        return contracts
                 .stream()
                 .map(rentalContractMapper::toResponse)
                 .toList();
@@ -37,14 +44,17 @@ public class RentalContractServiceImpl implements RentalContractService {
 
     @Override
     @Transactional(readOnly = true)
-    public RentalContractResponse getContract(Long id) {
-        return rentalContractMapper.toResponse(findContract(id));
+    public RentalContractResponse getContract(Long id, Long buildingId) {
+        RentalContract contract = findContract(id);
+        validateContractBelongsToBuilding(contract, buildingId);
+        return rentalContractMapper.toResponse(contract);
     }
 
     @Override
     @Transactional
-    public RentalContractResponse uploadContract(Long id, MultipartFile file) {
+    public RentalContractResponse uploadContract(Long id, Long buildingId, MultipartFile file) {
         RentalContract contract = findContract(id);
+        validateContractBelongsToBuilding(contract, buildingId);
         String fileUrl = contractFileStorageService.store(file);
 
         contract.setContractFileUrl(fileUrl);
@@ -61,8 +71,9 @@ public class RentalContractServiceImpl implements RentalContractService {
 
     @Override
     @Transactional
-    public RentalContractResponse markNeedUpdate(Long id) {
+    public RentalContractResponse markNeedUpdate(Long id, Long buildingId) {
         RentalContract contract = findContract(id);
+        validateContractBelongsToBuilding(contract, buildingId);
         contract.setContractStatus(ContractStatus.NEED_UPDATE);
         return rentalContractMapper.toResponse(rentalContractRepository.save(contract));
     }
@@ -104,6 +115,29 @@ public class RentalContractServiceImpl implements RentalContractService {
     private RentalContract findContract(Long id) {
         return rentalContractRepository.findByIdWithDetails(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Rental contract not found"));
+    }
+
+    private List<RentalContract> getBuildingContracts(Long buildingId) {
+        validateBuildingExists(buildingId);
+        return rentalContractRepository.findByBuildingIdWithDetails(buildingId);
+    }
+
+    private void validateBuildingExists(Long buildingId) {
+        if (!buildingRepository.existsById(buildingId)) {
+            throw new ResourceNotFoundException("Building not found");
+        }
+    }
+
+    private void validateContractBelongsToBuilding(RentalContract contract, Long buildingId) {
+        if (buildingId == null) {
+            return;
+        }
+
+        validateBuildingExists(buildingId);
+
+        if (!Objects.equals(contract.getRoom().getBuilding().getId(), buildingId)) {
+            throw new BadRequestException("Rental contract does not belong to the selected building");
+        }
     }
 
     private RentalContract findCurrentResidentContract(Long residentHeadId) {

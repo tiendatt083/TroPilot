@@ -14,6 +14,7 @@ import com.tropilot.repository.RoomAssignmentRepository;
 import com.tropilot.repository.RoomRepository;
 import com.tropilot.repository.UserRepository;
 import com.tropilot.repository.UtilityReadingRepository;
+import com.tropilot.repository.BuildingRepository;
 import com.tropilot.service.ActivityLogService;
 import com.tropilot.service.UtilityReadingService;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,7 @@ public class UtilityReadingServiceImpl implements UtilityReadingService {
 
     private final UtilityReadingRepository utilityReadingRepository;
     private final RoomRepository roomRepository;
+    private final BuildingRepository buildingRepository;
     private final UserRepository userRepository;
     private final RoomAssignmentRepository roomAssignmentRepository;
     private final UtilityReadingMapper utilityReadingMapper;
@@ -41,6 +43,7 @@ public class UtilityReadingServiceImpl implements UtilityReadingService {
     @Transactional
     public UtilityReadingResponse createReading(UtilityReadingCreateRequest request, Long createdById) {
         Room room = findRoom(request.getRoomId());
+        validateRoomBelongsToBuilding(room, request.getBuildingId());
         User createdBy = findUser(createdById);
         LocalDate month = parseMonth(request.getMonth());
 
@@ -82,8 +85,17 @@ public class UtilityReadingServiceImpl implements UtilityReadingService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<UtilityReadingResponse> getReadings() {
-        return utilityReadingRepository.findAllWithDetails()
+    public List<UtilityReadingResponse> getReadings(Long buildingId) {
+        List<UtilityReading> readings;
+
+        if (buildingId == null) {
+            readings = utilityReadingRepository.findAllWithDetails();
+        } else {
+            validateBuildingExists(buildingId);
+            readings = utilityReadingRepository.findByBuildingIdWithDetails(buildingId);
+        }
+
+        return readings
                 .stream()
                 .map(utilityReadingMapper::toResponse)
                 .toList();
@@ -100,6 +112,8 @@ public class UtilityReadingServiceImpl implements UtilityReadingService {
     public UtilityReadingResponse updateReading(Long id, UtilityReadingUpdateRequest request) {
         UtilityReading reading = findReading(id);
         Room room = findRoom(request.getRoomId());
+        validateReadingBelongsToBuilding(reading, request.getBuildingId());
+        validateRoomBelongsToBuilding(room, request.getBuildingId());
         LocalDate month = parseMonth(request.getMonth());
 
         validateReadings(
@@ -161,6 +175,36 @@ public class UtilityReadingServiceImpl implements UtilityReadingService {
     private User findUser(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    }
+
+    private void validateBuildingExists(Long buildingId) {
+        if (!buildingRepository.existsById(buildingId)) {
+            throw new ResourceNotFoundException("Building not found");
+        }
+    }
+
+    private void validateRoomBelongsToBuilding(Room room, Long buildingId) {
+        if (buildingId == null) {
+            return;
+        }
+
+        validateBuildingExists(buildingId);
+
+        if (!room.getBuilding().getId().equals(buildingId)) {
+            throw new BadRequestException("Selected room does not belong to the selected building");
+        }
+    }
+
+    private void validateReadingBelongsToBuilding(UtilityReading reading, Long buildingId) {
+        if (buildingId == null) {
+            return;
+        }
+
+        validateBuildingExists(buildingId);
+
+        if (!reading.getRoom().getBuilding().getId().equals(buildingId)) {
+            throw new BadRequestException("Utility reading does not belong to the selected building");
+        }
     }
 
     private LocalDate parseMonth(String month) {

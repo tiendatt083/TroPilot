@@ -7,13 +7,13 @@ import java.util.List;
 
 public interface RentalContractService {
 
-    List<RentalContractResponse> getContracts();
+    List<RentalContractResponse> getContracts(Long buildingId);
 
-    RentalContractResponse getContract(Long id);
+    RentalContractResponse getContract(Long id, Long buildingId);
 
-    RentalContractResponse uploadContract(Long id, MultipartFile file);
+    RentalContractResponse uploadContract(Long id, Long buildingId, MultipartFile file);
 
-    RentalContractResponse markNeedUpdate(Long id);
+    RentalContractResponse markNeedUpdate(Long id, Long buildingId);
 
     RentalContractResponse getCurrentResidentContract(Long residentHeadId);
 

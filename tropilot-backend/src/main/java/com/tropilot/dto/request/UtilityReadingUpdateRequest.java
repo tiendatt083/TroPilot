@@ -18,6 +18,8 @@ public class UtilityReadingUpdateRequest {
     @NotNull(message = "Room is required")
     private Long roomId;
 
+    private Long buildingId;
+
     @NotBlank(message = "Reading month is required")
     @Pattern(
             regexp = "^\\d{4}-(0[1-9]|1[0-2])$",

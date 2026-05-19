@@ -51,6 +51,16 @@ public interface UtilityReadingRepository extends JpaRepository<UtilityReading, 
             join fetch reading.room room
             join fetch room.building building
             join fetch reading.createdBy createdBy
+            where building.id = :buildingId
+            order by reading.month desc, reading.createdAt desc
+            """)
+    List<UtilityReading> findByBuildingIdWithDetails(@Param("buildingId") Long buildingId);
+
+    @Query("""
+            select reading from UtilityReading reading
+            join fetch reading.room room
+            join fetch room.building building
+            join fetch reading.createdBy createdBy
             where room.id = :roomId
             order by reading.month desc, reading.createdAt desc
             """)

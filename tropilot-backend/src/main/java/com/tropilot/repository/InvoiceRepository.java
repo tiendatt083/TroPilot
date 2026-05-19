@@ -66,6 +66,19 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
     List<Invoice> findByRoomIdWithDetails(@Param("roomId") Long roomId);
 
     @Query("""
+            select distinct invoice from Invoice invoice
+            join fetch invoice.room room
+            join fetch room.building building
+            join fetch invoice.residentHead residentHead
+            join fetch invoice.createdBy createdBy
+            left join fetch invoice.items items
+            left join fetch items.serviceFee serviceFee
+            where building.id = :buildingId
+            order by invoice.month desc, invoice.createdAt desc
+            """)
+    List<Invoice> findByBuildingIdWithDetails(@Param("buildingId") Long buildingId);
+
+    @Query("""
             select coalesce(sum(invoice.totalAmount), 0)
             from Invoice invoice
             where invoice.month = :month

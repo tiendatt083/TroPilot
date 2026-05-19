@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -26,8 +27,8 @@ public class AdminUtilityReadingController {
     private final UtilityReadingService utilityReadingService;
 
     @GetMapping
-    public ApiResponse<List<UtilityReadingResponse>> getReadings() {
-        return ApiResponse.success("Utility readings loaded successfully", utilityReadingService.getReadings());
+    public ApiResponse<List<UtilityReadingResponse>> getReadings(@RequestParam(required = false) Long buildingId) {
+        return ApiResponse.success("Utility readings loaded successfully", utilityReadingService.getReadings(buildingId));
     }
 
     @PutMapping(path = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

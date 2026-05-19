@@ -8,6 +8,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -21,12 +22,15 @@ public class AdminInvoiceController {
     private final InvoiceService invoiceService;
 
     @GetMapping
-    public ApiResponse<List<InvoiceResponse>> getInvoices() {
-        return ApiResponse.success("Invoices loaded successfully", invoiceService.getInvoices());
+    public ApiResponse<List<InvoiceResponse>> getInvoices(@RequestParam(required = false) Long buildingId) {
+        return ApiResponse.success("Invoices loaded successfully", invoiceService.getInvoices(buildingId));
     }
 
     @GetMapping("/{id}")
-    public ApiResponse<InvoiceResponse> getInvoice(@PathVariable Long id) {
-        return ApiResponse.success("Invoice loaded successfully", invoiceService.getInvoice(id));
+    public ApiResponse<InvoiceResponse> getInvoice(
+            @PathVariable Long id,
+            @RequestParam(required = false) Long buildingId
+    ) {
+        return ApiResponse.success("Invoice loaded successfully", invoiceService.getInvoice(id, buildingId));
     }
 }

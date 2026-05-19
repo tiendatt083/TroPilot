@@ -29,6 +29,16 @@ public interface RentalContractRepository extends JpaRepository<RentalContract, 
             join fetch contract.room room
             join fetch room.building building
             join fetch contract.residentHead residentHead
+            where building.id = :buildingId
+            order by contract.createdAt desc
+            """)
+    List<RentalContract> findByBuildingIdWithDetails(@Param("buildingId") Long buildingId);
+
+    @Query("""
+            select contract from RentalContract contract
+            join fetch contract.room room
+            join fetch room.building building
+            join fetch contract.residentHead residentHead
             where contract.id = :id
             """)
     Optional<RentalContract> findByIdWithDetails(@Param("id") Long id);

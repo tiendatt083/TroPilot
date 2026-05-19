@@ -67,8 +67,8 @@ export default function AdminBuildingDetailPage() {
           expensesResponse
         ] = await Promise.all([
           roomApi.getAdminRooms({ buildingId }),
-          contractApi.getAdminContracts(),
-          invoiceApi.getAdminInvoices(),
+          contractApi.getAdminContracts({ buildingId }),
+          invoiceApi.getAdminInvoices({ buildingId }),
           vehicleApi.getAdminVehicles(),
           maintenanceApi.getAdminMaintenanceRequests(),
           expenseApi.getAdminExpenses()
@@ -83,8 +83,8 @@ export default function AdminBuildingDetailPage() {
 
         setOperations({
           rooms,
-          contracts: filterByBuilding(contractsResponse.data || [], buildingId, roomIds),
-          invoices: filterByBuilding(invoicesResponse.data || [], buildingId, roomIds),
+          contracts: contractsResponse.data || [],
+          invoices: invoicesResponse.data || [],
           vehicles: filterByBuilding(vehiclesResponse.data || [], buildingId, roomIds),
           maintenanceRequests: filterByBuilding(maintenanceResponse.data || [], buildingId, roomIds),
           expenses: filterByBuilding(expensesResponse.data || [], buildingId, roomIds)
@@ -142,7 +142,7 @@ export default function AdminBuildingDetailPage() {
         </div>
         <div>
           <span>Management scope</span>
-          <strong>Rooms, contracts, invoices, vehicles, maintenance, and expenses for this building</strong>
+          <strong>Rooms, utility readings, contracts, invoices, vehicles, maintenance, and expenses for this building</strong>
         </div>
         <div className="detail-wide">
           <span>Description</span>
@@ -241,7 +241,12 @@ export default function AdminBuildingDetailPage() {
       </section>
 
       <section className="building-section">
-        <PageHeader eyebrow="Contracts" title="Contracts in this building" />
+        <div className="building-section-header">
+          <PageHeader eyebrow="Contracts" title="Contracts in this building" />
+          <Link className="secondary-link" to={`/admin/buildings/${building.id}/contracts`}>
+            Manage contracts
+          </Link>
+        </div>
         <div className="table-wrap">
           <table className="data-table">
             <thead>
@@ -284,7 +289,12 @@ export default function AdminBuildingDetailPage() {
       </section>
 
       <section className="building-section">
-        <PageHeader eyebrow="Invoices" title="Invoices in this building" />
+        <div className="building-section-header">
+          <PageHeader eyebrow="Invoices" title="Invoices in this building" />
+          <Link className="secondary-link" to={`/admin/buildings/${building.id}/invoices`}>
+            Manage invoices
+          </Link>
+        </div>
         <InvoiceTable invoices={operations.invoices} />
       </section>
 

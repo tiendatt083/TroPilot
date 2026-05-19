@@ -12,6 +12,8 @@ import java.time.LocalDate;
 @Setter
 public class InvoiceGenerateRequest {
 
+    private Long buildingId;
+
     @NotNull(message = "Room is required")
     private Long roomId;
 

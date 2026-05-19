@@ -1,20 +1,32 @@
 import apiClient from './axiosClient.js';
 
-export async function getAdminContracts() {
-  const response = await apiClient.get('/api/admin/contracts');
+function filterConfig(filters = {}) {
+  const params = {};
+
+  if (filters.buildingId) {
+    params.buildingId = filters.buildingId;
+  }
+
+  return Object.keys(params).length ? { params } : {};
+}
+
+export async function getAdminContracts(filters) {
+  const response = await apiClient.get('/api/admin/contracts', filterConfig(filters));
   return response.data;
 }
 
-export async function getAdminContract(id) {
-  const response = await apiClient.get(`/api/admin/contracts/${id}`);
+export async function getAdminContract(id, filters) {
+  const response = await apiClient.get(`/api/admin/contracts/${id}`, filterConfig(filters));
   return response.data;
 }
 
-export async function uploadAdminContract(id, file) {
+export async function uploadAdminContract(id, file, filters) {
   const formData = new FormData();
   formData.append('file', file);
 
+  const config = filterConfig(filters);
   const response = await apiClient.post(`/api/admin/contracts/${id}/upload`, formData, {
+    ...config,
     headers: {
       'Content-Type': 'multipart/form-data'
     }
@@ -22,8 +34,8 @@ export async function uploadAdminContract(id, file) {
   return response.data;
 }
 
-export async function markContractNeedUpdate(id) {
-  const response = await apiClient.put(`/api/admin/contracts/${id}/mark-need-update`);
+export async function markContractNeedUpdate(id, filters) {
+  const response = await apiClient.put(`/api/admin/contracts/${id}/mark-need-update`, null, filterConfig(filters));
   return response.data;
 }
 

@@ -18,6 +18,16 @@ const multipartConfig = {
   }
 };
 
+function filterConfig(filters = {}) {
+  const params = {};
+
+  if (filters.buildingId) {
+    params.buildingId = filters.buildingId;
+  }
+
+  return Object.keys(params).length > 0 ? { params } : {};
+}
+
 export async function createUtilityReading(payload) {
   const response = await apiClient.post(
     '/api/staff/utility-readings',
@@ -27,8 +37,8 @@ export async function createUtilityReading(payload) {
   return response.data;
 }
 
-export async function getStaffUtilityReadings() {
-  const response = await apiClient.get('/api/staff/utility-readings');
+export async function getStaffUtilityReadings(filters) {
+  const response = await apiClient.get('/api/staff/utility-readings', filterConfig(filters));
   return response.data;
 }
 
@@ -37,8 +47,8 @@ export async function getStaffUtilityReading(id) {
   return response.data;
 }
 
-export async function getAdminUtilityReadings() {
-  const response = await apiClient.get('/api/admin/utility-readings');
+export async function getAdminUtilityReadings(filters) {
+  const response = await apiClient.get('/api/admin/utility-readings', filterConfig(filters));
   return response.data;
 }
 

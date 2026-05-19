@@ -25,31 +25,38 @@ public class AdminContractController {
     private final RentalContractService rentalContractService;
 
     @GetMapping
-    public ApiResponse<List<RentalContractResponse>> getContracts() {
-        return ApiResponse.success("Rental contracts loaded successfully", rentalContractService.getContracts());
+    public ApiResponse<List<RentalContractResponse>> getContracts(@RequestParam(required = false) Long buildingId) {
+        return ApiResponse.success("Rental contracts loaded successfully", rentalContractService.getContracts(buildingId));
     }
 
     @GetMapping("/{id}")
-    public ApiResponse<RentalContractResponse> getContract(@PathVariable Long id) {
-        return ApiResponse.success("Rental contract loaded successfully", rentalContractService.getContract(id));
+    public ApiResponse<RentalContractResponse> getContract(
+            @PathVariable Long id,
+            @RequestParam(required = false) Long buildingId
+    ) {
+        return ApiResponse.success("Rental contract loaded successfully", rentalContractService.getContract(id, buildingId));
     }
 
     @PostMapping("/{id}/upload")
     public ApiResponse<RentalContractResponse> uploadContract(
             @PathVariable Long id,
+            @RequestParam(required = false) Long buildingId,
             @RequestParam("file") MultipartFile file
     ) {
         return ApiResponse.success(
                 "Rental contract uploaded successfully",
-                rentalContractService.uploadContract(id, file)
+                rentalContractService.uploadContract(id, buildingId, file)
         );
     }
 
     @PutMapping("/{id}/mark-need-update")
-    public ApiResponse<RentalContractResponse> markNeedUpdate(@PathVariable Long id) {
+    public ApiResponse<RentalContractResponse> markNeedUpdate(
+            @PathVariable Long id,
+            @RequestParam(required = false) Long buildingId
+    ) {
         return ApiResponse.success(
                 "Rental contract marked as needing update successfully",
-                rentalContractService.markNeedUpdate(id)
+                rentalContractService.markNeedUpdate(id, buildingId)
         );
     }
 }

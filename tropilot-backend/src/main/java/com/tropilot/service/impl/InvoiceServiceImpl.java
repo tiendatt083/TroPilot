@@ -20,6 +20,7 @@ import com.tropilot.exception.BadRequestException;
 import com.tropilot.exception.ForbiddenException;
 import com.tropilot.exception.ResourceNotFoundException;
 import com.tropilot.repository.InvoiceRepository;
+import com.tropilot.repository.BuildingRepository;
 import com.tropilot.repository.RoomAssignmentRepository;
 import com.tropilot.repository.RoomMemberRepository;
 import com.tropilot.repository.RoomRepository;
@@ -46,6 +47,7 @@ public class InvoiceServiceImpl implements InvoiceService {
     private static final BigDecimal ONE = BigDecimal.ONE;
 
     private final InvoiceRepository invoiceRepository;
+    private final BuildingRepository buildingRepository;
     private final RoomRepository roomRepository;
     private final UserRepository userRepository;
     private final RoomAssignmentRepository roomAssignmentRepository;
@@ -60,6 +62,7 @@ public class InvoiceServiceImpl implements InvoiceService {
     @Transactional
     public InvoiceResponse generateInvoice(InvoiceGenerateRequest request, Long createdById) {
         Room room = findRoom(request.getRoomId());
+        validateRoomBelongsToBuilding(room, request.getBuildingId());
         User createdBy = findUser(createdById);
         LocalDate month = parseMonth(request.getMonth());
 
@@ -120,8 +123,12 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<InvoiceResponse> getInvoices() {
-        return invoiceRepository.findAllWithDetails()
+    public List<InvoiceResponse> getInvoices(Long buildingId) {
+        List<Invoice> invoices = buildingId == null
+                ? invoiceRepository.findAllWithDetails()
+                : getBuildingInvoices(buildingId);
+
+        return invoices
                 .stream()
                 .map(invoice -> invoiceMapper.toResponse(invoice, findUtilityReadingForInvoice(invoice)))
                 .toList();
@@ -129,8 +136,9 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     @Override
     @Transactional(readOnly = true)
-    public InvoiceResponse getInvoice(Long id) {
+    public InvoiceResponse getInvoice(Long id, Long buildingId) {
         Invoice invoice = findInvoice(id);
+        validateInvoiceBelongsToBuilding(invoice, buildingId);
         return invoiceMapper.toResponse(invoice, findUtilityReadingForInvoice(invoice));
     }
 
@@ -262,6 +270,41 @@ public class InvoiceServiceImpl implements InvoiceService {
     private Invoice findInvoice(Long id) {
         return invoiceRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Invoice not found"));
+    }
+
+    private List<Invoice> getBuildingInvoices(Long buildingId) {
+        validateBuildingExists(buildingId);
+        return invoiceRepository.findByBuildingIdWithDetails(buildingId);
+    }
+
+    private void validateBuildingExists(Long buildingId) {
+        if (!buildingRepository.existsById(buildingId)) {
+            throw new ResourceNotFoundException("Building not found");
+        }
+    }
+
+    private void validateRoomBelongsToBuilding(Room room, Long buildingId) {
+        if (buildingId == null) {
+            return;
+        }
+
+        validateBuildingExists(buildingId);
+
+        if (!Objects.equals(room.getBuilding().getId(), buildingId)) {
+            throw new BadRequestException("Selected room does not belong to the selected building");
+        }
+    }
+
+    private void validateInvoiceBelongsToBuilding(Invoice invoice, Long buildingId) {
+        if (buildingId == null) {
+            return;
+        }
+
+        validateBuildingExists(buildingId);
+
+        if (!Objects.equals(invoice.getRoom().getBuilding().getId(), buildingId)) {
+            throw new BadRequestException("Invoice does not belong to the selected building");
+        }
     }
 
     private Room findRoom(Long roomId) {
