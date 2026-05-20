@@ -38,10 +38,6 @@ function statusClass(status) {
   return `status-pill room-status-${status.toLowerCase()}`;
 }
 
-function filterByBuilding(items, buildingId, roomIds) {
-  return items.filter((item) => Number(item.buildingId) === buildingId || roomIds.has(Number(item.roomId)));
-}
-
 export default function AdminBuildingDetailPage() {
   const { id } = useParams();
   const { building } = useOutletContext();
@@ -69,25 +65,22 @@ export default function AdminBuildingDetailPage() {
           roomApi.getAdminRooms({ buildingId }),
           contractApi.getAdminContracts({ buildingId }),
           invoiceApi.getAdminInvoices({ buildingId }),
-          vehicleApi.getAdminVehicles(),
-          maintenanceApi.getAdminMaintenanceRequests(),
-          expenseApi.getAdminExpenses()
+          vehicleApi.getAdminVehicles({ buildingId }),
+          maintenanceApi.getAdminMaintenanceRequests({ buildingId }),
+          expenseApi.getAdminExpenses({ buildingId })
         ]);
 
         if (!active) {
           return;
         }
 
-        const rooms = roomsResponse.data || [];
-        const roomIds = new Set(rooms.map((room) => Number(room.id)));
-
         setOperations({
-          rooms,
+          rooms: roomsResponse.data || [],
           contracts: contractsResponse.data || [],
           invoices: invoicesResponse.data || [],
-          vehicles: filterByBuilding(vehiclesResponse.data || [], buildingId, roomIds),
-          maintenanceRequests: filterByBuilding(maintenanceResponse.data || [], buildingId, roomIds),
-          expenses: filterByBuilding(expensesResponse.data || [], buildingId, roomIds)
+          vehicles: vehiclesResponse.data || [],
+          maintenanceRequests: maintenanceResponse.data || [],
+          expenses: expensesResponse.data || []
         });
       } catch (apiError) {
         if (active) {
@@ -299,17 +292,37 @@ export default function AdminBuildingDetailPage() {
       </section>
 
       <section className="building-section">
-        <PageHeader eyebrow="Vehicles" title="Vehicles in this building" />
+        <div className="building-section-header">
+          <PageHeader eyebrow="Vehicles" title="Vehicles in this building" />
+          <Link className="secondary-link" to={`/admin/buildings/${building.id}/vehicles`}>
+            Manage vehicles
+          </Link>
+        </div>
         <VehicleTable vehicles={operations.vehicles} />
       </section>
 
       <section className="building-section">
-        <PageHeader eyebrow="Maintenance" title="Maintenance requests in this building" />
+        <div className="building-section-header">
+          <PageHeader eyebrow="Maintenance" title="Maintenance requests in this building" />
+          <Link className="secondary-link" to={`/admin/buildings/${building.id}/maintenance`}>
+            Manage maintenance
+          </Link>
+        </div>
         <MaintenanceRequestTable requests={operations.maintenanceRequests} />
       </section>
 
       <section className="building-section">
-        <PageHeader eyebrow="Expenses" title="Expenses in this building" />
+        <div className="building-section-header">
+          <PageHeader eyebrow="Expenses" title="Expenses in this building" />
+          <div className="button-row">
+            <Link className="secondary-link" to={`/admin/buildings/${building.id}/expenses`}>
+              Manage expenses
+            </Link>
+            <Link className="secondary-link" to={`/admin/buildings/${building.id}/cashflow`}>
+              View cash flow
+            </Link>
+          </div>
+        </div>
         <ExpenseTable expenses={operations.expenses} />
       </section>
     </div>

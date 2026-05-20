@@ -4,5 +4,5 @@ import com.tropilot.dto.response.CashFlowResponse;
 
 public interface CashFlowService {
 
-    CashFlowResponse getCashFlow(String month);
+    CashFlowResponse getCashFlow(String month, Long buildingId);
 }

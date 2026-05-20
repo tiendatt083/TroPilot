@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -20,7 +21,7 @@ public class StaffVehicleController {
     private final VehicleService vehicleService;
 
     @GetMapping
-    public ApiResponse<List<VehicleResponse>> getVehicles() {
-        return ApiResponse.success("Vehicles loaded successfully", vehicleService.getVehicles());
+    public ApiResponse<List<VehicleResponse>> getVehicles(@RequestParam(required = false) Long buildingId) {
+        return ApiResponse.success("Vehicles loaded successfully", vehicleService.getVehicles(buildingId));
     }
 }

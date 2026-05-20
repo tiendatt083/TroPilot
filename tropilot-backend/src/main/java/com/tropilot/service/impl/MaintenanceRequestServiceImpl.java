@@ -15,6 +15,7 @@ import com.tropilot.enums.UserStatus;
 import com.tropilot.exception.BadRequestException;
 import com.tropilot.exception.ForbiddenException;
 import com.tropilot.exception.ResourceNotFoundException;
+import com.tropilot.repository.BuildingRepository;
 import com.tropilot.repository.MaintenanceRequestRepository;
 import com.tropilot.repository.RoomAssignmentRepository;
 import com.tropilot.repository.UserRepository;
@@ -25,12 +26,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
 public class MaintenanceRequestServiceImpl implements MaintenanceRequestService {
 
     private final MaintenanceRequestRepository maintenanceRequestRepository;
+    private final BuildingRepository buildingRepository;
     private final RoomAssignmentRepository roomAssignmentRepository;
     private final UserRepository userRepository;
     private final MaintenanceImageStorageService maintenanceImageStorageService;
@@ -90,8 +93,12 @@ public class MaintenanceRequestServiceImpl implements MaintenanceRequestService 
 
     @Override
     @Transactional(readOnly = true)
-    public List<MaintenanceRequestResponse> getRequests() {
-        return maintenanceRequestRepository.findAllWithDetails()
+    public List<MaintenanceRequestResponse> getRequests(Long buildingId) {
+        List<MaintenanceRequest> requests = buildingId == null
+                ? maintenanceRequestRepository.findAllWithDetails()
+                : getBuildingRequests(buildingId);
+
+        return requests
                 .stream()
                 .map(maintenanceRequestMapper::toResponse)
                 .toList();
@@ -99,8 +106,9 @@ public class MaintenanceRequestServiceImpl implements MaintenanceRequestService 
 
     @Override
     @Transactional
-    public MaintenanceRequestResponse assignRequest(Long id, MaintenanceAssignRequest request) {
+    public MaintenanceRequestResponse assignRequest(Long id, MaintenanceAssignRequest request, Long buildingId) {
         MaintenanceRequest maintenanceRequest = findRequest(id);
+        validateRequestBelongsToBuilding(maintenanceRequest, buildingId);
 
         if (maintenanceRequest.getStatus() == MaintenanceStatus.COMPLETED) {
             throw new BadRequestException("Completed maintenance requests cannot be reassigned");
@@ -115,8 +123,12 @@ public class MaintenanceRequestServiceImpl implements MaintenanceRequestService 
 
     @Override
     @Transactional(readOnly = true)
-    public List<MaintenanceRequestResponse> getStaffRequests(Long staffId) {
-        return maintenanceRequestRepository.findByAssignedToIdWithDetails(staffId)
+    public List<MaintenanceRequestResponse> getStaffRequests(Long staffId, Long buildingId) {
+        List<MaintenanceRequest> requests = buildingId == null
+                ? maintenanceRequestRepository.findByAssignedToIdWithDetails(staffId)
+                : getStaffBuildingRequests(staffId, buildingId);
+
+        return requests
                 .stream()
                 .map(maintenanceRequestMapper::toResponse)
                 .toList();
@@ -204,6 +216,34 @@ public class MaintenanceRequestServiceImpl implements MaintenanceRequestService 
     private MaintenanceRequest findRequest(Long id) {
         return maintenanceRequestRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Maintenance request not found"));
+    }
+
+    private List<MaintenanceRequest> getBuildingRequests(Long buildingId) {
+        validateBuildingExists(buildingId);
+        return maintenanceRequestRepository.findByBuildingIdWithDetails(buildingId);
+    }
+
+    private List<MaintenanceRequest> getStaffBuildingRequests(Long staffId, Long buildingId) {
+        validateBuildingExists(buildingId);
+        return maintenanceRequestRepository.findByAssignedToIdAndBuildingIdWithDetails(staffId, buildingId);
+    }
+
+    private void validateBuildingExists(Long buildingId) {
+        if (!buildingRepository.existsById(buildingId)) {
+            throw new ResourceNotFoundException("Building not found");
+        }
+    }
+
+    private void validateRequestBelongsToBuilding(MaintenanceRequest request, Long buildingId) {
+        if (buildingId == null) {
+            return;
+        }
+
+        validateBuildingExists(buildingId);
+
+        if (!Objects.equals(request.getRoom().getBuilding().getId(), buildingId)) {
+            throw new BadRequestException("Maintenance request does not belong to the selected building");
+        }
     }
 
     private User findActiveStaff(Long userId) {

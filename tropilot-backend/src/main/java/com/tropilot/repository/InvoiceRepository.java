@@ -92,6 +92,21 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
     @Query("""
             select coalesce(sum(invoice.totalAmount), 0)
             from Invoice invoice
+            join invoice.room room
+            join room.building building
+            where building.id = :buildingId
+              and invoice.month = :month
+              and invoice.status <> :paidStatus
+            """)
+    BigDecimal sumUnpaidAmountByBuildingIdAndMonth(
+            @Param("buildingId") Long buildingId,
+            @Param("month") LocalDate month,
+            @Param("paidStatus") InvoiceStatus paidStatus
+    );
+
+    @Query("""
+            select coalesce(sum(invoice.totalAmount), 0)
+            from Invoice invoice
             where invoice.status <> :paidStatus
             """)
     BigDecimal sumUnpaidAmount(@Param("paidStatus") InvoiceStatus paidStatus);

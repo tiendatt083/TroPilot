@@ -40,6 +40,17 @@ public interface MaintenanceRequestRepository extends JpaRepository<MaintenanceR
             join fetch room.building building
             join fetch request.residentHead residentHead
             left join fetch request.assignedTo assignedTo
+            where building.id = :buildingId
+            order by request.createdAt desc
+            """)
+    List<MaintenanceRequest> findByBuildingIdWithDetails(@Param("buildingId") Long buildingId);
+
+    @Query("""
+            select request from MaintenanceRequest request
+            join fetch request.room room
+            join fetch room.building building
+            join fetch request.residentHead residentHead
+            left join fetch request.assignedTo assignedTo
             where room.id = :roomId
               and residentHead.id = :residentHeadId
             order by request.createdAt desc
@@ -59,4 +70,19 @@ public interface MaintenanceRequestRepository extends JpaRepository<MaintenanceR
             order by request.createdAt desc
             """)
     List<MaintenanceRequest> findByAssignedToIdWithDetails(@Param("staffId") Long staffId);
+
+    @Query("""
+            select request from MaintenanceRequest request
+            join fetch request.room room
+            join fetch room.building building
+            join fetch request.residentHead residentHead
+            join fetch request.assignedTo assignedTo
+            where assignedTo.id = :staffId
+              and building.id = :buildingId
+            order by request.createdAt desc
+            """)
+    List<MaintenanceRequest> findByAssignedToIdAndBuildingIdWithDetails(
+            @Param("staffId") Long staffId,
+            @Param("buildingId") Long buildingId
+    );
 }

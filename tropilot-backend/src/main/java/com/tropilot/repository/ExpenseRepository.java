@@ -41,6 +41,16 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 
     @Query("""
             select expense from Expense expense
+            join fetch expense.room room
+            join fetch room.building building
+            join fetch expense.createdBy createdBy
+            where building.id = :buildingId
+            order by expense.createdAt desc
+            """)
+    List<Expense> findByBuildingIdWithDetails(@Param("buildingId") Long buildingId);
+
+    @Query("""
+            select expense from Expense expense
             left join fetch expense.room room
             left join fetch room.building building
             join fetch expense.createdBy createdBy
@@ -56,6 +66,24 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     );
 
     @Query("""
+            select expense from Expense expense
+            join fetch expense.room room
+            join fetch room.building building
+            join fetch expense.createdBy createdBy
+            where building.id = :buildingId
+              and expense.status = :status
+              and expense.createdAt >= :startDateTime
+              and expense.createdAt < :endDateTime
+            order by expense.createdAt desc
+            """)
+    List<Expense> findByBuildingIdAndStatusAndCreatedAtBetweenWithDetails(
+            @Param("buildingId") Long buildingId,
+            @Param("status") ExpenseStatus status,
+            @Param("startDateTime") LocalDateTime startDateTime,
+            @Param("endDateTime") LocalDateTime endDateTime
+    );
+
+    @Query("""
             select coalesce(sum(expense.amount), 0)
             from Expense expense
             where expense.status = :status
@@ -63,6 +91,23 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
               and expense.createdAt < :endDateTime
             """)
     BigDecimal sumAmountByStatusAndCreatedAtBetween(
+            @Param("status") ExpenseStatus status,
+            @Param("startDateTime") LocalDateTime startDateTime,
+            @Param("endDateTime") LocalDateTime endDateTime
+    );
+
+    @Query("""
+            select coalesce(sum(expense.amount), 0)
+            from Expense expense
+            join expense.room room
+            join room.building building
+            where building.id = :buildingId
+              and expense.status = :status
+              and expense.createdAt >= :startDateTime
+              and expense.createdAt < :endDateTime
+            """)
+    BigDecimal sumAmountByBuildingIdAndStatusAndCreatedAtBetween(
+            @Param("buildingId") Long buildingId,
             @Param("status") ExpenseStatus status,
             @Param("startDateTime") LocalDateTime startDateTime,
             @Param("endDateTime") LocalDateTime endDateTime

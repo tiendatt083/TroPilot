@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -36,8 +37,8 @@ public class StaffExpenseController {
     }
 
     @GetMapping
-    public ApiResponse<List<ExpenseResponse>> getExpenses() {
-        return ApiResponse.success("Expenses loaded successfully", expenseService.getExpenses());
+    public ApiResponse<List<ExpenseResponse>> getExpenses(@RequestParam(required = false) Long buildingId) {
+        return ApiResponse.success("Expenses loaded successfully", expenseService.getExpenses(buildingId));
     }
 
     private Long getUserId(AuthenticatedUser user) {

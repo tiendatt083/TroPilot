@@ -19,7 +19,10 @@ public class AdminCashFlowController {
     private final CashFlowService cashFlowService;
 
     @GetMapping
-    public ApiResponse<CashFlowResponse> getCashFlow(@RequestParam(required = false) String month) {
-        return ApiResponse.success("Cash flow loaded successfully", cashFlowService.getCashFlow(month));
+    public ApiResponse<CashFlowResponse> getCashFlow(
+            @RequestParam(required = false) String month,
+            @RequestParam(required = false) Long buildingId
+    ) {
+        return ApiResponse.success("Cash flow loaded successfully", cashFlowService.getCashFlow(month, buildingId));
     }
 }

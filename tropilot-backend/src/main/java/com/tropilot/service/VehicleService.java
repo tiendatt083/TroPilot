@@ -13,13 +13,13 @@ public interface VehicleService {
 
     VehicleResponse requestCancel(Long residentHeadId, Long id);
 
-    List<VehicleResponse> getVehicles();
+    List<VehicleResponse> getVehicles(Long buildingId);
 
-    List<VehicleResponse> getPendingVehicles();
+    List<VehicleResponse> getPendingVehicles(Long buildingId);
 
-    VehicleResponse approveVehicle(Long id);
+    VehicleResponse approveVehicle(Long id, Long buildingId);
 
-    VehicleResponse rejectVehicle(Long id);
+    VehicleResponse rejectVehicle(Long id, Long buildingId);
 
-    VehicleResponse deactivateVehicle(Long id);
+    VehicleResponse deactivateVehicle(Long id, Long buildingId);
 }

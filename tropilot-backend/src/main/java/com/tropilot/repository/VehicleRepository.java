@@ -37,10 +37,32 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
             select vehicle from Vehicle vehicle
             join fetch vehicle.room room
             join fetch room.building building
+            where building.id = :buildingId
+            order by vehicle.createdAt desc
+            """)
+    List<Vehicle> findByBuildingIdWithDetails(@Param("buildingId") Long buildingId);
+
+    @Query("""
+            select vehicle from Vehicle vehicle
+            join fetch vehicle.room room
+            join fetch room.building building
             where vehicle.status = :status
             order by vehicle.createdAt desc
             """)
     List<Vehicle> findByStatusWithDetails(@Param("status") VehicleStatus status);
+
+    @Query("""
+            select vehicle from Vehicle vehicle
+            join fetch vehicle.room room
+            join fetch room.building building
+            where building.id = :buildingId
+              and vehicle.status = :status
+            order by vehicle.createdAt desc
+            """)
+    List<Vehicle> findByBuildingIdAndStatusWithDetails(
+            @Param("buildingId") Long buildingId,
+            @Param("status") VehicleStatus status
+    );
 
     @Query("""
             select vehicle from Vehicle vehicle

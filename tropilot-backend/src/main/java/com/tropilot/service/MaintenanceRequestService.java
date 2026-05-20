@@ -16,11 +16,11 @@ public interface MaintenanceRequestService {
 
     MaintenanceRequestResponse getResidentRequest(Long residentHeadId, Long id);
 
-    List<MaintenanceRequestResponse> getRequests();
+    List<MaintenanceRequestResponse> getRequests(Long buildingId);
 
-    MaintenanceRequestResponse assignRequest(Long id, MaintenanceAssignRequest request);
+    MaintenanceRequestResponse assignRequest(Long id, MaintenanceAssignRequest request, Long buildingId);
 
-    List<MaintenanceRequestResponse> getStaffRequests(Long staffId);
+    List<MaintenanceRequestResponse> getStaffRequests(Long staffId, Long buildingId);
 
     MaintenanceRequestResponse startRequest(Long staffId, Long id);
 

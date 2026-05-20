@@ -12,6 +12,7 @@ import com.tropilot.enums.UserRole;
 import com.tropilot.exception.BadRequestException;
 import com.tropilot.exception.ForbiddenException;
 import com.tropilot.exception.ResourceNotFoundException;
+import com.tropilot.repository.BuildingRepository;
 import com.tropilot.repository.ExpenseRepository;
 import com.tropilot.repository.MaintenanceRequestRepository;
 import com.tropilot.repository.RoomRepository;
@@ -26,6 +27,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -35,6 +37,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     private static final DateTimeFormatter EXPENSE_CODE_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
     private final ExpenseRepository expenseRepository;
+    private final BuildingRepository buildingRepository;
     private final RoomRepository roomRepository;
     private final UserRepository userRepository;
     private final MaintenanceRequestRepository maintenanceRequestRepository;
@@ -81,8 +84,12 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ExpenseResponse> getExpenses() {
-        return expenseRepository.findAllWithDetails()
+    public List<ExpenseResponse> getExpenses(Long buildingId) {
+        List<Expense> expenses = buildingId == null
+                ? expenseRepository.findAllWithDetails()
+                : getBuildingExpenses(buildingId);
+
+        return expenses
                 .stream()
                 .map(expenseMapper::toResponse)
                 .toList();
@@ -90,8 +97,9 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     @Override
     @Transactional
-    public ExpenseResponse cancelExpense(Long id) {
+    public ExpenseResponse cancelExpense(Long id, Long buildingId) {
         Expense expense = findExpense(id);
+        validateExpenseBelongsToBuilding(expense, buildingId);
 
         if (expense.getStatus() == ExpenseStatus.CANCELLED) {
             throw new BadRequestException("Expense is already cancelled");
@@ -117,6 +125,30 @@ public class ExpenseServiceImpl implements ExpenseService {
     private Expense findExpense(Long id) {
         return expenseRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Expense not found"));
+    }
+
+    private List<Expense> getBuildingExpenses(Long buildingId) {
+        validateBuildingExists(buildingId);
+        return expenseRepository.findByBuildingIdWithDetails(buildingId);
+    }
+
+    private void validateBuildingExists(Long buildingId) {
+        if (!buildingRepository.existsById(buildingId)) {
+            throw new ResourceNotFoundException("Building not found");
+        }
+    }
+
+    private void validateExpenseBelongsToBuilding(Expense expense, Long buildingId) {
+        if (buildingId == null) {
+            return;
+        }
+
+        validateBuildingExists(buildingId);
+
+        if (expense.getRoom() == null
+                || !Objects.equals(expense.getRoom().getBuilding().getId(), buildingId)) {
+            throw new BadRequestException("Expense does not belong to the selected building");
+        }
     }
 
     private Room findRoom(Long roomId) {

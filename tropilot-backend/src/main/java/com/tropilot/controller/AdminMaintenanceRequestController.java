@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -25,15 +26,22 @@ public class AdminMaintenanceRequestController {
     private final MaintenanceRequestService maintenanceRequestService;
 
     @GetMapping
-    public ApiResponse<List<MaintenanceRequestResponse>> getRequests() {
-        return ApiResponse.success("Maintenance requests loaded successfully", maintenanceRequestService.getRequests());
+    public ApiResponse<List<MaintenanceRequestResponse>> getRequests(@RequestParam(required = false) Long buildingId) {
+        return ApiResponse.success(
+                "Maintenance requests loaded successfully",
+                maintenanceRequestService.getRequests(buildingId)
+        );
     }
 
     @PutMapping("/{id}/assign")
     public ApiResponse<MaintenanceRequestResponse> assignRequest(
             @PathVariable Long id,
-            @Valid @RequestBody MaintenanceAssignRequest request
+            @Valid @RequestBody MaintenanceAssignRequest request,
+            @RequestParam(required = false) Long buildingId
     ) {
-        return ApiResponse.success("Maintenance request assigned successfully", maintenanceRequestService.assignRequest(id, request));
+        return ApiResponse.success(
+                "Maintenance request assigned successfully",
+                maintenanceRequestService.assignRequest(id, request, buildingId)
+        );
     }
 }

@@ -62,6 +62,26 @@ public interface ReceiptRepository extends JpaRepository<Receipt, Long> {
     );
 
     @Query("""
+            select receipt from Receipt receipt
+            join fetch receipt.invoice invoice
+            join fetch receipt.room room
+            join fetch room.building building
+            join fetch receipt.residentHead residentHead
+            join fetch receipt.createdBy createdBy
+            where building.id = :buildingId
+              and receipt.status = :status
+              and receipt.createdAt >= :startDateTime
+              and receipt.createdAt < :endDateTime
+            order by receipt.createdAt desc
+            """)
+    List<Receipt> findByBuildingIdAndStatusAndCreatedAtBetweenWithDetails(
+            @Param("buildingId") Long buildingId,
+            @Param("status") ReceiptStatus status,
+            @Param("startDateTime") LocalDateTime startDateTime,
+            @Param("endDateTime") LocalDateTime endDateTime
+    );
+
+    @Query("""
             select coalesce(sum(receipt.amount), 0)
             from Receipt receipt
             where receipt.status = :status
@@ -69,6 +89,23 @@ public interface ReceiptRepository extends JpaRepository<Receipt, Long> {
               and receipt.createdAt < :endDateTime
             """)
     BigDecimal sumAmountByStatusAndCreatedAtBetween(
+            @Param("status") ReceiptStatus status,
+            @Param("startDateTime") LocalDateTime startDateTime,
+            @Param("endDateTime") LocalDateTime endDateTime
+    );
+
+    @Query("""
+            select coalesce(sum(receipt.amount), 0)
+            from Receipt receipt
+            join receipt.room room
+            join room.building building
+            where building.id = :buildingId
+              and receipt.status = :status
+              and receipt.createdAt >= :startDateTime
+              and receipt.createdAt < :endDateTime
+            """)
+    BigDecimal sumAmountByBuildingIdAndStatusAndCreatedAtBetween(
+            @Param("buildingId") Long buildingId,
             @Param("status") ReceiptStatus status,
             @Param("startDateTime") LocalDateTime startDateTime,
             @Param("endDateTime") LocalDateTime endDateTime

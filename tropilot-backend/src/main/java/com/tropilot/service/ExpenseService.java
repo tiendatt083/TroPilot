@@ -9,7 +9,7 @@ public interface ExpenseService {
 
     ExpenseResponse createExpense(ExpenseRequest request, Long createdById);
 
-    List<ExpenseResponse> getExpenses();
+    List<ExpenseResponse> getExpenses(Long buildingId);
 
-    ExpenseResponse cancelExpense(Long id);
+    ExpenseResponse cancelExpense(Long id, Long buildingId);
 }

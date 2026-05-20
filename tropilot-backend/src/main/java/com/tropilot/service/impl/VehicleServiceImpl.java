@@ -13,6 +13,7 @@ import com.tropilot.enums.VehicleType;
 import com.tropilot.exception.BadRequestException;
 import com.tropilot.exception.ForbiddenException;
 import com.tropilot.exception.ResourceNotFoundException;
+import com.tropilot.repository.BuildingRepository;
 import com.tropilot.repository.RoomAssignmentRepository;
 import com.tropilot.repository.RoomMemberRepository;
 import com.tropilot.repository.VehicleRepository;
@@ -23,12 +24,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
 public class VehicleServiceImpl implements VehicleService {
 
     private final VehicleRepository vehicleRepository;
+    private final BuildingRepository buildingRepository;
     private final RoomAssignmentRepository roomAssignmentRepository;
     private final RoomMemberRepository roomMemberRepository;
     private final VehicleMapper vehicleMapper;
@@ -94,8 +97,12 @@ public class VehicleServiceImpl implements VehicleService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<VehicleResponse> getVehicles() {
-        return vehicleRepository.findAllWithDetails()
+    public List<VehicleResponse> getVehicles(Long buildingId) {
+        List<Vehicle> vehicles = buildingId == null
+                ? vehicleRepository.findAllWithDetails()
+                : getBuildingVehicles(buildingId);
+
+        return vehicles
                 .stream()
                 .map(vehicleMapper::toResponse)
                 .toList();
@@ -103,8 +110,12 @@ public class VehicleServiceImpl implements VehicleService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<VehicleResponse> getPendingVehicles() {
-        return vehicleRepository.findByStatusWithDetails(VehicleStatus.PENDING)
+    public List<VehicleResponse> getPendingVehicles(Long buildingId) {
+        List<Vehicle> vehicles = buildingId == null
+                ? vehicleRepository.findByStatusWithDetails(VehicleStatus.PENDING)
+                : getBuildingVehiclesByStatus(buildingId, VehicleStatus.PENDING);
+
+        return vehicles
                 .stream()
                 .map(vehicleMapper::toResponse)
                 .toList();
@@ -112,8 +123,9 @@ public class VehicleServiceImpl implements VehicleService {
 
     @Override
     @Transactional
-    public VehicleResponse approveVehicle(Long id) {
+    public VehicleResponse approveVehicle(Long id, Long buildingId) {
         Vehicle vehicle = findVehicle(id);
+        validateVehicleBelongsToBuilding(vehicle, buildingId);
 
         if (vehicle.getStatus() != VehicleStatus.PENDING) {
             throw new BadRequestException("Only pending vehicles can be approved");
@@ -135,8 +147,9 @@ public class VehicleServiceImpl implements VehicleService {
 
     @Override
     @Transactional
-    public VehicleResponse rejectVehicle(Long id) {
+    public VehicleResponse rejectVehicle(Long id, Long buildingId) {
         Vehicle vehicle = findVehicle(id);
+        validateVehicleBelongsToBuilding(vehicle, buildingId);
 
         if (vehicle.getStatus() != VehicleStatus.PENDING) {
             throw new BadRequestException("Only pending vehicles can be rejected");
@@ -149,8 +162,9 @@ public class VehicleServiceImpl implements VehicleService {
 
     @Override
     @Transactional
-    public VehicleResponse deactivateVehicle(Long id) {
+    public VehicleResponse deactivateVehicle(Long id, Long buildingId) {
         Vehicle vehicle = findVehicle(id);
+        validateVehicleBelongsToBuilding(vehicle, buildingId);
 
         if (vehicle.getStatus() == VehicleStatus.REJECTED) {
             throw new BadRequestException("Rejected vehicles cannot be deactivated");
@@ -175,6 +189,34 @@ public class VehicleServiceImpl implements VehicleService {
     private Vehicle findVehicle(Long id) {
         return vehicleRepository.findByIdWithDetails(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found"));
+    }
+
+    private List<Vehicle> getBuildingVehicles(Long buildingId) {
+        validateBuildingExists(buildingId);
+        return vehicleRepository.findByBuildingIdWithDetails(buildingId);
+    }
+
+    private List<Vehicle> getBuildingVehiclesByStatus(Long buildingId, VehicleStatus status) {
+        validateBuildingExists(buildingId);
+        return vehicleRepository.findByBuildingIdAndStatusWithDetails(buildingId, status);
+    }
+
+    private void validateBuildingExists(Long buildingId) {
+        if (!buildingRepository.existsById(buildingId)) {
+            throw new ResourceNotFoundException("Building not found");
+        }
+    }
+
+    private void validateVehicleBelongsToBuilding(Vehicle vehicle, Long buildingId) {
+        if (buildingId == null) {
+            return;
+        }
+
+        validateBuildingExists(buildingId);
+
+        if (!Objects.equals(vehicle.getRoom().getBuilding().getId(), buildingId)) {
+            throw new BadRequestException("Vehicle does not belong to the selected building");
+        }
     }
 
     private void validateVehicleRoom(Vehicle vehicle, Room room) {

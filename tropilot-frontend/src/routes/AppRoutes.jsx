@@ -4,13 +4,17 @@ import AdminLayout from '../layouts/AdminLayout.jsx';
 import ResidentLayout from '../layouts/ResidentLayout.jsx';
 import StaffLayout from '../layouts/StaffLayout.jsx';
 import AdminBuildingCreatePage from '../pages/admin/AdminBuildingCreatePage.jsx';
+import AdminBuildingCashFlowPage from '../pages/admin/AdminBuildingCashFlowPage.jsx';
 import AdminBuildingContractPage from '../pages/admin/AdminBuildingContractPage.jsx';
 import AdminBuildingDetailPage from '../pages/admin/AdminBuildingDetailPage.jsx';
 import AdminBuildingEditPage from '../pages/admin/AdminBuildingEditPage.jsx';
+import AdminBuildingExpensePage from '../pages/admin/AdminBuildingExpensePage.jsx';
 import AdminBuildingInvoicePage from '../pages/admin/AdminBuildingInvoicePage.jsx';
 import AdminBuildingListPage from '../pages/admin/AdminBuildingListPage.jsx';
+import AdminBuildingMaintenancePage from '../pages/admin/AdminBuildingMaintenancePage.jsx';
 import AdminBuildingRoomsPage from '../pages/admin/AdminBuildingRoomsPage.jsx';
 import AdminBuildingUtilityReadingPage from '../pages/admin/AdminBuildingUtilityReadingPage.jsx';
+import AdminBuildingVehiclePage from '../pages/admin/AdminBuildingVehiclePage.jsx';
 import AdminActivityLogPage from '../pages/admin/AdminActivityLogPage.jsx';
 import AdminContractDetailPage from '../pages/admin/AdminContractDetailPage.jsx';
 import AdminContractListPage from '../pages/admin/AdminContractListPage.jsx';
@@ -123,6 +127,10 @@ export default function AppRoutes() {
                 <Route path="contracts" element={<AdminBuildingContractPage />} />
                 <Route path="utility-readings" element={<AdminBuildingUtilityReadingPage />} />
                 <Route path="invoices" element={<AdminBuildingInvoicePage />} />
+                <Route path="vehicles" element={<AdminBuildingVehiclePage />} />
+                <Route path="maintenance" element={<AdminBuildingMaintenancePage />} />
+                <Route path="expenses" element={<AdminBuildingExpensePage />} />
+                <Route path="cashflow" element={<AdminBuildingCashFlowPage />} />
               </Route>
               <Route path="buildings/:id/edit" element={<AdminBuildingEditPage />} />
               <Route path="rooms" element={<AdminRoomListPage />} />

@@ -6,6 +6,16 @@ const multipartConfig = {
   }
 };
 
+function filterConfig(filters = {}) {
+  const params = {};
+
+  if (filters.buildingId) {
+    params.buildingId = filters.buildingId;
+  }
+
+  return Object.keys(params).length ? { params } : {};
+}
+
 function toFormData(payload) {
   const formData = new FormData();
 
@@ -37,18 +47,18 @@ export async function getResidentMaintenanceRequest(id) {
   return response.data;
 }
 
-export async function getAdminMaintenanceRequests() {
-  const response = await apiClient.get('/api/admin/maintenance-requests');
+export async function getAdminMaintenanceRequests(filters) {
+  const response = await apiClient.get('/api/admin/maintenance-requests', filterConfig(filters));
   return response.data;
 }
 
-export async function assignAdminMaintenanceRequest(id, payload) {
-  const response = await apiClient.put(`/api/admin/maintenance-requests/${id}/assign`, payload);
+export async function assignAdminMaintenanceRequest(id, payload, filters) {
+  const response = await apiClient.put(`/api/admin/maintenance-requests/${id}/assign`, payload, filterConfig(filters));
   return response.data;
 }
 
-export async function getStaffMaintenanceRequests() {
-  const response = await apiClient.get('/api/staff/maintenance-requests');
+export async function getStaffMaintenanceRequests(filters) {
+  const response = await apiClient.get('/api/staff/maintenance-requests', filterConfig(filters));
   return response.data;
 }
 
