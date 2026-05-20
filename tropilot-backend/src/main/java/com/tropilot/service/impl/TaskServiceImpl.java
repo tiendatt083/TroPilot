@@ -17,6 +17,7 @@ import com.tropilot.exception.BadRequestException;
 import com.tropilot.exception.ForbiddenException;
 import com.tropilot.exception.ResourceNotFoundException;
 import com.tropilot.repository.RoomRepository;
+import com.tropilot.repository.BuildingRepository;
 import com.tropilot.repository.TaskRepository;
 import com.tropilot.repository.UserRepository;
 import com.tropilot.service.ActivityLogService;
@@ -27,12 +28,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
 public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
+    private final BuildingRepository buildingRepository;
     private final UserRepository userRepository;
     private final RoomRepository roomRepository;
     private final TaskResultImageStorageService taskResultImageStorageService;
@@ -41,10 +44,11 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @Transactional
-    public TaskResponse createTask(TaskCreateRequest request, Long createdById) {
+    public TaskResponse createTask(TaskCreateRequest request, Long createdById, Long buildingId) {
         User createdBy = findUser(createdById);
         User assignedTo = findActiveStaff(request.getAssignedToId());
         Room room = request.getRoomId() == null ? null : findRoom(request.getRoomId());
+        validateRoomBelongsToBuilding(room, buildingId);
 
         Task task = Task.builder()
                 .title(request.getTitle().trim())
@@ -70,8 +74,12 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<TaskResponse> getTasks() {
-        return taskRepository.findAllWithDetails()
+    public List<TaskResponse> getTasks(Long buildingId) {
+        List<Task> tasks = buildingId == null
+                ? taskRepository.findAllWithDetails()
+                : getBuildingTasks(buildingId);
+
+        return tasks
                 .stream()
                 .map(taskMapper::toResponse)
                 .toList();
@@ -79,16 +87,21 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @Transactional(readOnly = true)
-    public TaskResponse getTask(Long id) {
-        return taskMapper.toResponse(findTask(id));
+    public TaskResponse getTask(Long id, Long buildingId) {
+        Task task = findTask(id);
+        validateTaskBelongsToBuilding(task, buildingId);
+
+        return taskMapper.toResponse(task);
     }
 
     @Override
     @Transactional
-    public TaskResponse updateTask(Long id, TaskUpdateRequest request) {
+    public TaskResponse updateTask(Long id, TaskUpdateRequest request, Long buildingId) {
         Task task = findTask(id);
         User assignedTo = findActiveStaff(request.getAssignedToId());
         Room room = request.getRoomId() == null ? null : findRoom(request.getRoomId());
+        validateTaskBelongsToBuilding(task, buildingId);
+        validateRoomBelongsToBuilding(room, buildingId);
 
         task.setTitle(request.getTitle().trim());
         task.setContent(request.getContent().trim());
@@ -187,6 +200,45 @@ public class TaskServiceImpl implements TaskService {
     private Task findTask(Long id) {
         return taskRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Task not found"));
+    }
+
+    private List<Task> getBuildingTasks(Long buildingId) {
+        validateBuildingExists(buildingId);
+        return taskRepository.findByBuildingIdWithDetails(buildingId);
+    }
+
+    private void validateBuildingExists(Long buildingId) {
+        if (!buildingRepository.existsById(buildingId)) {
+            throw new ResourceNotFoundException("Building not found");
+        }
+    }
+
+    private void validateRoomBelongsToBuilding(Room room, Long buildingId) {
+        if (buildingId == null) {
+            return;
+        }
+
+        validateBuildingExists(buildingId);
+
+        if (room == null) {
+            throw new BadRequestException("Room is required for building tasks");
+        }
+
+        if (!Objects.equals(room.getBuilding().getId(), buildingId)) {
+            throw new BadRequestException("Task room does not belong to the selected building");
+        }
+    }
+
+    private void validateTaskBelongsToBuilding(Task task, Long buildingId) {
+        if (buildingId == null) {
+            return;
+        }
+
+        validateBuildingExists(buildingId);
+
+        if (task.getRoom() == null || !Objects.equals(task.getRoom().getBuilding().getId(), buildingId)) {
+            throw new BadRequestException("Task does not belong to the selected building");
+        }
     }
 
     private Room findRoom(Long roomId) {

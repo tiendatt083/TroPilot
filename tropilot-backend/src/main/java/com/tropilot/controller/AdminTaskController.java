@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -32,27 +33,32 @@ public class AdminTaskController {
     @PostMapping
     public ApiResponse<TaskResponse> createTask(
             @AuthenticationPrincipal AuthenticatedUser user,
+            @RequestParam(required = false) Long buildingId,
             @Valid @RequestBody TaskCreateRequest request
     ) {
-        return ApiResponse.success("Task created successfully", taskService.createTask(request, getUserId(user)));
+        return ApiResponse.success("Task created successfully", taskService.createTask(request, getUserId(user), buildingId));
     }
 
     @GetMapping
-    public ApiResponse<List<TaskResponse>> getTasks() {
-        return ApiResponse.success("Tasks loaded successfully", taskService.getTasks());
+    public ApiResponse<List<TaskResponse>> getTasks(@RequestParam(required = false) Long buildingId) {
+        return ApiResponse.success("Tasks loaded successfully", taskService.getTasks(buildingId));
     }
 
     @GetMapping("/{id}")
-    public ApiResponse<TaskResponse> getTask(@PathVariable Long id) {
-        return ApiResponse.success("Task loaded successfully", taskService.getTask(id));
+    public ApiResponse<TaskResponse> getTask(
+            @PathVariable Long id,
+            @RequestParam(required = false) Long buildingId
+    ) {
+        return ApiResponse.success("Task loaded successfully", taskService.getTask(id, buildingId));
     }
 
     @PutMapping("/{id}")
     public ApiResponse<TaskResponse> updateTask(
             @PathVariable Long id,
+            @RequestParam(required = false) Long buildingId,
             @Valid @RequestBody TaskUpdateRequest request
     ) {
-        return ApiResponse.success("Task updated successfully", taskService.updateTask(id, request));
+        return ApiResponse.success("Task updated successfully", taskService.updateTask(id, request, buildingId));
     }
 
     private Long getUserId(AuthenticatedUser user) {

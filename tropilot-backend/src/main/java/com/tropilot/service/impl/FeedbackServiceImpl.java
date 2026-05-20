@@ -16,6 +16,7 @@ import com.tropilot.exception.BadRequestException;
 import com.tropilot.exception.ForbiddenException;
 import com.tropilot.exception.ResourceNotFoundException;
 import com.tropilot.repository.FeedbackRepository;
+import com.tropilot.repository.BuildingRepository;
 import com.tropilot.repository.InvoiceRepository;
 import com.tropilot.repository.RoomAssignmentRepository;
 import com.tropilot.repository.UserRepository;
@@ -26,12 +27,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
 public class FeedbackServiceImpl implements FeedbackService {
 
     private final FeedbackRepository feedbackRepository;
+    private final BuildingRepository buildingRepository;
     private final UserRepository userRepository;
     private final RoomAssignmentRepository roomAssignmentRepository;
     private final InvoiceRepository invoiceRepository;
@@ -89,8 +92,12 @@ public class FeedbackServiceImpl implements FeedbackService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<FeedbackResponse> getFeedbacks() {
-        return feedbackRepository.findAllWithDetails()
+    public List<FeedbackResponse> getFeedbacks(Long buildingId) {
+        List<Feedback> feedbacks = buildingId == null
+                ? feedbackRepository.findAllWithDetails()
+                : getBuildingFeedbacks(buildingId);
+
+        return feedbacks
                 .stream()
                 .map(feedbackMapper::toResponse)
                 .toList();
@@ -98,8 +105,12 @@ public class FeedbackServiceImpl implements FeedbackService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<FeedbackResponse> getInvoiceComplaints() {
-        return feedbackRepository.findByTypeWithDetails(FeedbackType.INVOICE_COMPLAINT)
+    public List<FeedbackResponse> getInvoiceComplaints(Long buildingId) {
+        List<Feedback> feedbacks = buildingId == null
+                ? feedbackRepository.findByTypeWithDetails(FeedbackType.INVOICE_COMPLAINT)
+                : getBuildingInvoiceComplaints(buildingId);
+
+        return feedbacks
                 .stream()
                 .map(feedbackMapper::toResponse)
                 .toList();
@@ -107,9 +118,15 @@ public class FeedbackServiceImpl implements FeedbackService {
 
     @Override
     @Transactional
-    public FeedbackResponse replyFeedback(Long id, Long repliedById, FeedbackReplyRequest request) {
+    public FeedbackResponse replyFeedback(
+            Long id,
+            Long repliedById,
+            FeedbackReplyRequest request,
+            Long buildingId
+    ) {
         Feedback feedback = findFeedback(id);
         User repliedBy = findUser(repliedById);
+        validateFeedbackBelongsToBuilding(feedback, buildingId);
 
         feedback.setReply(request.getReply().trim());
         feedback.setRepliedBy(repliedBy);
@@ -119,8 +136,9 @@ public class FeedbackServiceImpl implements FeedbackService {
 
     @Override
     @Transactional
-    public FeedbackResponse updateFeedbackStatus(Long id, FeedbackStatusUpdateRequest request) {
+    public FeedbackResponse updateFeedbackStatus(Long id, FeedbackStatusUpdateRequest request, Long buildingId) {
         Feedback feedback = findFeedback(id);
+        validateFeedbackBelongsToBuilding(feedback, buildingId);
         feedback.setStatus(parseFeedbackStatus(request.getStatus()));
 
         return feedbackMapper.toResponse(feedbackRepository.save(feedback));
@@ -135,6 +153,34 @@ public class FeedbackServiceImpl implements FeedbackService {
     private Feedback findFeedback(Long id) {
         return feedbackRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Feedback not found"));
+    }
+
+    private List<Feedback> getBuildingFeedbacks(Long buildingId) {
+        validateBuildingExists(buildingId);
+        return feedbackRepository.findByBuildingIdWithDetails(buildingId);
+    }
+
+    private List<Feedback> getBuildingInvoiceComplaints(Long buildingId) {
+        validateBuildingExists(buildingId);
+        return feedbackRepository.findByBuildingIdAndTypeWithDetails(buildingId, FeedbackType.INVOICE_COMPLAINT);
+    }
+
+    private void validateBuildingExists(Long buildingId) {
+        if (!buildingRepository.existsById(buildingId)) {
+            throw new ResourceNotFoundException("Building not found");
+        }
+    }
+
+    private void validateFeedbackBelongsToBuilding(Feedback feedback, Long buildingId) {
+        if (buildingId == null) {
+            return;
+        }
+
+        validateBuildingExists(buildingId);
+
+        if (!Objects.equals(feedback.getRoom().getBuilding().getId(), buildingId)) {
+            throw new BadRequestException("Feedback does not belong to the selected building");
+        }
     }
 
     private User findUser(Long userId) {

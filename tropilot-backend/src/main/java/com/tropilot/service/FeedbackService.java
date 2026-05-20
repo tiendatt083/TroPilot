@@ -14,11 +14,11 @@ public interface FeedbackService {
 
     FeedbackResponse createInvoiceComplaint(Long residentHeadId, Long invoiceId, InvoiceComplaintRequest request);
 
-    List<FeedbackResponse> getFeedbacks();
+    List<FeedbackResponse> getFeedbacks(Long buildingId);
 
-    List<FeedbackResponse> getInvoiceComplaints();
+    List<FeedbackResponse> getInvoiceComplaints(Long buildingId);
 
-    FeedbackResponse replyFeedback(Long id, Long repliedById, FeedbackReplyRequest request);
+    FeedbackResponse replyFeedback(Long id, Long repliedById, FeedbackReplyRequest request, Long buildingId);
 
-    FeedbackResponse updateFeedbackStatus(Long id, FeedbackStatusUpdateRequest request);
+    FeedbackResponse updateFeedbackStatus(Long id, FeedbackStatusUpdateRequest request, Long buildingId);
 }

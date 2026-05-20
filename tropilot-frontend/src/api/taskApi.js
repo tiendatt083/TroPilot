@@ -18,23 +18,33 @@ function toFormData(payload) {
   return formData;
 }
 
-export async function createAdminTask(payload) {
-  const response = await apiClient.post('/api/admin/tasks', payload);
+function filterConfig(filters = {}) {
+  const params = {};
+
+  if (filters.buildingId) {
+    params.buildingId = filters.buildingId;
+  }
+
+  return Object.keys(params).length ? { params } : {};
+}
+
+export async function createAdminTask(payload, filters) {
+  const response = await apiClient.post('/api/admin/tasks', payload, filterConfig(filters));
   return response.data;
 }
 
-export async function getAdminTasks() {
-  const response = await apiClient.get('/api/admin/tasks');
+export async function getAdminTasks(filters) {
+  const response = await apiClient.get('/api/admin/tasks', filterConfig(filters));
   return response.data;
 }
 
-export async function getAdminTask(id) {
-  const response = await apiClient.get(`/api/admin/tasks/${id}`);
+export async function getAdminTask(id, filters) {
+  const response = await apiClient.get(`/api/admin/tasks/${id}`, filterConfig(filters));
   return response.data;
 }
 
-export async function updateAdminTask(id, payload) {
-  const response = await apiClient.put(`/api/admin/tasks/${id}`, payload);
+export async function updateAdminTask(id, payload, filters) {
+  const response = await apiClient.put(`/api/admin/tasks/${id}`, payload, filterConfig(filters));
   return response.data;
 }
 

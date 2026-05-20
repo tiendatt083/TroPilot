@@ -42,8 +42,36 @@ public interface FeedbackRepository extends JpaRepository<Feedback, Long> {
             join fetch room.building building
             left join fetch feedback.invoice invoice
             left join fetch feedback.repliedBy repliedBy
+            where building.id = :buildingId
+            order by feedback.createdAt desc
+            """)
+    List<Feedback> findByBuildingIdWithDetails(@Param("buildingId") Long buildingId);
+
+    @Query("""
+            select feedback from Feedback feedback
+            join fetch feedback.residentHead residentHead
+            join fetch feedback.room room
+            join fetch room.building building
+            left join fetch feedback.invoice invoice
+            left join fetch feedback.repliedBy repliedBy
             where feedback.type = :type
             order by feedback.createdAt desc
             """)
     List<Feedback> findByTypeWithDetails(@Param("type") FeedbackType type);
+
+    @Query("""
+            select feedback from Feedback feedback
+            join fetch feedback.residentHead residentHead
+            join fetch feedback.room room
+            join fetch room.building building
+            left join fetch feedback.invoice invoice
+            left join fetch feedback.repliedBy repliedBy
+            where building.id = :buildingId
+              and feedback.type = :type
+            order by feedback.createdAt desc
+            """)
+    List<Feedback> findByBuildingIdAndTypeWithDetails(
+            @Param("buildingId") Long buildingId,
+            @Param("type") FeedbackType type
+    );
 }

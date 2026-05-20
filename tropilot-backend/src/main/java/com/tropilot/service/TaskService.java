@@ -10,13 +10,13 @@ import java.util.List;
 
 public interface TaskService {
 
-    TaskResponse createTask(TaskCreateRequest request, Long createdById);
+    TaskResponse createTask(TaskCreateRequest request, Long createdById, Long buildingId);
 
-    List<TaskResponse> getTasks();
+    List<TaskResponse> getTasks(Long buildingId);
 
-    TaskResponse getTask(Long id);
+    TaskResponse getTask(Long id, Long buildingId);
 
-    TaskResponse updateTask(Long id, TaskUpdateRequest request);
+    TaskResponse updateTask(Long id, TaskUpdateRequest request, Long buildingId);
 
     List<TaskResponse> getStaffTasks(Long staffId);
 

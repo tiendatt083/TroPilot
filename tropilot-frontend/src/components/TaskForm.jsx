@@ -24,6 +24,8 @@ export default function TaskForm({
   loading,
   submitLabel,
   includeStatus = false,
+  roomRequired = false,
+  roomPlaceholder = 'No room linked',
   onSubmit
 }) {
   const [form, setForm] = useState(emptyForm);
@@ -123,8 +125,8 @@ export default function TaskForm({
       </div>
 
       <label htmlFor="roomId">Room</label>
-      <select id="roomId" name="roomId" value={form.roomId} onChange={handleChange}>
-        <option value="">No room linked</option>
+      <select id="roomId" name="roomId" value={form.roomId} onChange={handleChange} required={roomRequired}>
+        <option value="">{roomPlaceholder}</option>
         {rooms.map((room) => (
           <option key={room.id} value={room.id}>
             {room.roomCode} - {room.roomName}

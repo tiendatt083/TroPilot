@@ -43,6 +43,17 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     @Query("""
             select taskEntity from Task taskEntity
+            join fetch taskEntity.room room
+            join fetch room.building building
+            join fetch taskEntity.assignedTo assignedTo
+            join fetch taskEntity.createdBy createdBy
+            where building.id = :buildingId
+            order by taskEntity.createdAt desc
+            """)
+    List<Task> findByBuildingIdWithDetails(@Param("buildingId") Long buildingId);
+
+    @Query("""
+            select taskEntity from Task taskEntity
             left join fetch taskEntity.room room
             left join fetch room.building building
             join fetch taskEntity.assignedTo assignedTo

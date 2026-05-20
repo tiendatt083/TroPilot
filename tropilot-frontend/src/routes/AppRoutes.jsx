@@ -9,13 +9,17 @@ import AdminBuildingContractPage from '../pages/admin/AdminBuildingContractPage.
 import AdminBuildingDetailPage from '../pages/admin/AdminBuildingDetailPage.jsx';
 import AdminBuildingEditPage from '../pages/admin/AdminBuildingEditPage.jsx';
 import AdminBuildingExpensePage from '../pages/admin/AdminBuildingExpensePage.jsx';
+import AdminBuildingFeedbackPage from '../pages/admin/AdminBuildingFeedbackPage.jsx';
 import AdminBuildingInvoicePage from '../pages/admin/AdminBuildingInvoicePage.jsx';
+import AdminBuildingInvoiceComplaintPage from '../pages/admin/AdminBuildingInvoiceComplaintPage.jsx';
 import AdminBuildingListPage from '../pages/admin/AdminBuildingListPage.jsx';
 import AdminBuildingMaintenancePage from '../pages/admin/AdminBuildingMaintenancePage.jsx';
 import AdminBuildingMemberPage from '../pages/admin/AdminBuildingMemberPage.jsx';
 import AdminBuildingPaymentPage from '../pages/admin/AdminBuildingPaymentPage.jsx';
 import AdminBuildingReceiptPage from '../pages/admin/AdminBuildingReceiptPage.jsx';
 import AdminBuildingRoomsPage from '../pages/admin/AdminBuildingRoomsPage.jsx';
+import AdminBuildingTaskDetailPage from '../pages/admin/AdminBuildingTaskDetailPage.jsx';
+import AdminBuildingTaskPage from '../pages/admin/AdminBuildingTaskPage.jsx';
 import AdminBuildingUtilityReadingPage from '../pages/admin/AdminBuildingUtilityReadingPage.jsx';
 import AdminBuildingVehiclePage from '../pages/admin/AdminBuildingVehiclePage.jsx';
 import AdminActivityLogPage from '../pages/admin/AdminActivityLogPage.jsx';
@@ -137,6 +141,10 @@ export default function AppRoutes() {
                 <Route path="maintenance" element={<AdminBuildingMaintenancePage />} />
                 <Route path="expenses" element={<AdminBuildingExpensePage />} />
                 <Route path="cashflow" element={<AdminBuildingCashFlowPage />} />
+                <Route path="tasks" element={<AdminBuildingTaskPage />} />
+                <Route path="tasks/:taskId" element={<AdminBuildingTaskDetailPage />} />
+                <Route path="feedbacks" element={<AdminBuildingFeedbackPage />} />
+                <Route path="invoice-complaints" element={<AdminBuildingInvoiceComplaintPage />} />
               </Route>
               <Route path="buildings/:id/edit" element={<AdminBuildingEditPage />} />
               <Route path="rooms" element={<AdminRoomListPage />} />

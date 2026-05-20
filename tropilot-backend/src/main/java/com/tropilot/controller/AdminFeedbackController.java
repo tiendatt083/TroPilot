@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -29,25 +30,27 @@ public class AdminFeedbackController {
     private final FeedbackService feedbackService;
 
     @GetMapping
-    public ApiResponse<List<FeedbackResponse>> getFeedbacks() {
-        return ApiResponse.success("Feedbacks loaded successfully", feedbackService.getFeedbacks());
+    public ApiResponse<List<FeedbackResponse>> getFeedbacks(@RequestParam(required = false) Long buildingId) {
+        return ApiResponse.success("Feedbacks loaded successfully", feedbackService.getFeedbacks(buildingId));
     }
 
     @PutMapping("/{id}/reply")
     public ApiResponse<FeedbackResponse> replyFeedback(
             @AuthenticationPrincipal AuthenticatedUser user,
             @PathVariable Long id,
+            @RequestParam(required = false) Long buildingId,
             @Valid @RequestBody FeedbackReplyRequest request
     ) {
-        return ApiResponse.success("Feedback replied successfully", feedbackService.replyFeedback(id, getUserId(user), request));
+        return ApiResponse.success("Feedback replied successfully", feedbackService.replyFeedback(id, getUserId(user), request, buildingId));
     }
 
     @PutMapping("/{id}/status")
     public ApiResponse<FeedbackResponse> updateStatus(
             @PathVariable Long id,
+            @RequestParam(required = false) Long buildingId,
             @Valid @RequestBody FeedbackStatusUpdateRequest request
     ) {
-        return ApiResponse.success("Feedback status updated successfully", feedbackService.updateFeedbackStatus(id, request));
+        return ApiResponse.success("Feedback status updated successfully", feedbackService.updateFeedbackStatus(id, request, buildingId));
     }
 
     private Long getUserId(AuthenticatedUser user) {

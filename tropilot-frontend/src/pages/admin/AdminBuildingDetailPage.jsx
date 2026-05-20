@@ -2,18 +2,22 @@ import { useEffect, useState } from 'react';
 import { Link, useOutletContext, useParams } from 'react-router-dom';
 import * as contractApi from '../../api/contractApi.js';
 import * as expenseApi from '../../api/expenseApi.js';
+import * as feedbackApi from '../../api/feedbackApi.js';
 import * as invoiceApi from '../../api/invoiceApi.js';
 import * as maintenanceApi from '../../api/maintenanceApi.js';
 import * as memberApi from '../../api/memberApi.js';
 import * as paymentApi from '../../api/paymentApi.js';
 import * as roomApi from '../../api/roomApi.js';
+import * as taskApi from '../../api/taskApi.js';
 import * as vehicleApi from '../../api/vehicleApi.js';
 import ExpenseTable from '../../components/ExpenseTable.jsx';
+import FeedbackTable from '../../components/FeedbackTable.jsx';
 import InvoiceTable from '../../components/InvoiceTable.jsx';
 import MaintenanceRequestTable from '../../components/MaintenanceRequestTable.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
 import PaymentTable from '../../components/PaymentTable.jsx';
 import ReceiptTable from '../../components/ReceiptTable.jsx';
+import TaskTable from '../../components/TaskTable.jsx';
 import VehicleTable from '../../components/VehicleTable.jsx';
 import { getContractStatusClass, getContractStatusLabel } from '../../utils/contractStatusOptions.js';
 import { getMemberStatusLabel } from '../../utils/memberStatusOptions.js';
@@ -28,7 +32,10 @@ const emptyBuildingOperations = {
   receipts: [],
   members: [],
   maintenanceRequests: [],
-  expenses: []
+  expenses: [],
+  tasks: [],
+  feedbacks: [],
+  invoiceComplaints: []
 };
 
 function formatNumber(value) {
@@ -71,7 +78,10 @@ export default function AdminBuildingDetailPage() {
           receiptsResponse,
           membersResponse,
           maintenanceResponse,
-          expensesResponse
+          expensesResponse,
+          tasksResponse,
+          feedbacksResponse,
+          invoiceComplaintsResponse
         ] = await Promise.all([
           roomApi.getAdminRooms({ buildingId }),
           contractApi.getAdminContracts({ buildingId }),
@@ -81,7 +91,10 @@ export default function AdminBuildingDetailPage() {
           paymentApi.getAdminReceipts({ buildingId }),
           memberApi.getAdminBuildingMembers({ buildingId }),
           maintenanceApi.getAdminMaintenanceRequests({ buildingId }),
-          expenseApi.getAdminExpenses({ buildingId })
+          expenseApi.getAdminExpenses({ buildingId }),
+          taskApi.getAdminTasks({ buildingId }),
+          feedbackApi.getAdminFeedbacks({ buildingId }),
+          feedbackApi.getAdminInvoiceComplaints({ buildingId })
         ]);
 
         if (!active) {
@@ -97,7 +110,10 @@ export default function AdminBuildingDetailPage() {
           receipts: receiptsResponse.data || [],
           members: membersResponse.data || [],
           maintenanceRequests: maintenanceResponse.data || [],
-          expenses: expensesResponse.data || []
+          expenses: expensesResponse.data || [],
+          tasks: tasksResponse.data || [],
+          feedbacks: feedbacksResponse.data || [],
+          invoiceComplaints: invoiceComplaintsResponse.data || []
         });
       } catch (apiError) {
         if (active) {
@@ -131,6 +147,10 @@ export default function AdminBuildingDetailPage() {
   const validReceipts = operations.receipts.filter((receipt) => receipt.status === 'VALID');
   const openMaintenanceRequests = operations.maintenanceRequests.filter((request) =>
     ['PENDING', 'ASSIGNED', 'IN_PROGRESS'].includes(request.status)
+  ).length;
+  const openTasks = operations.tasks.filter((task) => ['NEW', 'IN_PROGRESS', 'OVERDUE'].includes(task.status)).length;
+  const unresolvedFeedbacks = operations.feedbacks.filter((feedback) =>
+    ['PENDING', 'IN_PROGRESS'].includes(feedback.status)
   ).length;
   const validExpenses = operations.expenses.filter((expense) => expense.status === 'VALID');
   const totalInvoiceAmount = sumAmounts(operations.invoices, 'totalAmount');
@@ -216,6 +236,18 @@ export default function AdminBuildingDetailPage() {
         <div className="dashboard-card">
           <span>Total expense</span>
           <strong>{formatNumber(totalExpenseAmount)}</strong>
+        </div>
+        <div className="dashboard-card">
+          <span>Open tasks</span>
+          <strong>{formatNumber(openTasks)}</strong>
+        </div>
+        <div className="dashboard-card">
+          <span>Unresolved feedbacks</span>
+          <strong>{formatNumber(unresolvedFeedbacks)}</strong>
+        </div>
+        <div className="dashboard-card">
+          <span>Invoice complaints</span>
+          <strong>{formatNumber(operations.invoiceComplaints.length)}</strong>
         </div>
       </div>
 
@@ -426,6 +458,36 @@ export default function AdminBuildingDetailPage() {
           </div>
         </div>
         <ExpenseTable expenses={operations.expenses} />
+      </section>
+
+      <section className="building-section">
+        <div className="building-section-header">
+          <PageHeader eyebrow="Tasks" title="Tasks in this building" />
+          <Link className="secondary-link" to={`/admin/buildings/${building.id}/tasks`}>
+            Manage tasks
+          </Link>
+        </div>
+        <TaskTable tasks={operations.tasks} detailBasePath={`/admin/buildings/${building.id}/tasks`} />
+      </section>
+
+      <section className="building-section">
+        <div className="building-section-header">
+          <PageHeader eyebrow="Feedbacks" title="Feedbacks in this building" />
+          <Link className="secondary-link" to={`/admin/buildings/${building.id}/feedbacks`}>
+            Manage feedbacks
+          </Link>
+        </div>
+        <FeedbackTable feedbacks={operations.feedbacks} />
+      </section>
+
+      <section className="building-section">
+        <div className="building-section-header">
+          <PageHeader eyebrow="Invoice complaints" title="Invoice complaints in this building" />
+          <Link className="secondary-link" to={`/admin/buildings/${building.id}/invoice-complaints`}>
+            Manage invoice complaints
+          </Link>
+        </div>
+        <FeedbackTable feedbacks={operations.invoiceComplaints} />
       </section>
     </div>
   );
