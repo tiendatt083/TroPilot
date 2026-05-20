@@ -48,4 +48,20 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
             order by payment.uploadedAt asc
             """)
     List<Payment> findByStatusWithDetails(@Param("status") PaymentStatus status);
+
+    @Query("""
+            select payment from Payment payment
+            join fetch payment.invoice invoice
+            join fetch invoice.room room
+            join fetch room.building building
+            join fetch payment.residentHead residentHead
+            left join fetch payment.confirmedBy confirmedBy
+            where building.id = :buildingId
+              and payment.status = :status
+            order by payment.uploadedAt asc
+            """)
+    List<Payment> findByBuildingIdAndStatusWithDetails(
+            @Param("buildingId") Long buildingId,
+            @Param("status") PaymentStatus status
+    );
 }

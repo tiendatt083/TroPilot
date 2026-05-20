@@ -12,9 +12,9 @@ public interface PaymentService {
 
     List<PaymentResponse> getResidentPayments(Long residentHeadId);
 
-    List<PaymentResponse> getPendingPayments();
+    List<PaymentResponse> getPendingPayments(Long buildingId);
 
-    PaymentResponse approvePayment(Long paymentId, Long confirmedById, PaymentDecisionRequest request);
+    PaymentResponse approvePayment(Long paymentId, Long confirmedById, PaymentDecisionRequest request, Long buildingId);
 
-    PaymentResponse rejectPayment(Long paymentId, Long confirmedById, PaymentDecisionRequest request);
+    PaymentResponse rejectPayment(Long paymentId, Long confirmedById, PaymentDecisionRequest request, Long buildingId);
 }

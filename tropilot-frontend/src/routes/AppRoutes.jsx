@@ -12,6 +12,9 @@ import AdminBuildingExpensePage from '../pages/admin/AdminBuildingExpensePage.js
 import AdminBuildingInvoicePage from '../pages/admin/AdminBuildingInvoicePage.jsx';
 import AdminBuildingListPage from '../pages/admin/AdminBuildingListPage.jsx';
 import AdminBuildingMaintenancePage from '../pages/admin/AdminBuildingMaintenancePage.jsx';
+import AdminBuildingMemberPage from '../pages/admin/AdminBuildingMemberPage.jsx';
+import AdminBuildingPaymentPage from '../pages/admin/AdminBuildingPaymentPage.jsx';
+import AdminBuildingReceiptPage from '../pages/admin/AdminBuildingReceiptPage.jsx';
 import AdminBuildingRoomsPage from '../pages/admin/AdminBuildingRoomsPage.jsx';
 import AdminBuildingUtilityReadingPage from '../pages/admin/AdminBuildingUtilityReadingPage.jsx';
 import AdminBuildingVehiclePage from '../pages/admin/AdminBuildingVehiclePage.jsx';
@@ -128,6 +131,9 @@ export default function AppRoutes() {
                 <Route path="utility-readings" element={<AdminBuildingUtilityReadingPage />} />
                 <Route path="invoices" element={<AdminBuildingInvoicePage />} />
                 <Route path="vehicles" element={<AdminBuildingVehiclePage />} />
+                <Route path="payments" element={<AdminBuildingPaymentPage />} />
+                <Route path="receipts" element={<AdminBuildingReceiptPage />} />
+                <Route path="members" element={<AdminBuildingMemberPage />} />
                 <Route path="maintenance" element={<AdminBuildingMaintenancePage />} />
                 <Route path="expenses" element={<AdminBuildingExpensePage />} />
                 <Route path="cashflow" element={<AdminBuildingCashFlowPage />} />

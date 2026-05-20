@@ -16,6 +16,7 @@ import com.tropilot.exception.BadRequestException;
 import com.tropilot.exception.ForbiddenException;
 import com.tropilot.exception.ResourceNotFoundException;
 import com.tropilot.repository.InvoiceRepository;
+import com.tropilot.repository.BuildingRepository;
 import com.tropilot.repository.PaymentRepository;
 import com.tropilot.repository.ReceiptRepository;
 import com.tropilot.repository.RoomAssignmentRepository;
@@ -29,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -39,6 +41,7 @@ public class PaymentServiceImpl implements PaymentService {
     private static final DateTimeFormatter MONTH_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM");
 
     private final PaymentRepository paymentRepository;
+    private final BuildingRepository buildingRepository;
     private final InvoiceRepository invoiceRepository;
     private final ReceiptRepository receiptRepository;
     private final RoomAssignmentRepository roomAssignmentRepository;
@@ -89,8 +92,12 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<PaymentResponse> getPendingPayments() {
-        return paymentRepository.findByStatusWithDetails(PaymentStatus.PENDING)
+    public List<PaymentResponse> getPendingPayments(Long buildingId) {
+        List<Payment> payments = buildingId == null
+                ? paymentRepository.findByStatusWithDetails(PaymentStatus.PENDING)
+                : getBuildingPendingPayments(buildingId);
+
+        return payments
                 .stream()
                 .map(paymentMapper::toResponse)
                 .toList();
@@ -98,11 +105,17 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     @Transactional
-    public PaymentResponse approvePayment(Long paymentId, Long confirmedById, PaymentDecisionRequest request) {
+    public PaymentResponse approvePayment(
+            Long paymentId,
+            Long confirmedById,
+            PaymentDecisionRequest request,
+            Long buildingId
+    ) {
         Payment payment = findPayment(paymentId);
         User confirmedBy = findUser(confirmedById);
         Invoice invoice = payment.getInvoice();
 
+        validatePaymentBelongsToBuilding(payment, buildingId);
         validatePaymentPending(payment);
         validateInvoicePendingConfirmation(invoice);
 
@@ -135,11 +148,17 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     @Transactional
-    public PaymentResponse rejectPayment(Long paymentId, Long confirmedById, PaymentDecisionRequest request) {
+    public PaymentResponse rejectPayment(
+            Long paymentId,
+            Long confirmedById,
+            PaymentDecisionRequest request,
+            Long buildingId
+    ) {
         Payment payment = findPayment(paymentId);
         User confirmedBy = findUser(confirmedById);
         Invoice invoice = payment.getInvoice();
 
+        validatePaymentBelongsToBuilding(payment, buildingId);
         validatePaymentPending(payment);
         validateInvoicePendingConfirmation(invoice);
 
@@ -226,6 +245,29 @@ public class PaymentServiceImpl implements PaymentService {
     private Payment findPayment(Long paymentId) {
         return paymentRepository.findById(paymentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Payment not found"));
+    }
+
+    private List<Payment> getBuildingPendingPayments(Long buildingId) {
+        validateBuildingExists(buildingId);
+        return paymentRepository.findByBuildingIdAndStatusWithDetails(buildingId, PaymentStatus.PENDING);
+    }
+
+    private void validateBuildingExists(Long buildingId) {
+        if (!buildingRepository.existsById(buildingId)) {
+            throw new ResourceNotFoundException("Building not found");
+        }
+    }
+
+    private void validatePaymentBelongsToBuilding(Payment payment, Long buildingId) {
+        if (buildingId == null) {
+            return;
+        }
+
+        validateBuildingExists(buildingId);
+
+        if (!Objects.equals(payment.getInvoice().getRoom().getBuilding().getId(), buildingId)) {
+            throw new BadRequestException("Payment does not belong to the selected building");
+        }
     }
 
     private Invoice findInvoice(Long invoiceId) {

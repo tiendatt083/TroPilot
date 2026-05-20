@@ -59,8 +59,32 @@ public interface RoomMemberRepository extends JpaRepository<RoomMember, Long> {
             join fetch member.room room
             join fetch room.building building
             join fetch member.residentHead residentHead
+            where building.id = :buildingId
+            order by member.createdAt desc
+            """)
+    List<RoomMember> findByBuildingIdWithDetails(@Param("buildingId") Long buildingId);
+
+    @Query("""
+            select member from RoomMember member
+            join fetch member.room room
+            join fetch room.building building
+            join fetch member.residentHead residentHead
             where member.status = :status
             order by member.createdAt desc
             """)
     List<RoomMember> findByStatusWithDetails(@Param("status") RoomMemberStatus status);
+
+    @Query("""
+            select member from RoomMember member
+            join fetch member.room room
+            join fetch room.building building
+            join fetch member.residentHead residentHead
+            where building.id = :buildingId
+              and member.status = :status
+            order by member.createdAt desc
+            """)
+    List<RoomMember> findByBuildingIdAndStatusWithDetails(
+            @Param("buildingId") Long buildingId,
+            @Param("status") RoomMemberStatus status
+    );
 }

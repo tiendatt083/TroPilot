@@ -11,6 +11,7 @@ import com.tropilot.exception.BadRequestException;
 import com.tropilot.exception.ForbiddenException;
 import com.tropilot.exception.ResourceNotFoundException;
 import com.tropilot.repository.RoomAssignmentRepository;
+import com.tropilot.repository.BuildingRepository;
 import com.tropilot.repository.RoomMemberRepository;
 import com.tropilot.repository.RoomRepository;
 import com.tropilot.service.ActivityLogService;
@@ -21,12 +22,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
 public class RoomMemberServiceImpl implements RoomMemberService {
 
     private final RoomMemberRepository roomMemberRepository;
+    private final BuildingRepository buildingRepository;
     private final RoomAssignmentRepository roomAssignmentRepository;
     private final RoomRepository roomRepository;
     private final RoomMemberMapper roomMemberMapper;
@@ -114,8 +117,21 @@ public class RoomMemberServiceImpl implements RoomMemberService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<RoomMemberResponse> getPendingMembers() {
-        return roomMemberRepository.findByStatusWithDetails(RoomMemberStatus.PENDING)
+    public List<RoomMemberResponse> getPendingMembers(Long buildingId) {
+        List<RoomMember> members = buildingId == null
+                ? roomMemberRepository.findByStatusWithDetails(RoomMemberStatus.PENDING)
+                : getBuildingMembersByStatus(buildingId, RoomMemberStatus.PENDING);
+
+        return members
+                .stream()
+                .map(roomMemberMapper::toResponse)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<RoomMemberResponse> getBuildingMembers(Long buildingId) {
+        return getBuildingMembersInternal(buildingId)
                 .stream()
                 .map(roomMemberMapper::toResponse)
                 .toList();
@@ -136,8 +152,9 @@ public class RoomMemberServiceImpl implements RoomMemberService {
 
     @Override
     @Transactional
-    public RoomMemberResponse approveMember(Long memberId) {
+    public RoomMemberResponse approveMember(Long memberId, Long buildingId) {
         RoomMember member = findMember(memberId);
+        validateMemberBelongsToBuilding(member, buildingId);
 
         if (member.getStatus() != RoomMemberStatus.PENDING) {
             throw new BadRequestException("Only pending members can be approved");
@@ -161,8 +178,9 @@ public class RoomMemberServiceImpl implements RoomMemberService {
 
     @Override
     @Transactional
-    public RoomMemberResponse rejectMember(Long memberId) {
+    public RoomMemberResponse rejectMember(Long memberId, Long buildingId) {
         RoomMember member = findMember(memberId);
+        validateMemberBelongsToBuilding(member, buildingId);
 
         if (member.getStatus() != RoomMemberStatus.PENDING) {
             throw new BadRequestException("Only pending members can be rejected");
@@ -189,6 +207,34 @@ public class RoomMemberServiceImpl implements RoomMemberService {
     private RoomMember findMember(Long memberId) {
         return roomMemberRepository.findByIdWithDetails(memberId)
                 .orElseThrow(() -> new ResourceNotFoundException("Room member not found"));
+    }
+
+    private List<RoomMember> getBuildingMembersInternal(Long buildingId) {
+        validateBuildingExists(buildingId);
+        return roomMemberRepository.findByBuildingIdWithDetails(buildingId);
+    }
+
+    private List<RoomMember> getBuildingMembersByStatus(Long buildingId, RoomMemberStatus status) {
+        validateBuildingExists(buildingId);
+        return roomMemberRepository.findByBuildingIdAndStatusWithDetails(buildingId, status);
+    }
+
+    private void validateBuildingExists(Long buildingId) {
+        if (!buildingRepository.existsById(buildingId)) {
+            throw new ResourceNotFoundException("Building not found");
+        }
+    }
+
+    private void validateMemberBelongsToBuilding(RoomMember member, Long buildingId) {
+        if (buildingId == null) {
+            return;
+        }
+
+        validateBuildingExists(buildingId);
+
+        if (!Objects.equals(member.getRoom().getBuilding().getId(), buildingId)) {
+            throw new BadRequestException("Room member does not belong to the selected building");
+        }
     }
 
     private void validateResidentMemberOwnership(RoomMember member, RoomAssignment assignment) {

@@ -1,5 +1,15 @@
 import apiClient from './axiosClient.js';
 
+function filterConfig(filters = {}) {
+  const params = {};
+
+  if (filters.buildingId) {
+    params.buildingId = filters.buildingId;
+  }
+
+  return Object.keys(params).length ? { params } : {};
+}
+
 export async function createResidentMember(payload) {
   const response = await apiClient.post('/api/resident/members', payload);
   return response.data;
@@ -20,8 +30,13 @@ export async function markResidentMemberLeft(id) {
   return response.data;
 }
 
-export async function getPendingMembers() {
-  const response = await apiClient.get('/api/admin/members/pending');
+export async function getPendingMembers(filters) {
+  const response = await apiClient.get('/api/admin/members/pending', filterConfig(filters));
+  return response.data;
+}
+
+export async function getAdminBuildingMembers(filters) {
+  const response = await apiClient.get('/api/admin/members', filterConfig(filters));
   return response.data;
 }
 
@@ -30,12 +45,12 @@ export async function getAdminRoomMembers(roomId) {
   return response.data;
 }
 
-export async function approveMember(id) {
-  const response = await apiClient.put(`/api/admin/members/${id}/approve`);
+export async function approveMember(id, filters) {
+  const response = await apiClient.put(`/api/admin/members/${id}/approve`, null, filterConfig(filters));
   return response.data;
 }
 
-export async function rejectMember(id) {
-  const response = await apiClient.put(`/api/admin/members/${id}/reject`);
+export async function rejectMember(id, filters) {
+  const response = await apiClient.put(`/api/admin/members/${id}/reject`, null, filterConfig(filters));
   return response.data;
 }

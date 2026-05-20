@@ -6,6 +6,16 @@ const multipartConfig = {
   }
 };
 
+function filterConfig(filters = {}) {
+  const params = {};
+
+  if (filters.buildingId) {
+    params.buildingId = filters.buildingId;
+  }
+
+  return Object.keys(params).length ? { params } : {};
+}
+
 export async function uploadPaymentProof({ invoiceId, proofImage, note }) {
   const formData = new FormData();
   formData.append('invoiceId', invoiceId);
@@ -24,27 +34,27 @@ export async function getResidentPayments() {
   return response.data;
 }
 
-export async function getPendingPayments() {
-  const response = await apiClient.get('/api/staff/payments/pending');
+export async function getPendingPayments(filters) {
+  const response = await apiClient.get('/api/staff/payments/pending', filterConfig(filters));
   return response.data;
 }
 
-export async function approvePayment(id, payload = {}) {
-  const response = await apiClient.put(`/api/staff/payments/${id}/approve`, payload);
+export async function approvePayment(id, payload = {}, filters) {
+  const response = await apiClient.put(`/api/staff/payments/${id}/approve`, payload, filterConfig(filters));
   return response.data;
 }
 
-export async function rejectPayment(id, payload = {}) {
-  const response = await apiClient.put(`/api/staff/payments/${id}/reject`, payload);
+export async function rejectPayment(id, payload = {}, filters) {
+  const response = await apiClient.put(`/api/staff/payments/${id}/reject`, payload, filterConfig(filters));
   return response.data;
 }
 
-export async function getAdminReceipts() {
-  const response = await apiClient.get('/api/admin/receipts');
+export async function getAdminReceipts(filters) {
+  const response = await apiClient.get('/api/admin/receipts', filterConfig(filters));
   return response.data;
 }
 
-export async function getAdminReceipt(id) {
-  const response = await apiClient.get(`/api/admin/receipts/${id}`);
+export async function getAdminReceipt(id, filters) {
+  const response = await apiClient.get(`/api/admin/receipts/${id}`, filterConfig(filters));
   return response.data;
 }

@@ -15,11 +15,13 @@ public interface RoomMemberService {
 
     RoomMemberResponse markResidentMemberLeft(Long residentHeadId, Long memberId);
 
-    List<RoomMemberResponse> getPendingMembers();
+    List<RoomMemberResponse> getPendingMembers(Long buildingId);
+
+    List<RoomMemberResponse> getBuildingMembers(Long buildingId);
 
     List<RoomMemberResponse> getRoomMembers(Long roomId);
 
-    RoomMemberResponse approveMember(Long memberId);
+    RoomMemberResponse approveMember(Long memberId, Long buildingId);
 
-    RoomMemberResponse rejectMember(Long memberId);
+    RoomMemberResponse rejectMember(Long memberId, Long buildingId);
 }

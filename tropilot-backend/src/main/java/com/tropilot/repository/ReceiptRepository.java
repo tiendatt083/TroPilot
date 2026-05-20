@@ -50,6 +50,18 @@ public interface ReceiptRepository extends JpaRepository<Receipt, Long> {
             join fetch room.building building
             join fetch receipt.residentHead residentHead
             join fetch receipt.createdBy createdBy
+            where building.id = :buildingId
+            order by receipt.createdAt desc
+            """)
+    List<Receipt> findByBuildingIdWithDetails(@Param("buildingId") Long buildingId);
+
+    @Query("""
+            select receipt from Receipt receipt
+            join fetch receipt.invoice invoice
+            join fetch receipt.room room
+            join fetch room.building building
+            join fetch receipt.residentHead residentHead
+            join fetch receipt.createdBy createdBy
             where receipt.status = :status
               and receipt.createdAt >= :startDateTime
               and receipt.createdAt < :endDateTime

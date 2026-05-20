@@ -4,14 +4,19 @@ import * as contractApi from '../../api/contractApi.js';
 import * as expenseApi from '../../api/expenseApi.js';
 import * as invoiceApi from '../../api/invoiceApi.js';
 import * as maintenanceApi from '../../api/maintenanceApi.js';
+import * as memberApi from '../../api/memberApi.js';
+import * as paymentApi from '../../api/paymentApi.js';
 import * as roomApi from '../../api/roomApi.js';
 import * as vehicleApi from '../../api/vehicleApi.js';
 import ExpenseTable from '../../components/ExpenseTable.jsx';
 import InvoiceTable from '../../components/InvoiceTable.jsx';
 import MaintenanceRequestTable from '../../components/MaintenanceRequestTable.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
+import PaymentTable from '../../components/PaymentTable.jsx';
+import ReceiptTable from '../../components/ReceiptTable.jsx';
 import VehicleTable from '../../components/VehicleTable.jsx';
 import { getContractStatusClass, getContractStatusLabel } from '../../utils/contractStatusOptions.js';
+import { getMemberStatusLabel } from '../../utils/memberStatusOptions.js';
 import { getRoomStatusLabel } from '../../utils/roomStatusOptions.js';
 
 const emptyBuildingOperations = {
@@ -19,6 +24,9 @@ const emptyBuildingOperations = {
   contracts: [],
   invoices: [],
   vehicles: [],
+  pendingPayments: [],
+  receipts: [],
+  members: [],
   maintenanceRequests: [],
   expenses: []
 };
@@ -59,6 +67,9 @@ export default function AdminBuildingDetailPage() {
           contractsResponse,
           invoicesResponse,
           vehiclesResponse,
+          paymentsResponse,
+          receiptsResponse,
+          membersResponse,
           maintenanceResponse,
           expensesResponse
         ] = await Promise.all([
@@ -66,6 +77,9 @@ export default function AdminBuildingDetailPage() {
           contractApi.getAdminContracts({ buildingId }),
           invoiceApi.getAdminInvoices({ buildingId }),
           vehicleApi.getAdminVehicles({ buildingId }),
+          paymentApi.getPendingPayments({ buildingId }),
+          paymentApi.getAdminReceipts({ buildingId }),
+          memberApi.getAdminBuildingMembers({ buildingId }),
           maintenanceApi.getAdminMaintenanceRequests({ buildingId }),
           expenseApi.getAdminExpenses({ buildingId })
         ]);
@@ -79,6 +93,9 @@ export default function AdminBuildingDetailPage() {
           contracts: contractsResponse.data || [],
           invoices: invoicesResponse.data || [],
           vehicles: vehiclesResponse.data || [],
+          pendingPayments: paymentsResponse.data || [],
+          receipts: receiptsResponse.data || [],
+          members: membersResponse.data || [],
           maintenanceRequests: maintenanceResponse.data || [],
           expenses: expensesResponse.data || []
         });
@@ -108,12 +125,16 @@ export default function AdminBuildingDetailPage() {
   const emptyRooms = operations.rooms.filter((room) => room.status === 'EMPTY').length;
   const maintenanceRooms = operations.rooms.filter((room) => room.status === 'MAINTENANCE').length;
   const activeVehicles = operations.vehicles.filter((vehicle) => vehicle.status === 'ACTIVE').length;
+  const approvedMembers = operations.members.filter((member) => member.status === 'APPROVED').length;
+  const pendingMembers = operations.members.filter((member) => member.status === 'PENDING').length;
   const unpaidInvoices = operations.invoices.filter((invoice) => invoice.status !== 'PAID').length;
+  const validReceipts = operations.receipts.filter((receipt) => receipt.status === 'VALID');
   const openMaintenanceRequests = operations.maintenanceRequests.filter((request) =>
     ['PENDING', 'ASSIGNED', 'IN_PROGRESS'].includes(request.status)
   ).length;
   const validExpenses = operations.expenses.filter((expense) => expense.status === 'VALID');
   const totalInvoiceAmount = sumAmounts(operations.invoices, 'totalAmount');
+  const totalReceiptAmount = sumAmounts(validReceipts, 'amount');
   const totalExpenseAmount = sumAmounts(validExpenses, 'amount');
 
   return (
@@ -135,7 +156,7 @@ export default function AdminBuildingDetailPage() {
         </div>
         <div>
           <span>Management scope</span>
-          <strong>Rooms, utility readings, contracts, invoices, vehicles, maintenance, and expenses for this building</strong>
+          <strong>Rooms, members, contracts, utility readings, invoices, payments, receipts, vehicles, maintenance, expenses, and cash flow for this building</strong>
         </div>
         <div className="detail-wide">
           <span>Description</span>
@@ -165,8 +186,20 @@ export default function AdminBuildingDetailPage() {
           <strong>{formatNumber(activeVehicles)}</strong>
         </div>
         <div className="dashboard-card">
+          <span>Approved room members</span>
+          <strong>{formatNumber(approvedMembers)}</strong>
+        </div>
+        <div className="dashboard-card">
+          <span>Pending room members</span>
+          <strong>{formatNumber(pendingMembers)}</strong>
+        </div>
+        <div className="dashboard-card">
           <span>Unpaid invoices</span>
           <strong>{formatNumber(unpaidInvoices)}</strong>
+        </div>
+        <div className="dashboard-card">
+          <span>Pending payments</span>
+          <strong>{formatNumber(operations.pendingPayments.length)}</strong>
         </div>
         <div className="dashboard-card">
           <span>Open maintenance requests</span>
@@ -175,6 +208,10 @@ export default function AdminBuildingDetailPage() {
         <div className="dashboard-card">
           <span>Total invoice amount</span>
           <strong>{formatNumber(totalInvoiceAmount)}</strong>
+        </div>
+        <div className="dashboard-card">
+          <span>Total income</span>
+          <strong>{formatNumber(totalReceiptAmount)}</strong>
         </div>
         <div className="dashboard-card">
           <span>Total expense</span>
@@ -299,6 +336,71 @@ export default function AdminBuildingDetailPage() {
           </Link>
         </div>
         <VehicleTable vehicles={operations.vehicles} />
+      </section>
+
+      <section className="building-section">
+        <div className="building-section-header">
+          <PageHeader eyebrow="Payments" title="Pending payments in this building" />
+          <Link className="secondary-link" to={`/admin/buildings/${building.id}/payments`}>
+            Manage payments
+          </Link>
+        </div>
+        <PaymentTable payments={operations.pendingPayments} />
+      </section>
+
+      <section className="building-section">
+        <div className="building-section-header">
+          <PageHeader eyebrow="Receipts" title="Receipts in this building" />
+          <Link className="secondary-link" to={`/admin/buildings/${building.id}/receipts`}>
+            Manage receipts
+          </Link>
+        </div>
+        <ReceiptTable receipts={operations.receipts} />
+      </section>
+
+      <section className="building-section">
+        <div className="building-section-header">
+          <PageHeader eyebrow="Room members" title="Room members in this building" />
+          <Link className="secondary-link" to={`/admin/buildings/${building.id}/members`}>
+            Manage room members
+          </Link>
+        </div>
+
+        <div className="table-wrap">
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>Member</th>
+                <th>Phone</th>
+                <th>Room</th>
+                <th>Head Resident</th>
+                <th>Status</th>
+                <th>Occupants</th>
+              </tr>
+            </thead>
+            <tbody>
+              {operations.members.map((member) => (
+                <tr key={member.id}>
+                  <td>{member.fullName}</td>
+                  <td>{member.phone}</td>
+                  <td>{member.roomCode}</td>
+                  <td>{member.residentHeadName}</td>
+                  <td>
+                    <span className={`status-pill member-status-${member.status.toLowerCase()}`}>
+                      {getMemberStatusLabel(member.status)}
+                    </span>
+                  </td>
+                  <td>
+                    {member.totalOccupants} of {member.maxOccupants}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {operations.members.length === 0 && (
+            <div className="empty-state flat-empty-state">No room members found.</div>
+          )}
+        </div>
       </section>
 
       <section className="building-section">

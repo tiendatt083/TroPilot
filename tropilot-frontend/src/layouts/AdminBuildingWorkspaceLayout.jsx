@@ -115,6 +115,15 @@ export default function AdminBuildingWorkspaceLayout() {
         <NavLink to={`/admin/buildings/${building.id}/vehicles`}>
           Vehicles
         </NavLink>
+        <NavLink to={`/admin/buildings/${building.id}/payments`}>
+          Payments
+        </NavLink>
+        <NavLink to={`/admin/buildings/${building.id}/receipts`}>
+          Receipts
+        </NavLink>
+        <NavLink to={`/admin/buildings/${building.id}/members`}>
+          Room members
+        </NavLink>
         <NavLink to={`/admin/buildings/${building.id}/maintenance`}>
           Maintenance
         </NavLink>

@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface ReceiptService {
 
-    List<ReceiptResponse> getReceipts();
+    List<ReceiptResponse> getReceipts(Long buildingId);
 
-    ReceiptResponse getReceipt(Long id);
+    ReceiptResponse getReceipt(Long id, Long buildingId);
 }

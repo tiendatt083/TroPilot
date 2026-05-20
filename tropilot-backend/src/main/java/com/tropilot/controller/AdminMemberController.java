@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -22,8 +23,13 @@ public class AdminMemberController {
     private final RoomMemberService roomMemberService;
 
     @GetMapping("/members/pending")
-    public ApiResponse<List<RoomMemberResponse>> getPendingMembers() {
-        return ApiResponse.success("Pending room members loaded successfully", roomMemberService.getPendingMembers());
+    public ApiResponse<List<RoomMemberResponse>> getPendingMembers(@RequestParam(required = false) Long buildingId) {
+        return ApiResponse.success("Pending room members loaded successfully", roomMemberService.getPendingMembers(buildingId));
+    }
+
+    @GetMapping("/members")
+    public ApiResponse<List<RoomMemberResponse>> getBuildingMembers(@RequestParam Long buildingId) {
+        return ApiResponse.success("Room members loaded successfully", roomMemberService.getBuildingMembers(buildingId));
     }
 
     @GetMapping("/rooms/{roomId}/members")
@@ -32,12 +38,18 @@ public class AdminMemberController {
     }
 
     @PutMapping("/members/{id}/approve")
-    public ApiResponse<RoomMemberResponse> approveMember(@PathVariable Long id) {
-        return ApiResponse.success("Room member approved successfully", roomMemberService.approveMember(id));
+    public ApiResponse<RoomMemberResponse> approveMember(
+            @PathVariable Long id,
+            @RequestParam(required = false) Long buildingId
+    ) {
+        return ApiResponse.success("Room member approved successfully", roomMemberService.approveMember(id, buildingId));
     }
 
     @PutMapping("/members/{id}/reject")
-    public ApiResponse<RoomMemberResponse> rejectMember(@PathVariable Long id) {
-        return ApiResponse.success("Room member rejected successfully", roomMemberService.rejectMember(id));
+    public ApiResponse<RoomMemberResponse> rejectMember(
+            @PathVariable Long id,
+            @RequestParam(required = false) Long buildingId
+    ) {
+        return ApiResponse.success("Room member rejected successfully", roomMemberService.rejectMember(id, buildingId));
     }
 }
