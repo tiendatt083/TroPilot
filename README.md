@@ -8,7 +8,8 @@ The system is designed for an academic demonstration while still following produ
 
 ### Frontend
 
-- ReactJS 18.2.0
+- ReactJS 18.2.0 
+edddd
 - Vite 5.2.0
 - JavaScript
 - React Router DOM
