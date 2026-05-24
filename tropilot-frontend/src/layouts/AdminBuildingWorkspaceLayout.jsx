@@ -142,6 +142,9 @@ export default function AdminBuildingWorkspaceLayout() {
         <NavLink to={`/admin/buildings/${building.id}/invoice-complaints`}>
           Invoice complaints
         </NavLink>
+        <NavLink to={`/admin/buildings/${building.id}/notifications`}>
+          Notifications
+        </NavLink>
       </nav>
 
       <Outlet context={{ building }} />

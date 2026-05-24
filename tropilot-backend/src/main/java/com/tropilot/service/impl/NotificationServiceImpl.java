@@ -11,6 +11,7 @@ import com.tropilot.enums.RoomAssignmentStatus;
 import com.tropilot.exception.BadRequestException;
 import com.tropilot.exception.ForbiddenException;
 import com.tropilot.exception.ResourceNotFoundException;
+import com.tropilot.repository.BuildingRepository;
 import com.tropilot.repository.NotificationReadRepository;
 import com.tropilot.repository.NotificationRepository;
 import com.tropilot.repository.RoomAssignmentRepository;
@@ -25,6 +26,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -34,6 +37,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     private final NotificationRepository notificationRepository;
     private final NotificationReadRepository notificationReadRepository;
+    private final BuildingRepository buildingRepository;
     private final UserRepository userRepository;
     private final RoomRepository roomRepository;
     private final RoomAssignmentRepository roomAssignmentRepository;
@@ -41,16 +45,18 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     @Transactional
-    public NotificationResponse createNotification(NotificationCreateRequest request, Long createdById) {
+    public NotificationResponse createNotification(NotificationCreateRequest request, Long createdById, Long buildingId) {
         User createdBy = findUser(createdById);
         NotificationTargetType targetType = parseTargetType(request.getTargetType());
-        validateTarget(targetType, request.getTargetId());
+        Long targetId = resolveTargetId(targetType, request.getTargetId(), buildingId);
+        validateTarget(targetType, targetId);
+        validateBuildingScope(targetType, targetId, buildingId);
 
         Notification notification = Notification.builder()
                 .title(request.getTitle().trim())
                 .content(request.getContent().trim())
                 .targetType(targetType)
-                .targetId(resolveTargetId(targetType, request.getTargetId()))
+                .targetId(targetId)
                 .createdBy(createdBy)
                 .build();
 
@@ -59,13 +65,28 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     @Transactional(readOnly = true)
+    public List<NotificationResponse> getAdminNotifications(Long buildingId) {
+        List<Notification> notifications = buildingId == null
+                ? notificationRepository.findAllByOrderByCreatedAtDesc()
+                : getBuildingNotifications(buildingId);
+
+        return notifications.stream()
+                .map(notification -> notificationMapper.toResponse(notification, null))
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<NotificationResponse> getResidentNotifications(Long userId) {
         User user = findUser(userId);
-        Long roomId = findActiveRoomId(user.getId());
+        RoomAssignment activeAssignment = findActiveAssignment(user.getId()).orElse(null);
+        Long roomId = activeAssignment == null ? null : activeAssignment.getRoom().getId();
+        Long buildingId = activeAssignment == null ? null : activeAssignment.getRoom().getBuilding().getId();
 
         return getVisibleNotifications(
                 user.getId(),
                 roomId,
+                buildingId,
                 List.of(NotificationTargetType.ALL, NotificationTargetType.ALL_RESIDENT_HEADS)
         );
     }
@@ -77,6 +98,7 @@ public class NotificationServiceImpl implements NotificationService {
 
         return getVisibleNotifications(
                 user.getId(),
+                null,
                 null,
                 List.of(NotificationTargetType.ALL, NotificationTargetType.STAFF)
         );
@@ -105,6 +127,7 @@ public class NotificationServiceImpl implements NotificationService {
     private List<NotificationResponse> getVisibleNotifications(
             Long userId,
             Long roomId,
+            Long buildingId,
             Collection<NotificationTargetType> globalTargets
     ) {
         List<Notification> notifications = notificationRepository.findVisibleNotifications(
@@ -112,7 +135,9 @@ public class NotificationServiceImpl implements NotificationService {
                 NotificationTargetType.ONE_USER,
                 userId,
                 NotificationTargetType.ONE_ROOM,
-                roomId
+                roomId,
+                NotificationTargetType.ONE_BUILDING,
+                buildingId
         );
 
         List<Long> notificationIds = notifications.stream()
@@ -137,13 +162,16 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     private boolean isVisibleToUser(Notification notification, User user) {
+        Long activeRoomId = findActiveRoomId(user.getId());
+        Long activeBuildingId = findActiveBuildingId(user.getId());
+
         return switch (notification.getTargetType()) {
             case ALL -> true;
             case STAFF -> user.getRole().name().equals("STAFF");
             case ALL_RESIDENT_HEADS -> user.getRole().name().equals("RESIDENT_HEAD");
+            case ONE_BUILDING -> activeBuildingId != null && notification.getTargetId().equals(activeBuildingId);
             case ONE_USER -> notification.getTargetId().equals(user.getId());
-            case ONE_ROOM -> findActiveRoomId(user.getId()) != null
-                    && notification.getTargetId().equals(findActiveRoomId(user.getId()));
+            case ONE_ROOM -> activeRoomId != null && notification.getTargetId().equals(activeRoomId);
         };
     }
 
@@ -153,6 +181,12 @@ public class NotificationServiceImpl implements NotificationService {
                 if (targetId != null) {
                     throw new BadRequestException("Target ID must be empty for this notification target");
                 }
+            }
+            case ONE_BUILDING -> {
+                if (targetId == null) {
+                    throw new BadRequestException("Target building is required");
+                }
+                validateBuildingExists(targetId);
             }
             case ONE_ROOM -> {
                 if (targetId == null) {
@@ -173,19 +207,69 @@ public class NotificationServiceImpl implements NotificationService {
         }
     }
 
-    private Long resolveTargetId(NotificationTargetType targetType, Long targetId) {
+    private Long resolveTargetId(NotificationTargetType targetType, Long targetId, Long buildingId) {
         return switch (targetType) {
             case ALL, ALL_RESIDENT_HEADS, STAFF -> null;
+            case ONE_BUILDING -> targetId == null ? buildingId : targetId;
             case ONE_ROOM, ONE_USER -> targetId;
         };
     }
 
+    private void validateBuildingScope(NotificationTargetType targetType, Long targetId, Long buildingId) {
+        if (buildingId == null) {
+            return;
+        }
+
+        validateBuildingExists(buildingId);
+
+        switch (targetType) {
+            case ONE_BUILDING -> {
+                if (!Objects.equals(targetId, buildingId)) {
+                    throw new BadRequestException("Notification target building must match the selected building");
+                }
+            }
+            case ONE_ROOM -> {
+                if (!roomRepository.findById(targetId)
+                        .map(room -> Objects.equals(room.getBuilding().getId(), buildingId))
+                        .orElse(false)) {
+                    throw new BadRequestException("Notification target room does not belong to the selected building");
+                }
+            }
+            default -> throw new BadRequestException("Building notifications must target the selected building or one room in it");
+        }
+    }
+
+    private List<Notification> getBuildingNotifications(Long buildingId) {
+        validateBuildingExists(buildingId);
+        return notificationRepository.findByBuildingIdWithCreator(
+                NotificationTargetType.ONE_BUILDING,
+                buildingId,
+                NotificationTargetType.ONE_ROOM
+        );
+    }
+
+    private void validateBuildingExists(Long buildingId) {
+        if (!buildingRepository.existsById(buildingId)) {
+            throw new ResourceNotFoundException("Building not found");
+        }
+    }
+
     private Long findActiveRoomId(Long residentHeadId) {
-        return roomAssignmentRepository
-                .findByResidentHeadIdAndStatus(residentHeadId, RoomAssignmentStatus.ACTIVE)
+        return findActiveAssignment(residentHeadId)
                 .map(RoomAssignment::getRoom)
                 .map(room -> room.getId())
                 .orElse(null);
+    }
+
+    private Long findActiveBuildingId(Long residentHeadId) {
+        return findActiveAssignment(residentHeadId)
+                .map(RoomAssignment::getRoom)
+                .map(room -> room.getBuilding().getId())
+                .orElse(null);
+    }
+
+    private Optional<RoomAssignment> findActiveAssignment(Long residentHeadId) {
+        return roomAssignmentRepository.findByResidentHeadIdAndStatus(residentHeadId, RoomAssignmentStatus.ACTIVE);
     }
 
     private Notification findNotification(Long notificationId) {

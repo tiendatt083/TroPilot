@@ -22,4 +22,6 @@ public interface UserService {
     UserResponse unlockUser(Long id);
 
     PasswordResetResponse resetPassword(Long id);
+
+    void deleteUser(Long id);
 }

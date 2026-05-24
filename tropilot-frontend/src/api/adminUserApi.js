@@ -29,3 +29,8 @@ export async function resetPassword(id) {
   const response = await apiClient.put(`/api/admin/users/${id}/reset-password`);
   return response.data;
 }
+
+export async function deleteUser(id) {
+  const response = await apiClient.delete(`/api/admin/users/${id}`);
+  return response.data;
+}

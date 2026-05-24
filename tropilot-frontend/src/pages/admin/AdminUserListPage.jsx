@@ -29,6 +29,13 @@ export default function AdminUserListPage() {
   }, []);
 
   const handleStatusAction = async (user, action) => {
+    const actionLabel = action === 'lock' ? 'lock' : 'unlock';
+    const confirmed = window.confirm(`Are you sure you want to ${actionLabel} ${user.fullName}?`);
+
+    if (!confirmed) {
+      return;
+    }
+
     setActionId(user.id);
     setMessage('');
     setError('');
@@ -51,6 +58,12 @@ export default function AdminUserListPage() {
   };
 
   const handleResetPassword = async (user) => {
+    const confirmed = window.confirm(`Are you sure you want to regenerate a temporary password for ${user.fullName}?`);
+
+    if (!confirmed) {
+      return;
+    }
+
     setActionId(user.id);
     setMessage('');
     setError('');
@@ -61,6 +74,28 @@ export default function AdminUserListPage() {
       await loadUsers();
     } catch (apiError) {
       setError(apiError.response?.data?.message || 'Password could not be reset');
+    } finally {
+      setActionId(null);
+    }
+  };
+
+  const handleDeleteUser = async (user) => {
+    const confirmed = window.confirm(`Are you sure you want to delete ${user.fullName}? This action cannot be undone.`);
+
+    if (!confirmed) {
+      return;
+    }
+
+    setActionId(user.id);
+    setMessage('');
+    setError('');
+
+    try {
+      await adminUserApi.deleteUser(user.id);
+      setMessage(`${user.fullName} was deleted successfully.`);
+      await loadUsers();
+    } catch (apiError) {
+      setError(apiError.response?.data?.message || 'User could not be deleted');
     } finally {
       setActionId(null);
     }
@@ -149,6 +184,14 @@ export default function AdminUserListPage() {
                         onClick={() => handleResetPassword(user)}
                       >
                         Regenerate
+                      </button>
+                      <button
+                        className="secondary-button compact-button"
+                        type="button"
+                        disabled={actionId === user.id || user.role === 'ADMIN'}
+                        onClick={() => handleDeleteUser(user)}
+                      >
+                        Delete
                       </button>
                     </div>
                   </td>

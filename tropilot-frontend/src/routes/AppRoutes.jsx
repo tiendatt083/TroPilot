@@ -15,6 +15,7 @@ import AdminBuildingInvoiceComplaintPage from '../pages/admin/AdminBuildingInvoi
 import AdminBuildingListPage from '../pages/admin/AdminBuildingListPage.jsx';
 import AdminBuildingMaintenancePage from '../pages/admin/AdminBuildingMaintenancePage.jsx';
 import AdminBuildingMemberPage from '../pages/admin/AdminBuildingMemberPage.jsx';
+import AdminBuildingNotificationPage from '../pages/admin/AdminBuildingNotificationPage.jsx';
 import AdminBuildingPaymentPage from '../pages/admin/AdminBuildingPaymentPage.jsx';
 import AdminBuildingReceiptPage from '../pages/admin/AdminBuildingReceiptPage.jsx';
 import AdminBuildingRoomsPage from '../pages/admin/AdminBuildingRoomsPage.jsx';
@@ -145,6 +146,7 @@ export default function AppRoutes() {
                 <Route path="tasks/:taskId" element={<AdminBuildingTaskDetailPage />} />
                 <Route path="feedbacks" element={<AdminBuildingFeedbackPage />} />
                 <Route path="invoice-complaints" element={<AdminBuildingInvoiceComplaintPage />} />
+                <Route path="notifications" element={<AdminBuildingNotificationPage />} />
               </Route>
               <Route path="buildings/:id/edit" element={<AdminBuildingEditPage />} />
               <Route path="rooms" element={<AdminRoomListPage />} />

@@ -7,7 +7,9 @@ import java.util.List;
 
 public interface NotificationService {
 
-    NotificationResponse createNotification(NotificationCreateRequest request, Long createdById);
+    NotificationResponse createNotification(NotificationCreateRequest request, Long createdById, Long buildingId);
+
+    List<NotificationResponse> getAdminNotifications(Long buildingId);
 
     List<NotificationResponse> getResidentNotifications(Long userId);
 

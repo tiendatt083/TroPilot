@@ -6,6 +6,7 @@ import * as feedbackApi from '../../api/feedbackApi.js';
 import * as invoiceApi from '../../api/invoiceApi.js';
 import * as maintenanceApi from '../../api/maintenanceApi.js';
 import * as memberApi from '../../api/memberApi.js';
+import * as notificationApi from '../../api/notificationApi.js';
 import * as paymentApi from '../../api/paymentApi.js';
 import * as roomApi from '../../api/roomApi.js';
 import * as taskApi from '../../api/taskApi.js';
@@ -14,6 +15,7 @@ import ExpenseTable from '../../components/ExpenseTable.jsx';
 import FeedbackTable from '../../components/FeedbackTable.jsx';
 import InvoiceTable from '../../components/InvoiceTable.jsx';
 import MaintenanceRequestTable from '../../components/MaintenanceRequestTable.jsx';
+import NotificationTable from '../../components/NotificationTable.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
 import PaymentTable from '../../components/PaymentTable.jsx';
 import ReceiptTable from '../../components/ReceiptTable.jsx';
@@ -35,7 +37,8 @@ const emptyBuildingOperations = {
   expenses: [],
   tasks: [],
   feedbacks: [],
-  invoiceComplaints: []
+  invoiceComplaints: [],
+  notifications: []
 };
 
 function formatNumber(value) {
@@ -81,7 +84,8 @@ export default function AdminBuildingDetailPage() {
           expensesResponse,
           tasksResponse,
           feedbacksResponse,
-          invoiceComplaintsResponse
+          invoiceComplaintsResponse,
+          notificationsResponse
         ] = await Promise.all([
           roomApi.getAdminRooms({ buildingId }),
           contractApi.getAdminContracts({ buildingId }),
@@ -94,7 +98,8 @@ export default function AdminBuildingDetailPage() {
           expenseApi.getAdminExpenses({ buildingId }),
           taskApi.getAdminTasks({ buildingId }),
           feedbackApi.getAdminFeedbacks({ buildingId }),
-          feedbackApi.getAdminInvoiceComplaints({ buildingId })
+          feedbackApi.getAdminInvoiceComplaints({ buildingId }),
+          notificationApi.getAdminNotifications({ buildingId })
         ]);
 
         if (!active) {
@@ -113,7 +118,8 @@ export default function AdminBuildingDetailPage() {
           expenses: expensesResponse.data || [],
           tasks: tasksResponse.data || [],
           feedbacks: feedbacksResponse.data || [],
-          invoiceComplaints: invoiceComplaintsResponse.data || []
+          invoiceComplaints: invoiceComplaintsResponse.data || [],
+          notifications: notificationsResponse.data || []
         });
       } catch (apiError) {
         if (active) {
@@ -248,6 +254,10 @@ export default function AdminBuildingDetailPage() {
         <div className="dashboard-card">
           <span>Invoice complaints</span>
           <strong>{formatNumber(operations.invoiceComplaints.length)}</strong>
+        </div>
+        <div className="dashboard-card">
+          <span>Building notifications</span>
+          <strong>{formatNumber(operations.notifications.length)}</strong>
         </div>
       </div>
 
@@ -488,6 +498,16 @@ export default function AdminBuildingDetailPage() {
           </Link>
         </div>
         <FeedbackTable feedbacks={operations.invoiceComplaints} />
+      </section>
+
+      <section className="building-section">
+        <div className="building-section-header">
+          <PageHeader eyebrow="Notifications" title="Notifications in this building" />
+          <Link className="secondary-link" to={`/admin/buildings/${building.id}/notifications`}>
+            Manage notifications
+          </Link>
+        </div>
+        <NotificationTable notifications={operations.notifications} />
       </section>
     </div>
   );

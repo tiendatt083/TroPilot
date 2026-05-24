@@ -1,5 +1,6 @@
 export const NOTIFICATION_TARGET_OPTIONS = [
   { value: 'ALL_RESIDENT_HEADS', label: 'All Head Residents' },
+  { value: 'ONE_BUILDING', label: 'One building' },
   { value: 'ONE_ROOM', label: 'One room' },
   { value: 'ONE_USER', label: 'One user' },
   { value: 'STAFF', label: 'All Staff' },
