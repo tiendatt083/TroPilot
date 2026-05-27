@@ -21,6 +21,12 @@ public class UserResponse {
     private UserStatus status;
     private boolean mustChangePassword;
     private String temporaryPassword;
+    private Long assignedRoomId;
+    private String assignedRoomCode;
+    private String assignedRoomName;
+    private Long assignedBuildingId;
+    private String assignedBuildingCode;
+    private String assignedBuildingName;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

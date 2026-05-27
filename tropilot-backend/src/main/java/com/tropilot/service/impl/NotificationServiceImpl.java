@@ -32,6 +32,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -55,6 +56,7 @@ public class NotificationServiceImpl implements NotificationService {
         List<User> selectedUsers = resolveSelectedUsers(targetType, request);
         List<Building> selectedBuildings = resolveSelectedBuildings(request, buildingId);
         Long targetId = resolveTargetId(targetType, request.getTargetId(), buildingId);
+        validateSelectedResidentHeads(targetType, selectedUsers, selectedBuildings);
         validateTarget(targetType, targetId, selectedUsers);
         validateBuildingScope(targetType, targetId, buildingId, selectedBuildings);
 
@@ -230,7 +232,7 @@ public class NotificationServiceImpl implements NotificationService {
             }
             case SELECTED_USERS -> {
                 if (selectedUsers.isEmpty()) {
-                    throw new BadRequestException("At least one target user is required");
+                    throw new BadRequestException("At least one Head Resident is required");
                 }
             }
             case ONE_BUILDING -> {
@@ -318,10 +320,44 @@ public class NotificationServiceImpl implements NotificationService {
 
         List<User> users = userRepository.findAllById(userIds);
         if (users.size() != userIds.size()) {
-            throw new ResourceNotFoundException("Target user not found");
+            throw new ResourceNotFoundException("Target Head Resident not found");
         }
 
         return users;
+    }
+
+    private void validateSelectedResidentHeads(
+            NotificationTargetType targetType,
+            List<User> selectedUsers,
+            List<Building> selectedBuildings
+    ) {
+        if (targetType != NotificationTargetType.SELECTED_USERS) {
+            return;
+        }
+
+        boolean hasInvalidRole = selectedUsers.stream()
+                .anyMatch(user -> user.getRole() != UserRole.RESIDENT_HEAD);
+        if (hasInvalidRole) {
+            throw new BadRequestException("Only Head Residents can be selected as notification recipients");
+        }
+
+        if (selectedBuildings.isEmpty()) {
+            return;
+        }
+
+        Set<Long> selectedBuildingIds = selectedBuildings.stream()
+                .map(Building::getId)
+                .collect(Collectors.toSet());
+
+        boolean hasResidentOutsideSelectedBuildings = selectedUsers.stream()
+                .anyMatch(user -> findActiveAssignment(user.getId())
+                        .map(assignment -> assignment.getRoom().getBuilding().getId())
+                        .filter(selectedBuildingIds::contains)
+                        .isEmpty());
+
+        if (hasResidentOutsideSelectedBuildings) {
+            throw new BadRequestException("Selected Head Resident does not belong to selected buildings");
+        }
     }
 
     private List<Building> resolveSelectedBuildings(NotificationCreateRequest request, Long buildingId) {

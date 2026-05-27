@@ -4,11 +4,14 @@ import com.tropilot.dto.request.AdminCreateUserRequest;
 import com.tropilot.dto.request.AdminUpdateUserRequest;
 import com.tropilot.dto.response.PasswordResetResponse;
 import com.tropilot.dto.response.UserResponse;
+import com.tropilot.entity.RoomAssignment;
 import com.tropilot.entity.User;
+import com.tropilot.enums.RoomAssignmentStatus;
 import com.tropilot.enums.UserRole;
 import com.tropilot.enums.UserStatus;
 import com.tropilot.exception.BadRequestException;
 import com.tropilot.exception.ResourceNotFoundException;
+import com.tropilot.repository.RoomAssignmentRepository;
 import com.tropilot.repository.UserRepository;
 import com.tropilot.service.ActivityLogService;
 import com.tropilot.service.UserService;
@@ -21,6 +24,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +37,7 @@ public class UserServiceImpl implements UserService {
     private static final int GENERATED_PASSWORD_LENGTH = 12;
 
     private final UserRepository userRepository;
+    private final RoomAssignmentRepository roomAssignmentRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
     private final TemporaryPasswordCipher temporaryPasswordCipher;
@@ -72,9 +79,12 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public List<UserResponse> getUsers() {
-        return userRepository.findAllByOrderByCreatedAtDesc()
+        List<User> users = userRepository.findAllByOrderByCreatedAtDesc();
+        Map<Long, RoomAssignment> activeAssignments = findActiveResidentHeadAssignments(users);
+
+        return users
                 .stream()
-                .map(userMapper::toAdminResponse)
+                .map(user -> userMapper.toAdminResponse(user, activeAssignments.get(user.getId())))
                 .toList();
     }
 
@@ -179,6 +189,26 @@ public class UserServiceImpl implements UserService {
     private User findUser(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    }
+
+    private Map<Long, RoomAssignment> findActiveResidentHeadAssignments(List<User> users) {
+        List<Long> residentHeadIds = users.stream()
+                .filter(user -> user.getRole() == UserRole.RESIDENT_HEAD)
+                .map(User::getId)
+                .toList();
+
+        if (residentHeadIds.isEmpty()) {
+            return Map.of();
+        }
+
+        return roomAssignmentRepository
+                .findAllByResidentHeadIdInAndStatus(residentHeadIds, RoomAssignmentStatus.ACTIVE)
+                .stream()
+                .collect(Collectors.toMap(
+                        assignment -> assignment.getResidentHead().getId(),
+                        Function.identity(),
+                        (existing, replacement) -> existing
+                ));
     }
 
     private void validateAssignableRole(UserRole role) {

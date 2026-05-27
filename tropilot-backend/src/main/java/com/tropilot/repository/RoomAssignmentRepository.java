@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface RoomAssignmentRepository extends JpaRepository<RoomAssignment, Long> {
@@ -39,6 +40,19 @@ public interface RoomAssignmentRepository extends JpaRepository<RoomAssignment, 
             """)
     Optional<RoomAssignment> findByResidentHeadIdAndStatus(
             @Param("residentHeadId") Long residentHeadId,
+            @Param("status") RoomAssignmentStatus status
+    );
+
+    @Query("""
+            select assignment from RoomAssignment assignment
+            join fetch assignment.room room
+            join fetch room.building building
+            join fetch assignment.residentHead residentHead
+            where residentHead.id in :residentHeadIds
+              and assignment.status = :status
+            """)
+    List<RoomAssignment> findAllByResidentHeadIdInAndStatus(
+            @Param("residentHeadIds") List<Long> residentHeadIds,
             @Param("status") RoomAssignmentStatus status
     );
 }

@@ -1,6 +1,8 @@
 package com.tropilot.service.impl;
 
 import com.tropilot.dto.response.UserResponse;
+import com.tropilot.entity.Room;
+import com.tropilot.entity.RoomAssignment;
 import com.tropilot.entity.User;
 import com.tropilot.util.TemporaryPasswordCipher;
 import lombok.RequiredArgsConstructor;
@@ -17,11 +19,19 @@ public class UserMapper {
     }
 
     public UserResponse toAdminResponse(User user) {
-        return toResponse(user, true);
+        return toResponse(user, true, null);
+    }
+
+    public UserResponse toAdminResponse(User user, RoomAssignment activeAssignment) {
+        return toResponse(user, true, activeAssignment);
     }
 
     private UserResponse toResponse(User user, boolean includeTemporaryPassword) {
-        return UserResponse.builder()
+        return toResponse(user, includeTemporaryPassword, null);
+    }
+
+    private UserResponse toResponse(User user, boolean includeTemporaryPassword, RoomAssignment activeAssignment) {
+        UserResponse.UserResponseBuilder builder = UserResponse.builder()
                 .id(user.getId())
                 .fullName(user.getFullName())
                 .email(user.getEmail())
@@ -31,8 +41,19 @@ public class UserMapper {
                 .mustChangePassword(user.isMustChangePassword())
                 .temporaryPassword(resolveTemporaryPassword(user, includeTemporaryPassword))
                 .createdAt(user.getCreatedAt())
-                .updatedAt(user.getUpdatedAt())
-                .build();
+                .updatedAt(user.getUpdatedAt());
+
+        if (activeAssignment != null) {
+            Room room = activeAssignment.getRoom();
+            builder.assignedRoomId(room.getId())
+                    .assignedRoomCode(room.getRoomCode())
+                    .assignedRoomName(room.getRoomName())
+                    .assignedBuildingId(room.getBuilding().getId())
+                    .assignedBuildingCode(room.getBuilding().getBuildingCode())
+                    .assignedBuildingName(room.getBuilding().getName());
+        }
+
+        return builder.build();
     }
 
     private String resolveTemporaryPassword(User user, boolean includeTemporaryPassword) {

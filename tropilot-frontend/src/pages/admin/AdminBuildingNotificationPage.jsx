@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import * as adminUserApi from '../../api/adminUserApi.js';
 import * as notificationApi from '../../api/notificationApi.js';
+import CheckboxList from '../../components/CheckboxList.jsx';
 import NotificationTable from '../../components/NotificationTable.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
 import { NOTIFICATION_TARGET_OPTIONS } from '../../utils/notificationOptions.js';
@@ -13,8 +14,9 @@ const emptyForm = {
   targetUserIds: []
 };
 
-function getSelectedValues(selectElement) {
-  return Array.from(selectElement.selectedOptions).map((option) => option.value);
+function getResidentHeadDescription(user) {
+  const roomLabel = user.assignedRoomCode ? `Room ${user.assignedRoomCode}` : null;
+  return [roomLabel, user.email].filter(Boolean).join(' - ');
 }
 
 export default function AdminBuildingNotificationPage() {
@@ -28,6 +30,10 @@ export default function AdminBuildingNotificationPage() {
   const [saving, setSaving] = useState(false);
 
   const buildingFilter = { buildingId: building.id };
+  const residentHeads = useMemo(
+    () => users.filter((user) => user.role === 'RESIDENT_HEAD' && String(user.assignedBuildingId) === String(building.id)),
+    [building.id, users]
+  );
 
   const loadData = async () => {
     setError('');
@@ -59,18 +65,24 @@ export default function AdminBuildingNotificationPage() {
     }));
   };
 
-  const handleTargetUsersChange = (event) => {
+  const handleTargetUsersChange = (targetUserIds) => {
     setForm((current) => ({
       ...current,
-      targetUserIds: getSelectedValues(event.target)
+      targetUserIds
     }));
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setSaving(true);
     setMessage('');
     setError('');
+
+    if (form.targetType === 'SELECTED_USERS' && form.targetUserIds.length === 0) {
+      setError('At least one Head Resident is required');
+      return;
+    }
+
+    setSaving(true);
 
     try {
       await notificationApi.createAdminNotification(
@@ -126,21 +138,17 @@ export default function AdminBuildingNotificationPage() {
 
           {needsSelectedUsers && (
             <>
-              <label htmlFor="targetUsers">Target users</label>
-              <select
-                id="targetUsers"
-                value={form.targetUserIds}
+              <label>Target Head Residents</label>
+              <CheckboxList
+                ariaLabel="Target Head Residents"
+                items={residentHeads}
+                selectedValues={form.targetUserIds}
                 onChange={handleTargetUsersChange}
-                multiple
-                size={Math.min(Math.max(users.length, 3), 8)}
-                required
-              >
-                {users.map((user) => (
-                  <option key={user.id} value={user.id}>
-                    {user.fullName} - {user.email}
-                  </option>
-                ))}
-              </select>
+                getValue={(user) => user.id}
+                getLabel={(user) => user.fullName}
+                getDescription={getResidentHeadDescription}
+                emptyMessage="No assigned Head Residents found in this building."
+              />
             </>
           )}
 
