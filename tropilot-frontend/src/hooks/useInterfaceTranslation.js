@@ -42,7 +42,7 @@ function getVietnameseRoleName(roleCode) {
   const roleMap = {
     ADMIN: 'Quản trị viên',
     STAFF: 'Nhân viên',
-    RESIDENT_HEAD: 'Trưởng phòng'
+    RESIDENT_HEAD: 'Chủ hộ'
   };
 
   return roleMap[roleCode] || roleCode;
@@ -52,6 +52,7 @@ function getEnglishRoleCode(roleName) {
   const roleMap = {
     'quản trị viên': 'ADMIN',
     'nhân viên': 'STAFF',
+    'chủ hộ': 'RESIDENT_HEAD',
     'trưởng phòng': 'RESIDENT_HEAD'
   };
 
