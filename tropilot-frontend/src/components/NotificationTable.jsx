@@ -1,5 +1,6 @@
 import {
   formatNotificationDateTime,
+  getNotificationBuildingLabel,
   getNotificationTargetLabel
 } from '../utils/notificationOptions.js';
 
@@ -24,7 +25,13 @@ export default function NotificationTable({ notifications, onMarkRead, processin
                 <strong>{notification.title}</strong>
                 <span className="table-subtext">{notification.content}</span>
               </td>
-              <td>{getNotificationTargetLabel(notification.targetType)}</td>
+              <td>
+                <strong>{getNotificationTargetLabel(notification.targetType)}</strong>
+                <span className="table-subtext">{getNotificationBuildingLabel(notification)}</span>
+                {notification.targetUserNames?.length > 0 && (
+                  <span className="table-subtext">{notification.targetUserNames.join(', ')}</span>
+                )}
+              </td>
               <td>
                 <strong>{notification.createdByName}</strong>
                 <span className="table-subtext">{notification.createdByRole}</span>

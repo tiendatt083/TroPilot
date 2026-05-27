@@ -13,10 +13,22 @@ import java.util.Optional;
 
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
 
-    @EntityGraph(attributePaths = "createdBy")
+    @EntityGraph(attributePaths = {
+            "createdBy",
+            "targetUsers",
+            "targetUsers.user",
+            "targetBuildings",
+            "targetBuildings.building"
+    })
     Optional<Notification> findById(Long id);
 
-    @EntityGraph(attributePaths = "createdBy")
+    @EntityGraph(attributePaths = {
+            "createdBy",
+            "targetUsers",
+            "targetUsers.user",
+            "targetBuildings",
+            "targetBuildings.building"
+    })
     List<Notification> findAllByOrderByCreatedAtDesc();
 
     @Query("""

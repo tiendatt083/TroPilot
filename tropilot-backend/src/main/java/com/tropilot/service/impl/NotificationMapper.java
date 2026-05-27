@@ -3,6 +3,8 @@ package com.tropilot.service.impl;
 import com.tropilot.dto.response.NotificationResponse;
 import com.tropilot.entity.Notification;
 import com.tropilot.entity.NotificationRead;
+import com.tropilot.entity.NotificationTargetBuilding;
+import com.tropilot.entity.NotificationTargetUser;
 import com.tropilot.entity.User;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +20,27 @@ public class NotificationMapper {
                 .content(notification.getContent())
                 .targetType(notification.getTargetType())
                 .targetId(notification.getTargetId())
+                .targetUserIds(notification.getTargetUsers()
+                        .stream()
+                        .map(NotificationTargetUser::getUser)
+                        .map(User::getId)
+                        .toList())
+                .targetUserNames(notification.getTargetUsers()
+                        .stream()
+                        .map(NotificationTargetUser::getUser)
+                        .map(User::getFullName)
+                        .toList())
+                .allBuildings(notification.getTargetBuildings().isEmpty())
+                .buildingIds(notification.getTargetBuildings()
+                        .stream()
+                        .map(NotificationTargetBuilding::getBuilding)
+                        .map(building -> building.getId())
+                        .toList())
+                .buildingNames(notification.getTargetBuildings()
+                        .stream()
+                        .map(NotificationTargetBuilding::getBuilding)
+                        .map(building -> building.getBuildingCode() + " - " + building.getName())
+                        .toList())
                 .createdById(createdBy.getId())
                 .createdByName(createdBy.getFullName())
                 .createdByRole(createdBy.getRole().name())

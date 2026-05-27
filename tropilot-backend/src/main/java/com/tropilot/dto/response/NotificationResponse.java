@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Builder
@@ -15,6 +16,11 @@ public class NotificationResponse {
     private String content;
     private NotificationTargetType targetType;
     private Long targetId;
+    private List<Long> targetUserIds;
+    private List<String> targetUserNames;
+    private boolean allBuildings;
+    private List<Long> buildingIds;
+    private List<String> buildingNames;
     private Long createdById;
     private String createdByName;
     private String createdByRole;

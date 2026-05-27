@@ -2,12 +2,16 @@ package com.tropilot.service.impl;
 
 import com.tropilot.dto.request.NotificationCreateRequest;
 import com.tropilot.dto.response.NotificationResponse;
+import com.tropilot.entity.Building;
 import com.tropilot.entity.Notification;
 import com.tropilot.entity.NotificationRead;
+import com.tropilot.entity.NotificationTargetBuilding;
+import com.tropilot.entity.NotificationTargetUser;
 import com.tropilot.entity.RoomAssignment;
 import com.tropilot.entity.User;
 import com.tropilot.enums.NotificationTargetType;
 import com.tropilot.enums.RoomAssignmentStatus;
+import com.tropilot.enums.UserRole;
 import com.tropilot.exception.BadRequestException;
 import com.tropilot.exception.ForbiddenException;
 import com.tropilot.exception.ResourceNotFoundException;
@@ -22,7 +26,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -48,9 +52,11 @@ public class NotificationServiceImpl implements NotificationService {
     public NotificationResponse createNotification(NotificationCreateRequest request, Long createdById, Long buildingId) {
         User createdBy = findUser(createdById);
         NotificationTargetType targetType = parseTargetType(request.getTargetType());
+        List<User> selectedUsers = resolveSelectedUsers(targetType, request);
+        List<Building> selectedBuildings = resolveSelectedBuildings(request, buildingId);
         Long targetId = resolveTargetId(targetType, request.getTargetId(), buildingId);
-        validateTarget(targetType, targetId);
-        validateBuildingScope(targetType, targetId, buildingId);
+        validateTarget(targetType, targetId, selectedUsers);
+        validateBuildingScope(targetType, targetId, buildingId, selectedBuildings);
 
         Notification notification = Notification.builder()
                 .title(request.getTitle().trim())
@@ -60,15 +66,29 @@ public class NotificationServiceImpl implements NotificationService {
                 .createdBy(createdBy)
                 .build();
 
+        selectedUsers.forEach(user -> notification.getTargetUsers().add(NotificationTargetUser.builder()
+                .notification(notification)
+                .user(user)
+                .build()));
+        selectedBuildings.forEach(building -> notification.getTargetBuildings().add(NotificationTargetBuilding.builder()
+                .notification(notification)
+                .building(building)
+                .build()));
+
         return notificationMapper.toResponse(notificationRepository.save(notification), null);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<NotificationResponse> getAdminNotifications(Long buildingId) {
-        List<Notification> notifications = buildingId == null
-                ? notificationRepository.findAllByOrderByCreatedAtDesc()
-                : getBuildingNotifications(buildingId);
+        if (buildingId != null) {
+            validateBuildingExists(buildingId);
+        }
+
+        List<Notification> notifications = notificationRepository.findAllByOrderByCreatedAtDesc()
+                .stream()
+                .filter(notification -> buildingId == null || isNotificationLinkedToBuilding(notification, buildingId))
+                .toList();
 
         return notifications.stream()
                 .map(notification -> notificationMapper.toResponse(notification, null))
@@ -86,8 +106,7 @@ public class NotificationServiceImpl implements NotificationService {
         return getVisibleNotifications(
                 user.getId(),
                 roomId,
-                buildingId,
-                List.of(NotificationTargetType.ALL, NotificationTargetType.ALL_RESIDENT_HEADS)
+                buildingId
         );
     }
 
@@ -99,8 +118,7 @@ public class NotificationServiceImpl implements NotificationService {
         return getVisibleNotifications(
                 user.getId(),
                 null,
-                null,
-                List.of(NotificationTargetType.ALL, NotificationTargetType.STAFF)
+                null
         );
     }
 
@@ -127,18 +145,13 @@ public class NotificationServiceImpl implements NotificationService {
     private List<NotificationResponse> getVisibleNotifications(
             Long userId,
             Long roomId,
-            Long buildingId,
-            Collection<NotificationTargetType> globalTargets
+            Long buildingId
     ) {
-        List<Notification> notifications = notificationRepository.findVisibleNotifications(
-                globalTargets,
-                NotificationTargetType.ONE_USER,
-                userId,
-                NotificationTargetType.ONE_ROOM,
-                roomId,
-                NotificationTargetType.ONE_BUILDING,
-                buildingId
-        );
+        User user = findUser(userId);
+        List<Notification> notifications = notificationRepository.findAllByOrderByCreatedAtDesc()
+                .stream()
+                .filter(notification -> isVisibleToUser(notification, user, roomId, buildingId))
+                .toList();
 
         List<Long> notificationIds = notifications.stream()
                 .map(Notification::getId)
@@ -165,21 +178,59 @@ public class NotificationServiceImpl implements NotificationService {
         Long activeRoomId = findActiveRoomId(user.getId());
         Long activeBuildingId = findActiveBuildingId(user.getId());
 
+        return isVisibleToUser(notification, user, activeRoomId, activeBuildingId);
+    }
+
+    private boolean isVisibleToUser(Notification notification, User user, Long activeRoomId, Long activeBuildingId) {
+        if (!matchesNotificationTarget(notification, user, activeRoomId, activeBuildingId)) {
+            return false;
+        }
+
+        return matchesBuildingScope(notification, user, activeBuildingId);
+    }
+
+    private boolean matchesNotificationTarget(Notification notification, User user, Long activeRoomId, Long activeBuildingId) {
         return switch (notification.getTargetType()) {
             case ALL -> true;
-            case STAFF -> user.getRole().name().equals("STAFF");
-            case ALL_RESIDENT_HEADS -> user.getRole().name().equals("RESIDENT_HEAD");
+            case STAFF -> user.getRole() == UserRole.STAFF;
+            case ALL_RESIDENT_HEADS -> user.getRole() == UserRole.RESIDENT_HEAD;
+            case SELECTED_USERS -> notification.getTargetUsers()
+                    .stream()
+                    .anyMatch(targetUser -> targetUser.getUser().getId().equals(user.getId()));
             case ONE_BUILDING -> activeBuildingId != null && notification.getTargetId().equals(activeBuildingId);
             case ONE_USER -> notification.getTargetId().equals(user.getId());
             case ONE_ROOM -> activeRoomId != null && notification.getTargetId().equals(activeRoomId);
         };
     }
 
-    private void validateTarget(NotificationTargetType targetType, Long targetId) {
+    private boolean matchesBuildingScope(Notification notification, User user, Long activeBuildingId) {
+        if (notification.getTargetBuildings().isEmpty()) {
+            return true;
+        }
+
+        if (notification.getTargetType() == NotificationTargetType.SELECTED_USERS) {
+            return true;
+        }
+
+        if (user.getRole() != UserRole.RESIDENT_HEAD) {
+            return true;
+        }
+
+        return activeBuildingId != null && notification.getTargetBuildings()
+                .stream()
+                .anyMatch(targetBuilding -> targetBuilding.getBuilding().getId().equals(activeBuildingId));
+    }
+
+    private void validateTarget(NotificationTargetType targetType, Long targetId, List<User> selectedUsers) {
         switch (targetType) {
             case ALL, ALL_RESIDENT_HEADS, STAFF -> {
                 if (targetId != null) {
                     throw new BadRequestException("Target ID must be empty for this notification target");
+                }
+            }
+            case SELECTED_USERS -> {
+                if (selectedUsers.isEmpty()) {
+                    throw new BadRequestException("At least one target user is required");
                 }
             }
             case ONE_BUILDING -> {
@@ -210,17 +261,27 @@ public class NotificationServiceImpl implements NotificationService {
     private Long resolveTargetId(NotificationTargetType targetType, Long targetId, Long buildingId) {
         return switch (targetType) {
             case ALL, ALL_RESIDENT_HEADS, STAFF -> null;
+            case SELECTED_USERS -> null;
             case ONE_BUILDING -> targetId == null ? buildingId : targetId;
             case ONE_ROOM, ONE_USER -> targetId;
         };
     }
 
-    private void validateBuildingScope(NotificationTargetType targetType, Long targetId, Long buildingId) {
+    private void validateBuildingScope(
+            NotificationTargetType targetType,
+            Long targetId,
+            Long buildingId,
+            List<Building> selectedBuildings
+    ) {
         if (buildingId == null) {
             return;
         }
 
         validateBuildingExists(buildingId);
+
+        if (!selectedBuildings.isEmpty() && selectedBuildings.stream().anyMatch(building -> !Objects.equals(building.getId(), buildingId))) {
+            throw new BadRequestException("Notification target building must match the selected building");
+        }
 
         switch (targetType) {
             case ONE_BUILDING -> {
@@ -235,17 +296,113 @@ public class NotificationServiceImpl implements NotificationService {
                     throw new BadRequestException("Notification target room does not belong to the selected building");
                 }
             }
-            default -> throw new BadRequestException("Building notifications must target the selected building or one room in it");
+            default -> {
+            }
         }
     }
 
-    private List<Notification> getBuildingNotifications(Long buildingId) {
-        validateBuildingExists(buildingId);
-        return notificationRepository.findByBuildingIdWithCreator(
-                NotificationTargetType.ONE_BUILDING,
-                buildingId,
-                NotificationTargetType.ONE_ROOM
-        );
+    private List<User> resolveSelectedUsers(NotificationTargetType targetType, NotificationCreateRequest request) {
+        if (targetType != NotificationTargetType.SELECTED_USERS) {
+            return List.of();
+        }
+
+        List<Long> userIds = normalizeIds(request.getTargetUserIds());
+
+        if (userIds.isEmpty() && request.getTargetId() != null) {
+            userIds = List.of(request.getTargetId());
+        }
+
+        if (userIds.isEmpty()) {
+            return List.of();
+        }
+
+        List<User> users = userRepository.findAllById(userIds);
+        if (users.size() != userIds.size()) {
+            throw new ResourceNotFoundException("Target user not found");
+        }
+
+        return users;
+    }
+
+    private List<Building> resolveSelectedBuildings(NotificationCreateRequest request, Long buildingId) {
+        if (buildingId != null) {
+            return List.of(findBuilding(buildingId));
+        }
+
+        String buildingTargetType = request.getBuildingTargetType();
+        List<Long> buildingIds = normalizeIds(request.getBuildingIds());
+
+        if (buildingTargetType == null || buildingTargetType.isBlank()) {
+            return buildingIds.isEmpty() ? List.of() : findBuildings(buildingIds);
+        }
+
+        String normalizedType = buildingTargetType.trim().toUpperCase(Locale.ROOT);
+
+        if ("ALL".equals(normalizedType)) {
+            return List.of();
+        }
+
+        if ("SELECTED".equals(normalizedType)) {
+            if (buildingIds.isEmpty()) {
+                throw new BadRequestException("At least one target building is required");
+            }
+            return findBuildings(buildingIds);
+        }
+
+        throw new BadRequestException("Notification building target type is invalid");
+    }
+
+    private List<Long> normalizeIds(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return List.of();
+        }
+
+        return ids.stream()
+                .filter(Objects::nonNull)
+                .collect(Collectors.collectingAndThen(
+                        Collectors.toCollection(LinkedHashSet::new),
+                        List::copyOf
+                ));
+    }
+
+    private List<Building> findBuildings(List<Long> buildingIds) {
+        List<Building> buildings = buildingRepository.findAllById(buildingIds);
+        if (buildings.size() != buildingIds.size()) {
+            throw new ResourceNotFoundException("Building not found");
+        }
+
+        return buildings;
+    }
+
+    private Building findBuilding(Long buildingId) {
+        return buildingRepository.findById(buildingId)
+                .orElseThrow(() -> new ResourceNotFoundException("Building not found"));
+    }
+
+    private boolean isNotificationLinkedToBuilding(Notification notification, Long buildingId) {
+        if (notification.getTargetBuildings().isEmpty()
+                && notification.getTargetType() != NotificationTargetType.ONE_BUILDING
+                && notification.getTargetType() != NotificationTargetType.ONE_ROOM) {
+            return true;
+        }
+
+        if (notification.getTargetBuildings()
+                .stream()
+                .anyMatch(targetBuilding -> targetBuilding.getBuilding().getId().equals(buildingId))) {
+            return true;
+        }
+
+        if (notification.getTargetType() == NotificationTargetType.ONE_BUILDING) {
+            return Objects.equals(notification.getTargetId(), buildingId);
+        }
+
+        if (notification.getTargetType() == NotificationTargetType.ONE_ROOM) {
+            return roomRepository.findById(notification.getTargetId())
+                    .map(room -> Objects.equals(room.getBuilding().getId(), buildingId))
+                    .orElse(false);
+        }
+
+        return false;
     }
 
     private void validateBuildingExists(Long buildingId) {

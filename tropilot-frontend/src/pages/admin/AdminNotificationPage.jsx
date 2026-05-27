@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import * as adminUserApi from '../../api/adminUserApi.js';
 import * as buildingApi from '../../api/buildingApi.js';
 import * as notificationApi from '../../api/notificationApi.js';
-import * as roomApi from '../../api/roomApi.js';
 import NotificationTable from '../../components/NotificationTable.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
 import { NOTIFICATION_TARGET_OPTIONS } from '../../utils/notificationOptions.js';
@@ -11,15 +10,19 @@ const emptyForm = {
   title: '',
   content: '',
   targetType: 'ALL_RESIDENT_HEADS',
-  buildingId: '',
-  targetId: ''
+  targetUserIds: [],
+  buildingTargetType: 'ALL',
+  buildingIds: []
 };
+
+function getSelectedValues(selectElement) {
+  return Array.from(selectElement.selectedOptions).map((option) => option.value);
+}
 
 export default function AdminNotificationPage() {
   const [form, setForm] = useState(emptyForm);
   const [notifications, setNotifications] = useState([]);
   const [buildings, setBuildings] = useState([]);
-  const [rooms, setRooms] = useState([]);
   const [users, setUsers] = useState([]);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
@@ -33,13 +36,11 @@ export default function AdminNotificationPage() {
 
   useEffect(() => {
     Promise.all([
-      roomApi.getAdminRooms(),
       adminUserApi.getUsers(),
       buildingApi.getAdminBuildings(),
       notificationApi.getAdminNotifications()
     ])
-      .then(([roomsResponse, usersResponse, buildingsResponse, notificationsResponse]) => {
-        setRooms(roomsResponse.data);
+      .then(([usersResponse, buildingsResponse, notificationsResponse]) => {
         setUsers(usersResponse.data);
         setBuildings(buildingsResponse.data);
         setNotifications(notificationsResponse.data);
@@ -53,23 +54,22 @@ export default function AdminNotificationPage() {
     setForm((current) => ({
       ...current,
       [name]: value,
-      buildingId: name === 'targetType' ? '' : current.buildingId,
-      targetId: name === 'targetType' ? '' : current.targetId
+      targetUserIds: name === 'targetType' ? [] : current.targetUserIds,
+      buildingIds: name === 'buildingTargetType' && value === 'ALL' ? [] : current.buildingIds
     }));
   };
 
-  const handleBuildingIdChange = (event) => {
+  const handleTargetUsersChange = (event) => {
     setForm((current) => ({
       ...current,
-      buildingId: event.target.value,
-      targetId: ''
+      targetUserIds: getSelectedValues(event.target)
     }));
   };
 
-  const handleTargetIdChange = (event) => {
+  const handleBuildingsChange = (event) => {
     setForm((current) => ({
       ...current,
-      targetId: event.target.value
+      buildingIds: getSelectedValues(event.target)
     }));
   };
 
@@ -80,13 +80,13 @@ export default function AdminNotificationPage() {
     setError('');
 
     try {
-      const targetId = form.targetType === 'ONE_BUILDING' ? form.buildingId : form.targetId;
-
       await notificationApi.createAdminNotification({
         title: form.title,
         content: form.content,
         targetType: form.targetType,
-        targetId: targetId ? Number(targetId) : null
+        targetUserIds: form.targetType === 'SELECTED_USERS' ? form.targetUserIds.map(Number) : [],
+        buildingTargetType: form.buildingTargetType,
+        buildingIds: form.buildingTargetType === 'SELECTED' ? form.buildingIds.map(Number) : []
       });
       setForm(emptyForm);
       setMessage('Notification created successfully.');
@@ -98,12 +98,8 @@ export default function AdminNotificationPage() {
     }
   };
 
-  const needsBuildingTarget = form.targetType === 'ONE_BUILDING';
-  const needsRoomTarget = form.targetType === 'ONE_ROOM';
-  const needsUserTarget = form.targetType === 'ONE_USER';
-  const filteredRooms = needsRoomTarget
-    ? rooms.filter((room) => String(room.buildingId) === String(form.buildingId))
-    : rooms;
+  const needsSelectedUsers = form.targetType === 'SELECTED_USERS';
+  const needsSelectedBuildings = form.buildingTargetType === 'SELECTED';
 
   if (loading) {
     return <div className="empty-state">Loading notification form...</div>;
@@ -133,52 +129,52 @@ export default function AdminNotificationPage() {
             ))}
           </select>
 
-          {needsBuildingTarget && (
+          {needsSelectedUsers && (
             <>
-              <label htmlFor="targetBuilding">Target building</label>
-              <select id="targetBuilding" value={form.buildingId} onChange={handleBuildingIdChange} required>
-                <option value="">Select building</option>
-                {buildings.map((building) => (
-                  <option key={building.id} value={building.id}>
-                    {building.buildingCode} - {building.name}
-                  </option>
-                ))}
-              </select>
-            </>
-          )}
-
-          {needsRoomTarget && (
-            <>
-              <label htmlFor="targetRoomBuilding">Target building</label>
-              <select id="targetRoomBuilding" value={form.buildingId} onChange={handleBuildingIdChange} required>
-                <option value="">Select building</option>
-                {buildings.map((building) => (
-                  <option key={building.id} value={building.id}>
-                    {building.buildingCode} - {building.name}
-                  </option>
-                ))}
-              </select>
-
-              <label htmlFor="targetRoom">Target room</label>
-              <select id="targetRoom" value={form.targetId} onChange={handleTargetIdChange} disabled={!form.buildingId} required>
-                <option value="">Select room</option>
-                {filteredRooms.map((room) => (
-                  <option key={room.id} value={room.id}>
-                    {room.roomCode} - {room.roomName}
-                  </option>
-                ))}
-              </select>
-            </>
-          )}
-
-          {needsUserTarget && (
-            <>
-              <label htmlFor="targetUser">Target user</label>
-              <select id="targetUser" value={form.targetId} onChange={handleTargetIdChange} required>
-                <option value="">Select user</option>
+              <label htmlFor="targetUsers">Target users</label>
+              <select
+                id="targetUsers"
+                value={form.targetUserIds}
+                onChange={handleTargetUsersChange}
+                multiple
+                size={Math.min(Math.max(users.length, 3), 8)}
+                required
+              >
                 {users.map((user) => (
                   <option key={user.id} value={user.id}>
                     {user.fullName} - {user.email}
+                  </option>
+                ))}
+              </select>
+            </>
+          )}
+
+          <label htmlFor="buildingTargetType">Target buildings</label>
+          <select
+            id="buildingTargetType"
+            name="buildingTargetType"
+            value={form.buildingTargetType}
+            onChange={handleChange}
+            required
+          >
+            <option value="ALL">All buildings</option>
+            <option value="SELECTED">Selected buildings</option>
+          </select>
+
+          {needsSelectedBuildings && (
+            <>
+              <label htmlFor="targetBuildings">Building receiving notification</label>
+              <select
+                id="targetBuildings"
+                value={form.buildingIds}
+                onChange={handleBuildingsChange}
+                multiple
+                size={Math.min(Math.max(buildings.length, 3), 8)}
+                required
+              >
+                {buildings.map((building) => (
+                  <option key={building.id} value={building.id}>
+                    {building.buildingCode} - {building.name}
                   </option>
                 ))}
               </select>

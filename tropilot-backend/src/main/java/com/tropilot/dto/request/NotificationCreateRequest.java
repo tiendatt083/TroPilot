@@ -5,6 +5,8 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 public class NotificationCreateRequest {
@@ -22,4 +24,10 @@ public class NotificationCreateRequest {
     private String targetType;
 
     private Long targetId;
+
+    private List<Long> targetUserIds;
+
+    private String buildingTargetType;
+
+    private List<Long> buildingIds;
 }

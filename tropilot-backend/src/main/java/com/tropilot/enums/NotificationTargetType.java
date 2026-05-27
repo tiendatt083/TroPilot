@@ -5,6 +5,7 @@ public enum NotificationTargetType {
     ONE_BUILDING,
     ONE_ROOM,
     ONE_USER,
+    SELECTED_USERS,
     STAFF,
     ALL
 }
