@@ -16,6 +16,7 @@ public class AdminDashboardResponse {
     private long maintenanceRooms;
     private long totalHeadResidents;
     private long totalApprovedRoomMembers;
+    private long totalPendingRoomMembers;
     private long totalOccupants;
     private long totalActiveVehicles;
     private long expiringContracts;

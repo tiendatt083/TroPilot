@@ -50,6 +50,7 @@ export default function AdminDashboardPage() {
         { label: 'Maintenance rooms', value: formatNumber(dashboard.maintenanceRooms) },
         { label: 'Head residents', value: formatNumber(dashboard.totalHeadResidents) },
         { label: 'Approved room members', value: formatNumber(dashboard.totalApprovedRoomMembers) },
+        { label: 'Pending room members', value: formatNumber(dashboard.totalPendingRoomMembers) },
         { label: 'Total occupants', value: formatNumber(dashboard.totalOccupants) },
         { label: 'Active vehicles', value: formatNumber(dashboard.totalActiveVehicles) },
         { label: 'Expiring contracts', value: formatNumber(dashboard.expiringContracts), note: 'Next 30 days' },

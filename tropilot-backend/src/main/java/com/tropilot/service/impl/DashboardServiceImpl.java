@@ -88,6 +88,7 @@ public class DashboardServiceImpl implements DashboardService {
         LocalDate today = LocalDate.now();
         long activeAssignedHeads = roomAssignmentRepository.countByStatus(RoomAssignmentStatus.ACTIVE);
         long approvedMembers = roomMemberRepository.countByStatus(RoomMemberStatus.APPROVED);
+        long pendingMembers = roomMemberRepository.countByStatus(RoomMemberStatus.PENDING);
         BigDecimal totalIncome = nonNull(receiptRepository.sumAmountByStatus(ReceiptStatus.VALID));
         BigDecimal totalExpense = nonNull(expenseRepository.sumAmountByStatus(ExpenseStatus.VALID));
 
@@ -99,6 +100,7 @@ public class DashboardServiceImpl implements DashboardService {
                 .maintenanceRooms(roomRepository.countByStatus(RoomStatus.MAINTENANCE))
                 .totalHeadResidents(userRepository.countByRole(UserRole.RESIDENT_HEAD))
                 .totalApprovedRoomMembers(approvedMembers)
+                .totalPendingRoomMembers(pendingMembers)
                 .totalOccupants(activeAssignedHeads + approvedMembers)
                 .totalActiveVehicles(vehicleRepository.countByStatus(VehicleStatus.ACTIVE))
                 .expiringContracts(rentalContractRepository.countByRentalStatusAndEndDateBetween(
