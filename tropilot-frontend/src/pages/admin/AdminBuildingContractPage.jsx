@@ -13,6 +13,10 @@ function formatNumber(value) {
     : value;
 }
 
+function isCurrentContract(contract) {
+  return contract.rentalStatus !== 'ENDED';
+}
+
 export default function AdminBuildingContractPage() {
   const { building } = useOutletContext();
   const [contracts, setContracts] = useState([]);
@@ -31,7 +35,7 @@ export default function AdminBuildingContractPage() {
 
     try {
       const response = await contractApi.getAdminContracts(buildingFilter);
-      setContracts(response.data);
+      setContracts(response.data.filter(isCurrentContract));
     } catch (apiError) {
       setError(apiError.response?.data?.message || 'Building contracts could not be loaded');
     }
@@ -151,7 +155,7 @@ export default function AdminBuildingContractPage() {
                 ))}
               </tbody>
             </table>
-            {contracts.length === 0 && <div className="empty-state flat-empty-state">No rental contracts found.</div>}
+            {contracts.length === 0 && <div className="empty-state flat-empty-state">No active rental contracts found.</div>}
           </div>
 
           <div className="invoice-list-column">

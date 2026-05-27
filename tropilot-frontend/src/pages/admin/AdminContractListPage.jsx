@@ -11,6 +11,10 @@ function formatNumber(value) {
     : value;
 }
 
+function isCurrentContract(contract) {
+  return contract.rentalStatus !== 'ENDED';
+}
+
 export default function AdminContractListPage() {
   const [contracts, setContracts] = useState([]);
   const [error, setError] = useState('');
@@ -23,7 +27,7 @@ export default function AdminContractListPage() {
       .getAdminContracts()
       .then((response) => {
         if (active) {
-          setContracts(response.data);
+          setContracts(response.data.filter(isCurrentContract));
         }
       })
       .catch((apiError) => {
@@ -86,7 +90,7 @@ export default function AdminContractListPage() {
               ))}
             </tbody>
           </table>
-          {contracts.length === 0 && <div className="empty-state flat-empty-state">No rental contracts found.</div>}
+          {contracts.length === 0 && <div className="empty-state flat-empty-state">No active rental contracts found.</div>}
         </div>
       )}
     </section>

@@ -695,6 +695,7 @@ export const EN_TO_VI_TRANSLATIONS = {
   'New reading': 'Chỉ số mới',
   'New water': 'Chỉ số nước mới',
   'No active contract is available.': 'Không có hợp đồng đang hoạt động.',
+  'No active rental contracts found.': 'Không tìm thấy hợp đồng thuê đang hoạt động.',
   'No active Head Residents available': 'Không có chủ hộ đang hoạt động',
   'No active vehicle is registered.': 'Không có xe đang hoạt động.',
   'No activity logs found.': 'Không tìm thấy nhật ký hoạt động.',
