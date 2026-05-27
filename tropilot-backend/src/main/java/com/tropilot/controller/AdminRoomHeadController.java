@@ -45,7 +45,7 @@ public class AdminRoomHeadController {
     @PutMapping("/remove-head")
     public ApiResponse<RoomHeadResponse> removeHeadResident(@PathVariable Long roomId) {
         return ApiResponse.success(
-                "Head Resident removed successfully",
+                "Contract ended successfully",
                 headResidentAssignmentService.removeHeadResident(roomId)
         );
     }

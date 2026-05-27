@@ -33,6 +33,26 @@ function getActiveResidentHeads(users) {
   return users.filter((user) => user.role === 'RESIDENT_HEAD' && user.status === 'ACTIVE');
 }
 
+function getTodayIsoDate() {
+  const now = new Date();
+  const localDate = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+  return localDate.toISOString().slice(0, 10);
+}
+
+function isFutureDate(dateValue) {
+  return Boolean(dateValue) && String(dateValue).slice(0, 10) > getTodayIsoDate();
+}
+
+function getEndContractConfirmationMessage(room, headInfo) {
+  const endDate = headInfo?.contractEndDate || headInfo?.assignmentEndDate;
+
+  if (isFutureDate(endDate)) {
+    return `The contract has not reached its end date yet (${endDate}). Do you want to end it now and remove the Head Resident and room members from room ${room.roomCode}?`;
+  }
+
+  return `End the contract and remove the Head Resident and room members from room ${room.roomCode}?`;
+}
+
 export default function AdminRoomDetailPage() {
   const { id } = useParams();
   const location = useLocation();
@@ -106,7 +126,7 @@ export default function AdminRoomDetailPage() {
   };
 
   const handleRemoveHead = async () => {
-    const confirmed = window.confirm(`Remove Head Resident from room ${room.roomCode}?`);
+    const confirmed = window.confirm(getEndContractConfirmationMessage(room, headInfo));
     if (!confirmed) {
       return;
     }
@@ -117,10 +137,10 @@ export default function AdminRoomDetailPage() {
 
     try {
       await roomApi.removeHeadResident(room.id);
-      setMessage('Head Resident removed successfully.');
+      setMessage('Contract ended. Head Resident and room members were removed successfully.');
       await refreshRoomDetails();
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Head Resident could not be removed');
+      setError(apiError.response?.data?.message || 'Contract could not be ended');
     } finally {
       setRemovingHead(false);
     }
@@ -275,7 +295,7 @@ export default function AdminRoomDetailPage() {
                 disabled={removingHead}
                 onClick={handleRemoveHead}
               >
-                {removingHead ? 'Removing...' : 'Remove Head Resident'}
+                {removingHead ? 'Ending contract...' : 'End contract'}
               </button>
             </div>
           </div>

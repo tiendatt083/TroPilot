@@ -6,10 +6,12 @@ import com.tropilot.entity.Building;
 import com.tropilot.entity.RentalContract;
 import com.tropilot.entity.Room;
 import com.tropilot.entity.RoomAssignment;
+import com.tropilot.entity.RoomMember;
 import com.tropilot.entity.User;
 import com.tropilot.enums.ContractStatus;
 import com.tropilot.enums.RentalStatus;
 import com.tropilot.enums.RoomAssignmentStatus;
+import com.tropilot.enums.RoomMemberStatus;
 import com.tropilot.enums.RoomStatus;
 import com.tropilot.enums.UserRole;
 import com.tropilot.enums.UserStatus;
@@ -17,6 +19,7 @@ import com.tropilot.exception.BadRequestException;
 import com.tropilot.exception.ResourceNotFoundException;
 import com.tropilot.repository.RentalContractRepository;
 import com.tropilot.repository.RoomAssignmentRepository;
+import com.tropilot.repository.RoomMemberRepository;
 import com.tropilot.repository.RoomRepository;
 import com.tropilot.repository.UserRepository;
 import com.tropilot.service.ActivityLogService;
@@ -26,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +39,7 @@ public class HeadResidentAssignmentServiceImpl implements HeadResidentAssignment
     private final UserRepository userRepository;
     private final RoomAssignmentRepository roomAssignmentRepository;
     private final RentalContractRepository rentalContractRepository;
+    private final RoomMemberRepository roomMemberRepository;
     private final ActivityLogService activityLogService;
 
     @Override
@@ -129,6 +134,8 @@ public class HeadResidentAssignmentServiceImpl implements HeadResidentAssignment
             rentalContractRepository.save(contract);
         }
 
+        markRoomMembersAsLeft(room.getId(), assignment.getResidentHead().getId(), removalDate);
+
         room.setStatus(RoomStatus.EMPTY);
         roomRepository.save(room);
         roomAssignmentRepository.save(assignment);
@@ -190,6 +197,23 @@ public class HeadResidentAssignmentServiceImpl implements HeadResidentAssignment
                         residentHeadId
                 ))
                 .orElse(null);
+    }
+
+    private void markRoomMembersAsLeft(Long roomId, Long residentHeadId, LocalDate moveOutDate) {
+        List<RoomMember> members = roomMemberRepository.findByRoom_IdAndResidentHead_IdAndStatusIn(
+                roomId,
+                residentHeadId,
+                List.of(RoomMemberStatus.PENDING, RoomMemberStatus.APPROVED)
+        );
+
+        members.forEach(member -> {
+            member.setStatus(RoomMemberStatus.LEFT);
+            if (member.getMoveOutDate() == null || member.getMoveOutDate().isAfter(moveOutDate)) {
+                member.setMoveOutDate(moveOutDate);
+            }
+        });
+
+        roomMemberRepository.saveAll(members);
     }
 
     private RoomHeadResponse toAssignedResponse(
