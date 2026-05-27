@@ -100,6 +100,14 @@ export default function AdminNotificationPage() {
           targetUserIds: []
         };
 
+        if (value === 'STAFF') {
+          return {
+            ...nextForm,
+            buildingTargetType: 'ALL',
+            buildingIds: []
+          };
+        }
+
         return value === 'SELECTED_USERS' && current.buildingTargetType === 'ALL'
           ? { ...nextForm, buildingTargetType: 'SELECTED' }
           : nextForm;
@@ -141,7 +149,9 @@ export default function AdminNotificationPage() {
     setMessage('');
     setError('');
 
-    if (form.buildingTargetType === 'SELECTED' && form.buildingIds.length === 0) {
+    const usesBuildingTarget = form.targetType !== 'STAFF';
+
+    if (usesBuildingTarget && form.buildingTargetType === 'SELECTED' && form.buildingIds.length === 0) {
       setError('At least one target building is required');
       return;
     }
@@ -159,8 +169,8 @@ export default function AdminNotificationPage() {
         content: form.content,
         targetType: form.targetType,
         targetUserIds: form.targetType === 'SELECTED_USERS' ? form.targetUserIds.map(Number) : [],
-        buildingTargetType: form.buildingTargetType,
-        buildingIds: form.buildingTargetType === 'SELECTED' ? form.buildingIds.map(Number) : []
+        buildingTargetType: usesBuildingTarget ? form.buildingTargetType : 'ALL',
+        buildingIds: usesBuildingTarget && form.buildingTargetType === 'SELECTED' ? form.buildingIds.map(Number) : []
       });
       setForm(emptyForm);
       setMessage('Notification created successfully.');
@@ -173,7 +183,8 @@ export default function AdminNotificationPage() {
   };
 
   const needsSelectedUsers = form.targetType === 'SELECTED_USERS';
-  const needsSelectedBuildings = form.buildingTargetType === 'SELECTED';
+  const usesBuildingTarget = form.targetType !== 'STAFF';
+  const needsSelectedBuildings = usesBuildingTarget && form.buildingTargetType === 'SELECTED';
 
   if (loading) {
     return <div className="empty-state">Loading notification form...</div>;
@@ -203,17 +214,21 @@ export default function AdminNotificationPage() {
             ))}
           </select>
 
-          <label htmlFor="buildingTargetType">Target buildings</label>
-          <select
-            id="buildingTargetType"
-            name="buildingTargetType"
-            value={form.buildingTargetType}
-            onChange={handleChange}
-            required
-          >
-            <option value="ALL">All buildings</option>
-            <option value="SELECTED">Selected buildings</option>
-          </select>
+          {usesBuildingTarget && (
+            <>
+              <label htmlFor="buildingTargetType">Target buildings</label>
+              <select
+                id="buildingTargetType"
+                name="buildingTargetType"
+                value={form.buildingTargetType}
+                onChange={handleChange}
+                required
+              >
+                <option value="ALL">All buildings</option>
+                <option value="SELECTED">Selected buildings</option>
+              </select>
+            </>
+          )}
 
           {needsSelectedBuildings && (
             <>

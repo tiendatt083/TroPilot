@@ -54,7 +54,7 @@ public class NotificationServiceImpl implements NotificationService {
         User createdBy = findUser(createdById);
         NotificationTargetType targetType = parseTargetType(request.getTargetType());
         List<User> selectedUsers = resolveSelectedUsers(targetType, request);
-        List<Building> selectedBuildings = resolveSelectedBuildings(request, buildingId);
+        List<Building> selectedBuildings = resolveSelectedBuildings(targetType, request, buildingId);
         Long targetId = resolveTargetId(targetType, request.getTargetId(), buildingId);
         validateSelectedResidentHeads(targetType, selectedUsers, selectedBuildings);
         validateTarget(targetType, targetId, selectedUsers);
@@ -360,7 +360,15 @@ public class NotificationServiceImpl implements NotificationService {
         }
     }
 
-    private List<Building> resolveSelectedBuildings(NotificationCreateRequest request, Long buildingId) {
+    private List<Building> resolveSelectedBuildings(
+            NotificationTargetType targetType,
+            NotificationCreateRequest request,
+            Long buildingId
+    ) {
+        if (targetType == NotificationTargetType.STAFF) {
+            return List.of();
+        }
+
         if (buildingId != null) {
             return List.of(findBuilding(buildingId));
         }

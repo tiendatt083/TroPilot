@@ -26,32 +26,22 @@ import AdminBuildingVehiclePage from '../pages/admin/AdminBuildingVehiclePage.js
 import AdminActivityLogPage from '../pages/admin/AdminActivityLogPage.jsx';
 import AdminContractDetailPage from '../pages/admin/AdminContractDetailPage.jsx';
 import AdminContractListPage from '../pages/admin/AdminContractListPage.jsx';
-import AdminCashFlowPage from '../pages/admin/AdminCashFlowPage.jsx';
 import AdminDashboardPage from '../pages/admin/AdminDashboardPage.jsx';
-import AdminExpenseListPage from '../pages/admin/AdminExpenseListPage.jsx';
 import AdminFeedbackPage from '../pages/admin/AdminFeedbackPage.jsx';
-import AdminInvoiceListPage from '../pages/admin/AdminInvoiceListPage.jsx';
 import AdminInvoiceComplaintPage from '../pages/admin/AdminInvoiceComplaintPage.jsx';
 import AdminMaintenancePage from '../pages/admin/AdminMaintenancePage.jsx';
 import AdminNotificationPage from '../pages/admin/AdminNotificationPage.jsx';
 import AdminPendingMembersPage from '../pages/admin/AdminPendingMembersPage.jsx';
-import AdminPendingVehiclesPage from '../pages/admin/AdminPendingVehiclesPage.jsx';
-import AdminReceiptListPage from '../pages/admin/AdminReceiptListPage.jsx';
 import AdminRoomCreatePage from '../pages/admin/AdminRoomCreatePage.jsx';
 import AdminRoomDetailPage from '../pages/admin/AdminRoomDetailPage.jsx';
 import AdminRoomEditPage from '../pages/admin/AdminRoomEditPage.jsx';
 import AdminRoomListPage from '../pages/admin/AdminRoomListPage.jsx';
 import AdminRoomMembersPage from '../pages/admin/AdminRoomMembersPage.jsx';
-import AdminServiceFeeCreatePage from '../pages/admin/AdminServiceFeeCreatePage.jsx';
-import AdminServiceFeeEditPage from '../pages/admin/AdminServiceFeeEditPage.jsx';
-import AdminServiceFeeListPage from '../pages/admin/AdminServiceFeeListPage.jsx';
 import AdminTaskCreatePage from '../pages/admin/AdminTaskCreatePage.jsx';
 import AdminTaskDetailPage from '../pages/admin/AdminTaskDetailPage.jsx';
 import AdminTaskListPage from '../pages/admin/AdminTaskListPage.jsx';
 import AdminUserCreatePage from '../pages/admin/AdminUserCreatePage.jsx';
 import AdminUserListPage from '../pages/admin/AdminUserListPage.jsx';
-import AdminUtilityReadingPage from '../pages/admin/AdminUtilityReadingPage.jsx';
-import AdminVehicleListPage from '../pages/admin/AdminVehicleListPage.jsx';
 import ChangePasswordPage from '../pages/auth/ChangePasswordPage.jsx';
 import LoginPage from '../pages/auth/LoginPage.jsx';
 import ResidentContractPage from '../pages/resident/ResidentContractPage.jsx';
@@ -113,20 +103,20 @@ export default function AppRoutes() {
               <Route path="members/pending" element={<AdminPendingMembersPage />} />
               <Route path="contracts" element={<AdminContractListPage />} />
               <Route path="contracts/:id" element={<AdminContractDetailPage />} />
-              <Route path="invoices" element={<AdminInvoiceListPage />} />
-              <Route path="receipts" element={<AdminReceiptListPage />} />
-              <Route path="expenses" element={<AdminExpenseListPage />} />
-              <Route path="cashflow" element={<AdminCashFlowPage />} />
+              <Route path="invoices" element={<Navigate to="/admin/buildings" replace />} />
+              <Route path="receipts" element={<Navigate to="/admin/buildings" replace />} />
+              <Route path="expenses" element={<Navigate to="/admin/buildings" replace />} />
+              <Route path="cashflow" element={<Navigate to="/admin/buildings" replace />} />
               <Route path="tasks" element={<AdminTaskListPage />} />
               <Route path="tasks/create" element={<AdminTaskCreatePage />} />
               <Route path="tasks/:id" element={<AdminTaskDetailPage />} />
               <Route path="maintenance" element={<AdminMaintenancePage />} />
-              <Route path="vehicles" element={<AdminVehicleListPage />} />
-              <Route path="vehicles/pending" element={<AdminPendingVehiclesPage />} />
-              <Route path="service-fees" element={<AdminServiceFeeListPage />} />
-              <Route path="service-fees/create" element={<AdminServiceFeeCreatePage />} />
-              <Route path="service-fees/:id/edit" element={<AdminServiceFeeEditPage />} />
-              <Route path="utility-readings" element={<AdminUtilityReadingPage />} />
+              <Route path="vehicles" element={<Navigate to="/admin/buildings" replace />} />
+              <Route path="vehicles/pending" element={<Navigate to="/admin/buildings" replace />} />
+              <Route path="service-fees" element={<Navigate to="/admin/buildings" replace />} />
+              <Route path="service-fees/create" element={<Navigate to="/admin/buildings" replace />} />
+              <Route path="service-fees/:id/edit" element={<Navigate to="/admin/buildings" replace />} />
+              <Route path="utility-readings" element={<Navigate to="/admin/buildings" replace />} />
               <Route path="buildings" element={<AdminBuildingListPage />} />
               <Route path="buildings/create" element={<AdminBuildingCreatePage />} />
               <Route path="buildings/:id" element={<AdminBuildingWorkspaceLayout />}>

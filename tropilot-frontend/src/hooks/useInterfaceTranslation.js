@@ -4,6 +4,11 @@ import { EN_TO_VI_TRANSLATIONS, VI_TO_EN_TRANSLATIONS } from '../utils/interface
 
 const TRANSLATABLE_ATTRIBUTES = ['placeholder', 'aria-label', 'title'];
 const IGNORED_TAGS = new Set(['SCRIPT', 'STYLE', 'TEXTAREA']);
+const FIXED_DISPLAY_VALUES = {
+  'property administrator': 'Admin',
+  'quản trị viên bất động sản': 'Admin',
+  'quản trị viên bất đọng sản': 'Admin'
+};
 
 function getDictionary(language) {
   return language?.startsWith('en') ? VI_TO_EN_TRANSLATIONS : EN_TO_VI_TRANSLATIONS;
@@ -61,6 +66,52 @@ function getEnglishRoleCode(roleName) {
 
 function translateDynamicValue(trimmedValue, isEnglish) {
   if (isEnglish) {
+    const deleteBuildingMatch = trimmedValue.match(/^Xóa tòa nhà (.+)\?$/i);
+    if (deleteBuildingMatch) {
+      return `Delete building ${deleteBuildingMatch[1]}?`;
+    }
+
+    const deleteRoomMatch = trimmedValue.match(/^Xóa phòng (.+)\?$/i);
+    if (deleteRoomMatch) {
+      return `Delete room ${deleteRoomMatch[1]}?`;
+    }
+
+    const removeHeadResidentMatch = trimmedValue.match(/^Xóa chủ hộ khỏi phòng (.+)\?$/i);
+    if (removeHeadResidentMatch) {
+      return `Remove Head Resident from room ${removeHeadResidentMatch[1]}?`;
+    }
+
+    const deleteUserMatch = trimmedValue.match(/^Bạn có chắc muốn xóa (.+)\? Thao tác này không thể hoàn tác\.$/i);
+    if (deleteUserMatch) {
+      return `Are you sure you want to delete ${deleteUserMatch[1]}? This action cannot be undone.`;
+    }
+
+    const regeneratePasswordMatch = trimmedValue.match(/^Bạn có chắc muốn tạo lại mật khẩu tạm thời cho (.+)\?$/i);
+    if (regeneratePasswordMatch) {
+      return `Are you sure you want to regenerate a temporary password for ${regeneratePasswordMatch[1]}?`;
+    }
+
+    const userActionMatch = trimmedValue.match(/^Bạn có chắc muốn (khóa|mở khóa) (.+)\?$/i);
+    if (userActionMatch) {
+      const action = userActionMatch[1].toLowerCase() === 'khóa' ? 'lock' : 'unlock';
+      return `Are you sure you want to ${action} ${userActionMatch[2]}?`;
+    }
+
+    const userActionSuccessMatch = trimmedValue.match(/^(.+) đã được (xóa|khóa|mở khóa) thành công\.$/i);
+    if (userActionSuccessMatch) {
+      const actionMap = {
+        'xóa': 'deleted',
+        'khóa': 'locked',
+        'mở khóa': 'unlocked'
+      };
+      return `${userActionSuccessMatch[1]} was ${actionMap[userActionSuccessMatch[2].toLowerCase()]} successfully.`;
+    }
+
+    const temporaryPasswordMatch = trimmedValue.match(/^Mật khẩu tạm thời của (.+): (.+)$/i);
+    if (temporaryPasswordMatch) {
+      return `Temporary password for ${temporaryPasswordMatch[1]}: ${temporaryPasswordMatch[2]}`;
+    }
+
     const usageMatch = trimmedValue.match(/^Mức dùng:\s*(.+)$/i);
     if (usageMatch) {
       return `Usage: ${usageMatch[1]}`;
@@ -88,6 +139,77 @@ function translateDynamicValue(trimmedValue, isEnglish) {
     }
 
     return null;
+  }
+
+  const deleteBuildingMatch = trimmedValue.match(/^Delete building (.+)\?$/i);
+  if (deleteBuildingMatch) {
+    return `Xóa tòa nhà ${deleteBuildingMatch[1]}?`;
+  }
+
+  const deleteRoomMatch = trimmedValue.match(/^Delete room (.+)\?$/i);
+  if (deleteRoomMatch) {
+    return `Xóa phòng ${deleteRoomMatch[1]}?`;
+  }
+
+  const deleteServiceFeeMatch = trimmedValue.match(/^Delete service fee (.+)\?$/i);
+  if (deleteServiceFeeMatch) {
+    return `Xóa phí dịch vụ ${deleteServiceFeeMatch[1]}?`;
+  }
+
+  const removeHeadResidentMatch = trimmedValue.match(/^Remove Head Resident from room (.+)\?$/i);
+  if (removeHeadResidentMatch) {
+    return `Xóa chủ hộ khỏi phòng ${removeHeadResidentMatch[1]}?`;
+  }
+
+  const requestVehicleCancellationMatch = trimmedValue.match(/^Request cancellation for vehicle (.+)\?$/i);
+  if (requestVehicleCancellationMatch) {
+    return `Yêu cầu hủy xe ${requestVehicleCancellationMatch[1]}?`;
+  }
+
+  const markMemberLeftMatch = trimmedValue.match(/^Mark (.+) as left\?$/i);
+  if (markMemberLeftMatch) {
+    return `Đánh dấu ${markMemberLeftMatch[1]} đã rời đi?`;
+  }
+
+  const deleteUserMatch = trimmedValue.match(/^Are you sure you want to delete (.+)\? This action cannot be undone\.$/i);
+  if (deleteUserMatch) {
+    return `Bạn có chắc muốn xóa ${deleteUserMatch[1]}? Thao tác này không thể hoàn tác.`;
+  }
+
+  const regeneratePasswordMatch = trimmedValue.match(/^Are you sure you want to regenerate a temporary password for (.+)\?$/i);
+  if (regeneratePasswordMatch) {
+    return `Bạn có chắc muốn tạo lại mật khẩu tạm thời cho ${regeneratePasswordMatch[1]}?`;
+  }
+
+  const userActionMatch = trimmedValue.match(/^Are you sure you want to (lock|unlock) (.+)\?$/i);
+  if (userActionMatch) {
+    const action = userActionMatch[1].toLowerCase() === 'lock' ? 'khóa' : 'mở khóa';
+    return `Bạn có chắc muốn ${action} ${userActionMatch[2]}?`;
+  }
+
+  const userActionSuccessMatch = trimmedValue.match(/^(.+) was (deleted|locked|unlocked) successfully\.$/i);
+  if (userActionSuccessMatch) {
+    const actionMap = {
+      deleted: 'xóa',
+      locked: 'khóa',
+      unlocked: 'mở khóa'
+    };
+    return `${userActionSuccessMatch[1]} đã được ${actionMap[userActionSuccessMatch[2].toLowerCase()]} thành công.`;
+  }
+
+  const temporaryPasswordMatch = trimmedValue.match(/^Temporary password for (.+): (.+)$/i);
+  if (temporaryPasswordMatch) {
+    return `Mật khẩu tạm thời của ${temporaryPasswordMatch[1]}: ${temporaryPasswordMatch[2]}`;
+  }
+
+  const maintenanceRequestTitleMatch = trimmedValue.match(/^Maintenance request #(.+): (.+)$/i);
+  if (maintenanceRequestTitleMatch) {
+    return `Yêu cầu bảo trì #${maintenanceRequestTitleMatch[1]}: ${maintenanceRequestTitleMatch[2]}`;
+  }
+
+  const plainOccupantMatch = trimmedValue.match(/^(\d+)\s+of\s+(\d+)$/i);
+  if (plainOccupantMatch) {
+    return `${plainOccupantMatch[1]} / ${plainOccupantMatch[2]}`;
   }
 
   const usageMatch = trimmedValue.match(/^Usage:\s*(.+)$/i);
@@ -125,6 +247,11 @@ function translateValue(value, translationContext) {
   }
 
   const trimmedValue = value.trim();
+  const fixedDisplayValue = FIXED_DISPLAY_VALUES[trimmedValue.toLowerCase()];
+  if (fixedDisplayValue) {
+    return withOriginalSpacing(value, fixedDisplayValue);
+  }
+
   const translatedValue =
     translationContext.dictionary[trimmedValue] ||
     translationContext.caseInsensitiveDictionary[trimmedValue.toLowerCase()] ||
@@ -162,11 +289,15 @@ function translateNode(node, translationContext) {
     return;
   }
 
-  if (node.nodeType !== Node.ELEMENT_NODE || IGNORED_TAGS.has(node.tagName)) {
+  if (node.nodeType !== Node.ELEMENT_NODE) {
     return;
   }
 
   translateElementAttributes(node, translationContext);
+
+  if (IGNORED_TAGS.has(node.tagName)) {
+    return;
+  }
 
   node.childNodes.forEach((childNode) => {
     translateNode(childNode, translationContext);

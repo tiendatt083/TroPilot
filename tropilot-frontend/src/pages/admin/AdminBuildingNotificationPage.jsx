@@ -77,6 +77,8 @@ export default function AdminBuildingNotificationPage() {
     setMessage('');
     setError('');
 
+    const usesBuildingTarget = form.targetType !== 'STAFF';
+
     if (form.targetType === 'SELECTED_USERS' && form.targetUserIds.length === 0) {
       setError('At least one Head Resident is required');
       return;
@@ -91,8 +93,8 @@ export default function AdminBuildingNotificationPage() {
           content: form.content,
           targetType: form.targetType,
           targetUserIds: form.targetType === 'SELECTED_USERS' ? form.targetUserIds.map(Number) : [],
-          buildingTargetType: 'SELECTED',
-          buildingIds: [building.id]
+          buildingTargetType: usesBuildingTarget ? 'SELECTED' : 'ALL',
+          buildingIds: usesBuildingTarget ? [building.id] : []
         },
         buildingFilter
       );
@@ -111,6 +113,7 @@ export default function AdminBuildingNotificationPage() {
   }
 
   const needsSelectedUsers = form.targetType === 'SELECTED_USERS';
+  const usesBuildingTarget = form.targetType !== 'STAFF';
 
   return (
     <div className="building-workspace">
@@ -152,8 +155,12 @@ export default function AdminBuildingNotificationPage() {
             </>
           )}
 
-          <label htmlFor="targetBuilding">Building receiving notification</label>
-          <input id="targetBuilding" value={`${building.buildingCode} - ${building.name}`} disabled readOnly />
+          {usesBuildingTarget && (
+            <>
+              <label htmlFor="targetBuilding">Building receiving notification</label>
+              <input id="targetBuilding" value={`${building.buildingCode} - ${building.name}`} disabled readOnly />
+            </>
+          )}
 
           <button type="submit" disabled={saving}>
             {saving ? 'Creating...' : 'Create notification'}
