@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
 import * as invoiceApi from '../../api/invoiceApi.js';
 import * as roomApi from '../../api/roomApi.js';
@@ -12,6 +13,7 @@ import UtilityReadingTable from '../../components/UtilityReadingTable.jsx';
 import { formatRoomCode } from '../../utils/roomDisplay.js';
 
 export default function AdminBuildingBillingPage() {
+  const { t } = useTranslation();
   const { building } = useOutletContext();
   const [rooms, setRooms] = useState([]);
   const [readings, setReadings] = useState([]);
@@ -40,7 +42,7 @@ export default function AdminBuildingBillingPage() {
       setReadings(readingsResponse.data);
       setInvoices(invoicesResponse.data);
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Billing data could not be loaded');
+      setError(apiError.response?.data?.message || t('buildingBilling.loadError'));
     }
   };
 
@@ -61,11 +63,11 @@ export default function AdminBuildingBillingPage() {
         ...payload,
         buildingId: building.id
       });
-      setMessage('Utility reading created successfully.');
+      setMessage(t('buildingBilling.readingCreated'));
       setFormKey((current) => current + 1);
       await loadData();
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Utility reading could not be created');
+      setError(apiError.response?.data?.message || t('buildingBilling.readingCreateError'));
     } finally {
       setSavingReading(false);
     }
@@ -81,11 +83,11 @@ export default function AdminBuildingBillingPage() {
         ...payload,
         buildingId: building.id
       });
-      setMessage('Utility reading updated successfully.');
+      setMessage(t('buildingBilling.readingUpdated'));
       setEditingReading(null);
       await loadData();
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Utility reading could not be updated');
+      setError(apiError.response?.data?.message || t('buildingBilling.readingUpdateError'));
     } finally {
       setSavingReading(false);
     }
@@ -102,10 +104,10 @@ export default function AdminBuildingBillingPage() {
         buildingId: building.id
       });
       setSelectedInvoice(response.data);
-      setMessage('Invoice generated successfully.');
+      setMessage(t('buildingBilling.invoiceGenerated'));
       await loadData();
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Invoice could not be generated');
+      setError(apiError.response?.data?.message || t('buildingBilling.invoiceGenerateError'));
       throw apiError;
     } finally {
       setGeneratingInvoice(false);
@@ -120,7 +122,7 @@ export default function AdminBuildingBillingPage() {
       const response = await invoiceApi.getAdminInvoice(invoice.id, { buildingId: building.id });
       setSelectedInvoice(response.data);
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Invoice could not be loaded');
+      setError(apiError.response?.data?.message || t('buildingBilling.invoiceLoadError'));
     } finally {
       setLoadingDetailId(null);
     }
@@ -129,7 +131,7 @@ export default function AdminBuildingBillingPage() {
   const renderReadingActions = (reading) => (
     <div className="table-actions">
       <button className="secondary-button compact-button" type="button" onClick={() => setEditingReading(reading)}>
-        Edit
+        {t('common.edit')}
       </button>
     </div>
   );
@@ -141,29 +143,27 @@ export default function AdminBuildingBillingPage() {
       disabled={loadingDetailId === invoice.id}
       onClick={() => handleViewInvoice(invoice)}
     >
-      View
+      {t('common.view')}
     </button>
   );
 
   return (
     <div className="building-workspace">
-      <PageHeader eyebrow="Building billing" title="Utility readings and invoices" />
-      <p className="page-support-text">
-        Record or update room readings, then generate room invoices from the same workspace.
-      </p>
+      <PageHeader eyebrow={t('buildingBilling.eyebrow')} title={t('buildingBilling.title')} />
+      <p className="page-support-text">{t('buildingBilling.description')}</p>
 
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
 
       {loading ? (
-        <div className="empty-state">Loading billing data...</div>
+        <div className="empty-state">{t('buildingBilling.loading')}</div>
       ) : (
         <section className="building-billing-workspace">
           <div className="billing-form-stack">
             <section className="building-section">
               <PageHeader
-                eyebrow={editingReading ? 'Edit reading' : 'Reading entry'}
-                title={editingReading ? `${formatRoomCode(editingReading)} - ${editingReading.month}` : 'Record reading'}
+                eyebrow={editingReading ? t('buildingBilling.editReading') : t('buildingBilling.readingEntry')}
+                title={editingReading ? `${formatRoomCode(editingReading)} - ${editingReading.month}` : t('buildingBilling.recordReading')}
               />
               <UtilityReadingForm
                 key={editingReading?.id || `new-building-reading-${building.id}-${formKey}`}
@@ -172,26 +172,26 @@ export default function AdminBuildingBillingPage() {
                 initialValues={editingReading}
                 loading={savingReading}
                 mode={editingReading ? 'edit' : 'create'}
-                submitLabel={editingReading ? 'Save changes' : 'Record reading'}
+                submitLabel={editingReading ? t('buildingBilling.saveChanges') : t('buildingBilling.recordReading')}
                 onSubmit={editingReading ? handleUpdateReading : handleCreateReading}
                 onCancel={editingReading ? () => setEditingReading(null) : undefined}
               />
             </section>
 
             <section className="building-section">
-              <PageHeader eyebrow="Invoice generation" title="New invoice" />
+              <PageHeader eyebrow={t('buildingBilling.invoiceGeneration')} title={t('buildingBilling.newInvoice')} />
               <InvoiceGenerateForm rooms={rooms} loading={generatingInvoice} onSubmit={handleGenerateInvoice} />
             </section>
           </div>
 
           <div className="billing-data-stack">
             <section className="building-section">
-              <PageHeader eyebrow="Billing records" title="Utility readings" />
+              <PageHeader eyebrow={t('buildingBilling.billingRecords')} title={t('buildingBilling.utilityReadings')} />
               <UtilityReadingTable readings={readings} renderActions={renderReadingActions} />
             </section>
 
             <section className="building-section">
-              <PageHeader eyebrow="Billing records" title="Invoices" />
+              <PageHeader eyebrow={t('buildingBilling.billingRecords')} title={t('buildingBilling.invoices')} />
               <InvoiceTable invoices={invoices} renderActions={renderInvoiceActions} />
               <InvoiceDetail invoice={selectedInvoice} />
             </section>

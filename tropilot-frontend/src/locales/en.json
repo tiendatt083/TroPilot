@@ -88,6 +88,29 @@
     "invoiceComplaints": "Invoice complaints",
     "notifications": "Notifications"
   },
+  "buildingBilling": {
+    "eyebrow": "Building billing",
+    "title": "Utility readings and invoices",
+    "description": "Record or update room readings, then generate room invoices from the same workspace.",
+    "loading": "Loading billing data...",
+    "loadError": "Billing data could not be loaded",
+    "readingCreated": "Utility reading created successfully.",
+    "readingCreateError": "Utility reading could not be created",
+    "readingUpdated": "Utility reading updated successfully.",
+    "readingUpdateError": "Utility reading could not be updated",
+    "invoiceGenerated": "Invoice generated successfully.",
+    "invoiceGenerateError": "Invoice could not be generated",
+    "invoiceLoadError": "Invoice could not be loaded",
+    "editReading": "Edit reading",
+    "readingEntry": "Reading entry",
+    "recordReading": "Record reading",
+    "saveChanges": "Save changes",
+    "invoiceGeneration": "Invoice generation",
+    "newInvoice": "New invoice",
+    "billingRecords": "Billing records",
+    "utilityReadings": "Utility readings",
+    "invoices": "Invoices"
+  },
   "activityLogs": {
     "title": "Activity logs",
     "eyebrow": "Admin",
@@ -515,8 +538,9 @@
       "selectInvoice": "Select an invoice to view details.",
       "electricityEvidence": "Electricity evidence",
       "waterEvidence": "Water evidence"
-    },
-    "details": {
+    }
+  },
+  "details": {
       "selectMaintenanceRequest": "Select a maintenance request to view details.",
       "selectTask": "Select a task to view details.",
       "title": "Title",
@@ -525,8 +549,8 @@
       "resultImage": "Result image",
       "viewImage": "View image",
       "noResultNote": "No result note provided."
-    },
-    "forms": {
+  },
+  "forms": {
       "assignment": {
         "selectHeadResident": "Select Head Resident",
         "noHeadResidents": "No active Head Residents available",
@@ -605,5 +629,4 @@
         "previousWaterAlt": "Previous water meter evidence"
       }
     }
-  }
 }

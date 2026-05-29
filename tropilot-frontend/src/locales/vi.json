@@ -88,6 +88,29 @@
     "invoiceComplaints": "Khiếu nại hóa đơn",
     "notifications": "Thông báo"
   },
+  "buildingBilling": {
+    "eyebrow": "Lập hóa đơn của tòa nhà",
+    "title": "Chỉ số tiện ích và hóa đơn",
+    "description": "Ghi hoặc cập nhật chỉ số phòng, sau đó tạo hóa đơn phòng trong cùng một khu vực làm việc.",
+    "loading": "Đang tải dữ liệu lập hóa đơn...",
+    "loadError": "Không thể tải dữ liệu lập hóa đơn",
+    "readingCreated": "Đã tạo chỉ số tiện ích thành công.",
+    "readingCreateError": "Không thể tạo chỉ số tiện ích",
+    "readingUpdated": "Đã cập nhật chỉ số tiện ích thành công.",
+    "readingUpdateError": "Không thể cập nhật chỉ số tiện ích",
+    "invoiceGenerated": "Đã tạo hóa đơn thành công.",
+    "invoiceGenerateError": "Không thể tạo hóa đơn",
+    "invoiceLoadError": "Không thể tải hóa đơn",
+    "editReading": "Sửa chỉ số",
+    "readingEntry": "Nhập chỉ số",
+    "recordReading": "Ghi chỉ số",
+    "saveChanges": "Lưu thay đổi",
+    "invoiceGeneration": "Tạo hóa đơn",
+    "newInvoice": "Hóa đơn mới",
+    "billingRecords": "Dữ liệu lập hóa đơn",
+    "utilityReadings": "Chỉ số tiện ích",
+    "invoices": "Hóa đơn"
+  },
   "activityLogs": {
     "title": "Nhật ký hoạt động",
     "eyebrow": "Admin",
@@ -515,8 +538,9 @@
       "selectInvoice": "Chọn một hóa đơn để xem chi tiết.",
       "electricityEvidence": "Bằng chứng điện",
       "waterEvidence": "Bằng chứng nước"
-    },
-    "details": {
+    }
+  },
+  "details": {
       "selectMaintenanceRequest": "Chọn một yêu cầu bảo trì để xem chi tiết.",
       "selectTask": "Chọn một công việc để xem chi tiết.",
       "title": "Tiêu đề",
@@ -525,8 +549,8 @@
       "resultImage": "Ảnh kết quả",
       "viewImage": "Xem ảnh",
       "noResultNote": "Chưa có ghi chú kết quả."
-    },
-    "forms": {
+  },
+  "forms": {
       "assignment": {
         "selectHeadResident": "Chọn chủ hộ",
         "noHeadResidents": "Không có chủ hộ đang hoạt động",
@@ -605,5 +629,4 @@
         "previousWaterAlt": "Bằng chứng đồng hồ nước tháng trước"
       }
     }
-  }
 }
