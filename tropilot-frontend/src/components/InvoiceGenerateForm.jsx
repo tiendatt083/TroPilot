@@ -19,13 +19,11 @@ function getDefaultDueDate(month) {
 
 function createInitialForm() {
   const creationDate = getLocalDateInputValue();
-  const month = creationDate.slice(0, 7);
 
   return {
     roomId: '',
     creationDate,
-    month,
-    dueDate: getDefaultDueDate(month)
+    dueDate: getDefaultDueDate(creationDate.slice(0, 7))
   };
 }
 
@@ -43,16 +41,7 @@ export default function InvoiceGenerateForm({ rooms, loading, onSubmit }) {
         return {
           ...current,
           creationDate: value,
-          month,
           dueDate: getDefaultDueDate(month)
-        };
-      }
-
-      if (name === 'month') {
-        return {
-          ...current,
-          month: value,
-          dueDate: getDefaultDueDate(value)
         };
       }
 
@@ -69,7 +58,7 @@ export default function InvoiceGenerateForm({ rooms, loading, onSubmit }) {
     try {
       await onSubmit({
         roomId: form.roomId,
-        month: form.month,
+        month: form.creationDate.slice(0, 7),
         dueDate: form.dueDate
       });
       setForm(createInitialForm());
@@ -99,9 +88,6 @@ export default function InvoiceGenerateForm({ rooms, loading, onSubmit }) {
         onChange={handleChange}
         required
       />
-
-      <label htmlFor="month">{t('forms.invoice.invoiceMonth')}</label>
-      <input id="month" name="month" type="month" value={form.month} onChange={handleChange} required />
 
       <label htmlFor="dueDate">{t('tables.common.dueDate')}</label>
       <input id="dueDate" name="dueDate" type="date" value={form.dueDate} onChange={handleChange} required />
