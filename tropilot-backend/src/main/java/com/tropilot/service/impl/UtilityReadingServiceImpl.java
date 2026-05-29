@@ -45,7 +45,8 @@ public class UtilityReadingServiceImpl implements UtilityReadingService {
         Room room = findRoom(request.getRoomId());
         validateRoomBelongsToBuilding(room, request.getBuildingId());
         User createdBy = findUser(createdById);
-        LocalDate month = parseMonth(request.getMonth());
+        LocalDate readingDate = parseReadingDate(request.getReadingDate(), request.getMonth());
+        LocalDate month = readingDate.withDayOfMonth(1);
 
         validateReadings(
                 request.getOldElectricity(),
@@ -61,6 +62,7 @@ public class UtilityReadingServiceImpl implements UtilityReadingService {
         UtilityReading reading = UtilityReading.builder()
                 .room(room)
                 .month(month)
+                .readingDate(readingDate)
                 .oldElectricity(request.getOldElectricity())
                 .newElectricity(request.getNewElectricity())
                 .electricityImageUrl(imageStorageService.store(
@@ -77,10 +79,10 @@ public class UtilityReadingServiceImpl implements UtilityReadingService {
         activityLogService.record(
                 createdBy,
                 "UTILITY_READING_RECORDED",
-                "Recorded utility reading for room " + room.getRoomCode() + " and month " + month
+                "Recorded utility reading for room " + room.getRoomCode() + " on " + readingDate
         );
 
-        return utilityReadingMapper.toResponse(savedReading);
+        return toResponseWithPreviousReading(savedReading);
     }
 
     @Override
@@ -97,14 +99,14 @@ public class UtilityReadingServiceImpl implements UtilityReadingService {
 
         return readings
                 .stream()
-                .map(utilityReadingMapper::toResponse)
+                .map(this::toResponseWithPreviousReading)
                 .toList();
     }
 
     @Override
     @Transactional(readOnly = true)
     public UtilityReadingResponse getReading(Long id) {
-        return utilityReadingMapper.toResponse(findReading(id));
+        return toResponseWithPreviousReading(findReading(id));
     }
 
     @Override
@@ -114,7 +116,8 @@ public class UtilityReadingServiceImpl implements UtilityReadingService {
         Room room = findRoom(request.getRoomId());
         validateReadingBelongsToBuilding(reading, request.getBuildingId());
         validateRoomBelongsToBuilding(room, request.getBuildingId());
-        LocalDate month = parseMonth(request.getMonth());
+        LocalDate readingDate = parseReadingDate(request.getReadingDate(), request.getMonth());
+        LocalDate month = readingDate.withDayOfMonth(1);
 
         validateReadings(
                 request.getOldElectricity(),
@@ -129,6 +132,7 @@ public class UtilityReadingServiceImpl implements UtilityReadingService {
 
         reading.setRoom(room);
         reading.setMonth(month);
+        reading.setReadingDate(readingDate);
         reading.setOldElectricity(request.getOldElectricity());
         reading.setNewElectricity(request.getNewElectricity());
         reading.setOldWater(request.getOldWater());
@@ -146,7 +150,7 @@ public class UtilityReadingServiceImpl implements UtilityReadingService {
             reading.setWaterImageUrl(imageStorageService.store(request.getWaterImage(), "Water evidence image"));
         }
 
-        return utilityReadingMapper.toResponse(utilityReadingRepository.save(reading));
+        return toResponseWithPreviousReading(utilityReadingRepository.save(reading));
     }
 
     @Override
@@ -158,8 +162,19 @@ public class UtilityReadingServiceImpl implements UtilityReadingService {
 
         return utilityReadingRepository.findByRoomIdWithDetails(assignment.getRoom().getId())
                 .stream()
-                .map(utilityReadingMapper::toResponse)
+                .map(this::toResponseWithPreviousReading)
                 .toList();
+    }
+
+    private UtilityReadingResponse toResponseWithPreviousReading(UtilityReading reading) {
+        UtilityReading previousReading = utilityReadingRepository
+                .findFirstByRoom_IdAndMonthBeforeOrderByMonthDescCreatedAtDesc(
+                        reading.getRoom().getId(),
+                        reading.getMonth()
+                )
+                .orElse(null);
+
+        return utilityReadingMapper.toResponse(reading, previousReading);
     }
 
     private UtilityReading findReading(Long id) {
@@ -208,10 +223,26 @@ public class UtilityReadingServiceImpl implements UtilityReadingService {
     }
 
     private LocalDate parseMonth(String month) {
+        if (month == null || month.isBlank()) {
+            throw new BadRequestException("Reading date is required");
+        }
+
         try {
             return YearMonth.parse(month.trim()).atDay(1);
         } catch (RuntimeException exception) {
             throw new BadRequestException("Reading month must use YYYY-MM format");
+        }
+    }
+
+    private LocalDate parseReadingDate(String readingDate, String fallbackMonth) {
+        if (readingDate == null || readingDate.isBlank()) {
+            return parseMonth(fallbackMonth);
+        }
+
+        try {
+            return LocalDate.parse(readingDate.trim());
+        } catch (RuntimeException exception) {
+            throw new BadRequestException("Reading date must use YYYY-MM-DD format");
         }
     }
 

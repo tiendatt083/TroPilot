@@ -18,6 +18,7 @@ public class UtilityReadingResponse {
     private String buildingCode;
     private String buildingName;
     private String month;
+    private String readingDate;
     private BigDecimal oldElectricity;
     private BigDecimal newElectricity;
     private BigDecimal electricityUsage;
@@ -26,6 +27,10 @@ public class UtilityReadingResponse {
     private BigDecimal newWater;
     private BigDecimal waterUsage;
     private String waterImageUrl;
+    private String previousReadingMonth;
+    private String previousReadingDate;
+    private String previousElectricityImageUrl;
+    private String previousWaterImageUrl;
     private String editReason;
     private Long createdById;
     private String createdByName;

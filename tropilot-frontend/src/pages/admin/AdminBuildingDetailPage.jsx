@@ -363,9 +363,9 @@ export default function AdminBuildingDetailPage() {
 
       <section className="building-section">
         <div className="building-section-header">
-          <PageHeader eyebrow="Invoices" title="Invoices in this building" />
-          <Link className="secondary-link" to={`/admin/buildings/${building.id}/invoices`}>
-            Manage invoices
+          <PageHeader eyebrow="Billing" title="Utility readings and invoices" />
+          <Link className="secondary-link" to={`/admin/buildings/${building.id}/billing`}>
+            Manage billing
           </Link>
         </div>
         <InvoiceTable invoices={operations.invoices} />

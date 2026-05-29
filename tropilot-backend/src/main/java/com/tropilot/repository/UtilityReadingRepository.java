@@ -15,6 +15,8 @@ public interface UtilityReadingRepository extends JpaRepository<UtilityReading, 
 
     boolean existsByRoom_IdAndMonthAndIdNot(Long roomId, LocalDate month, Long id);
 
+    Optional<UtilityReading> findFirstByRoom_IdAndMonthBeforeOrderByMonthDescCreatedAtDesc(Long roomId, LocalDate month);
+
     @Query("""
             select reading from UtilityReading reading
             join fetch reading.room room

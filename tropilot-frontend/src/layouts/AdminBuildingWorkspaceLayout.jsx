@@ -96,58 +96,59 @@ export default function AdminBuildingWorkspaceLayout() {
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
 
-      <nav className="workspace-tabs" aria-label="Building workspace navigation">
-        <NavLink end to={`/admin/buildings/${building.id}`}>
-          Overview
-        </NavLink>
-        <NavLink to={`/admin/buildings/${building.id}/rooms`}>
-          Rooms
-        </NavLink>
-        <NavLink to={`/admin/buildings/${building.id}/contracts`}>
-          Contracts
-        </NavLink>
-        <NavLink to={`/admin/buildings/${building.id}/utility-readings`}>
-          Utility readings
-        </NavLink>
-        <NavLink to={`/admin/buildings/${building.id}/invoices`}>
-          Invoices
-        </NavLink>
-        <NavLink to={`/admin/buildings/${building.id}/vehicles`}>
-          Vehicles
-        </NavLink>
-        <NavLink to={`/admin/buildings/${building.id}/payments`}>
-          Payments
-        </NavLink>
-        <NavLink to={`/admin/buildings/${building.id}/receipts`}>
-          Receipts
-        </NavLink>
-        <NavLink to={`/admin/buildings/${building.id}/members`}>
-          Room members
-        </NavLink>
-        <NavLink to={`/admin/buildings/${building.id}/maintenance`}>
-          Maintenance
-        </NavLink>
-        <NavLink to={`/admin/buildings/${building.id}/expenses`}>
-          Expenses
-        </NavLink>
-        <NavLink to={`/admin/buildings/${building.id}/cashflow`}>
-          Cash flow
-        </NavLink>
-        <NavLink to={`/admin/buildings/${building.id}/tasks`}>
-          Tasks
-        </NavLink>
-        <NavLink to={`/admin/buildings/${building.id}/feedbacks`}>
-          Feedbacks
-        </NavLink>
-        <NavLink to={`/admin/buildings/${building.id}/invoice-complaints`}>
-          Invoice complaints
-        </NavLink>
-        <NavLink to={`/admin/buildings/${building.id}/notifications`}>
-          Notifications
-        </NavLink>
-      </nav>
+      <div className="building-workspace-body">
+        <nav className="workspace-tabs building-workspace-tabs" aria-label="Building workspace navigation">
+          <NavLink end to={`/admin/buildings/${building.id}`}>
+            Overview
+          </NavLink>
+          <NavLink to={`/admin/buildings/${building.id}/rooms`}>
+            Rooms
+          </NavLink>
+          <NavLink to={`/admin/buildings/${building.id}/contracts`}>
+            Contracts
+          </NavLink>
+          <NavLink to={`/admin/buildings/${building.id}/billing`}>
+            Billing
+          </NavLink>
+          <NavLink to={`/admin/buildings/${building.id}/vehicles`}>
+            Vehicles
+          </NavLink>
+          <NavLink to={`/admin/buildings/${building.id}/payments`}>
+            Payments
+          </NavLink>
+          <NavLink to={`/admin/buildings/${building.id}/receipts`}>
+            Receipts
+          </NavLink>
+          <NavLink to={`/admin/buildings/${building.id}/members`}>
+            Room members
+          </NavLink>
+          <NavLink to={`/admin/buildings/${building.id}/maintenance`}>
+            Maintenance
+          </NavLink>
+          <NavLink to={`/admin/buildings/${building.id}/expenses`}>
+            Expenses
+          </NavLink>
+          <NavLink to={`/admin/buildings/${building.id}/cashflow`}>
+            Cash flow
+          </NavLink>
+          <NavLink to={`/admin/buildings/${building.id}/tasks`}>
+            Tasks
+          </NavLink>
+          <NavLink to={`/admin/buildings/${building.id}/feedbacks`}>
+            Feedbacks
+          </NavLink>
+          <NavLink to={`/admin/buildings/${building.id}/invoice-complaints`}>
+            Invoice complaints
+          </NavLink>
+          <NavLink to={`/admin/buildings/${building.id}/notifications`}>
+            Notifications
+          </NavLink>
+        </nav>
 
-      <Outlet context={{ building }} />
+        <div className="building-workspace-content">
+          <Outlet context={{ building }} />
+        </div>
+      </div>
     </section>
   );
 }

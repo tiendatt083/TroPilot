@@ -1,9 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { resolveFileUrl } from '../utils/fileUrl.js';
 import { formatRoomLabel } from '../utils/roomDisplay.js';
 
 const emptyForm = {
   roomId: '',
   month: '',
+  readingDate: getTodayInputValue(),
   oldElectricity: 0,
   newElectricity: 0,
   oldWater: 0,
@@ -13,6 +15,7 @@ const emptyForm = {
 
 export default function UtilityReadingForm({
   rooms,
+  readings = [],
   initialValues,
   loading,
   mode = 'create',
@@ -25,10 +28,14 @@ export default function UtilityReadingForm({
   const [waterImage, setWaterImage] = useState(null);
 
   useEffect(() => {
+    const readingDate = normalizeReadingDate(initialValues);
+
     setForm({
       ...emptyForm,
       ...initialValues,
       roomId: initialValues?.roomId || '',
+      month: initialValues?.month || getMonthFromReadingDate(readingDate),
+      readingDate,
       oldElectricity: initialValues?.oldElectricity ?? 0,
       newElectricity: initialValues?.newElectricity ?? 0,
       oldWater: initialValues?.oldWater ?? 0,
@@ -43,15 +50,23 @@ export default function UtilityReadingForm({
     const { name, value } = event.target;
     setForm((current) => ({
       ...current,
-      [name]: value
+      [name]: value,
+      ...(name === 'readingDate' ? { month: getMonthFromReadingDate(value) } : {})
     }));
   };
 
+  const previousReading = useMemo(
+    () => findPreviousReading(readings, form.roomId, form.readingDate, initialValues?.id),
+    [readings, form.roomId, form.readingDate, initialValues?.id]
+  );
+
   const handleSubmit = (event) => {
     event.preventDefault();
+
     onSubmit({
       roomId: form.roomId,
-      month: form.month,
+      month: getMonthFromReadingDate(form.readingDate),
+      readingDate: form.readingDate,
       oldElectricity: form.oldElectricity,
       newElectricity: form.newElectricity,
       oldWater: form.oldWater,
@@ -76,8 +91,7 @@ export default function UtilityReadingForm({
         ))}
       </select>
 
-      <label htmlFor="month">Reading month</label>
-      <input id="month" name="month" type="month" value={form.month} onChange={handleChange} required />
+      {form.roomId && <PreviousReadingEvidence previousReading={previousReading} />}
 
       <div className="form-grid">
         <div>
@@ -174,6 +188,19 @@ export default function UtilityReadingForm({
         </>
       )}
 
+      <div>
+        <label htmlFor="readingDate">Reading date</label>
+        <input
+          id="readingDate"
+          name="readingDate"
+          type="date"
+          value={form.readingDate}
+          onChange={handleChange}
+          required
+        />
+        <span className="field-help">This date applies to both electricity and water readings.</span>
+      </div>
+
       <div className="button-row form-button-row">
         <button type="submit" disabled={loading}>
           {loading ? 'Saving...' : submitLabel}
@@ -186,4 +213,90 @@ export default function UtilityReadingForm({
       </div>
     </form>
   );
+}
+
+function PreviousReadingEvidence({ previousReading }) {
+  if (!previousReading) {
+    return (
+      <div className="previous-reading-panel">
+        <strong>Previous month evidence</strong>
+        <span className="table-subtext">No previous reading evidence found for this room.</span>
+      </div>
+    );
+  }
+
+  const electricityImageUrl = previousReading.electricityImageUrl
+    ? resolveFileUrl(previousReading.electricityImageUrl)
+    : null;
+  const waterImageUrl = previousReading.waterImageUrl
+    ? resolveFileUrl(previousReading.waterImageUrl)
+    : null;
+
+  return (
+    <div className="previous-reading-panel">
+      <div>
+        <strong>Previous month evidence</strong>
+        <span className="table-subtext">
+          {previousReading.month}
+          {previousReading.readingDate ? ` - ${previousReading.readingDate}` : ''}
+        </span>
+      </div>
+      <div className="previous-reading-images">
+        {electricityImageUrl && (
+          <a className="previous-reading-image-link" href={electricityImageUrl} target="_blank" rel="noreferrer">
+            <span>Previous electricity image</span>
+            <img src={electricityImageUrl} alt="Previous electricity meter evidence" />
+          </a>
+        )}
+        {waterImageUrl && (
+          <a className="previous-reading-image-link" href={waterImageUrl} target="_blank" rel="noreferrer">
+            <span>Previous water image</span>
+            <img src={waterImageUrl} alt="Previous water meter evidence" />
+          </a>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function findPreviousReading(readings, roomId, readingDate, currentReadingId) {
+  const selectedMonth = getMonthFromReadingDate(readingDate);
+
+  if (!roomId || !selectedMonth) {
+    return null;
+  }
+
+  const previousReadings = [...readings]
+    .filter((reading) => String(reading.roomId) === String(roomId))
+    .filter((reading) => reading.id !== currentReadingId)
+    .filter((reading) => reading.month && reading.month < selectedMonth)
+    .sort((first, second) => getReadingSortValue(second).localeCompare(getReadingSortValue(first)));
+
+  return previousReadings[0] || null;
+}
+
+function getReadingSortValue(reading) {
+  return reading.readingDate || (reading.month ? `${reading.month}-01` : '');
+}
+
+function normalizeReadingDate(values) {
+  if (values?.readingDate) {
+    return values.readingDate;
+  }
+
+  if (values?.month) {
+    return `${values.month}-01`;
+  }
+
+  return getTodayInputValue();
+}
+
+function getMonthFromReadingDate(readingDate) {
+  return readingDate ? readingDate.slice(0, 7) : '';
+}
+
+function getTodayInputValue() {
+  const now = new Date();
+  const localDate = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+  return localDate.toISOString().slice(0, 10);
 }

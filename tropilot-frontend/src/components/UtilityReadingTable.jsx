@@ -31,6 +31,7 @@ export default function UtilityReadingTable({ readings, renderActions }) {
           <tr>
             <th>Room</th>
             <th>Month</th>
+            <th>Reading date</th>
             <th>Electricity</th>
             <th>Water</th>
             <th>Evidence</th>
@@ -47,6 +48,7 @@ export default function UtilityReadingTable({ readings, renderActions }) {
                 <span className="table-subtext">{reading.buildingCode}</span>
               </td>
               <td>{reading.month}</td>
+              <td>{reading.readingDate || 'Not set'}</td>
               <td>
                 {formatNumber(reading.oldElectricity)} to {formatNumber(reading.newElectricity)}
                 <span className="table-subtext">Usage: {formatNumber(reading.electricityUsage)}</span>

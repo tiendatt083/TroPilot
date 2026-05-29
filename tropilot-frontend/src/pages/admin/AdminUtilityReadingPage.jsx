@@ -96,6 +96,7 @@ export default function AdminUtilityReadingPage() {
             <UtilityReadingForm
               key={editingReading?.id || `new-reading-${formKey}`}
               rooms={rooms}
+              readings={readings}
               initialValues={editingReading}
               loading={saving}
               mode={editingReading ? 'edit' : 'create'}

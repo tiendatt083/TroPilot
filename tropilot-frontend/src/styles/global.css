@@ -477,6 +477,13 @@ a:focus-visible {
   margin-bottom: 0;
 }
 
+.page-support-text {
+  max-width: 760px;
+  margin: -0.55rem 0 1rem;
+  color: var(--color-text-muted);
+  line-height: 1.55;
+}
+
 .narrow-section {
   max-width: 680px;
 }
@@ -496,6 +503,14 @@ a:focus-visible {
   margin-bottom: 0.4rem;
   color: var(--color-text);
   font-weight: 750;
+}
+
+.field-help {
+  display: block;
+  margin-top: 0.35rem;
+  color: var(--color-text-muted);
+  font-size: 0.86rem;
+  line-height: 1.45;
 }
 
 .panel-form button {
@@ -987,6 +1002,36 @@ a:focus-visible {
   gap: 0.65rem;
 }
 
+.previous-reading-panel {
+  display: grid;
+  gap: 0.65rem;
+  border-left: 3px solid var(--color-primary);
+  padding: 0.75rem 0.85rem;
+  background: var(--color-surface-muted);
+}
+
+.previous-reading-images {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.previous-reading-image-link {
+  display: grid;
+  gap: 0.45rem;
+  color: var(--color-text);
+  font-weight: 750;
+}
+
+.previous-reading-image-link img {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+}
+
 .evidence-links a {
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
@@ -1178,6 +1223,19 @@ a:focus-visible {
   gap: 1.25rem;
 }
 
+.building-workspace-body {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.building-workspace-content {
+  display: grid;
+  min-width: 0;
+  gap: 1.25rem;
+}
+
 .workspace-tabs {
   display: flex;
   flex-wrap: wrap;
@@ -1213,7 +1271,37 @@ a:focus-visible {
   box-shadow: 0 8px 18px rgba(47, 125, 103, 0.16);
 }
 
+.building-workspace-tabs {
+  position: sticky;
+  top: 1rem;
+  display: grid;
+  align-content: start;
+  max-height: calc(100vh - 8.5rem);
+  overflow-y: auto;
+  scrollbar-color: #9aa6b2 transparent;
+  scrollbar-width: thin;
+}
+
+.building-workspace-tabs a {
+  width: 100%;
+  justify-content: flex-start;
+  min-height: 40px;
+}
+
 .building-workspace {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.building-billing-workspace {
+  display: grid;
+  grid-template-columns: minmax(340px, 0.38fr) minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.billing-form-stack,
+.billing-data-stack {
   display: grid;
   gap: 1.25rem;
 }
@@ -1471,8 +1559,24 @@ a:focus-visible {
   .maintenance-workspace,
   .dashboard-hero,
   .dashboard-two-column,
+  .building-workspace-body,
+  .building-billing-workspace,
   .cashflow-summary {
     grid-template-columns: 1fr;
+  }
+
+  .building-workspace-tabs {
+    position: static;
+    display: flex;
+    flex-wrap: nowrap;
+    max-height: none;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  .building-workspace-tabs a {
+    width: auto;
+    flex: 0 0 auto;
   }
 }
 
@@ -1537,6 +1641,7 @@ a:focus-visible {
   .month-filter-row,
   .cashflow-summary,
   .form-grid,
+  .previous-reading-images,
   .room-code-input-group,
   .assignment-action-row,
   .dashboard-grid,

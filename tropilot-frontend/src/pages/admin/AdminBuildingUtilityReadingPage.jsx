@@ -105,6 +105,7 @@ export default function AdminBuildingUtilityReadingPage() {
             <UtilityReadingForm
               key={editingReading?.id || `new-building-reading-${building.id}-${formKey}`}
               rooms={rooms}
+              readings={readings}
               initialValues={editingReading}
               loading={saving}
               mode={editingReading ? 'edit' : 'create'}

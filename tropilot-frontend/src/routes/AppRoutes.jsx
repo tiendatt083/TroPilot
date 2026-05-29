@@ -4,13 +4,13 @@ import AdminLayout from '../layouts/AdminLayout.jsx';
 import ResidentLayout from '../layouts/ResidentLayout.jsx';
 import StaffLayout from '../layouts/StaffLayout.jsx';
 import AdminBuildingCreatePage from '../pages/admin/AdminBuildingCreatePage.jsx';
+import AdminBuildingBillingPage from '../pages/admin/AdminBuildingBillingPage.jsx';
 import AdminBuildingCashFlowPage from '../pages/admin/AdminBuildingCashFlowPage.jsx';
 import AdminBuildingContractPage from '../pages/admin/AdminBuildingContractPage.jsx';
 import AdminBuildingDetailPage from '../pages/admin/AdminBuildingDetailPage.jsx';
 import AdminBuildingEditPage from '../pages/admin/AdminBuildingEditPage.jsx';
 import AdminBuildingExpensePage from '../pages/admin/AdminBuildingExpensePage.jsx';
 import AdminBuildingFeedbackPage from '../pages/admin/AdminBuildingFeedbackPage.jsx';
-import AdminBuildingInvoicePage from '../pages/admin/AdminBuildingInvoicePage.jsx';
 import AdminBuildingInvoiceComplaintPage from '../pages/admin/AdminBuildingInvoiceComplaintPage.jsx';
 import AdminBuildingListPage from '../pages/admin/AdminBuildingListPage.jsx';
 import AdminBuildingMaintenancePage from '../pages/admin/AdminBuildingMaintenancePage.jsx';
@@ -21,7 +21,6 @@ import AdminBuildingReceiptPage from '../pages/admin/AdminBuildingReceiptPage.js
 import AdminBuildingRoomsPage from '../pages/admin/AdminBuildingRoomsPage.jsx';
 import AdminBuildingTaskDetailPage from '../pages/admin/AdminBuildingTaskDetailPage.jsx';
 import AdminBuildingTaskPage from '../pages/admin/AdminBuildingTaskPage.jsx';
-import AdminBuildingUtilityReadingPage from '../pages/admin/AdminBuildingUtilityReadingPage.jsx';
 import AdminBuildingVehiclePage from '../pages/admin/AdminBuildingVehiclePage.jsx';
 import AdminActivityLogPage from '../pages/admin/AdminActivityLogPage.jsx';
 import AdminContractDetailPage from '../pages/admin/AdminContractDetailPage.jsx';
@@ -123,8 +122,9 @@ export default function AppRoutes() {
                 <Route index element={<AdminBuildingDetailPage />} />
                 <Route path="rooms" element={<AdminBuildingRoomsPage />} />
                 <Route path="contracts" element={<AdminBuildingContractPage />} />
-                <Route path="utility-readings" element={<AdminBuildingUtilityReadingPage />} />
-                <Route path="invoices" element={<AdminBuildingInvoicePage />} />
+                <Route path="billing" element={<AdminBuildingBillingPage />} />
+                <Route path="utility-readings" element={<Navigate to="../billing" replace />} />
+                <Route path="invoices" element={<Navigate to="../billing" replace />} />
                 <Route path="vehicles" element={<AdminBuildingVehiclePage />} />
                 <Route path="payments" element={<AdminBuildingPaymentPage />} />
                 <Route path="receipts" element={<AdminBuildingReceiptPage />} />

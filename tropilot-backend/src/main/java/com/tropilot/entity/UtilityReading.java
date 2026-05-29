@@ -48,6 +48,9 @@ public class UtilityReading {
     @Column(name = "reading_month", nullable = false)
     private LocalDate month;
 
+    @Column(name = "reading_date")
+    private LocalDate readingDate;
+
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal oldElectricity;
 

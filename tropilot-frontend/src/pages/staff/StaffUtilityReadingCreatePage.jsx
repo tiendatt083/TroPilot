@@ -8,16 +8,22 @@ import UtilityReadingForm from '../../components/UtilityReadingForm.jsx';
 export default function StaffUtilityReadingCreatePage() {
   const navigate = useNavigate();
   const [rooms, setRooms] = useState([]);
+  const [readings, setReadings] = useState([]);
   const [error, setError] = useState('');
-  const [loadingRooms, setLoadingRooms] = useState(true);
+  const [loadingData, setLoadingData] = useState(true);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    roomApi
-      .getStaffRooms()
-      .then((response) => setRooms(response.data))
+    Promise.all([
+      roomApi.getStaffRooms(),
+      utilityReadingApi.getStaffUtilityReadings()
+    ])
+      .then(([roomsResponse, readingsResponse]) => {
+        setRooms(roomsResponse.data);
+        setReadings(readingsResponse.data);
+      })
       .catch((apiError) => setError(apiError.response?.data?.message || 'Rooms could not be loaded'))
-      .finally(() => setLoadingRooms(false));
+      .finally(() => setLoadingData(false));
   }, []);
 
   const handleSubmit = async (payload) => {
@@ -34,7 +40,7 @@ export default function StaffUtilityReadingCreatePage() {
     }
   };
 
-  if (loadingRooms) {
+  if (loadingData) {
     return <div className="empty-state">Loading rooms...</div>;
   }
 
@@ -51,6 +57,7 @@ export default function StaffUtilityReadingCreatePage() {
 
       <UtilityReadingForm
         rooms={rooms}
+        readings={readings}
         loading={saving}
         submitLabel="Record reading"
         onSubmit={handleSubmit}
