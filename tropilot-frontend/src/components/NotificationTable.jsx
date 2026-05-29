@@ -1,21 +1,30 @@
-import {
-  formatNotificationDateTime,
-  getNotificationBuildingLabel,
-  getNotificationTargetLabel
-} from '../utils/notificationOptions.js';
+import { useTranslation } from 'react-i18next';
+import { formatDateTime, formatEnumLabel } from '../utils/i18nFormat.js';
+
+function getBuildingLabel(notification, t) {
+  if (notification.allBuildings) {
+    return t('tables.notifications.allBuildings');
+  }
+
+  return notification.buildingNames?.length
+    ? notification.buildingNames.join(', ')
+    : t('tables.notifications.selectedBuildings');
+}
 
 export default function NotificationTable({ notifications, onMarkRead, processingId }) {
+  const { t } = useTranslation();
+
   return (
     <div className="table-wrap">
       <table className="data-table notification-table">
         <thead>
           <tr>
-            <th>Notification</th>
-            <th>Target</th>
-            <th>Created by</th>
-            <th>Created</th>
-            <th>Read status</th>
-            {onMarkRead && <th>Actions</th>}
+            <th>{t('tables.notifications.title')}</th>
+            <th>{t('tables.common.target')}</th>
+            <th>{t('tables.common.createdBy')}</th>
+            <th>{t('tables.common.created')}</th>
+            <th>{t('tables.notifications.readStatus')}</th>
+            {onMarkRead && <th>{t('tables.common.actions')}</th>}
           </tr>
         </thead>
         <tbody>
@@ -26,8 +35,8 @@ export default function NotificationTable({ notifications, onMarkRead, processin
                 <span className="table-subtext">{notification.content}</span>
               </td>
               <td>
-                <strong>{getNotificationTargetLabel(notification.targetType)}</strong>
-                <span className="table-subtext">{getNotificationBuildingLabel(notification)}</span>
+                <strong>{formatEnumLabel(t, 'notificationTarget', notification.targetType)}</strong>
+                <span className="table-subtext">{getBuildingLabel(notification, t)}</span>
                 {notification.targetUserNames?.length > 0 && (
                   <span className="table-subtext">{notification.targetUserNames.join(', ')}</span>
                 )}
@@ -36,12 +45,12 @@ export default function NotificationTable({ notifications, onMarkRead, processin
                 <strong>{notification.createdByName}</strong>
                 <span className="table-subtext">{notification.createdByRole}</span>
               </td>
-              <td>{formatNotificationDateTime(notification.createdAt)}</td>
+              <td>{formatDateTime(notification.createdAt, t)}</td>
               <td>
                 <span className={notification.read ? 'status-pill read-status-read' : 'status-pill read-status-unread'}>
-                  {notification.read ? 'Read' : 'Unread'}
+                  {notification.read ? t('enum.readStatus.READ') : t('enum.readStatus.UNREAD')}
                 </span>
-                {notification.readAt && <span className="table-subtext">{formatNotificationDateTime(notification.readAt)}</span>}
+                {notification.readAt && <span className="table-subtext">{formatDateTime(notification.readAt, t)}</span>}
               </td>
               {onMarkRead && (
                 <td>
@@ -51,7 +60,7 @@ export default function NotificationTable({ notifications, onMarkRead, processin
                     disabled={notification.read || processingId === notification.id}
                     onClick={() => onMarkRead(notification)}
                   >
-                    Mark read
+                    {t('tables.notifications.markRead')}
                   </button>
                 </td>
               )}
@@ -59,7 +68,7 @@ export default function NotificationTable({ notifications, onMarkRead, processin
           ))}
         </tbody>
       </table>
-      {notifications.length === 0 && <div className="empty-state flat-empty-state">No notifications found.</div>}
+      {notifications.length === 0 && <div className="empty-state flat-empty-state">{t('tables.notifications.empty')}</div>}
     </div>
   );
 }

@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom';
-import { getInvoiceStatusClass, getInvoiceStatusLabel } from '../utils/invoiceStatusOptions.js';
+import { useTranslation } from 'react-i18next';
+import { getInvoiceStatusClass } from '../utils/invoiceStatusOptions.js';
+import { formatEnumLabel } from '../utils/i18nFormat.js';
 import { formatRoomCode } from '../utils/roomDisplay.js';
 
 function formatNumber(value) {
@@ -10,6 +12,7 @@ function formatNumber(value) {
 }
 
 export default function InvoiceTable({ invoices, renderActions, detailPathBase }) {
+  const { t } = useTranslation();
   const hasActions = Boolean(renderActions || detailPathBase);
 
   return (
@@ -17,13 +20,13 @@ export default function InvoiceTable({ invoices, renderActions, detailPathBase }
       <table className="data-table invoice-table">
         <thead>
           <tr>
-            <th>Room</th>
-            <th>Head Resident</th>
-            <th>Month</th>
-            <th>Due date</th>
-            <th>Status</th>
-            <th>Total amount</th>
-            {hasActions && <th>Actions</th>}
+            <th>{t('tables.common.room')}</th>
+            <th>{t('tables.common.headResident')}</th>
+            <th>{t('tables.common.month')}</th>
+            <th>{t('tables.common.dueDate')}</th>
+            <th>{t('tables.common.status')}</th>
+            <th>{t('tables.common.totalAmount')}</th>
+            {hasActions && <th>{t('tables.common.actions')}</th>}
           </tr>
         </thead>
         <tbody>
@@ -41,7 +44,7 @@ export default function InvoiceTable({ invoices, renderActions, detailPathBase }
               <td>{invoice.dueDate}</td>
               <td>
                 <span className={getInvoiceStatusClass(invoice.status)}>
-                  {getInvoiceStatusLabel(invoice.status)}
+                  {formatEnumLabel(t, 'invoiceStatus', invoice.status)}
                 </span>
               </td>
               <td>{formatNumber(invoice.totalAmount)}</td>
@@ -49,7 +52,7 @@ export default function InvoiceTable({ invoices, renderActions, detailPathBase }
                 <td>
                   {detailPathBase ? (
                     <Link className="secondary-link compact-link" to={`${detailPathBase}/${invoice.id}`}>
-                      View
+                      {t('common.view')}
                     </Link>
                   ) : (
                     renderActions(invoice)
@@ -60,7 +63,7 @@ export default function InvoiceTable({ invoices, renderActions, detailPathBase }
           ))}
         </tbody>
       </table>
-      {invoices.length === 0 && <div className="empty-state flat-empty-state">No invoices found.</div>}
+      {invoices.length === 0 && <div className="empty-state flat-empty-state">{t('tables.invoices.empty')}</div>}
     </div>
   );
 }

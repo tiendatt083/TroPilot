@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import * as dashboardApi from '../../api/dashboardApi.js';
 import DashboardMetricGrid from '../../components/DashboardMetricGrid.jsx';
 import DashboardSection from '../../components/DashboardSection.jsx';
@@ -12,6 +13,7 @@ function formatNumber(value) {
 }
 
 export default function StaffDashboardPage() {
+  const { t } = useTranslation();
   const [dashboard, setDashboard] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
@@ -28,7 +30,7 @@ export default function StaffDashboardPage() {
       })
       .catch((apiError) => {
         if (active) {
-          setError(apiError.response?.data?.message || 'Staff dashboard could not be loaded');
+          setError(apiError.response?.data?.message || t('dashboard.staff.loadError'));
         }
       })
       .finally(() => {
@@ -40,32 +42,32 @@ export default function StaffDashboardPage() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [t]);
 
   const workloadMetrics = dashboard
     ? [
-        { label: 'Assigned tasks', value: formatNumber(dashboard.assignedTasks), tone: 'primary', featured: true },
-        { label: 'Overdue tasks', value: formatNumber(dashboard.overdueTasks), tone: 'danger' }
+        { label: t('dashboard.staff.metrics.assignedTasks'), value: formatNumber(dashboard.assignedTasks), tone: 'primary', featured: true },
+        { label: t('dashboard.staff.metrics.overdueTasks'), value: formatNumber(dashboard.overdueTasks), tone: 'danger' }
       ]
     : [];
   const operationsMetrics = dashboard
     ? [
-        { label: 'Rooms needing utility reading', value: formatNumber(dashboard.roomsNeedingUtilityReading), tone: 'warning' },
-        { label: 'Pending payment confirmations', value: formatNumber(dashboard.pendingPaymentConfirmations), tone: 'warning' },
-        { label: 'Active maintenance requests', value: formatNumber(dashboard.activeMaintenanceRequests), tone: 'primary' }
+        { label: t('dashboard.staff.metrics.roomsNeedingUtilityReading'), value: formatNumber(dashboard.roomsNeedingUtilityReading), tone: 'warning' },
+        { label: t('dashboard.staff.metrics.pendingPaymentConfirmations'), value: formatNumber(dashboard.pendingPaymentConfirmations), tone: 'warning' },
+        { label: t('dashboard.staff.metrics.activeMaintenanceRequests'), value: formatNumber(dashboard.activeMaintenanceRequests), tone: 'primary' }
       ]
     : [];
   const financeMetrics = dashboard
     ? [
-        { label: 'Created expenses', value: formatNumber(dashboard.createdExpenses), tone: 'primary' }
+        { label: t('dashboard.staff.metrics.createdExpenses'), value: formatNumber(dashboard.createdExpenses), tone: 'primary' }
       ]
     : [];
   const heroMetrics = dashboard
     ? [
-        { label: 'Assigned tasks', value: formatNumber(dashboard.assignedTasks) },
-        { label: 'Overdue tasks', value: formatNumber(dashboard.overdueTasks) },
-        { label: 'Utility readings due', value: formatNumber(dashboard.roomsNeedingUtilityReading) },
-        { label: 'Payment checks', value: formatNumber(dashboard.pendingPaymentConfirmations) }
+        { label: t('dashboard.staff.metrics.assignedTasks'), value: formatNumber(dashboard.assignedTasks) },
+        { label: t('dashboard.staff.metrics.overdueTasks'), value: formatNumber(dashboard.overdueTasks) },
+        { label: t('dashboard.staff.metrics.utilityReadingsDue'), value: formatNumber(dashboard.roomsNeedingUtilityReading) },
+        { label: t('dashboard.staff.metrics.paymentChecks'), value: formatNumber(dashboard.pendingPaymentConfirmations) }
       ]
     : [];
 
@@ -73,8 +75,8 @@ export default function StaffDashboardPage() {
     <section className="content-section dashboard-page">
       <div className="dashboard-hero">
         <div>
-          <PageHeader eyebrow="Operations staff" title="Dashboard" />
-          <p>Daily work queue for readings, payments, maintenance, and assigned operational tasks.</p>
+          <PageHeader eyebrow={t('dashboard.staff.eyebrow')} title={t('dashboard.staff.title')} />
+          <p>{t('dashboard.staff.heroDescription')}</p>
         </div>
         {dashboard && <DashboardMetricGrid metrics={heroMetrics} compact />}
       </div>
@@ -82,22 +84,22 @@ export default function StaffDashboardPage() {
       {error && <div className="alert error-alert">{error}</div>}
 
       {loading ? (
-        <div className="empty-state">Loading dashboard...</div>
+        <div className="empty-state">{t('dashboard.staff.loading')}</div>
       ) : (
         <div className="dashboard-section-stack staff-dashboard-grid">
           <DashboardSection
-            title="Task workload"
-            description="Assigned work and overdue items requiring immediate action."
+            title={t('dashboard.staff.sections.taskTitle')}
+            description={t('dashboard.staff.sections.taskDescription')}
             metrics={workloadMetrics}
           />
           <DashboardSection
-            title="Operational queue"
-            description="Building operations that need staff processing."
+            title={t('dashboard.staff.sections.operationsTitle')}
+            description={t('dashboard.staff.sections.operationsDescription')}
             metrics={operationsMetrics}
           />
           <DashboardSection
-            title="Expense activity"
-            description="Expenses created from valid operational work."
+            title={t('dashboard.staff.sections.expenseTitle')}
+            description={t('dashboard.staff.sections.expenseDescription')}
             metrics={financeMetrics}
           />
         </div>

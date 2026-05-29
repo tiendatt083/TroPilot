@@ -1,25 +1,17 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
+import en from './locales/en.json';
+import vi from './locales/vi.json';
 
 const savedLanguage = localStorage.getItem('lang') || 'vi';
 
 i18n.use(initReactI18next).init({
   resources: {
     en: {
-      translation: {
-        settings: 'Settings',
-        language: 'Language',
-        vietnamese: 'Vietnamese',
-        english: 'English'
-      }
+      translation: en
     },
     vi: {
-      translation: {
-        settings: 'Cài đặt',
-        language: 'Ngôn ngữ',
-        vietnamese: 'Tiếng Việt',
-        english: 'Tiếng Anh'
-      }
+      translation: vi
     }
   },
   lng: savedLanguage,

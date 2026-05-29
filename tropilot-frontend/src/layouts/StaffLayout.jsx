@@ -2,6 +2,22 @@ import { NavLink, Outlet } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext.jsx';
 
+const STAFF_NAV_ITEMS = [
+  { to: '/staff/dashboard', labelKey: 'navigation.dashboard' },
+  { to: '/staff/notifications', labelKey: 'navigation.notifications' },
+  { to: '/staff/invoices', labelKey: 'navigation.invoices' },
+  { to: '/staff/payments/pending', labelKey: 'navigation.pendingPayments' },
+  { to: '/staff/expenses', labelKey: 'navigation.expenses' },
+  { to: '/staff/tasks', labelKey: 'navigation.tasks' },
+  { to: '/staff/maintenance', labelKey: 'navigation.maintenance' },
+  { to: '/staff/buildings', labelKey: 'navigation.buildings' },
+  { to: '/staff/rooms', labelKey: 'navigation.rooms' },
+  { to: '/staff/vehicles', labelKey: 'navigation.vehicles' },
+  { to: '/staff/service-fees', labelKey: 'navigation.serviceFees' },
+  { to: '/staff/utility-readings', labelKey: 'navigation.utilityReadings' },
+  { to: '/staff/settings', labelKey: 'settings.title' }
+];
+
 export default function StaffLayout() {
   const { logout, user } = useAuth();
   const { t } = useTranslation();
@@ -12,25 +28,17 @@ export default function StaffLayout() {
         <strong>Tropilot</strong>
         <div className="sidebar-user">
           <span>{user?.fullName}</span>
-          <small>Operations staff</small>
+          <small>{t('role.staff')}</small>
         </div>
-        <nav aria-label="Staff navigation">
-          <NavLink to="/staff/dashboard">Dashboard</NavLink>
-          <NavLink to="/staff/notifications">Notifications</NavLink>
-          <NavLink to="/staff/invoices">Invoices</NavLink>
-          <NavLink to="/staff/payments/pending">Pending payments</NavLink>
-          <NavLink to="/staff/expenses">Expenses</NavLink>
-          <NavLink to="/staff/tasks">Tasks</NavLink>
-          <NavLink to="/staff/maintenance">Maintenance</NavLink>
-          <NavLink to="/staff/buildings">Buildings</NavLink>
-          <NavLink to="/staff/rooms">Rooms</NavLink>
-          <NavLink to="/staff/vehicles">Vehicles</NavLink>
-          <NavLink to="/staff/service-fees">Service fees</NavLink>
-          <NavLink to="/staff/utility-readings">Utility readings</NavLink>
-          <NavLink to="/staff/settings">{t('settings')}</NavLink>
+        <nav aria-label={t('navigation.staff')}>
+          {STAFF_NAV_ITEMS.map((item) => (
+            <NavLink key={item.to} to={item.to}>
+              {t(item.labelKey)}
+            </NavLink>
+          ))}
         </nav>
         <button className="secondary-button" type="button" onClick={logout}>
-          Sign out
+          {t('common.signOut')}
         </button>
       </aside>
       <main className="main-panel">

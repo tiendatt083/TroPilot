@@ -1,19 +1,16 @@
-import {
-  getVehicleOwnerTypeLabel,
-  getVehicleStatusClass,
-  getVehicleStatusLabel,
-  getVehicleTypeLabel
-} from '../utils/vehicleOptions.js';
+import { useTranslation } from 'react-i18next';
+import { getVehicleStatusClass } from '../utils/vehicleOptions.js';
+import { formatEnumLabel } from '../utils/i18nFormat.js';
 import { formatRoomCode } from '../utils/roomDisplay.js';
 
-function displayText(value, fallback = 'Not provided') {
+function displayText(value, fallback) {
   return value || fallback;
 }
 
-function periodText(vehicle) {
-  const startDate = vehicle.startDate || 'Not set';
-  const endDate = vehicle.endDate || 'Open';
-  return `${startDate} to ${endDate}`;
+function periodText(vehicle, t) {
+  const startDate = vehicle.startDate || t('common.notSet');
+  const endDate = vehicle.endDate || t('common.open');
+  return `${startDate} ${t('common.to')} ${endDate}`;
 }
 
 function billableClass(vehicle) {
@@ -21,6 +18,7 @@ function billableClass(vehicle) {
 }
 
 export default function VehicleTable({ vehicles, renderActions }) {
+  const { t } = useTranslation();
   const hasActions = Boolean(renderActions);
 
   return (
@@ -28,14 +26,14 @@ export default function VehicleTable({ vehicles, renderActions }) {
       <table className="data-table vehicle-table">
         <thead>
           <tr>
-            <th>Room</th>
-            <th>Owner</th>
-            <th>Vehicle</th>
-            <th>License plate</th>
-            <th>Period</th>
-            <th>Status</th>
-            <th>Billable</th>
-            {hasActions && <th>Actions</th>}
+            <th>{t('tables.common.room')}</th>
+            <th>{t('tables.common.owner')}</th>
+            <th>{t('tables.common.vehicle')}</th>
+            <th>{t('tables.common.licensePlate')}</th>
+            <th>{t('tables.common.period')}</th>
+            <th>{t('tables.common.status')}</th>
+            <th>{t('common.billable')}</th>
+            {hasActions && <th>{t('tables.common.actions')}</th>}
           </tr>
         </thead>
         <tbody>
@@ -47,29 +45,29 @@ export default function VehicleTable({ vehicles, renderActions }) {
               </td>
               <td>
                 <strong>{vehicle.ownerName}</strong>
-                <span className="table-subtext">{getVehicleOwnerTypeLabel(vehicle.ownerType)}</span>
+                <span className="table-subtext">{formatEnumLabel(t, 'vehicleOwnerType', vehicle.ownerType)}</span>
               </td>
               <td>
-                <strong>{getVehicleTypeLabel(vehicle.vehicleType)}</strong>
+                <strong>{formatEnumLabel(t, 'vehicleType', vehicle.vehicleType)}</strong>
                 <span className="table-subtext">
-                  {displayText(vehicle.brand)}
+                  {displayText(vehicle.brand, t('common.notProvided'))}
                   {vehicle.color ? `, ${vehicle.color}` : ''}
                 </span>
               </td>
               <td>{vehicle.licensePlate}</td>
-              <td>{periodText(vehicle)}</td>
+              <td>{periodText(vehicle, t)}</td>
               <td>
-                <span className={getVehicleStatusClass(vehicle.status)}>{getVehicleStatusLabel(vehicle.status)}</span>
+                <span className={getVehicleStatusClass(vehicle.status)}>{formatEnumLabel(t, 'vehicleStatus', vehicle.status)}</span>
               </td>
               <td>
-                <span className={billableClass(vehicle)}>{vehicle.billable ? 'Billable' : 'Not billable'}</span>
+                <span className={billableClass(vehicle)}>{vehicle.billable ? t('common.billable') : t('common.notBillable')}</span>
               </td>
               {hasActions && <td>{renderActions(vehicle)}</td>}
             </tr>
           ))}
         </tbody>
       </table>
-      {vehicles.length === 0 && <div className="empty-state flat-empty-state">No vehicles found.</div>}
+      {vehicles.length === 0 && <div className="empty-state flat-empty-state">{t('tables.vehicles.empty')}</div>}
     </div>
   );
 }

@@ -1,9 +1,7 @@
-import {
-  formatMaintenanceDateTime,
-  getMaintenanceStatusClass,
-  getMaintenanceStatusLabel
-} from '../utils/maintenanceOptions.js';
+import { useTranslation } from 'react-i18next';
+import { getMaintenanceStatusClass } from '../utils/maintenanceOptions.js';
 import { resolveFileUrl } from '../utils/fileUrl.js';
+import { formatDateTime, formatEnumLabel } from '../utils/i18nFormat.js';
 import { formatRoomLabel } from '../utils/roomDisplay.js';
 
 function roomText(request) {
@@ -11,6 +9,7 @@ function roomText(request) {
 }
 
 export default function MaintenanceRequestTable({ requests, renderActions, onSelect, selectedId }) {
+  const { t } = useTranslation();
   const hasActions = Boolean(renderActions);
 
   return (
@@ -18,14 +17,14 @@ export default function MaintenanceRequestTable({ requests, renderActions, onSel
       <table className="data-table maintenance-table">
         <thead>
           <tr>
-            <th>Request</th>
-            <th>Room</th>
-            <th>Head resident</th>
-            <th>Assigned staff</th>
-            <th>Status</th>
-            <th>Images</th>
-            <th>Created</th>
-            {hasActions && <th>Actions</th>}
+            <th>{t('tables.common.request')}</th>
+            <th>{t('tables.common.room')}</th>
+            <th>{t('tables.common.headResident')}</th>
+            <th>{t('tables.common.assignedStaff')}</th>
+            <th>{t('tables.common.status')}</th>
+            <th>{t('tables.common.images')}</th>
+            <th>{t('tables.common.created')}</th>
+            {hasActions && <th>{t('tables.common.actions')}</th>}
           </tr>
         </thead>
         <tbody>
@@ -54,19 +53,19 @@ export default function MaintenanceRequestTable({ requests, renderActions, onSel
                     <span className="table-subtext">{request.assignedToEmail}</span>
                   </>
                 ) : (
-                  'Not assigned'
+                  t('common.notAssigned')
                 )}
               </td>
               <td>
                 <span className={getMaintenanceStatusClass(request.status)}>
-                  {getMaintenanceStatusLabel(request.status)}
+                  {formatEnumLabel(t, 'maintenanceStatus', request.status)}
                 </span>
               </td>
               <td>
                 <div className="evidence-links">
                   {request.imageUrl && (
                     <a href={resolveFileUrl(request.imageUrl)} target="_blank" rel="noreferrer" onClick={(event) => event.stopPropagation()}>
-                      Issue
+                      {t('tables.maintenanceRequests.issue')}
                     </a>
                   )}
                   {request.resultImageUrl && (
@@ -76,19 +75,19 @@ export default function MaintenanceRequestTable({ requests, renderActions, onSel
                       rel="noreferrer"
                       onClick={(event) => event.stopPropagation()}
                     >
-                      Result
+                      {t('tables.maintenanceRequests.result')}
                     </a>
                   )}
-                  {!request.imageUrl && !request.resultImageUrl && 'Not provided'}
+                  {!request.imageUrl && !request.resultImageUrl && t('common.notProvided')}
                 </div>
               </td>
-              <td>{formatMaintenanceDateTime(request.createdAt)}</td>
+              <td>{formatDateTime(request.createdAt, t)}</td>
               {hasActions && <td onClick={(event) => event.stopPropagation()}>{renderActions(request)}</td>}
             </tr>
           ))}
         </tbody>
       </table>
-      {requests.length === 0 && <div className="empty-state flat-empty-state">No maintenance requests found.</div>}
+      {requests.length === 0 && <div className="empty-state flat-empty-state">{t('tables.maintenanceRequests.empty')}</div>}
     </div>
   );
 }

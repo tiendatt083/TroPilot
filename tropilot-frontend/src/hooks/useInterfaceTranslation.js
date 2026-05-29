@@ -5,6 +5,7 @@ import { EN_TO_VI_TRANSLATIONS, VI_TO_EN_TRANSLATIONS } from '../utils/interface
 const TRANSLATABLE_ATTRIBUTES = ['placeholder', 'aria-label', 'title'];
 const IGNORED_TAGS = new Set(['SCRIPT', 'STYLE', 'TEXTAREA']);
 const FIXED_DISPLAY_VALUES = {
+  admin: 'Admin',
   'property administrator': 'Admin',
   'quản trị viên bất động sản': 'Admin',
   'quản trị viên bất đọng sản': 'Admin'

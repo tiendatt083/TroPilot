@@ -1,9 +1,9 @@
+import { useTranslation } from 'react-i18next';
 import {
   formatFeedbackDateTime,
   getFeedbackStatusClass,
-  getFeedbackStatusLabel,
-  getFeedbackTypeLabel
 } from '../utils/feedbackOptions.js';
+import { formatEnumLabel } from '../utils/i18nFormat.js';
 import { formatRoomLabel } from '../utils/roomDisplay.js';
 
 function formatNumber(value) {
@@ -14,6 +14,7 @@ function formatNumber(value) {
 }
 
 export default function FeedbackTable({ feedbacks, renderActions }) {
+  const { t } = useTranslation();
   const hasActions = Boolean(renderActions);
 
   return (
@@ -21,15 +22,15 @@ export default function FeedbackTable({ feedbacks, renderActions }) {
       <table className="data-table feedback-table">
         <thead>
           <tr>
-            <th>Feedback</th>
-            <th>Type</th>
-            <th>Resident</th>
-            <th>Room</th>
-            <th>Invoice</th>
-            <th>Status</th>
-            <th>Reply</th>
-            <th>Created</th>
-            {hasActions && <th>Actions</th>}
+            <th>{t('tables.feedbacks.title')}</th>
+            <th>{t('tables.common.type')}</th>
+            <th>{t('tables.common.resident')}</th>
+            <th>{t('tables.common.room')}</th>
+            <th>{t('tables.common.invoice')}</th>
+            <th>{t('tables.common.status')}</th>
+            <th>{t('tables.common.reply')}</th>
+            <th>{t('tables.common.created')}</th>
+            {hasActions && <th>{t('tables.common.actions')}</th>}
           </tr>
         </thead>
         <tbody>
@@ -39,7 +40,7 @@ export default function FeedbackTable({ feedbacks, renderActions }) {
                 <strong>{feedback.title}</strong>
                 <span className="table-subtext">{feedback.content}</span>
               </td>
-              <td>{getFeedbackTypeLabel(feedback.type)}</td>
+              <td>{formatEnumLabel(t, 'feedbackType', feedback.type)}</td>
               <td>
                 <strong>{feedback.residentHeadName}</strong>
                 <span className="table-subtext">{feedback.residentHeadEmail}</span>
@@ -57,17 +58,19 @@ export default function FeedbackTable({ feedbacks, renderActions }) {
                     </span>
                   </>
                 ) : (
-                  'Not linked'
+                  t('common.notLinked')
                 )}
               </td>
               <td>
                 <span className={getFeedbackStatusClass(feedback.status)}>
-                  {getFeedbackStatusLabel(feedback.status)}
+                  {formatEnumLabel(t, 'feedbackStatus', feedback.status)}
                 </span>
               </td>
               <td>
-                {feedback.reply || 'No reply'}
-                {feedback.repliedByName && <span className="table-subtext">By {feedback.repliedByName}</span>}
+                {feedback.reply || t('common.noReply')}
+                {feedback.repliedByName && (
+                  <span className="table-subtext">{t('tables.feedbacks.by', { name: feedback.repliedByName })}</span>
+                )}
               </td>
               <td>{formatFeedbackDateTime(feedback.createdAt)}</td>
               {hasActions && <td>{renderActions(feedback)}</td>}
@@ -75,7 +78,7 @@ export default function FeedbackTable({ feedbacks, renderActions }) {
           ))}
         </tbody>
       </table>
-      {feedbacks.length === 0 && <div className="empty-state flat-empty-state">No feedbacks found.</div>}
+      {feedbacks.length === 0 && <div className="empty-state flat-empty-state">{t('tables.feedbacks.empty')}</div>}
     </div>
   );
 }

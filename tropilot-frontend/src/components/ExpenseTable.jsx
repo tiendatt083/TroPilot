@@ -1,9 +1,7 @@
-import {
-  getExpenseStatusClass,
-  getExpenseStatusLabel,
-  getExpenseTypeLabel
-} from '../utils/expenseOptions.js';
+import { useTranslation } from 'react-i18next';
+import { getExpenseStatusClass } from '../utils/expenseOptions.js';
 import { resolveFileUrl } from '../utils/fileUrl.js';
+import { formatEnumLabel } from '../utils/i18nFormat.js';
 import { formatRoomLabel } from '../utils/roomDisplay.js';
 
 function formatNumber(value) {
@@ -13,15 +11,16 @@ function formatNumber(value) {
     : value;
 }
 
-function roomText(expense) {
+function roomText(expense, t) {
   if (!expense.roomCode) {
-    return 'Not linked';
+    return t('common.notLinked');
   }
 
   return formatRoomLabel(expense);
 }
 
 export default function ExpenseTable({ expenses, renderActions }) {
+  const { t } = useTranslation();
   const hasActions = Boolean(renderActions);
 
   return (
@@ -29,15 +28,15 @@ export default function ExpenseTable({ expenses, renderActions }) {
       <table className="data-table expense-table">
         <thead>
           <tr>
-            <th>Expense</th>
-            <th>Room</th>
-            <th>Type</th>
-            <th>Amount</th>
-            <th>Status</th>
-            <th>Proof</th>
-            <th>Created by</th>
-            <th>Content</th>
-            {hasActions && <th>Actions</th>}
+            <th>{t('tables.common.expense')}</th>
+            <th>{t('tables.common.room')}</th>
+            <th>{t('tables.common.type')}</th>
+            <th>{t('tables.common.amount')}</th>
+            <th>{t('tables.common.status')}</th>
+            <th>{t('tables.common.proof')}</th>
+            <th>{t('tables.common.createdBy')}</th>
+            <th>{t('tables.common.content')}</th>
+            {hasActions && <th>{t('tables.common.actions')}</th>}
           </tr>
         </thead>
         <tbody>
@@ -48,23 +47,23 @@ export default function ExpenseTable({ expenses, renderActions }) {
                 <span className="table-subtext">{expense.createdAt}</span>
               </td>
               <td>
-                <strong>{roomText(expense)}</strong>
-                <span className="table-subtext">{expense.buildingCode || 'No building'}</span>
+                <strong>{roomText(expense, t)}</strong>
+                <span className="table-subtext">{expense.buildingCode || t('common.noBuilding')}</span>
               </td>
-              <td>{getExpenseTypeLabel(expense.expenseType)}</td>
+              <td>{formatEnumLabel(t, 'expenseType', expense.expenseType)}</td>
               <td>{formatNumber(expense.amount)}</td>
               <td>
                 <span className={getExpenseStatusClass(expense.status)}>
-                  {getExpenseStatusLabel(expense.status)}
+                  {formatEnumLabel(t, 'expenseStatus', expense.status)}
                 </span>
               </td>
               <td>
                 {expense.proofImageUrl ? (
                   <a className="secondary-link compact-link" href={resolveFileUrl(expense.proofImageUrl)} target="_blank" rel="noreferrer">
-                    View
+                    {t('common.view')}
                   </a>
                 ) : (
-                  'Not provided'
+                  t('common.notProvided')
                 )}
               </td>
               <td>
@@ -77,7 +76,7 @@ export default function ExpenseTable({ expenses, renderActions }) {
           ))}
         </tbody>
       </table>
-      {expenses.length === 0 && <div className="empty-state flat-empty-state">No expenses found.</div>}
+      {expenses.length === 0 && <div className="empty-state flat-empty-state">{t('tables.expenses.empty')}</div>}
     </div>
   );
 }

@@ -1,0 +1,561 @@
+{
+  "common": {
+    "cancel": "Cancel",
+    "clear": "Clear",
+    "delete": "Delete",
+    "edit": "Edit",
+    "filter": "Filter",
+    "notAvailable": "Not available",
+    "notLinked": "Not linked",
+    "notProvided": "Not provided",
+    "noReply": "No reply",
+    "notApplicable": "Not applicable",
+    "notAssigned": "Not assigned",
+    "noBuilding": "No building",
+    "notSet": "Not set",
+    "open": "Open",
+    "active": "Active",
+    "inactive": "Inactive",
+    "billable": "Billable",
+    "notBillable": "Not billable",
+    "saving": "Saving...",
+    "signOut": "Sign out",
+    "to": "to",
+    "view": "View"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "currentLanguage": "Current language",
+    "vietnamese": "Vietnamese",
+    "english": "English"
+  },
+  "role": {
+    "admin": "Admin",
+    "staff": "Staff",
+    "residentHead": "Head Resident"
+  },
+  "navigation": {
+    "admin": "Admin navigation",
+    "staff": "Staff navigation",
+    "resident": "Resident navigation",
+    "buildingWorkspace": "Building workspace navigation",
+    "dashboard": "Dashboard",
+    "notifications": "Notifications",
+    "activityLogs": "Activity logs",
+    "feedbacks": "Feedbacks",
+    "invoiceComplaints": "Invoice complaints",
+    "users": "Users",
+    "pendingMembers": "Pending members",
+    "contracts": "Contracts",
+    "tasks": "Tasks",
+    "maintenance": "Maintenance",
+    "buildings": "Buildings",
+    "rooms": "Rooms",
+    "invoices": "Invoices",
+    "pendingPayments": "Pending payments",
+    "expenses": "Expenses",
+    "vehicles": "Vehicles",
+    "serviceFees": "Service fees",
+    "utilityReadings": "Utility readings",
+    "members": "Members",
+    "contract": "Contract"
+  },
+  "buildingWorkspace": {
+    "eyebrow": "Building workspace",
+    "loading": "Loading building workspace...",
+    "loadError": "Building workspace could not be loaded",
+    "notFound": "Building not found.",
+    "deleteError": "Building could not be deleted",
+    "deleteConfirm": "Delete building {{code}}?",
+    "allBuildings": "All buildings",
+    "roomsInBuilding": "Rooms in this building",
+    "createRoom": "Create room",
+    "overview": "Overview",
+    "rooms": "Rooms",
+    "contracts": "Contracts",
+    "billing": "Billing",
+    "vehicles": "Vehicles",
+    "payments": "Payments",
+    "receipts": "Receipts",
+    "roomMembers": "Room members",
+    "maintenance": "Maintenance",
+    "expenses": "Expenses",
+    "cashFlow": "Cash flow",
+    "tasks": "Tasks",
+    "feedbacks": "Feedbacks",
+    "invoiceComplaints": "Invoice complaints",
+    "notifications": "Notifications"
+  },
+  "activityLogs": {
+    "title": "Activity logs",
+    "eyebrow": "Admin",
+    "loading": "Loading activity logs...",
+    "loadError": "Activity logs could not be loaded",
+    "empty": "No activity logs found.",
+    "notAvailable": "Not available",
+    "filterPlaceholder": "Filter by action",
+    "filterAriaLabel": "Action filter",
+    "columns": {
+      "time": "Time",
+      "user": "User",
+      "action": "Action",
+      "description": "Description"
+    },
+    "actions": {
+      "CONTRACT_CONFIRMED": "Contract confirmed",
+      "CONTRACT_UPLOADED": "Contract uploaded",
+      "EXPENSE_CREATED": "Expense created",
+      "FIRST_TIME_PASSWORD_CHANGED": "First-time password changed",
+      "HEAD_RESIDENT_ASSIGNED": "Head Resident assigned",
+      "INVOICE_GENERATED": "Invoice generated",
+      "MAINTENANCE_REQUEST_COMPLETED": "Maintenance request completed",
+      "MAINTENANCE_REQUEST_CREATED": "Maintenance request created",
+      "PAYMENT_APPROVED": "Payment approved",
+      "PAYMENT_PROOF_UPLOADED": "Payment proof uploaded",
+      "PAYMENT_REJECTED": "Payment rejected",
+      "RECEIPT_CREATED": "Receipt created",
+      "ROOM_CREATED": "Room created",
+      "ROOM_MEMBER_ADDED": "Room member added",
+      "ROOM_MEMBER_APPROVED": "Room member approved",
+      "ROOM_MEMBER_REJECTED": "Room member rejected",
+      "TASK_COMPLETED": "Task completed",
+      "TASK_CREATED": "Task created",
+      "USER_CREATED": "User created",
+      "USER_DELETED": "User deleted",
+      "USER_PASSWORD_RESET": "User password reset",
+      "UTILITY_READING_RECORDED": "Utility reading recorded"
+    },
+    "roleInText": {
+      "ADMIN": "Admin",
+      "STAFF": "Staff",
+      "RESIDENT_HEAD": "Head Resident"
+    },
+    "descriptions": {
+      "changedFirstTimePassword": "Changed first-time password",
+      "createdAccount": "Created {{role}} account for {{target}}",
+      "resetTemporaryPassword": "Reset temporary password for {{target}}",
+      "deletedUserAccount": "Deleted user account for {{target}}",
+      "createdRoom": "Created room {{room}} in building {{building}}",
+      "assignedHeadResident": "Assigned Head Resident {{resident}} to room {{room}}",
+      "addedRoomMemberRequest": "Added room member request for {{member}}",
+      "approvedRoomMember": "Approved room member {{member}} in room {{room}}",
+      "rejectedRoomMember": "Rejected room member {{member}} in room {{room}}",
+      "uploadedContract": "Uploaded contract for room {{room}}",
+      "confirmedContract": "Confirmed contract for room {{room}}",
+      "recordedUtilityReading": "Recorded utility reading for room {{room}} on {{date}}",
+      "generatedInvoice": "Generated invoice for room {{room}} and month {{month}}",
+      "uploadedPaymentProof": "Uploaded payment proof for invoice {{invoice}}",
+      "approvedPayment": "Approved payment for invoice {{invoice}}",
+      "rejectedPayment": "Rejected payment for invoice {{invoice}}",
+      "createdReceipt": "System created receipt {{receipt}} for invoice {{invoice}}",
+      "createdExpense": "Created expense {{expense}}",
+      "createdTask": "Created task {{task}} for {{assignee}}",
+      "completedTask": "Completed task {{task}}",
+      "createdMaintenanceRequest": "Created maintenance request {{request}} for room {{room}}",
+      "completedMaintenanceRequest": "Completed maintenance request {{request}} for room {{room}}"
+    }
+  },
+  "dashboard": {
+    "admin": {
+      "title": "Dashboard",
+      "eyebrow": "Admin",
+      "loading": "Loading dashboard...",
+      "loadError": "Admin dashboard could not be loaded",
+      "heroDescription": "System-wide operating snapshot for buildings, rooms, residents, invoices, maintenance, and cash flow.",
+      "sections": {
+        "portfolioTitle": "Portfolio overview",
+        "portfolioDescription": "Room supply and occupancy health across all buildings.",
+        "residentsTitle": "Residents and vehicles",
+        "residentsDescription": "Current resident coverage and vehicle volume.",
+        "financeTitle": "Financial position",
+        "financeDescription": "Income, expense, outstanding amount, and remaining cash from real records.",
+        "attentionTitle": "Attention required",
+        "attentionDescription": "Items that need review or operational follow-up."
+      },
+      "metrics": {
+        "totalBuildings": "Total buildings",
+        "totalRooms": "Total rooms",
+        "occupiedRooms": "Occupied rooms",
+        "emptyRooms": "Empty rooms",
+        "maintenanceRooms": "Maintenance rooms",
+        "headResidents": "Head residents",
+        "approvedRoomMembers": "Approved room members",
+        "pendingRoomMembers": "Pending room members",
+        "totalOccupants": "Total occupants",
+        "activeVehicles": "Active vehicles",
+        "totalIncome": "Total income",
+        "totalExpense": "Total expense",
+        "remainingCash": "Remaining cash",
+        "unpaidAmount": "Unpaid amount",
+        "expiringContracts": "Expiring contracts",
+        "unpaidInvoices": "Unpaid invoices",
+        "overdueInvoices": "Overdue invoices",
+        "pendingMaintenance": "Pending maintenance",
+        "inProgressTasks": "In-progress tasks",
+        "unresolvedFeedbacks": "Unresolved feedbacks",
+        "buildings": "Buildings",
+        "rooms": "Rooms",
+        "openIssues": "Open issues",
+        "cashPosition": "Cash position"
+      },
+      "notes": {
+        "next30Days": "Next 30 days"
+      }
+    },
+    "staff": {
+      "title": "Dashboard",
+      "eyebrow": "Staff",
+      "loading": "Loading dashboard...",
+      "loadError": "Staff dashboard could not be loaded",
+      "heroDescription": "Daily work queue for readings, payments, maintenance, and assigned operational tasks.",
+      "sections": {
+        "taskTitle": "Task workload",
+        "taskDescription": "Assigned work and overdue items requiring immediate action.",
+        "operationsTitle": "Operational queue",
+        "operationsDescription": "Building operations that need staff processing.",
+        "expenseTitle": "Expense activity",
+        "expenseDescription": "Expenses created from valid operational work."
+      },
+      "metrics": {
+        "assignedTasks": "Assigned tasks",
+        "overdueTasks": "Overdue tasks",
+        "roomsNeedingUtilityReading": "Rooms needing utility reading",
+        "pendingPaymentConfirmations": "Pending payment confirmations",
+        "activeMaintenanceRequests": "Active maintenance requests",
+        "createdExpenses": "Created expenses",
+        "utilityReadingsDue": "Utility readings due",
+        "paymentChecks": "Payment checks"
+      }
+    },
+    "resident": {
+      "title": "Dashboard",
+      "eyebrow": "Head Resident",
+      "loading": "Loading dashboard...",
+      "loadError": "Resident dashboard could not be loaded",
+      "heroDescription": "Room status, contract, invoice, vehicle, and maintenance overview for your assigned room.",
+      "metrics": {
+        "approvedMembers": "Approved members",
+        "activeVehicles": "Active vehicles",
+        "unreadNotifications": "Unread notifications",
+        "recentMaintenanceRequests": "Recent maintenance requests"
+      },
+      "sections": {
+        "roomOverviewTitle": "Room overview",
+        "roomOverviewDescription": "Current assigned room, building, and contract summary."
+      },
+      "labels": {
+        "assignedRoom": "Assigned room",
+        "building": "Building",
+        "roomStatus": "Room status",
+        "assignmentPeriod": "Assignment period",
+        "depositAmount": "Deposit amount",
+        "contractStatus": "Contract status",
+        "currentContract": "Current contract",
+        "period": "Period",
+        "status": "Status",
+        "contractFile": "Contract file",
+        "latestInvoice": "Latest invoice",
+        "month": "Month",
+        "dueDate": "Due date",
+        "totalAmount": "Total amount",
+        "activeVehicles": "Active vehicles",
+        "recentMaintenanceRequests": "Recent maintenance requests"
+      },
+      "empty": {
+        "noActiveContract": "No active contract is available.",
+        "noInvoice": "No invoice is available.",
+        "noActiveVehicle": "No active vehicle is registered.",
+        "noMaintenanceRequest": "No maintenance request is available.",
+        "noAssignedRoom": "No room is assigned to your account."
+      }
+    }
+  },
+  "enum": {
+    "roomStatus": {
+      "EMPTY": "Empty",
+      "OCCUPIED": "Occupied",
+      "MAINTENANCE": "Maintenance",
+      "RESERVED": "Reserved"
+    },
+    "contractStatus": {
+      "NOT_UPLOADED": "Not uploaded",
+      "UPLOADED": "Uploaded",
+      "CONFIRMED": "Confirmed",
+      "NEED_UPDATE": "Need update"
+    },
+    "rentalStatus": {
+      "ACTIVE": "Active",
+      "EXPIRING_SOON": "Expiring soon",
+      "EXPIRED": "Expired",
+      "RENEWED": "Renewed",
+      "ENDED": "Ended",
+      "TRANSFERRED": "Transferred"
+    },
+    "invoiceStatus": {
+      "UNPAID": "Unpaid",
+      "PENDING_CONFIRMATION": "Pending confirmation",
+      "PAID": "Paid",
+      "OVERDUE": "Overdue",
+      "REJECTED": "Rejected"
+    },
+    "maintenanceStatus": {
+      "PENDING": "Pending",
+      "ASSIGNED": "Assigned",
+      "IN_PROGRESS": "In progress",
+      "COMPLETED": "Completed",
+      "REJECTED": "Rejected"
+    },
+    "vehicleType": {
+      "MOTORBIKE": "Motorbike",
+      "CAR": "Car",
+      "BICYCLE": "Bicycle",
+      "ELECTRIC_BIKE": "Electric bike"
+    },
+    "notificationTarget": {
+      "ALL_RESIDENT_HEADS": "All Head Residents",
+      "ALL": "All users",
+      "STAFF": "All Staff",
+      "SELECTED_USERS": "Selected Head Residents",
+      "ONE_BUILDING": "One building",
+      "ONE_ROOM": "One room",
+      "ONE_USER": "One user"
+    },
+    "readStatus": {
+      "READ": "Read",
+      "UNREAD": "Unread"
+    },
+    "feedbackType": {
+      "GENERAL": "General",
+      "INVOICE_COMPLAINT": "Invoice complaint",
+      "CONTRACT_ERROR": "Contract error",
+      "OTHER": "Other"
+    },
+    "feedbackStatus": {
+      "PENDING": "Pending",
+      "IN_PROGRESS": "In progress",
+      "RESOLVED": "Resolved",
+      "REJECTED": "Rejected"
+    },
+    "paymentStatus": {
+      "PENDING": "Pending",
+      "APPROVED": "Approved",
+      "REJECTED": "Rejected"
+    },
+    "receiptStatus": {
+      "VALID": "Valid",
+      "CANCELLED": "Cancelled"
+    },
+    "expenseType": {
+      "REPAIR": "Repair",
+      "REPLACEMENT": "Replacement",
+      "CLEANING": "Cleaning",
+      "MAINTENANCE": "Maintenance",
+      "OPERATION": "Operation",
+      "OTHER": "Other"
+    },
+    "expenseStatus": {
+      "VALID": "Valid",
+      "PENDING": "Pending",
+      "CANCELLED": "Cancelled"
+    },
+    "feeType": {
+      "ROOM": "Room",
+      "ELECTRICITY": "Electricity",
+      "WATER": "Water",
+      "INTERNET": "Internet",
+      "CLEANING": "Cleaning",
+      "GARBAGE": "Garbage",
+      "PARKING": "Parking",
+      "OTHER": "Other"
+    },
+    "calculationType": {
+      "FIXED": "Fixed",
+      "BY_USAGE": "By usage",
+      "BY_PERSON": "By person",
+      "BY_QUANTITY": "By quantity"
+    },
+    "vehicleOwnerType": {
+      "RESIDENT_HEAD": "Head Resident",
+      "ROOM_MEMBER": "Room Member"
+    },
+    "vehicleStatus": {
+      "PENDING": "Pending",
+      "ACTIVE": "Active",
+      "INACTIVE": "Inactive",
+      "REJECTED": "Rejected"
+    },
+    "taskType": {
+      "METER_READING": "Meter reading",
+      "INVOICE_CREATION": "Invoice creation",
+      "ROOM_CHECK": "Room check",
+      "MAINTENANCE": "Maintenance",
+      "VEHICLE_CHECK": "Vehicle check",
+      "FEEDBACK_HANDLING": "Feedback handling",
+      "OTHER": "Other"
+    },
+    "taskPriority": {
+      "LOW": "Low",
+      "MEDIUM": "Medium",
+      "HIGH": "High",
+      "URGENT": "Urgent"
+    },
+    "taskStatus": {
+      "NEW": "New",
+      "IN_PROGRESS": "In progress",
+      "COMPLETED": "Completed",
+      "REJECTED": "Rejected",
+      "OVERDUE": "Overdue"
+    }
+  },
+  "tables": {
+    "common": {
+      "actions": "Actions",
+      "amount": "Amount",
+      "assignedStaff": "Assigned staff",
+      "building": "Building",
+      "calculation": "Calculation",
+      "code": "Code",
+      "content": "Content",
+      "created": "Created",
+      "createdBy": "Created by",
+      "depositAmount": "Deposit amount",
+      "description": "Description",
+      "deadline": "Deadline",
+      "dueDate": "Due date",
+      "editReason": "Edit reason",
+      "electricity": "Electricity",
+      "evidence": "Evidence",
+      "expense": "Expense",
+      "feeType": "Fee type",
+      "floor": "Floor",
+      "headResident": "Head Resident",
+      "images": "Images",
+      "invoice": "Invoice",
+      "item": "Item",
+      "licensePlate": "License plate",
+      "month": "Month",
+      "name": "Name",
+      "maxOccupants": "Maximum occupants",
+      "note": "Note",
+      "owner": "Owner",
+      "period": "Period",
+      "price": "Price",
+      "priority": "Priority",
+      "proof": "Proof",
+      "quantity": "Quantity",
+      "readingDate": "Reading date",
+      "request": "Request",
+      "resultImage": "Result image",
+      "resultNote": "Result note",
+      "reply": "Reply",
+      "resident": "Resident",
+      "room": "Room",
+      "status": "Status",
+      "target": "Target",
+      "totalAmount": "Total amount",
+      "type": "Type",
+      "unitPrice": "Unit price",
+      "updated": "Updated",
+      "vehicle": "Vehicle",
+      "vehicleType": "Vehicle type",
+      "water": "Water"
+    },
+    "notifications": {
+      "title": "Notification",
+      "readStatus": "Read status",
+      "markRead": "Mark read",
+      "empty": "No notifications found.",
+      "allBuildings": "All buildings",
+      "selectedBuildings": "Selected buildings"
+    },
+    "feedbacks": {
+      "title": "Feedback",
+      "empty": "No feedbacks found.",
+      "by": "By {{name}}"
+    },
+    "invoices": {
+      "empty": "No invoices found."
+    },
+    "payments": {
+      "uploadedAt": "Uploaded at",
+      "empty": "No payments found."
+    },
+    "receipts": {
+      "title": "Receipt",
+      "empty": "No receipts found."
+    },
+    "expenses": {
+      "empty": "No expenses found."
+    },
+    "maintenanceRequests": {
+      "empty": "No maintenance requests found.",
+      "issue": "Issue",
+      "result": "Result"
+    },
+    "serviceFees": {
+      "empty": "No service fees found."
+    },
+    "tasks": {
+      "title": "Task",
+      "empty": "No tasks found."
+    },
+    "vehicles": {
+      "empty": "No vehicles found."
+    },
+    "utilityReadings": {
+      "empty": "No utility readings found.",
+      "usage": "Usage",
+      "notEdited": "Not edited"
+    },
+    "invoiceItems": {
+      "empty": "No invoice items found.",
+      "selectInvoice": "Select an invoice to view details.",
+      "electricityEvidence": "Electricity evidence",
+      "waterEvidence": "Water evidence"
+    },
+    "details": {
+      "selectMaintenanceRequest": "Select a maintenance request to view details.",
+      "selectTask": "Select a task to view details.",
+      "title": "Title",
+      "staffEmail": "Staff email",
+      "issueImage": "Issue image",
+      "resultImage": "Result image",
+      "viewImage": "View image",
+      "noResultNote": "No result note provided."
+    },
+    "forms": {
+      "assignment": {
+        "selectHeadResident": "Select Head Resident",
+        "noHeadResidents": "No active Head Residents available",
+        "startDate": "Start date",
+        "endDate": "End date",
+        "assigning": "Assigning...",
+        "submit": "Assign Head Resident"
+      },
+      "room": {
+        "selectBuilding": "Select building",
+        "noBuildings": "No buildings available",
+        "roomCode": "Room code",
+        "roomName": "Room name"
+      },
+      "utilityReading": {
+        "selectRoom": "Select room",
+        "oldElectricity": "Old electricity",
+        "newElectricity": "New electricity",
+        "electricityEvidenceImage": "Electricity evidence image",
+        "oldWater": "Old water",
+        "newWater": "New water",
+        "waterEvidenceImage": "Water evidence image",
+        "allowedImageTypes": "Allowed image types: jpg, jpeg, png. Maximum size: 10 MB.",
+        "readingDateHelp": "This date applies to both electricity and water readings.",
+        "previousMonthEvidence": "Previous month evidence",
+        "noPreviousEvidence": "No previous reading evidence found for this room.",
+        "previousElectricityImage": "Previous electricity image",
+        "previousWaterImage": "Previous water image",
+        "previousElectricityAlt": "Previous electricity meter evidence",
+        "previousWaterAlt": "Previous water meter evidence"
+      }
+    }
+  }
+}

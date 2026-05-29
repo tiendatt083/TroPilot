@@ -19,13 +19,13 @@ export default function Settings() {
   return (
     <section className="content-section narrow-section">
       <div className="page-title-row">
-        <PageHeader eyebrow="Tropilot" title={t('settings')} />
+        <PageHeader eyebrow="Tropilot" title={t('settings.title')} />
       </div>
 
       <section className="settings-panel">
         <div className="settings-language-summary">
-          <span>{t('language')}</span>
-          <strong>{currentLanguage === 'vi' ? t('vietnamese') : t('english')}</strong>
+          <span>{t('settings.currentLanguage')}</span>
+          <strong>{currentLanguage === 'vi' ? t('settings.vietnamese') : t('settings.english')}</strong>
         </div>
 
         <div className="settings-language-actions">
@@ -34,14 +34,14 @@ export default function Settings() {
             type="button"
             onClick={() => handleLanguageChange('vi')}
           >
-            {t('vietnamese')}
+            {t('settings.vietnamese')}
           </button>
           <button
             className={currentLanguage === 'en' ? undefined : 'secondary-button inline-button'}
             type="button"
             onClick={() => handleLanguageChange('en')}
           >
-            {t('english')}
+            {t('settings.english')}
           </button>
         </div>
       </section>

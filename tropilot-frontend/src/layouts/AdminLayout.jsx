@@ -2,6 +2,22 @@ import { NavLink, Outlet } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext.jsx';
 
+const ADMIN_NAV_ITEMS = [
+  { to: '/admin/dashboard', labelKey: 'navigation.dashboard' },
+  { to: '/admin/notifications', labelKey: 'navigation.notifications' },
+  { to: '/admin/activity-logs', labelKey: 'navigation.activityLogs' },
+  { to: '/admin/feedbacks', labelKey: 'navigation.feedbacks' },
+  { to: '/admin/invoice-complaints', labelKey: 'navigation.invoiceComplaints' },
+  { to: '/admin/users', labelKey: 'navigation.users' },
+  { to: '/admin/members/pending', labelKey: 'navigation.pendingMembers' },
+  { to: '/admin/contracts', labelKey: 'navigation.contracts' },
+  { to: '/admin/tasks', labelKey: 'navigation.tasks' },
+  { to: '/admin/maintenance', labelKey: 'navigation.maintenance' },
+  { to: '/admin/buildings', labelKey: 'navigation.buildings' },
+  { to: '/admin/rooms', labelKey: 'navigation.rooms' },
+  { to: '/admin/settings', labelKey: 'settings.title' }
+];
+
 export default function AdminLayout() {
   const { logout, user } = useAuth();
   const { t } = useTranslation();
@@ -12,25 +28,17 @@ export default function AdminLayout() {
         <strong>Tropilot</strong>
         <div className="sidebar-user">
           <span>{user?.fullName}</span>
-          <small>Administrator</small>
+          <small>{t('role.admin')}</small>
         </div>
-        <nav aria-label="Admin navigation">
-          <NavLink to="/admin/dashboard">Dashboard</NavLink>
-          <NavLink to="/admin/notifications">Notifications</NavLink>
-          <NavLink to="/admin/activity-logs">Activity logs</NavLink>
-          <NavLink to="/admin/feedbacks">Feedbacks</NavLink>
-          <NavLink to="/admin/invoice-complaints">Invoice complaints</NavLink>
-          <NavLink to="/admin/users">Users</NavLink>
-          <NavLink to="/admin/members/pending">Pending members</NavLink>
-          <NavLink to="/admin/contracts">Contracts</NavLink>
-          <NavLink to="/admin/tasks">Tasks</NavLink>
-          <NavLink to="/admin/maintenance">Maintenance</NavLink>
-          <NavLink to="/admin/buildings">Buildings</NavLink>
-          <NavLink to="/admin/rooms">Rooms</NavLink>
-          <NavLink to="/admin/settings">{t('settings')}</NavLink>
+        <nav aria-label={t('navigation.admin')}>
+          {ADMIN_NAV_ITEMS.map((item) => (
+            <NavLink key={item.to} to={item.to}>
+              {t(item.labelKey)}
+            </NavLink>
+          ))}
         </nav>
         <button className="secondary-button" type="button" onClick={logout}>
-          Sign out
+          {t('common.signOut')}
         </button>
       </aside>
       <main className="main-panel">

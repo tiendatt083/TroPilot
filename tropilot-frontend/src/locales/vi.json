@@ -1,0 +1,561 @@
+{
+  "common": {
+    "cancel": "Hủy",
+    "clear": "Xóa lọc",
+    "delete": "Xóa",
+    "edit": "Sửa",
+    "filter": "Lọc",
+    "notAvailable": "Không có dữ liệu",
+    "notLinked": "Không liên kết",
+    "notProvided": "Chưa cung cấp",
+    "noReply": "Chưa phản hồi",
+    "notApplicable": "Không áp dụng",
+    "notAssigned": "Chưa phân công",
+    "noBuilding": "Không có tòa nhà",
+    "notSet": "Chưa đặt",
+    "open": "Không giới hạn",
+    "active": "Hoạt động",
+    "inactive": "Không hoạt động",
+    "billable": "Tính phí",
+    "notBillable": "Không tính phí",
+    "saving": "Đang lưu...",
+    "signOut": "Đăng xuất",
+    "to": "đến",
+    "view": "Xem"
+  },
+  "settings": {
+    "title": "Cài đặt",
+    "language": "Ngôn ngữ",
+    "currentLanguage": "Ngôn ngữ hiện tại",
+    "vietnamese": "Tiếng Việt",
+    "english": "Tiếng Anh"
+  },
+  "role": {
+    "admin": "Admin",
+    "staff": "Nhân viên",
+    "residentHead": "Chủ hộ"
+  },
+  "navigation": {
+    "admin": "Điều hướng Admin",
+    "staff": "Điều hướng nhân viên",
+    "resident": "Điều hướng chủ hộ",
+    "buildingWorkspace": "Điều hướng quản lý tòa nhà",
+    "dashboard": "Bảng điều khiển",
+    "notifications": "Thông báo",
+    "activityLogs": "Nhật ký hoạt động",
+    "feedbacks": "Phản hồi",
+    "invoiceComplaints": "Khiếu nại hóa đơn",
+    "users": "Người dùng",
+    "pendingMembers": "Thành viên chờ duyệt",
+    "contracts": "Hợp đồng",
+    "tasks": "Công việc",
+    "maintenance": "Bảo trì",
+    "buildings": "Tòa nhà",
+    "rooms": "Phòng",
+    "invoices": "Hóa đơn",
+    "pendingPayments": "Thanh toán chờ duyệt",
+    "expenses": "Chi phí",
+    "vehicles": "Xe",
+    "serviceFees": "Phí dịch vụ",
+    "utilityReadings": "Chỉ số tiện ích",
+    "members": "Thành viên",
+    "contract": "Hợp đồng"
+  },
+  "buildingWorkspace": {
+    "eyebrow": "Không gian quản lý tòa nhà",
+    "loading": "Đang tải không gian quản lý tòa nhà...",
+    "loadError": "Không thể tải không gian quản lý tòa nhà",
+    "notFound": "Không tìm thấy tòa nhà.",
+    "deleteError": "Không thể xóa tòa nhà",
+    "deleteConfirm": "Xóa tòa nhà {{code}}?",
+    "allBuildings": "Tất cả tòa nhà",
+    "roomsInBuilding": "Phòng trong tòa nhà này",
+    "createRoom": "Tạo phòng",
+    "overview": "Tổng quan",
+    "rooms": "Phòng",
+    "contracts": "Hợp đồng",
+    "billing": "Lập hóa đơn",
+    "vehicles": "Xe",
+    "payments": "Thanh toán",
+    "receipts": "Biên lai",
+    "roomMembers": "Thành viên phòng",
+    "maintenance": "Bảo trì",
+    "expenses": "Chi phí",
+    "cashFlow": "Dòng tiền",
+    "tasks": "Công việc",
+    "feedbacks": "Phản hồi",
+    "invoiceComplaints": "Khiếu nại hóa đơn",
+    "notifications": "Thông báo"
+  },
+  "activityLogs": {
+    "title": "Nhật ký hoạt động",
+    "eyebrow": "Admin",
+    "loading": "Đang tải nhật ký hoạt động...",
+    "loadError": "Không thể tải nhật ký hoạt động",
+    "empty": "Không tìm thấy nhật ký hoạt động.",
+    "notAvailable": "Không có dữ liệu",
+    "filterPlaceholder": "Lọc theo thao tác",
+    "filterAriaLabel": "Bộ lọc thao tác",
+    "columns": {
+      "time": "Thời gian",
+      "user": "Người dùng",
+      "action": "Thao tác",
+      "description": "Mô tả"
+    },
+    "actions": {
+      "CONTRACT_CONFIRMED": "Xác nhận hợp đồng",
+      "CONTRACT_UPLOADED": "Tải hợp đồng lên",
+      "EXPENSE_CREATED": "Tạo chi phí",
+      "FIRST_TIME_PASSWORD_CHANGED": "Đổi mật khẩu lần đầu",
+      "HEAD_RESIDENT_ASSIGNED": "Gán chủ hộ",
+      "INVOICE_GENERATED": "Tạo hóa đơn",
+      "MAINTENANCE_REQUEST_COMPLETED": "Hoàn thành yêu cầu bảo trì",
+      "MAINTENANCE_REQUEST_CREATED": "Tạo yêu cầu bảo trì",
+      "PAYMENT_APPROVED": "Duyệt thanh toán",
+      "PAYMENT_PROOF_UPLOADED": "Tải bằng chứng thanh toán",
+      "PAYMENT_REJECTED": "Từ chối thanh toán",
+      "RECEIPT_CREATED": "Tạo biên lai",
+      "ROOM_CREATED": "Tạo phòng",
+      "ROOM_MEMBER_ADDED": "Thêm thành viên phòng",
+      "ROOM_MEMBER_APPROVED": "Duyệt thành viên phòng",
+      "ROOM_MEMBER_REJECTED": "Từ chối thành viên phòng",
+      "TASK_COMPLETED": "Hoàn thành công việc",
+      "TASK_CREATED": "Tạo công việc",
+      "USER_CREATED": "Tạo người dùng",
+      "USER_DELETED": "Xóa người dùng",
+      "USER_PASSWORD_RESET": "Tạo lại mật khẩu người dùng",
+      "UTILITY_READING_RECORDED": "Ghi chỉ số tiện ích"
+    },
+    "roleInText": {
+      "ADMIN": "Admin",
+      "STAFF": "nhân viên",
+      "RESIDENT_HEAD": "chủ hộ"
+    },
+    "descriptions": {
+      "changedFirstTimePassword": "Đã đổi mật khẩu lần đầu",
+      "createdAccount": "Đã tạo tài khoản {{role}} cho {{target}}",
+      "resetTemporaryPassword": "Đã tạo lại mật khẩu tạm thời cho {{target}}",
+      "deletedUserAccount": "Đã xóa tài khoản người dùng {{target}}",
+      "createdRoom": "Đã tạo phòng {{room}} trong tòa nhà {{building}}",
+      "assignedHeadResident": "Đã gán chủ hộ {{resident}} vào phòng {{room}}",
+      "addedRoomMemberRequest": "Đã gửi yêu cầu thêm thành viên phòng cho {{member}}",
+      "approvedRoomMember": "Đã duyệt thành viên phòng {{member}} trong phòng {{room}}",
+      "rejectedRoomMember": "Đã từ chối thành viên phòng {{member}} trong phòng {{room}}",
+      "uploadedContract": "Đã tải hợp đồng cho phòng {{room}}",
+      "confirmedContract": "Đã xác nhận hợp đồng cho phòng {{room}}",
+      "recordedUtilityReading": "Đã ghi chỉ số tiện ích cho phòng {{room}} ngày {{date}}",
+      "generatedInvoice": "Đã tạo hóa đơn cho phòng {{room}} tháng {{month}}",
+      "uploadedPaymentProof": "Đã tải bằng chứng thanh toán cho hóa đơn {{invoice}}",
+      "approvedPayment": "Đã duyệt thanh toán cho hóa đơn {{invoice}}",
+      "rejectedPayment": "Đã từ chối thanh toán cho hóa đơn {{invoice}}",
+      "createdReceipt": "Hệ thống đã tạo biên lai {{receipt}} cho hóa đơn {{invoice}}",
+      "createdExpense": "Đã tạo chi phí {{expense}}",
+      "createdTask": "Đã tạo công việc {{task}} cho {{assignee}}",
+      "completedTask": "Đã hoàn thành công việc {{task}}",
+      "createdMaintenanceRequest": "Đã tạo yêu cầu bảo trì {{request}} cho phòng {{room}}",
+      "completedMaintenanceRequest": "Đã hoàn thành yêu cầu bảo trì {{request}} cho phòng {{room}}"
+    }
+  },
+  "dashboard": {
+    "admin": {
+      "title": "Bảng điều khiển",
+      "eyebrow": "Admin",
+      "loading": "Đang tải bảng điều khiển...",
+      "loadError": "Không thể tải bảng điều khiển Admin",
+      "heroDescription": "Tổng quan vận hành toàn hệ thống về tòa nhà, phòng, cư dân, hóa đơn, bảo trì và dòng tiền.",
+      "sections": {
+        "portfolioTitle": "Tổng quan danh mục",
+        "portfolioDescription": "Tình hình nguồn phòng và tỷ lệ sử dụng trên tất cả tòa nhà.",
+        "residentsTitle": "Cư dân và xe",
+        "residentsDescription": "Tình hình cư dân hiện tại và số lượng xe.",
+        "financeTitle": "Tình hình tài chính",
+        "financeDescription": "Thu, chi, số tiền còn phải thu và tiền còn lại từ dữ liệu thực.",
+        "attentionTitle": "Cần chú ý",
+        "attentionDescription": "Các mục cần xem xét hoặc xử lý vận hành."
+      },
+      "metrics": {
+        "totalBuildings": "Tổng số tòa nhà",
+        "totalRooms": "Tổng số phòng",
+        "occupiedRooms": "Phòng đã thuê",
+        "emptyRooms": "Phòng trống",
+        "maintenanceRooms": "Phòng bảo trì",
+        "headResidents": "Chủ hộ",
+        "approvedRoomMembers": "Thành viên phòng đã duyệt",
+        "pendingRoomMembers": "Thành viên phòng chờ duyệt",
+        "totalOccupants": "Tổng người ở",
+        "activeVehicles": "Xe đang hoạt động",
+        "totalIncome": "Tổng thu",
+        "totalExpense": "Tổng chi phí",
+        "remainingCash": "Tiền còn lại",
+        "unpaidAmount": "Số tiền chưa thanh toán",
+        "expiringContracts": "Hợp đồng sắp hết hạn",
+        "unpaidInvoices": "Hóa đơn chưa thanh toán",
+        "overdueInvoices": "Hóa đơn quá hạn",
+        "pendingMaintenance": "Bảo trì đang chờ",
+        "inProgressTasks": "Công việc đang xử lý",
+        "unresolvedFeedbacks": "Phản hồi chưa xử lý",
+        "buildings": "Tòa nhà",
+        "rooms": "Phòng",
+        "openIssues": "Vấn đề đang mở",
+        "cashPosition": "Tình hình tiền mặt"
+      },
+      "notes": {
+        "next30Days": "30 ngày tới"
+      }
+    },
+    "staff": {
+      "title": "Bảng điều khiển",
+      "eyebrow": "Nhân viên",
+      "loading": "Đang tải bảng điều khiển...",
+      "loadError": "Không thể tải bảng điều khiển nhân viên",
+      "heroDescription": "Hàng đợi công việc hằng ngày cho chỉ số, thanh toán, bảo trì và nhiệm vụ được giao.",
+      "sections": {
+        "taskTitle": "Khối lượng công việc",
+        "taskDescription": "Công việc được giao và mục quá hạn cần xử lý ngay.",
+        "operationsTitle": "Hàng đợi vận hành",
+        "operationsDescription": "Các nghiệp vụ tòa nhà cần nhân viên xử lý.",
+        "expenseTitle": "Hoạt động chi phí",
+        "expenseDescription": "Chi phí được tạo từ công việc vận hành hợp lệ."
+      },
+      "metrics": {
+        "assignedTasks": "Công việc được giao",
+        "overdueTasks": "Công việc quá hạn",
+        "roomsNeedingUtilityReading": "Phòng cần ghi chỉ số tiện ích",
+        "pendingPaymentConfirmations": "Thanh toán chờ xác nhận",
+        "activeMaintenanceRequests": "Yêu cầu bảo trì đang xử lý",
+        "createdExpenses": "Chi phí đã tạo",
+        "utilityReadingsDue": "Chỉ số tiện ích cần ghi",
+        "paymentChecks": "Thanh toán cần kiểm tra"
+      }
+    },
+    "resident": {
+      "title": "Bảng điều khiển",
+      "eyebrow": "Chủ hộ",
+      "loading": "Đang tải bảng điều khiển...",
+      "loadError": "Không thể tải bảng điều khiển chủ hộ",
+      "heroDescription": "Tổng quan trạng thái phòng, hợp đồng, hóa đơn, xe và bảo trì của phòng được phân.",
+      "metrics": {
+        "approvedMembers": "Thành viên đã duyệt",
+        "activeVehicles": "Xe đang hoạt động",
+        "unreadNotifications": "Thông báo chưa đọc",
+        "recentMaintenanceRequests": "Yêu cầu bảo trì gần đây"
+      },
+      "sections": {
+        "roomOverviewTitle": "Tổng quan phòng",
+        "roomOverviewDescription": "Tóm tắt phòng được phân, tòa nhà và hợp đồng hiện tại."
+      },
+      "labels": {
+        "assignedRoom": "Phòng được phân",
+        "building": "Tòa nhà",
+        "roomStatus": "Trạng thái phòng",
+        "assignmentPeriod": "Thời gian phân phòng",
+        "depositAmount": "Tiền đặt cọc",
+        "contractStatus": "Trạng thái hợp đồng",
+        "currentContract": "Hợp đồng hiện tại",
+        "period": "Thời hạn",
+        "status": "Trạng thái",
+        "contractFile": "Tệp hợp đồng",
+        "latestInvoice": "Hóa đơn mới nhất",
+        "month": "Tháng",
+        "dueDate": "Ngày đến hạn",
+        "totalAmount": "Tổng tiền",
+        "activeVehicles": "Xe đang hoạt động",
+        "recentMaintenanceRequests": "Yêu cầu bảo trì gần đây"
+      },
+      "empty": {
+        "noActiveContract": "Không có hợp đồng đang hoạt động.",
+        "noInvoice": "Không có hóa đơn.",
+        "noActiveVehicle": "Không có xe đang hoạt động.",
+        "noMaintenanceRequest": "Không có yêu cầu bảo trì nào.",
+        "noAssignedRoom": "Tài khoản của bạn chưa được gán phòng."
+      }
+    }
+  },
+  "enum": {
+    "roomStatus": {
+      "EMPTY": "Trống",
+      "OCCUPIED": "Đã thuê",
+      "MAINTENANCE": "Bảo trì",
+      "RESERVED": "Đã giữ chỗ"
+    },
+    "contractStatus": {
+      "NOT_UPLOADED": "Chưa tải lên",
+      "UPLOADED": "Đã tải lên",
+      "CONFIRMED": "Đã xác nhận",
+      "NEED_UPDATE": "Cần cập nhật"
+    },
+    "rentalStatus": {
+      "ACTIVE": "Hoạt động",
+      "EXPIRING_SOON": "Sắp hết hạn",
+      "EXPIRED": "Đã hết hạn",
+      "RENEWED": "Đã gia hạn",
+      "ENDED": "Đã kết thúc",
+      "TRANSFERRED": "Đã chuyển"
+    },
+    "invoiceStatus": {
+      "UNPAID": "Chưa thanh toán",
+      "PENDING_CONFIRMATION": "Chờ xác nhận",
+      "PAID": "Đã thanh toán",
+      "OVERDUE": "Quá hạn",
+      "REJECTED": "Bị từ chối"
+    },
+    "maintenanceStatus": {
+      "PENDING": "Đang chờ",
+      "ASSIGNED": "Đã phân công",
+      "IN_PROGRESS": "Đang xử lý",
+      "COMPLETED": "Đã hoàn thành",
+      "REJECTED": "Bị từ chối"
+    },
+    "vehicleType": {
+      "MOTORBIKE": "Xe máy",
+      "CAR": "Ô tô",
+      "BICYCLE": "Xe đạp",
+      "ELECTRIC_BIKE": "Xe đạp điện"
+    },
+    "notificationTarget": {
+      "ALL_RESIDENT_HEADS": "Tất cả chủ hộ",
+      "ALL": "Tất cả người dùng",
+      "STAFF": "Tất cả nhân viên",
+      "SELECTED_USERS": "Chủ hộ đã chọn",
+      "ONE_BUILDING": "Một tòa nhà",
+      "ONE_ROOM": "Một phòng",
+      "ONE_USER": "Một người dùng"
+    },
+    "readStatus": {
+      "READ": "Đã đọc",
+      "UNREAD": "Chưa đọc"
+    },
+    "feedbackType": {
+      "GENERAL": "Chung",
+      "INVOICE_COMPLAINT": "Khiếu nại hóa đơn",
+      "CONTRACT_ERROR": "Lỗi hợp đồng",
+      "OTHER": "Khác"
+    },
+    "feedbackStatus": {
+      "PENDING": "Đang chờ",
+      "IN_PROGRESS": "Đang xử lý",
+      "RESOLVED": "Đã giải quyết",
+      "REJECTED": "Bị từ chối"
+    },
+    "paymentStatus": {
+      "PENDING": "Đang chờ",
+      "APPROVED": "Đã duyệt",
+      "REJECTED": "Bị từ chối"
+    },
+    "receiptStatus": {
+      "VALID": "Hợp lệ",
+      "CANCELLED": "Đã hủy"
+    },
+    "expenseType": {
+      "REPAIR": "Sửa chữa",
+      "REPLACEMENT": "Thay thế",
+      "CLEANING": "Vệ sinh",
+      "MAINTENANCE": "Bảo trì",
+      "OPERATION": "Vận hành",
+      "OTHER": "Khác"
+    },
+    "expenseStatus": {
+      "VALID": "Hợp lệ",
+      "PENDING": "Đang chờ",
+      "CANCELLED": "Đã hủy"
+    },
+    "feeType": {
+      "ROOM": "Phòng",
+      "ELECTRICITY": "Điện",
+      "WATER": "Nước",
+      "INTERNET": "Internet",
+      "CLEANING": "Vệ sinh",
+      "GARBAGE": "Rác",
+      "PARKING": "Gửi xe",
+      "OTHER": "Khác"
+    },
+    "calculationType": {
+      "FIXED": "Cố định",
+      "BY_USAGE": "Theo mức dùng",
+      "BY_PERSON": "Theo người",
+      "BY_QUANTITY": "Theo số lượng"
+    },
+    "vehicleOwnerType": {
+      "RESIDENT_HEAD": "Chủ hộ",
+      "ROOM_MEMBER": "Thành viên phòng"
+    },
+    "vehicleStatus": {
+      "PENDING": "Đang chờ",
+      "ACTIVE": "Hoạt động",
+      "INACTIVE": "Không hoạt động",
+      "REJECTED": "Bị từ chối"
+    },
+    "taskType": {
+      "METER_READING": "Ghi chỉ số",
+      "INVOICE_CREATION": "Tạo hóa đơn",
+      "ROOM_CHECK": "Kiểm tra phòng",
+      "MAINTENANCE": "Bảo trì",
+      "VEHICLE_CHECK": "Kiểm tra xe",
+      "FEEDBACK_HANDLING": "Xử lý phản hồi",
+      "OTHER": "Khác"
+    },
+    "taskPriority": {
+      "LOW": "Thấp",
+      "MEDIUM": "Trung bình",
+      "HIGH": "Cao",
+      "URGENT": "Khẩn cấp"
+    },
+    "taskStatus": {
+      "NEW": "Mới",
+      "IN_PROGRESS": "Đang xử lý",
+      "COMPLETED": "Đã hoàn thành",
+      "REJECTED": "Bị từ chối",
+      "OVERDUE": "Quá hạn"
+    }
+  },
+  "tables": {
+    "common": {
+      "actions": "Thao tác",
+      "amount": "Số tiền",
+      "assignedStaff": "Nhân viên được phân công",
+      "building": "Tòa nhà",
+      "calculation": "Cách tính",
+      "code": "Mã",
+      "content": "Nội dung",
+      "created": "Ngày tạo",
+      "createdBy": "Người tạo",
+      "depositAmount": "Tiền đặt cọc",
+      "description": "Mô tả",
+      "deadline": "Hạn xử lý",
+      "dueDate": "Ngày đến hạn",
+      "editReason": "Lý do sửa",
+      "electricity": "Điện",
+      "evidence": "Bằng chứng",
+      "expense": "Chi phí",
+      "feeType": "Loại phí",
+      "floor": "Tầng",
+      "headResident": "Chủ hộ",
+      "images": "Hình ảnh",
+      "invoice": "Hóa đơn",
+      "item": "Mục",
+      "licensePlate": "Biển số xe",
+      "month": "Tháng",
+      "maxOccupants": "Số người tối đa",
+      "name": "Tên",
+      "note": "Ghi chú",
+      "owner": "Chủ sở hữu",
+      "period": "Thời gian",
+      "price": "Giá",
+      "priority": "Mức ưu tiên",
+      "proof": "Bằng chứng",
+      "quantity": "Số lượng",
+      "readingDate": "Ngày ghi chỉ số",
+      "request": "Yêu cầu",
+      "resultImage": "Ảnh kết quả",
+      "resultNote": "Ghi chú kết quả",
+      "reply": "Phản hồi",
+      "resident": "Cư dân",
+      "room": "Phòng",
+      "status": "Trạng thái",
+      "target": "Đối tượng",
+      "totalAmount": "Tổng tiền",
+      "type": "Loại",
+      "unitPrice": "Đơn giá",
+      "updated": "Cập nhật",
+      "vehicle": "Xe",
+      "vehicleType": "Loại xe",
+      "water": "Nước"
+    },
+    "notifications": {
+      "title": "Thông báo",
+      "readStatus": "Trạng thái đọc",
+      "markRead": "Đánh dấu đã đọc",
+      "empty": "Không tìm thấy thông báo.",
+      "allBuildings": "Tất cả tòa nhà",
+      "selectedBuildings": "Các tòa nhà đã chọn"
+    },
+    "feedbacks": {
+      "title": "Phản hồi",
+      "empty": "Không tìm thấy phản hồi.",
+      "by": "Bởi {{name}}"
+    },
+    "invoices": {
+      "empty": "Không tìm thấy hóa đơn."
+    },
+    "payments": {
+      "uploadedAt": "Thời điểm tải lên",
+      "empty": "Không tìm thấy thanh toán."
+    },
+    "receipts": {
+      "title": "Biên lai",
+      "empty": "Không tìm thấy biên lai."
+    },
+    "expenses": {
+      "empty": "Không tìm thấy chi phí."
+    },
+    "maintenanceRequests": {
+      "empty": "Không tìm thấy yêu cầu bảo trì.",
+      "issue": "Sự cố",
+      "result": "Kết quả"
+    },
+    "serviceFees": {
+      "empty": "Không tìm thấy phí dịch vụ."
+    },
+    "tasks": {
+      "title": "Công việc",
+      "empty": "Không tìm thấy công việc."
+    },
+    "vehicles": {
+      "empty": "Không tìm thấy xe."
+    },
+    "utilityReadings": {
+      "empty": "Không tìm thấy chỉ số tiện ích.",
+      "usage": "Mức dùng",
+      "notEdited": "Chưa chỉnh sửa"
+    },
+    "invoiceItems": {
+      "empty": "Không tìm thấy mục hóa đơn.",
+      "selectInvoice": "Chọn một hóa đơn để xem chi tiết.",
+      "electricityEvidence": "Bằng chứng điện",
+      "waterEvidence": "Bằng chứng nước"
+    },
+    "details": {
+      "selectMaintenanceRequest": "Chọn một yêu cầu bảo trì để xem chi tiết.",
+      "selectTask": "Chọn một công việc để xem chi tiết.",
+      "title": "Tiêu đề",
+      "staffEmail": "Email nhân viên",
+      "issueImage": "Ảnh sự cố",
+      "resultImage": "Ảnh kết quả",
+      "viewImage": "Xem ảnh",
+      "noResultNote": "Chưa có ghi chú kết quả."
+    },
+    "forms": {
+      "assignment": {
+        "selectHeadResident": "Chọn chủ hộ",
+        "noHeadResidents": "Không có chủ hộ đang hoạt động",
+        "startDate": "Ngày bắt đầu",
+        "endDate": "Ngày kết thúc",
+        "assigning": "Đang gán...",
+        "submit": "Gán chủ hộ"
+      },
+      "room": {
+        "selectBuilding": "Chọn tòa nhà",
+        "noBuildings": "Không có tòa nhà",
+        "roomCode": "Mã phòng",
+        "roomName": "Tên phòng"
+      },
+      "utilityReading": {
+        "selectRoom": "Chọn phòng",
+        "oldElectricity": "Chỉ số điện cũ",
+        "newElectricity": "Chỉ số điện mới",
+        "electricityEvidenceImage": "Ảnh bằng chứng điện",
+        "oldWater": "Chỉ số nước cũ",
+        "newWater": "Chỉ số nước mới",
+        "waterEvidenceImage": "Ảnh bằng chứng nước",
+        "allowedImageTypes": "Loại ảnh cho phép: jpg, jpeg, png. Dung lượng tối đa: 10 MB.",
+        "readingDateHelp": "Ngày này áp dụng cho cả chỉ số điện và nước.",
+        "previousMonthEvidence": "Bằng chứng tháng trước",
+        "noPreviousEvidence": "Không tìm thấy bằng chứng chỉ số tháng trước cho phòng này.",
+        "previousElectricityImage": "Ảnh điện tháng trước",
+        "previousWaterImage": "Ảnh nước tháng trước",
+        "previousElectricityAlt": "Bằng chứng đồng hồ điện tháng trước",
+        "previousWaterAlt": "Bằng chứng đồng hồ nước tháng trước"
+      }
+    }
+  }
+}

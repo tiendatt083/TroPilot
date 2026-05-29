@@ -1,4 +1,6 @@
-import { getReceiptStatusClass, getReceiptStatusLabel } from '../utils/paymentStatusOptions.js';
+import { useTranslation } from 'react-i18next';
+import { getReceiptStatusClass } from '../utils/paymentStatusOptions.js';
+import { formatEnumLabel } from '../utils/i18nFormat.js';
 import { formatRoomCode } from '../utils/roomDisplay.js';
 
 function formatNumber(value) {
@@ -9,6 +11,7 @@ function formatNumber(value) {
 }
 
 export default function ReceiptTable({ receipts, renderActions }) {
+  const { t } = useTranslation();
   const hasActions = Boolean(renderActions);
 
   return (
@@ -16,14 +19,14 @@ export default function ReceiptTable({ receipts, renderActions }) {
       <table className="data-table receipt-table">
         <thead>
           <tr>
-            <th>Receipt</th>
-            <th>Invoice</th>
-            <th>Room</th>
-            <th>Head Resident</th>
-            <th>Amount</th>
-            <th>Status</th>
-            <th>Created by</th>
-            {hasActions && <th>Actions</th>}
+            <th>{t('tables.receipts.title')}</th>
+            <th>{t('tables.common.invoice')}</th>
+            <th>{t('tables.common.room')}</th>
+            <th>{t('tables.common.headResident')}</th>
+            <th>{t('tables.common.amount')}</th>
+            <th>{t('tables.common.status')}</th>
+            <th>{t('tables.common.createdBy')}</th>
+            {hasActions && <th>{t('tables.common.actions')}</th>}
           </tr>
         </thead>
         <tbody>
@@ -48,7 +51,7 @@ export default function ReceiptTable({ receipts, renderActions }) {
               <td>{formatNumber(receipt.amount)}</td>
               <td>
                 <span className={getReceiptStatusClass(receipt.status)}>
-                  {getReceiptStatusLabel(receipt.status)}
+                  {formatEnumLabel(t, 'receiptStatus', receipt.status)}
                 </span>
               </td>
               <td>
@@ -60,7 +63,7 @@ export default function ReceiptTable({ receipts, renderActions }) {
           ))}
         </tbody>
       </table>
-      {receipts.length === 0 && <div className="empty-state flat-empty-state">No receipts found.</div>}
+      {receipts.length === 0 && <div className="empty-state flat-empty-state">{t('tables.receipts.empty')}</div>}
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { resolveFileUrl } from '../utils/fileUrl.js';
 import { formatRoomCode } from '../utils/roomDisplay.js';
 
@@ -8,20 +9,21 @@ function formatNumber(value) {
     : value;
 }
 
-function evidenceLinks(reading) {
+function evidenceLinks(reading, t) {
   return (
     <div className="evidence-links">
       <a href={resolveFileUrl(reading.electricityImageUrl)} target="_blank" rel="noreferrer">
-        Electricity
+        {t('tables.common.electricity')}
       </a>
       <a href={resolveFileUrl(reading.waterImageUrl)} target="_blank" rel="noreferrer">
-        Water
+        {t('tables.common.water')}
       </a>
     </div>
   );
 }
 
 export default function UtilityReadingTable({ readings, renderActions }) {
+  const { t } = useTranslation();
   const hasActions = Boolean(renderActions);
 
   return (
@@ -29,15 +31,15 @@ export default function UtilityReadingTable({ readings, renderActions }) {
       <table className="data-table utility-reading-table">
         <thead>
           <tr>
-            <th>Room</th>
-            <th>Month</th>
-            <th>Reading date</th>
-            <th>Electricity</th>
-            <th>Water</th>
-            <th>Evidence</th>
-            <th>Created by</th>
-            <th>Edit reason</th>
-            {hasActions && <th>Actions</th>}
+            <th>{t('tables.common.room')}</th>
+            <th>{t('tables.common.month')}</th>
+            <th>{t('tables.common.readingDate')}</th>
+            <th>{t('tables.common.electricity')}</th>
+            <th>{t('tables.common.water')}</th>
+            <th>{t('tables.common.evidence')}</th>
+            <th>{t('tables.common.createdBy')}</th>
+            <th>{t('tables.common.editReason')}</th>
+            {hasActions && <th>{t('tables.common.actions')}</th>}
           </tr>
         </thead>
         <tbody>
@@ -48,27 +50,27 @@ export default function UtilityReadingTable({ readings, renderActions }) {
                 <span className="table-subtext">{reading.buildingCode}</span>
               </td>
               <td>{reading.month}</td>
-              <td>{reading.readingDate || 'Not set'}</td>
+              <td>{reading.readingDate || t('common.notSet')}</td>
               <td>
-                {formatNumber(reading.oldElectricity)} to {formatNumber(reading.newElectricity)}
-                <span className="table-subtext">Usage: {formatNumber(reading.electricityUsage)}</span>
+                {formatNumber(reading.oldElectricity)} {t('common.to')} {formatNumber(reading.newElectricity)}
+                <span className="table-subtext">{t('tables.utilityReadings.usage')}: {formatNumber(reading.electricityUsage)}</span>
               </td>
               <td>
-                {formatNumber(reading.oldWater)} to {formatNumber(reading.newWater)}
-                <span className="table-subtext">Usage: {formatNumber(reading.waterUsage)}</span>
+                {formatNumber(reading.oldWater)} {t('common.to')} {formatNumber(reading.newWater)}
+                <span className="table-subtext">{t('tables.utilityReadings.usage')}: {formatNumber(reading.waterUsage)}</span>
               </td>
-              <td>{evidenceLinks(reading)}</td>
+              <td>{evidenceLinks(reading, t)}</td>
               <td>
                 <strong>{reading.createdByName}</strong>
                 <span className="table-subtext">{reading.createdByRole}</span>
               </td>
-              <td>{reading.editReason || 'Not edited'}</td>
+              <td>{reading.editReason || t('tables.utilityReadings.notEdited')}</td>
               {hasActions && <td>{renderActions(reading)}</td>}
             </tr>
           ))}
         </tbody>
       </table>
-      {readings.length === 0 && <div className="empty-state flat-empty-state">No utility readings found.</div>}
+      {readings.length === 0 && <div className="empty-state flat-empty-state">{t('tables.utilityReadings.empty')}</div>}
     </div>
   );
 }
