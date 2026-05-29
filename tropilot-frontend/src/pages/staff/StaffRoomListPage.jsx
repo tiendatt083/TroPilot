@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import * as buildingApi from '../../api/buildingApi.js';
 import * as roomApi from '../../api/roomApi.js';
 import PageHeader from '../../components/PageHeader.jsx';
+import { formatRoomCode } from '../../utils/roomDisplay.js';
 import { ROOM_STATUS_OPTIONS, getRoomStatusLabel } from '../../utils/roomStatusOptions.js';
 
 const emptyFilters = {
@@ -141,7 +142,7 @@ export default function StaffRoomListPage() {
             <tbody>
               {rooms.map((room) => (
                 <tr key={room.id}>
-                  <td>{room.roomCode}</td>
+                  <td>{formatRoomCode(room)}</td>
                   <td>{room.roomName}</td>
                   <td>{room.buildingCode}</td>
                   <td>{room.floor}</td>

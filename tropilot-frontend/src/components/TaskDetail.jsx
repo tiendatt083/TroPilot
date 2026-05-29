@@ -7,13 +7,14 @@ import {
   getTaskTypeLabel
 } from '../utils/taskOptions.js';
 import { resolveFileUrl } from '../utils/fileUrl.js';
+import { formatRoomLabel } from '../utils/roomDisplay.js';
 
 function roomText(task) {
   if (!task.roomCode) {
     return 'Not linked';
   }
 
-  return `${task.roomCode} - ${task.roomName}`;
+  return formatRoomLabel(task);
 }
 
 export default function TaskDetail({ task }) {

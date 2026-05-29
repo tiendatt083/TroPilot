@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import * as roomApi from '../../api/roomApi.js';
 import PageHeader from '../../components/PageHeader.jsx';
+import { formatRoomCode } from '../../utils/roomDisplay.js';
 import { getRoomStatusLabel } from '../../utils/roomStatusOptions.js';
 
 function formatNumber(value) {
@@ -58,7 +59,7 @@ export default function StaffRoomDetailPage() {
   return (
     <section className="content-section">
       <div className="page-title-row">
-        <PageHeader eyebrow={room.roomCode} title={room.roomName} />
+        <PageHeader eyebrow={formatRoomCode(room)} title={room.roomName} />
         <Link className="secondary-link" to="/staff/rooms">
           Back to rooms
         </Link>

@@ -5,6 +5,7 @@ import {
   TASK_TYPE_OPTIONS,
   toDateTimeInputValue
 } from '../utils/taskOptions.js';
+import { formatRoomLabel } from '../utils/roomDisplay.js';
 
 const emptyForm = {
   title: '',
@@ -129,7 +130,7 @@ export default function TaskForm({
         <option value="">{roomPlaceholder}</option>
         {rooms.map((room) => (
           <option key={room.id} value={room.id}>
-            {room.roomCode} - {room.roomName}
+            {formatRoomLabel(room)}
           </option>
         ))}
       </select>

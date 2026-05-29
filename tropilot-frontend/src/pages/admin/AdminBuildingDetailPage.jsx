@@ -23,6 +23,7 @@ import TaskTable from '../../components/TaskTable.jsx';
 import VehicleTable from '../../components/VehicleTable.jsx';
 import { getContractStatusClass, getContractStatusLabel } from '../../utils/contractStatusOptions.js';
 import { getMemberStatusLabel } from '../../utils/memberStatusOptions.js';
+import { formatRoomCode } from '../../utils/roomDisplay.js';
 import { getRoomStatusLabel } from '../../utils/roomStatusOptions.js';
 
 const emptyBuildingOperations = {
@@ -284,7 +285,7 @@ export default function AdminBuildingDetailPage() {
             <tbody>
               {operations.rooms.map((room) => (
                 <tr key={room.id}>
-                  <td>{room.roomCode}</td>
+                  <td>{formatRoomCode(room)}</td>
                   <td>{room.roomName}</td>
                   <td>{room.floor}</td>
                   <td>{formatNumber(room.price)}</td>
@@ -334,7 +335,7 @@ export default function AdminBuildingDetailPage() {
             <tbody>
               {operations.contracts.map((contract) => (
                 <tr key={contract.id}>
-                  <td>{contract.roomCode}</td>
+                  <td>{formatRoomCode(contract)}</td>
                   <td>{contract.residentHeadName}</td>
                   <td>
                     {contract.startDate} to {contract.endDate}
@@ -425,7 +426,7 @@ export default function AdminBuildingDetailPage() {
                 <tr key={member.id}>
                   <td>{member.fullName}</td>
                   <td>{member.phone}</td>
-                  <td>{member.roomCode}</td>
+                  <td>{formatRoomCode(member)}</td>
                   <td>{member.residentHeadName}</td>
                   <td>
                     <span className={`status-pill member-status-${member.status.toLowerCase()}`}>

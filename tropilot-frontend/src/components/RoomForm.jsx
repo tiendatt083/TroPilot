@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { buildFullRoomCode, stripRoomCodePrefix } from '../utils/roomDisplay.js';
 import { ROOM_STATUS_OPTIONS } from '../utils/roomStatusOptions.js';
 
 const emptyForm = {
@@ -21,6 +22,7 @@ export default function RoomForm({ buildingOptions, initialValues, loading, subm
       ...emptyForm,
       ...initialValues,
       buildingId: initialValues?.buildingId ? String(initialValues.buildingId) : '',
+      roomCode: stripRoomCodePrefix(initialValues?.roomCode, initialValues?.buildingCode),
       floor: initialValues?.floor ? String(initialValues.floor) : '1',
       price: initialValues?.price !== undefined ? String(initialValues.price) : '0',
       area: initialValues?.area !== undefined ? String(initialValues.area) : '0',
@@ -31,17 +33,27 @@ export default function RoomForm({ buildingOptions, initialValues, loading, subm
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    setForm((current) => ({
-      ...current,
-      [name]: value
-    }));
+    setForm((current) => {
+      const currentBuilding = getSelectedBuilding(buildingOptions, current.buildingId);
+      const nextValue =
+        name === 'roomCode'
+          ? stripRoomCodePrefix(value, currentBuilding?.buildingCode)
+          : value;
+
+      return {
+        ...current,
+        [name]: nextValue
+      };
+    });
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    const selectedBuilding = getSelectedBuilding(buildingOptions, form.buildingId);
+
     onSubmit({
       buildingId: Number(form.buildingId),
-      roomCode: form.roomCode,
+      roomCode: buildFullRoomCode(form.roomCode, selectedBuilding?.buildingCode),
       roomName: form.roomName,
       floor: Number(form.floor),
       price: Number(form.price),
@@ -53,6 +65,9 @@ export default function RoomForm({ buildingOptions, initialValues, loading, subm
   };
 
   const hasBuildings = buildingOptions.length > 0;
+  const selectedBuilding = getSelectedBuilding(buildingOptions, form.buildingId);
+  const roomCodePrefix = selectedBuilding?.buildingCode ? `${selectedBuilding.buildingCode}-` : '';
+  const roomCodeMaxLength = Math.max(1, 50 - roomCodePrefix.length);
 
   return (
     <form className="panel-form" onSubmit={handleSubmit}>
@@ -74,14 +89,19 @@ export default function RoomForm({ buildingOptions, initialValues, loading, subm
       </select>
 
       <label htmlFor="roomCode">Room code</label>
-      <input
-        id="roomCode"
-        name="roomCode"
-        value={form.roomCode}
-        onChange={handleChange}
-        maxLength={50}
-        required
-      />
+      <div className="room-code-input-group">
+        <span className="room-code-prefix">{roomCodePrefix || 'Select building'}</span>
+        <input
+          id="roomCode"
+          name="roomCode"
+          value={form.roomCode}
+          onChange={handleChange}
+          maxLength={roomCodeMaxLength}
+          required
+          disabled={!roomCodePrefix}
+          placeholder="P103"
+        />
+      </div>
 
       <label htmlFor="roomName">Room name</label>
       <input
@@ -173,4 +193,8 @@ export default function RoomForm({ buildingOptions, initialValues, loading, subm
       </button>
     </form>
   );
+}
+
+function getSelectedBuilding(buildingOptions, buildingId) {
+  return buildingOptions.find((building) => String(building.id) === String(buildingId));
 }

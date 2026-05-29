@@ -4,6 +4,7 @@ import {
   getVehicleStatusLabel,
   getVehicleTypeLabel
 } from '../utils/vehicleOptions.js';
+import { formatRoomCode } from '../utils/roomDisplay.js';
 
 function displayText(value, fallback = 'Not provided') {
   return value || fallback;
@@ -41,7 +42,7 @@ export default function VehicleTable({ vehicles, renderActions }) {
           {vehicles.map((vehicle) => (
             <tr key={vehicle.id}>
               <td>
-                <strong>{vehicle.roomCode}</strong>
+                <strong>{formatRoomCode(vehicle)}</strong>
                 <span className="table-subtext">{vehicle.buildingCode}</span>
               </td>
               <td>

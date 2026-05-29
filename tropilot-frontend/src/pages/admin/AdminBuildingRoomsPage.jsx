@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useOutletContext } from 'react-router-dom';
 import * as roomApi from '../../api/roomApi.js';
 import PageHeader from '../../components/PageHeader.jsx';
+import { formatRoomCode } from '../../utils/roomDisplay.js';
 import { ROOM_STATUS_OPTIONS, getRoomStatusLabel } from '../../utils/roomStatusOptions.js';
 
 const emptyFilters = {
@@ -78,7 +79,7 @@ export default function AdminBuildingRoomsPage() {
   };
 
   const handleDelete = async (room) => {
-    const confirmed = window.confirm(`Delete room ${room.roomCode}?`);
+    const confirmed = window.confirm(`Delete room ${formatRoomCode(room)}?`);
     if (!confirmed) {
       return;
     }
@@ -157,7 +158,7 @@ export default function AdminBuildingRoomsPage() {
             <tbody>
               {rooms.map((room) => (
                 <tr key={room.id}>
-                  <td>{room.roomCode}</td>
+                  <td>{formatRoomCode(room)}</td>
                   <td>{room.roomName}</td>
                   <td>{room.floor}</td>
                   <td>{formatNumber(room.price)}</td>

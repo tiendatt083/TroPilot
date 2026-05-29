@@ -4,9 +4,10 @@ import {
   getMaintenanceStatusLabel
 } from '../utils/maintenanceOptions.js';
 import { resolveFileUrl } from '../utils/fileUrl.js';
+import { formatRoomLabel } from '../utils/roomDisplay.js';
 
 function roomText(request) {
-  return `${request.roomCode} - ${request.roomName}`;
+  return formatRoomLabel(request);
 }
 
 export default function MaintenanceRequestTable({ requests, renderActions, onSelect, selectedId }) {

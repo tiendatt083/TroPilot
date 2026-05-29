@@ -1,4 +1,5 @@
 import { getReceiptStatusClass, getReceiptStatusLabel } from '../utils/paymentStatusOptions.js';
+import { formatRoomCode } from '../utils/roomDisplay.js';
 
 function formatNumber(value) {
   const numberValue = Number(value);
@@ -37,7 +38,7 @@ export default function ReceiptTable({ receipts, renderActions }) {
                 <span className="table-subtext">{receipt.invoiceMonth}</span>
               </td>
               <td>
-                <strong>{receipt.roomCode}</strong>
+                <strong>{formatRoomCode(receipt)}</strong>
                 <span className="table-subtext">{receipt.buildingCode}</span>
               </td>
               <td>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { EXPENSE_TYPE_OPTIONS } from '../utils/expenseOptions.js';
+import { formatRoomLabel } from '../utils/roomDisplay.js';
 
 const emptyForm = {
   roomId: '',
@@ -54,7 +55,7 @@ export default function ExpenseForm({ initialValues, rooms, loading, onSubmit })
         <option value="">No room linked</option>
         {rooms.map((room) => (
           <option key={room.id} value={room.id}>
-            {room.roomCode} - {room.roomName}
+            {formatRoomLabel(room)}
           </option>
         ))}
       </select>

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import * as memberApi from '../../api/memberApi.js';
 import PageHeader from '../../components/PageHeader.jsx';
+import { formatRoomCode } from '../../utils/roomDisplay.js';
 
 function countText(member) {
   return `${member.totalOccupants} of ${member.maxOccupants}`;
@@ -90,7 +91,7 @@ export default function AdminPendingMembersPage() {
                   <td>{member.phone}</td>
                   <td>
                     <Link className="secondary-link compact-link" to={`/admin/rooms/${member.roomId}/members`}>
-                      {member.roomCode}
+                      {formatRoomCode(member)}
                     </Link>
                   </td>
                   <td>{member.residentHeadName}</td>

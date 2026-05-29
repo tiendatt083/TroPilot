@@ -5,6 +5,7 @@ import PageHeader from '../../components/PageHeader.jsx';
 import { getContractStatusLabel } from '../../utils/contractStatusOptions.js';
 import { getInvoiceStatusClass, getInvoiceStatusLabel } from '../../utils/invoiceStatusOptions.js';
 import { getMaintenanceStatusClass, getMaintenanceStatusLabel } from '../../utils/maintenanceOptions.js';
+import { formatRoomLabel } from '../../utils/roomDisplay.js';
 import { getRoomStatusLabel } from '../../utils/roomStatusOptions.js';
 import { getVehicleTypeLabel } from '../../utils/vehicleOptions.js';
 
@@ -91,9 +92,7 @@ export default function ResidentDashboardPage() {
           <div className="detail-panel">
             <div>
               <span>Assigned room</span>
-              <strong>
-                {currentRoom.roomCode} - {currentRoom.roomName}
-              </strong>
+              <strong>{formatRoomLabel(currentRoom)}</strong>
             </div>
             <div>
               <span>Building</span>

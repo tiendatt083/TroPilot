@@ -529,10 +529,41 @@ a:focus-visible {
   margin-bottom: 1rem;
 }
 
+.user-filter-row {
+  display: grid;
+  grid-template-columns: minmax(260px, 1.2fr) minmax(220px, 0.9fr) auto auto;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
 .form-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.85rem;
+}
+
+.room-code-input-group {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: stretch;
+}
+
+.room-code-prefix {
+  display: inline-flex;
+  align-items: center;
+  min-height: 46px;
+  padding: 0 0.9rem;
+  border: 1px solid var(--color-border);
+  border-right: 0;
+  border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+  color: var(--color-text);
+  background: var(--color-surface-muted);
+  font-weight: 850;
+  white-space: nowrap;
+}
+
+.room-code-input-group input {
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
 }
 
 .inline-button {
@@ -1199,7 +1230,8 @@ a:focus-visible {
 }
 
 @media (max-width: 1180px) {
-  .filter-row {
+  .filter-row,
+  .user-filter-row {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -1207,7 +1239,8 @@ a:focus-visible {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .filter-row button {
+  .filter-row button,
+  .user-filter-row button {
     width: 100%;
   }
 
@@ -1273,16 +1306,27 @@ a:focus-visible {
     width: 100%;
   }
 
-    .search-row,
-    .filter-row,
+  .search-row,
+  .filter-row,
+  .user-filter-row,
   .building-filter-row,
-    .month-filter-row,
+  .month-filter-row,
   .cashflow-summary,
   .form-grid,
+  .room-code-input-group,
   .assignment-action-row,
   .dashboard-grid,
   .detail-panel {
     grid-template-columns: 1fr;
+  }
+
+  .room-code-prefix {
+    border-right: 1px solid var(--color-border);
+    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  }
+
+  .room-code-input-group input {
+    border-radius: 0 0 var(--radius-sm) var(--radius-sm);
   }
 
   .button-row {

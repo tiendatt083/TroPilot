@@ -4,6 +4,7 @@ import {
   getExpenseTypeLabel
 } from '../utils/expenseOptions.js';
 import { resolveFileUrl } from '../utils/fileUrl.js';
+import { formatRoomLabel } from '../utils/roomDisplay.js';
 
 function formatNumber(value) {
   const numberValue = Number(value);
@@ -17,7 +18,7 @@ function roomText(expense) {
     return 'Not linked';
   }
 
-  return `${expense.roomCode} - ${expense.roomName}`;
+  return formatRoomLabel(expense);
 }
 
 export default function ExpenseTable({ expenses, renderActions }) {

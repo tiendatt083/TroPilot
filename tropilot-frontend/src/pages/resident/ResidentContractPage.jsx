@@ -3,6 +3,7 @@ import * as contractApi from '../../api/contractApi.js';
 import PageHeader from '../../components/PageHeader.jsx';
 import { getContractStatusClass, getContractStatusLabel } from '../../utils/contractStatusOptions.js';
 import { resolveFileUrl } from '../../utils/fileUrl.js';
+import { formatRoomLabel } from '../../utils/roomDisplay.js';
 
 function formatNumber(value) {
   const numberValue = Number(value);
@@ -81,9 +82,7 @@ export default function ResidentContractPage() {
           <div className="detail-panel">
             <div>
               <span>Room</span>
-              <strong>
-                {contract.roomCode} - {contract.roomName}
-              </strong>
+              <strong>{formatRoomLabel(contract)}</strong>
             </div>
             <div>
               <span>Building</span>

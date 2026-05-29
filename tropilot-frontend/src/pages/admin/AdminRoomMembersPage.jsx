@@ -4,6 +4,7 @@ import * as roomApi from '../../api/roomApi.js';
 import * as memberApi from '../../api/memberApi.js';
 import PageHeader from '../../components/PageHeader.jsx';
 import { getMemberStatusLabel } from '../../utils/memberStatusOptions.js';
+import { formatRoomCode } from '../../utils/roomDisplay.js';
 
 function statusClass(status) {
   return `status-pill member-status-${status.toLowerCase()}`;
@@ -90,7 +91,7 @@ export default function AdminRoomMembersPage() {
   return (
     <section className="content-section">
       <div className="page-title-row">
-        <PageHeader eyebrow={room?.roomCode || 'Room'} title="Room members" />
+        <PageHeader eyebrow={formatRoomCode(room) || 'Room'} title="Room members" />
         <div className="button-row">
           <Link className="secondary-link" to={`/admin/rooms/${id}`}>
             Back to room

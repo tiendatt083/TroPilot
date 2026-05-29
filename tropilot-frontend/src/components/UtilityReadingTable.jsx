@@ -1,4 +1,5 @@
 import { resolveFileUrl } from '../utils/fileUrl.js';
+import { formatRoomCode } from '../utils/roomDisplay.js';
 
 function formatNumber(value) {
   const numberValue = Number(value);
@@ -42,7 +43,7 @@ export default function UtilityReadingTable({ readings, renderActions }) {
           {readings.map((reading) => (
             <tr key={reading.id}>
               <td>
-                <strong>{reading.roomCode}</strong>
+                <strong>{formatRoomCode(reading)}</strong>
                 <span className="table-subtext">{reading.buildingCode}</span>
               </td>
               <td>{reading.month}</td>

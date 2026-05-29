@@ -4,6 +4,7 @@ import {
   getMaintenanceStatusLabel
 } from '../utils/maintenanceOptions.js';
 import { resolveFileUrl } from '../utils/fileUrl.js';
+import { formatRoomLabel } from '../utils/roomDisplay.js';
 
 export default function MaintenanceRequestDetail({ request }) {
   if (!request) {
@@ -27,9 +28,7 @@ export default function MaintenanceRequestDetail({ request }) {
         </div>
         <div>
           <span>Room</span>
-          <strong>
-            {request.roomCode} - {request.roomName}
-          </strong>
+          <strong>{formatRoomLabel(request)}</strong>
         </div>
         <div>
           <span>Building</span>

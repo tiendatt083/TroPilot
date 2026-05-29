@@ -3,6 +3,7 @@ import { Link, useOutletContext } from 'react-router-dom';
 import * as memberApi from '../../api/memberApi.js';
 import PageHeader from '../../components/PageHeader.jsx';
 import { getMemberStatusLabel } from '../../utils/memberStatusOptions.js';
+import { formatRoomCode } from '../../utils/roomDisplay.js';
 
 function statusClass(status) {
   return `status-pill member-status-${status.toLowerCase()}`;
@@ -131,7 +132,7 @@ export default function AdminBuildingMemberPage() {
                   <td>{member.phone}</td>
                   <td>
                     <Link className="secondary-link compact-link" to={`/admin/rooms/${member.roomId}/members`}>
-                      {member.roomCode}
+                      {formatRoomCode(member)}
                     </Link>
                   </td>
                   <td>

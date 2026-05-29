@@ -1,5 +1,6 @@
 import { getPaymentStatusClass, getPaymentStatusLabel } from '../utils/paymentStatusOptions.js';
 import { resolveFileUrl } from '../utils/fileUrl.js';
+import { formatRoomCode } from '../utils/roomDisplay.js';
 
 function formatNumber(value) {
   const numberValue = Number(value);
@@ -35,7 +36,7 @@ export default function PaymentTable({ payments, renderActions }) {
                 <span className="table-subtext">{payment.invoiceMonth}</span>
               </td>
               <td>
-                <strong>{payment.roomCode}</strong>
+                <strong>{formatRoomCode(payment)}</strong>
                 <span className="table-subtext">{payment.buildingCode}</span>
               </td>
               <td>

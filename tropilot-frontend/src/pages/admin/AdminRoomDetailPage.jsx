@@ -4,6 +4,7 @@ import * as adminUserApi from '../../api/adminUserApi.js';
 import * as roomApi from '../../api/roomApi.js';
 import HeadResidentAssignmentForm from '../../components/HeadResidentAssignmentForm.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
+import { formatRoomCode } from '../../utils/roomDisplay.js';
 import { getRoomStatusLabel } from '../../utils/roomStatusOptions.js';
 
 function formatNumber(value) {
@@ -45,12 +46,13 @@ function isFutureDate(dateValue) {
 
 function getEndContractConfirmationMessage(room, headInfo) {
   const endDate = headInfo?.contractEndDate || headInfo?.assignmentEndDate;
+  const roomCode = formatRoomCode(room);
 
   if (isFutureDate(endDate)) {
-    return `The contract has not reached its end date yet (${endDate}). Do you want to end it now and remove the Head Resident and room members from room ${room.roomCode}?`;
+    return `The contract has not reached its end date yet (${endDate}). Do you want to end it now and remove the Head Resident and room members from room ${roomCode}?`;
   }
 
-  return `End the contract and remove the Head Resident and room members from room ${room.roomCode}?`;
+  return `End the contract and remove the Head Resident and room members from room ${roomCode}?`;
 }
 
 export default function AdminRoomDetailPage() {
@@ -147,7 +149,7 @@ export default function AdminRoomDetailPage() {
   };
 
   const handleDelete = async () => {
-    const confirmed = window.confirm(`Delete room ${room.roomCode}?`);
+    const confirmed = window.confirm(`Delete room ${formatRoomCode(room)}?`);
     if (!confirmed) {
       return;
     }
@@ -180,7 +182,7 @@ export default function AdminRoomDetailPage() {
   return (
     <section className="content-section">
       <div className="page-title-row">
-        <PageHeader eyebrow={room.roomCode} title={room.roomName} />
+        <PageHeader eyebrow={formatRoomCode(room)} title={room.roomName} />
         <div className="button-row">
           <Link className="secondary-link" to="/admin/rooms">
             Back

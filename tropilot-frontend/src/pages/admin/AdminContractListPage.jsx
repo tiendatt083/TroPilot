@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import * as contractApi from '../../api/contractApi.js';
 import PageHeader from '../../components/PageHeader.jsx';
 import { getContractStatusClass, getContractStatusLabel } from '../../utils/contractStatusOptions.js';
+import { formatRoomCode } from '../../utils/roomDisplay.js';
 
 function formatNumber(value) {
   const numberValue = Number(value);
@@ -70,7 +71,7 @@ export default function AdminContractListPage() {
             <tbody>
               {contracts.map((contract) => (
                 <tr key={contract.id}>
-                  <td>{contract.roomCode}</td>
+                  <td>{formatRoomCode(contract)}</td>
                   <td>{contract.residentHeadName}</td>
                   <td>
                     {contract.startDate} to {contract.endDate}

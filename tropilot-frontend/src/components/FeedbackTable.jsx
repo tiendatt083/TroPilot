@@ -4,6 +4,7 @@ import {
   getFeedbackStatusLabel,
   getFeedbackTypeLabel
 } from '../utils/feedbackOptions.js';
+import { formatRoomLabel } from '../utils/roomDisplay.js';
 
 function formatNumber(value) {
   const numberValue = Number(value);
@@ -44,9 +45,7 @@ export default function FeedbackTable({ feedbacks, renderActions }) {
                 <span className="table-subtext">{feedback.residentHeadEmail}</span>
               </td>
               <td>
-                <strong>
-                  {feedback.roomCode} - {feedback.roomName}
-                </strong>
+                <strong>{formatRoomLabel(feedback)}</strong>
                 <span className="table-subtext">{feedback.buildingCode}</span>
               </td>
               <td>

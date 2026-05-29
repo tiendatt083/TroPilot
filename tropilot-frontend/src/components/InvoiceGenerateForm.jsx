@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { formatRoomLabel } from '../utils/roomDisplay.js';
 
 const emptyForm = {
   roomId: '',
@@ -39,7 +40,7 @@ export default function InvoiceGenerateForm({ rooms, loading, onSubmit }) {
         <option value="">Select room</option>
         {rooms.map((room) => (
           <option key={room.id} value={room.id}>
-            {room.roomCode} - {room.roomName}
+            {formatRoomLabel(room)}
           </option>
         ))}
       </select>

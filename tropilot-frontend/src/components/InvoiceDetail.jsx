@@ -1,5 +1,6 @@
 import { getInvoiceStatusClass, getInvoiceStatusLabel } from '../utils/invoiceStatusOptions.js';
 import { resolveFileUrl } from '../utils/fileUrl.js';
+import { formatRoomLabel } from '../utils/roomDisplay.js';
 
 function formatNumber(value) {
   const numberValue = Number(value);
@@ -18,9 +19,7 @@ export default function InvoiceDetail({ invoice }) {
       <div className="detail-panel">
         <div>
           <span>Room</span>
-          <strong>
-            {invoice.roomCode} - {invoice.roomName}
-          </strong>
+          <strong>{formatRoomLabel(invoice)}</strong>
         </div>
         <div>
           <span>Building</span>

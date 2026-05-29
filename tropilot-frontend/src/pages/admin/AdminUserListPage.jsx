@@ -1,22 +1,66 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import * as adminUserApi from '../../api/adminUserApi.js';
+import * as buildingApi from '../../api/buildingApi.js';
 import PageHeader from '../../components/PageHeader.jsx';
+
+const emptyFilters = {
+  search: '',
+  buildingId: ''
+};
+
+function normalizeSearchValue(value) {
+  return String(value || '').trim().toLowerCase();
+}
+
+function userMatchesSearch(user, searchValue) {
+  if (!searchValue) {
+    return true;
+  }
+
+  const searchableValues = [
+    user.fullName,
+    user.email,
+    user.phone,
+    formatRole(user.role),
+    user.assignedBuildingCode,
+    user.assignedBuildingName
+  ];
+
+  return searchableValues.some((value) => normalizeSearchValue(value).includes(searchValue));
+}
+
+function userMatchesBuilding(user, buildingId) {
+  return !buildingId || String(user.assignedBuildingId || '') === String(buildingId);
+}
+
+function filterUsers(users, filters) {
+  const searchValue = normalizeSearchValue(filters.search);
+
+  return users.filter((user) => userMatchesSearch(user, searchValue) && userMatchesBuilding(user, filters.buildingId));
+}
 
 export default function AdminUserListPage() {
   const [users, setUsers] = useState([]);
+  const [buildings, setBuildings] = useState([]);
+  const [filters, setFilters] = useState(emptyFilters);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [actionId, setActionId] = useState(null);
 
-  const loadUsers = async () => {
+  const loadPageData = async () => {
     setLoading(true);
     setError('');
 
     try {
-      const response = await adminUserApi.getUsers();
-      setUsers(response.data);
+      const [usersResponse, buildingsResponse] = await Promise.all([
+        adminUserApi.getUsers(),
+        buildingApi.getAdminBuildings()
+      ]);
+
+      setUsers(usersResponse.data);
+      setBuildings(buildingsResponse.data);
     } catch (apiError) {
       setError(apiError.response?.data?.message || 'Users could not be loaded');
     } finally {
@@ -25,8 +69,28 @@ export default function AdminUserListPage() {
   };
 
   useEffect(() => {
-    loadUsers();
+    loadPageData();
   }, []);
+
+  const handleFilterChange = (event) => {
+    const { name, value } = event.target;
+    setFilters((current) => ({
+      ...current,
+      [name]: value
+    }));
+  };
+
+  const handleSearch = (event) => {
+    event.preventDefault();
+    setFilters((current) => ({
+      ...current,
+      search: current.search.trim()
+    }));
+  };
+
+  const handleClearFilters = () => {
+    setFilters(emptyFilters);
+  };
 
   const handleStatusAction = async (user, action) => {
     const actionLabel = action === 'lock' ? 'lock' : 'unlock';
@@ -49,7 +113,7 @@ export default function AdminUserListPage() {
         setMessage(`${user.fullName} was unlocked successfully.`);
       }
 
-      await loadUsers();
+      await loadPageData();
     } catch (apiError) {
       setError(apiError.response?.data?.message || 'Account status could not be updated');
     } finally {
@@ -71,7 +135,7 @@ export default function AdminUserListPage() {
     try {
       const response = await adminUserApi.resetPassword(user.id);
       setMessage(`Temporary password for ${user.fullName}: ${response.data.temporaryPassword}`);
-      await loadUsers();
+      await loadPageData();
     } catch (apiError) {
       setError(apiError.response?.data?.message || 'Password could not be reset');
     } finally {
@@ -79,27 +143,7 @@ export default function AdminUserListPage() {
     }
   };
 
-  const handleDeleteUser = async (user) => {
-    const confirmed = window.confirm(`Are you sure you want to delete ${user.fullName}? This action cannot be undone.`);
-
-    if (!confirmed) {
-      return;
-    }
-
-    setActionId(user.id);
-    setMessage('');
-    setError('');
-
-    try {
-      await adminUserApi.deleteUser(user.id);
-      setMessage(`${user.fullName} was deleted successfully.`);
-      await loadUsers();
-    } catch (apiError) {
-      setError(apiError.response?.data?.message || 'User could not be deleted');
-    } finally {
-      setActionId(null);
-    }
-  };
+  const filteredUsers = filterUsers(users, filters);
 
   return (
     <section className="content-section">
@@ -113,6 +157,33 @@ export default function AdminUserListPage() {
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
 
+      <form className="user-filter-row" onSubmit={handleSearch}>
+        <input
+          aria-label="Search users"
+          name="search"
+          value={filters.search}
+          onChange={handleFilterChange}
+          placeholder="Search by name or email"
+        />
+        <select
+          aria-label="Filter by building"
+          name="buildingId"
+          value={filters.buildingId}
+          onChange={handleFilterChange}
+        >
+          <option value="">All buildings</option>
+          {buildings.map((building) => (
+            <option key={building.id} value={building.id}>
+              {building.buildingCode} - {building.name}
+            </option>
+          ))}
+        </select>
+        <button type="submit">Search</button>
+        <button className="secondary-button inline-button" type="button" onClick={handleClearFilters}>
+          Clear
+        </button>
+      </form>
+
       {loading ? (
         <div className="empty-state">Loading users...</div>
       ) : (
@@ -120,17 +191,16 @@ export default function AdminUserListPage() {
           <table className="data-table">
             <thead>
               <tr>
-                <th>Name</th>
+                <th>User name</th>
                 <th>Email</th>
                 <th>Role</th>
                 <th>Account status</th>
-                <th>Password status</th>
                 <th>Temporary password</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {users.map((user) => (
+              {filteredUsers.map((user) => (
                 <tr key={user.id}>
                   <td>{user.fullName}</td>
                   <td>{user.email}</td>
@@ -139,13 +209,6 @@ export default function AdminUserListPage() {
                     <span className={`status-pill status-${user.status.toLowerCase()}`}>
                       {formatStatus(user.status)}
                     </span>
-                  </td>
-                  <td>
-                    {user.mustChangePassword ? (
-                      <span className="password-state pending-password">Password not changed</span>
-                    ) : (
-                      <span className="password-state changed-password">Password changed</span>
-                    )}
                   </td>
                   <td>
                     {user.mustChangePassword ? (
@@ -185,20 +248,13 @@ export default function AdminUserListPage() {
                       >
                         Regenerate
                       </button>
-                      <button
-                        className="secondary-button compact-button"
-                        type="button"
-                        disabled={actionId === user.id || user.role === 'ADMIN'}
-                        onClick={() => handleDeleteUser(user)}
-                      >
-                        Delete
-                      </button>
                     </div>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+          {filteredUsers.length === 0 && <div className="empty-state flat-empty-state">No users match the current filters.</div>}
         </div>
       )}
     </section>

@@ -31,7 +31,7 @@ public class RoomServiceImpl implements RoomService {
     @Transactional
     public RoomResponse createRoom(RoomRequest request) {
         Building building = findBuilding(request.getBuildingId());
-        String roomCode = normalizeCode(request.getRoomCode());
+        String roomCode = buildRoomCode(building, request.getRoomCode());
         RoomStatus roomStatus = parseRequiredStatus(request.getStatus());
 
         if (roomRepository.existsByRoomCode(roomCode)) {
@@ -88,7 +88,7 @@ public class RoomServiceImpl implements RoomService {
     public RoomResponse updateRoom(Long id, RoomRequest request) {
         Room room = findRoom(id);
         Building building = findBuilding(request.getBuildingId());
-        String roomCode = normalizeCode(request.getRoomCode());
+        String roomCode = buildRoomCode(building, request.getRoomCode());
         RoomStatus roomStatus = parseRequiredStatus(request.getStatus());
 
         roomRepository.findByRoomCode(roomCode)
@@ -164,6 +164,42 @@ public class RoomServiceImpl implements RoomService {
 
     private String normalizeCode(String roomCode) {
         return roomCode.trim().toUpperCase();
+    }
+
+    private String buildRoomCode(Building building, String requestedRoomCode) {
+        String normalizedRoomCode = normalizeCode(requestedRoomCode);
+        String selectedBuildingCode = normalizeCode(building.getBuildingCode());
+        String buildingPrefix = selectedBuildingCode + "-";
+
+        if (normalizedRoomCode.startsWith(buildingPrefix)) {
+            validateRoomCodeLength(normalizedRoomCode);
+            return normalizedRoomCode;
+        }
+
+        if (hasDifferentBuildingPrefix(normalizedRoomCode, selectedBuildingCode)) {
+            throw new BadRequestException("Room code must use the selected building code prefix");
+        }
+
+        String fullRoomCode = buildingPrefix + normalizedRoomCode;
+        validateRoomCodeLength(fullRoomCode);
+        return fullRoomCode;
+    }
+
+    private boolean hasDifferentBuildingPrefix(String roomCode, String selectedBuildingCode) {
+        int delimiterIndex = roomCode.indexOf("-");
+        if (delimiterIndex <= 0) {
+            return false;
+        }
+
+        String possibleBuildingCode = roomCode.substring(0, delimiterIndex);
+        return !possibleBuildingCode.equals(selectedBuildingCode)
+                && buildingRepository.existsByBuildingCode(possibleBuildingCode);
+    }
+
+    private void validateRoomCodeLength(String roomCode) {
+        if (roomCode.length() > 50) {
+            throw new BadRequestException("Room code must not exceed 50 characters");
+        }
     }
 
     private String normalizeOptionalText(String value) {

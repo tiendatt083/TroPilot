@@ -4,6 +4,7 @@ import * as paymentApi from '../../api/paymentApi.js';
 import PageHeader from '../../components/PageHeader.jsx';
 import ReceiptTable from '../../components/ReceiptTable.jsx';
 import { getReceiptStatusClass, getReceiptStatusLabel } from '../../utils/paymentStatusOptions.js';
+import { formatRoomLabel } from '../../utils/roomDisplay.js';
 
 function formatNumber(value) {
   const numberValue = Number(value);
@@ -44,9 +45,7 @@ function ReceiptDetail({ receipt }) {
         </div>
         <div>
           <span>Room</span>
-          <strong>
-            {receipt.roomCode} - {receipt.roomName}
-          </strong>
+          <strong>{formatRoomLabel(receipt)}</strong>
         </div>
         <div>
           <span>Head Resident</span>

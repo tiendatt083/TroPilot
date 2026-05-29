@@ -5,6 +5,7 @@ import ContractUploadForm from '../../components/ContractUploadForm.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
 import { getContractStatusClass, getContractStatusLabel } from '../../utils/contractStatusOptions.js';
 import { resolveFileUrl } from '../../utils/fileUrl.js';
+import { formatRoomCode, formatRoomLabel } from '../../utils/roomDisplay.js';
 
 function formatNumber(value) {
   const numberValue = Number(value);
@@ -130,7 +131,7 @@ export default function AdminBuildingContractPage() {
               <tbody>
                 {contracts.map((contract) => (
                   <tr key={contract.id}>
-                    <td>{contract.roomCode}</td>
+                    <td>{formatRoomCode(contract)}</td>
                     <td>{contract.residentHeadName}</td>
                     <td>
                       {contract.startDate} to {contract.endDate}
@@ -164,9 +165,7 @@ export default function AdminBuildingContractPage() {
                 <section className="detail-panel">
                   <div>
                     <span>Room</span>
-                    <strong>
-                      {selectedContract.roomCode} - {selectedContract.roomName}
-                    </strong>
+                    <strong>{formatRoomLabel(selectedContract)}</strong>
                   </div>
                   <div>
                     <span>Building</span>

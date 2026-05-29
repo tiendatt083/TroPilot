@@ -5,6 +5,7 @@ import ContractUploadForm from '../../components/ContractUploadForm.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
 import { getContractStatusClass, getContractStatusLabel } from '../../utils/contractStatusOptions.js';
 import { resolveFileUrl } from '../../utils/fileUrl.js';
+import { formatRoomCode, formatRoomLabel } from '../../utils/roomDisplay.js';
 
 function formatNumber(value) {
   const numberValue = Number(value);
@@ -80,7 +81,7 @@ export default function AdminContractDetailPage() {
   return (
     <section className="content-section">
       <div className="page-title-row">
-        <PageHeader eyebrow={contract.roomCode} title="Rental contract" />
+        <PageHeader eyebrow={formatRoomCode(contract)} title="Rental contract" />
         <div className="button-row">
           <Link className="secondary-link" to="/admin/contracts">
             Back
@@ -107,9 +108,7 @@ export default function AdminContractDetailPage() {
       <div className="detail-panel">
         <div>
           <span>Room</span>
-          <strong>
-            {contract.roomCode} - {contract.roomName}
-          </strong>
+          <strong>{formatRoomLabel(contract)}</strong>
         </div>
         <div>
           <span>Building</span>

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { getInvoiceStatusClass, getInvoiceStatusLabel } from '../utils/invoiceStatusOptions.js';
+import { formatRoomCode } from '../utils/roomDisplay.js';
 
 function formatNumber(value) {
   const numberValue = Number(value);
@@ -29,7 +30,7 @@ export default function InvoiceTable({ invoices, renderActions, detailPathBase }
           {invoices.map((invoice) => (
             <tr key={invoice.id}>
               <td>
-                <strong>{invoice.roomCode}</strong>
+                <strong>{formatRoomCode(invoice)}</strong>
                 <span className="table-subtext">{invoice.buildingCode}</span>
               </td>
               <td>
