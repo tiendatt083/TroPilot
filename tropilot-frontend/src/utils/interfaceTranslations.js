@@ -829,7 +829,30 @@ export const EN_TO_VI_TRANSLATIONS = {
   'Water evidence': 'Bằng chứng nước',
   'Water evidence image': 'Ảnh bằng chứng nước',
   'Water image': 'Ảnh nước',
-  'Water usage': 'Nước tiêu thụ'
+  'Water usage': 'Nước tiêu thụ',
+  'System-wide operating snapshot for buildings, rooms, residents, invoices, maintenance, and cash flow.': 'Tổng quan vận hành toàn hệ thống về tòa nhà, phòng, cư dân, hóa đơn, bảo trì và dòng tiền.',
+  'Open issues': 'Vấn đề đang mở',
+  'Cash position': 'Tình hình tiền mặt',
+  'Portfolio overview': 'Tổng quan danh mục',
+  'Room supply and occupancy health across all buildings.': 'Tình hình nguồn phòng và tỷ lệ sử dụng trên tất cả tòa nhà.',
+  'Residents and vehicles': 'Cư dân và xe',
+  'Current resident coverage and vehicle volume.': 'Tình hình cư dân hiện tại và số lượng xe.',
+  'Financial position': 'Tình hình tài chính',
+  'Income, expense, outstanding amount, and remaining cash from real records.': 'Thu, chi, số tiền còn phải thu và tiền còn lại từ dữ liệu thực.',
+  'Attention required': 'Cần chú ý',
+  'Items that need review or operational follow-up.': 'Các mục cần xem xét hoặc xử lý vận hành.',
+  'Daily work queue for readings, payments, maintenance, and assigned operational tasks.': 'Hàng đợi công việc hằng ngày cho chỉ số, thanh toán, bảo trì và nhiệm vụ được giao.',
+  'Utility readings due': 'Chỉ số tiện ích cần ghi',
+  'Payment checks': 'Thanh toán cần kiểm tra',
+  'Task workload': 'Khối lượng công việc',
+  'Assigned work and overdue items requiring immediate action.': 'Công việc được giao và mục quá hạn cần xử lý ngay.',
+  'Operational queue': 'Hàng đợi vận hành',
+  'Building operations that need staff processing.': 'Các nghiệp vụ tòa nhà cần nhân viên xử lý.',
+  'Expense activity': 'Hoạt động chi phí',
+  'Expenses created from valid operational work.': 'Chi phí được tạo từ công việc vận hành hợp lệ.',
+  'Room status, contract, invoice, vehicle, and maintenance overview for your assigned room.': 'Tổng quan trạng thái phòng, hợp đồng, hóa đơn, xe và bảo trì của phòng được phân.',
+  'Room overview': 'Tổng quan phòng',
+  'Current assigned room, building, and contract summary.': 'Tóm tắt phòng được phân, tòa nhà và hợp đồng hiện tại.'
 };
 
 export const VI_TO_EN_TRANSLATIONS = Object.fromEntries(

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import * as dashboardApi from '../../api/dashboardApi.js';
 import DashboardMetricGrid from '../../components/DashboardMetricGrid.jsx';
+import DashboardSection from '../../components/DashboardSection.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
 import { getContractStatusLabel } from '../../utils/contractStatusOptions.js';
 import { getInvoiceStatusClass, getInvoiceStatusLabel } from '../../utils/invoiceStatusOptions.js';
@@ -70,16 +71,22 @@ export default function ResidentDashboardPage() {
   const recentMaintenanceRequests = dashboard?.recentMaintenanceRequests || [];
   const metrics = dashboard
     ? [
-        { label: 'Approved members', value: formatNumber(dashboard.approvedMemberCount) },
-        { label: 'Active vehicles', value: formatNumber(activeVehicles.length) },
-        { label: 'Unread notifications', value: formatNumber(dashboard.unreadNotifications) },
-        { label: 'Recent maintenance requests', value: formatNumber(recentMaintenanceRequests.length) }
+        { label: 'Approved members', value: formatNumber(dashboard.approvedMemberCount), tone: 'success' },
+        { label: 'Active vehicles', value: formatNumber(activeVehicles.length), tone: 'primary' },
+        { label: 'Unread notifications', value: formatNumber(dashboard.unreadNotifications), tone: 'warning' },
+        { label: 'Recent maintenance requests', value: formatNumber(recentMaintenanceRequests.length), tone: 'primary' }
       ]
     : [];
 
   return (
-    <section className="content-section">
-      <PageHeader eyebrow="Head resident" title="Dashboard" />
+    <section className="content-section dashboard-page">
+      <div className="dashboard-hero">
+        <div>
+          <PageHeader eyebrow="Head resident" title="Dashboard" />
+          <p>Room status, contract, invoice, vehicle, and maintenance overview for your assigned room.</p>
+        </div>
+        {dashboard && <DashboardMetricGrid metrics={metrics} compact />}
+      </div>
 
       {error && <div className="alert error-alert">{error}</div>}
 
@@ -87,42 +94,45 @@ export default function ResidentDashboardPage() {
         <div className="empty-state">Loading dashboard...</div>
       ) : currentRoom?.assigned ? (
         <section className="resident-dashboard-workspace">
-          <DashboardMetricGrid metrics={metrics} />
-
-          <div className="detail-panel">
-            <div>
-              <span>Assigned room</span>
-              <strong>{formatRoomLabel(currentRoom)}</strong>
+          <DashboardSection
+            title="Room overview"
+            description="Current assigned room, building, and contract summary."
+          >
+            <div className="detail-panel dashboard-detail-panel">
+              <div>
+                <span>Assigned room</span>
+                <strong>{formatRoomLabel(currentRoom)}</strong>
+              </div>
+              <div>
+                <span>Building</span>
+                <strong>
+                  {currentRoom.buildingCode} - {currentRoom.buildingName}
+                </strong>
+              </div>
+              <div>
+                <span>Room status</span>
+                <strong>
+                  <span className={statusClass(currentRoom.roomStatus)}>
+                    {getRoomStatusLabel(currentRoom.roomStatus)}
+                  </span>
+                </strong>
+              </div>
+              <div>
+                <span>Assignment period</span>
+                <strong>
+                  {currentRoom.assignmentStartDate} to {currentRoom.assignmentEndDate}
+                </strong>
+              </div>
+              <div>
+                <span>Deposit amount</span>
+                <strong>{formatNumber(currentRoom.depositAmount)}</strong>
+              </div>
+              <div>
+                <span>Contract status</span>
+                <strong>{getContractStatusLabel(currentRoom.contractStatus)}</strong>
+              </div>
             </div>
-            <div>
-              <span>Building</span>
-              <strong>
-                {currentRoom.buildingCode} - {currentRoom.buildingName}
-              </strong>
-            </div>
-            <div>
-              <span>Room status</span>
-              <strong>
-                <span className={statusClass(currentRoom.roomStatus)}>
-                  {getRoomStatusLabel(currentRoom.roomStatus)}
-                </span>
-              </strong>
-            </div>
-            <div>
-              <span>Assignment period</span>
-              <strong>
-                {currentRoom.assignmentStartDate} to {currentRoom.assignmentEndDate}
-              </strong>
-            </div>
-            <div>
-              <span>Deposit amount</span>
-              <strong>{formatNumber(currentRoom.depositAmount)}</strong>
-            </div>
-            <div>
-              <span>Contract status</span>
-              <strong>{getContractStatusLabel(currentRoom.contractStatus)}</strong>
-            </div>
-          </div>
+          </DashboardSection>
 
           <div className="dashboard-two-column">
             <article className="dashboard-panel">

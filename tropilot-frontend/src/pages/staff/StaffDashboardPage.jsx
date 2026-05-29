@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import * as dashboardApi from '../../api/dashboardApi.js';
 import DashboardMetricGrid from '../../components/DashboardMetricGrid.jsx';
+import DashboardSection from '../../components/DashboardSection.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
 
 function formatNumber(value) {
@@ -41,27 +42,65 @@ export default function StaffDashboardPage() {
     };
   }, []);
 
-  const metrics = dashboard
+  const workloadMetrics = dashboard
+    ? [
+        { label: 'Assigned tasks', value: formatNumber(dashboard.assignedTasks), tone: 'primary', featured: true },
+        { label: 'Overdue tasks', value: formatNumber(dashboard.overdueTasks), tone: 'danger' }
+      ]
+    : [];
+  const operationsMetrics = dashboard
+    ? [
+        { label: 'Rooms needing utility reading', value: formatNumber(dashboard.roomsNeedingUtilityReading), tone: 'warning' },
+        { label: 'Pending payment confirmations', value: formatNumber(dashboard.pendingPaymentConfirmations), tone: 'warning' },
+        { label: 'Active maintenance requests', value: formatNumber(dashboard.activeMaintenanceRequests), tone: 'primary' }
+      ]
+    : [];
+  const financeMetrics = dashboard
+    ? [
+        { label: 'Created expenses', value: formatNumber(dashboard.createdExpenses), tone: 'primary' }
+      ]
+    : [];
+  const heroMetrics = dashboard
     ? [
         { label: 'Assigned tasks', value: formatNumber(dashboard.assignedTasks) },
         { label: 'Overdue tasks', value: formatNumber(dashboard.overdueTasks) },
-        { label: 'Rooms needing utility reading', value: formatNumber(dashboard.roomsNeedingUtilityReading) },
-        { label: 'Pending payment confirmations', value: formatNumber(dashboard.pendingPaymentConfirmations) },
-        { label: 'Active maintenance requests', value: formatNumber(dashboard.activeMaintenanceRequests) },
-        { label: 'Created expenses', value: formatNumber(dashboard.createdExpenses) }
+        { label: 'Utility readings due', value: formatNumber(dashboard.roomsNeedingUtilityReading) },
+        { label: 'Payment checks', value: formatNumber(dashboard.pendingPaymentConfirmations) }
       ]
     : [];
 
   return (
-    <section className="content-section">
-      <PageHeader eyebrow="Operations staff" title="Dashboard" />
+    <section className="content-section dashboard-page">
+      <div className="dashboard-hero">
+        <div>
+          <PageHeader eyebrow="Operations staff" title="Dashboard" />
+          <p>Daily work queue for readings, payments, maintenance, and assigned operational tasks.</p>
+        </div>
+        {dashboard && <DashboardMetricGrid metrics={heroMetrics} compact />}
+      </div>
 
       {error && <div className="alert error-alert">{error}</div>}
 
       {loading ? (
         <div className="empty-state">Loading dashboard...</div>
       ) : (
-        <DashboardMetricGrid metrics={metrics} />
+        <div className="dashboard-section-stack staff-dashboard-grid">
+          <DashboardSection
+            title="Task workload"
+            description="Assigned work and overdue items requiring immediate action."
+            metrics={workloadMetrics}
+          />
+          <DashboardSection
+            title="Operational queue"
+            description="Building operations that need staff processing."
+            metrics={operationsMetrics}
+          />
+          <DashboardSection
+            title="Expense activity"
+            description="Expenses created from valid operational work."
+            metrics={financeMetrics}
+          />
+        </div>
       )}
     </section>
   );
