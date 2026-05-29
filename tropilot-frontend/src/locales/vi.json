@@ -18,6 +18,7 @@
     "inactive": "Không hoạt động",
     "billable": "Tính phí",
     "notBillable": "Không tính phí",
+    "optional": "Không bắt buộc",
     "saving": "Đang lưu...",
     "signOut": "Đăng xuất",
     "to": "đến",
@@ -412,6 +413,7 @@
     "common": {
       "actions": "Thao tác",
       "amount": "Số tiền",
+      "area": "Diện tích",
       "assignedStaff": "Nhân viên được phân công",
       "building": "Tòa nhà",
       "calculation": "Cách tính",
@@ -538,6 +540,52 @@
         "noBuildings": "Không có tòa nhà",
         "roomCode": "Mã phòng",
         "roomName": "Tên phòng"
+      },
+      "building": {
+        "buildingCode": "Mã tòa nhà",
+        "buildingName": "Tên tòa nhà",
+        "address": "Địa chỉ",
+        "floors": "Số tầng"
+      },
+      "invoice": {
+        "invoiceMonth": "Tháng lập hóa đơn",
+        "generate": "Tạo hóa đơn",
+        "generating": "Đang tạo..."
+      },
+      "payment": {
+        "proofImage": "Ảnh bằng chứng thanh toán",
+        "note": "Ghi chú thanh toán",
+        "optionalNote": "Ghi chú thanh toán không bắt buộc",
+        "uploading": "Đang tải lên...",
+        "uploadProof": "Tải bằng chứng thanh toán"
+      },
+      "member": {
+        "fullName": "Họ và tên",
+        "phone": "Số điện thoại",
+        "identityNumber": "Số giấy tờ",
+        "relationship": "Quan hệ",
+        "dateOfBirth": "Ngày sinh",
+        "moveInDate": "Ngày chuyển vào"
+      },
+      "serviceFee": {
+        "serviceFeeCode": "Mã phí dịch vụ",
+        "serviceFeeName": "Tên phí dịch vụ",
+        "calculationType": "Cách tính phí",
+        "selectVehicleType": "Chọn loại xe",
+        "noSpecificVehicleType": "Không chọn loại xe cụ thể"
+      },
+      "task": {
+        "taskType": "Loại công việc",
+        "selectStaff": "Chọn nhân viên",
+        "noRoomLinked": "Không liên kết phòng"
+      },
+      "expense": {
+        "taskReference": "Mã công việc liên quan",
+        "maintenanceRequestReference": "Mã yêu cầu bảo trì liên quan",
+        "expenseType": "Loại chi phí",
+        "proofImage": "Ảnh bằng chứng",
+        "creating": "Đang tạo...",
+        "create": "Tạo chi phí"
       },
       "utilityReading": {
         "selectRoom": "Chọn phòng",

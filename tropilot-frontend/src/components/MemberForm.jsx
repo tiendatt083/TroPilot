@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const emptyForm = {
   fullName: '',
@@ -11,6 +12,7 @@ const emptyForm = {
 };
 
 export default function MemberForm({ initialValues, loading, submitLabel, onSubmit, onCancel }) {
+  const { t } = useTranslation();
   const [form, setForm] = useState(emptyForm);
 
   useEffect(() => {
@@ -45,7 +47,7 @@ export default function MemberForm({ initialValues, loading, submitLabel, onSubm
 
   return (
     <form className="panel-form" onSubmit={handleSubmit}>
-      <label htmlFor="fullName">Full name</label>
+      <label htmlFor="fullName">{t('forms.member.fullName')}</label>
       <input
         id="fullName"
         name="fullName"
@@ -55,12 +57,12 @@ export default function MemberForm({ initialValues, loading, submitLabel, onSubm
         required
       />
 
-      <label htmlFor="phone">Phone</label>
+      <label htmlFor="phone">{t('forms.member.phone')}</label>
       <input id="phone" name="phone" value={form.phone} onChange={handleChange} maxLength={30} required />
 
       <div className="form-grid">
         <div>
-          <label htmlFor="identityNumber">Identity number</label>
+          <label htmlFor="identityNumber">{t('forms.member.identityNumber')}</label>
           <input
             id="identityNumber"
             name="identityNumber"
@@ -70,7 +72,7 @@ export default function MemberForm({ initialValues, loading, submitLabel, onSubm
           />
         </div>
         <div>
-          <label htmlFor="relationship">Relationship</label>
+          <label htmlFor="relationship">{t('forms.member.relationship')}</label>
           <input
             id="relationship"
             name="relationship"
@@ -83,7 +85,7 @@ export default function MemberForm({ initialValues, loading, submitLabel, onSubm
 
       <div className="form-grid">
         <div>
-          <label htmlFor="dateOfBirth">Date of birth</label>
+          <label htmlFor="dateOfBirth">{t('forms.member.dateOfBirth')}</label>
           <input
             id="dateOfBirth"
             name="dateOfBirth"
@@ -93,7 +95,7 @@ export default function MemberForm({ initialValues, loading, submitLabel, onSubm
           />
         </div>
         <div>
-          <label htmlFor="moveInDate">Move-in date</label>
+          <label htmlFor="moveInDate">{t('forms.member.moveInDate')}</label>
           <input
             id="moveInDate"
             name="moveInDate"
@@ -104,17 +106,17 @@ export default function MemberForm({ initialValues, loading, submitLabel, onSubm
         </div>
       </div>
 
-      <label htmlFor="note">Note</label>
+      <label htmlFor="note">{t('tables.common.note')}</label>
       <textarea id="note" name="note" value={form.note || ''} onChange={handleChange} maxLength={1000} rows="4" />
 
       <div className="button-row form-button-row">
         {onCancel && (
           <button className="secondary-button inline-button" type="button" onClick={onCancel}>
-            Cancel
+            {t('common.cancel')}
           </button>
         )}
         <button type="submit" disabled={loading}>
-          {loading ? 'Saving...' : submitLabel}
+          {loading ? t('common.saving') : submitLabel}
         </button>
       </div>
     </form>

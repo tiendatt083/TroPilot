@@ -1,6 +1,8 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export default function PaymentProofUploadForm({ invoiceId, loading, onSubmit }) {
+  const { t } = useTranslation();
   const [proofImage, setProofImage] = useState(null);
   const [note, setNote] = useState('');
 
@@ -23,7 +25,7 @@ export default function PaymentProofUploadForm({ invoiceId, loading, onSubmit })
 
   return (
     <form className="panel-form payment-proof-form" onSubmit={handleSubmit}>
-      <label htmlFor="proofImage">Payment proof image</label>
+      <label htmlFor="proofImage">{t('forms.payment.proofImage')}</label>
       <input
         id="proofImage"
         name="proofImage"
@@ -33,18 +35,18 @@ export default function PaymentProofUploadForm({ invoiceId, loading, onSubmit })
         required
       />
 
-      <label htmlFor="paymentNote">Payment note</label>
+      <label htmlFor="paymentNote">{t('forms.payment.note')}</label>
       <textarea
         id="paymentNote"
         name="paymentNote"
         rows="3"
         value={note}
         onChange={(event) => setNote(event.target.value)}
-        placeholder="Optional payment note"
+        placeholder={t('forms.payment.optionalNote')}
       />
 
       <button type="submit" disabled={loading || !proofImage}>
-        {loading ? 'Uploading...' : 'Upload payment proof'}
+        {loading ? t('forms.payment.uploading') : t('forms.payment.uploadProof')}
       </button>
     </form>
   );

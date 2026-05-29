@@ -18,6 +18,7 @@
     "inactive": "Inactive",
     "billable": "Billable",
     "notBillable": "Not billable",
+    "optional": "Optional",
     "saving": "Saving...",
     "signOut": "Sign out",
     "to": "to",
@@ -412,6 +413,7 @@
     "common": {
       "actions": "Actions",
       "amount": "Amount",
+      "area": "Area",
       "assignedStaff": "Assigned staff",
       "building": "Building",
       "calculation": "Calculation",
@@ -538,6 +540,52 @@
         "noBuildings": "No buildings available",
         "roomCode": "Room code",
         "roomName": "Room name"
+      },
+      "building": {
+        "buildingCode": "Building code",
+        "buildingName": "Building name",
+        "address": "Address",
+        "floors": "Floors"
+      },
+      "invoice": {
+        "invoiceMonth": "Invoice month",
+        "generate": "Generate invoice",
+        "generating": "Generating..."
+      },
+      "payment": {
+        "proofImage": "Payment proof image",
+        "note": "Payment note",
+        "optionalNote": "Optional payment note",
+        "uploading": "Uploading...",
+        "uploadProof": "Upload payment proof"
+      },
+      "member": {
+        "fullName": "Full name",
+        "phone": "Phone",
+        "identityNumber": "Identity number",
+        "relationship": "Relationship",
+        "dateOfBirth": "Date of birth",
+        "moveInDate": "Move-in date"
+      },
+      "serviceFee": {
+        "serviceFeeCode": "Service fee code",
+        "serviceFeeName": "Service fee name",
+        "calculationType": "Calculation type",
+        "selectVehicleType": "Select vehicle type",
+        "noSpecificVehicleType": "No specific vehicle type"
+      },
+      "task": {
+        "taskType": "Task type",
+        "selectStaff": "Select staff",
+        "noRoomLinked": "No room linked"
+      },
+      "expense": {
+        "taskReference": "Task reference",
+        "maintenanceRequestReference": "Maintenance request reference",
+        "expenseType": "Expense type",
+        "proofImage": "Proof image",
+        "creating": "Creating...",
+        "create": "Create expense"
       },
       "utilityReading": {
         "selectRoom": "Select room",

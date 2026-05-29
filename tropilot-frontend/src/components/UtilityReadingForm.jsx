@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { resolveFileUrl } from '../utils/fileUrl.js';
 import { formatRoomLabel } from '../utils/roomDisplay.js';
 
@@ -23,6 +24,7 @@ export default function UtilityReadingForm({
   onSubmit,
   onCancel
 }) {
+  const { t } = useTranslation();
   const [form, setForm] = useState(emptyForm);
   const [electricityImage, setElectricityImage] = useState(null);
   const [waterImage, setWaterImage] = useState(null);
@@ -81,9 +83,9 @@ export default function UtilityReadingForm({
 
   return (
     <form className="panel-form" onSubmit={handleSubmit}>
-      <label htmlFor="roomId">Room</label>
+      <label htmlFor="roomId">{t('tables.common.room')}</label>
       <select id="roomId" name="roomId" value={form.roomId} onChange={handleChange} required>
-        <option value="">Select room</option>
+        <option value="">{t('forms.utilityReading.selectRoom')}</option>
         {rooms.map((room) => (
           <option key={room.id} value={room.id}>
             {formatRoomLabel(room)}
@@ -91,11 +93,11 @@ export default function UtilityReadingForm({
         ))}
       </select>
 
-      {form.roomId && <PreviousReadingEvidence previousReading={previousReading} />}
+      {form.roomId && <PreviousReadingEvidence previousReading={previousReading} t={t} />}
 
       <div className="form-grid">
         <div>
-          <label htmlFor="oldElectricity">Old electricity</label>
+          <label htmlFor="oldElectricity">{t('forms.utilityReading.oldElectricity')}</label>
           <input
             id="oldElectricity"
             name="oldElectricity"
@@ -108,7 +110,7 @@ export default function UtilityReadingForm({
           />
         </div>
         <div>
-          <label htmlFor="newElectricity">New electricity</label>
+          <label htmlFor="newElectricity">{t('forms.utilityReading.newElectricity')}</label>
           <input
             id="newElectricity"
             name="newElectricity"
@@ -122,7 +124,7 @@ export default function UtilityReadingForm({
         </div>
       </div>
 
-      <label htmlFor="electricityImage">Electricity evidence image</label>
+      <label htmlFor="electricityImage">{t('forms.utilityReading.electricityEvidenceImage')}</label>
       <input
         id="electricityImage"
         name="electricityImage"
@@ -134,7 +136,7 @@ export default function UtilityReadingForm({
 
       <div className="form-grid">
         <div>
-          <label htmlFor="oldWater">Old water</label>
+          <label htmlFor="oldWater">{t('forms.utilityReading.oldWater')}</label>
           <input
             id="oldWater"
             name="oldWater"
@@ -147,7 +149,7 @@ export default function UtilityReadingForm({
           />
         </div>
         <div>
-          <label htmlFor="newWater">New water</label>
+          <label htmlFor="newWater">{t('forms.utilityReading.newWater')}</label>
           <input
             id="newWater"
             name="newWater"
@@ -161,7 +163,7 @@ export default function UtilityReadingForm({
         </div>
       </div>
 
-      <label htmlFor="waterImage">Water evidence image</label>
+      <label htmlFor="waterImage">{t('forms.utilityReading.waterEvidenceImage')}</label>
       <input
         id="waterImage"
         name="waterImage"
@@ -171,11 +173,11 @@ export default function UtilityReadingForm({
         required={!editing}
       />
 
-      <p className="muted-text">Allowed image types: jpg, jpeg, png. Maximum size: 10 MB.</p>
+      <p className="muted-text">{t('forms.utilityReading.allowedImageTypes')}</p>
 
       {editing && (
         <>
-          <label htmlFor="editReason">Edit reason</label>
+          <label htmlFor="editReason">{t('tables.common.editReason')}</label>
           <textarea
             id="editReason"
             name="editReason"
@@ -189,7 +191,7 @@ export default function UtilityReadingForm({
       )}
 
       <div>
-        <label htmlFor="readingDate">Reading date</label>
+        <label htmlFor="readingDate">{t('tables.common.readingDate')}</label>
         <input
           id="readingDate"
           name="readingDate"
@@ -198,16 +200,16 @@ export default function UtilityReadingForm({
           onChange={handleChange}
           required
         />
-        <span className="field-help">This date applies to both electricity and water readings.</span>
+        <span className="field-help">{t('forms.utilityReading.readingDateHelp')}</span>
       </div>
 
       <div className="button-row form-button-row">
         <button type="submit" disabled={loading}>
-          {loading ? 'Saving...' : submitLabel}
+          {loading ? t('common.saving') : submitLabel}
         </button>
         {onCancel && (
           <button className="secondary-button inline-button" type="button" onClick={onCancel}>
-            Cancel
+            {t('common.cancel')}
           </button>
         )}
       </div>
@@ -215,12 +217,12 @@ export default function UtilityReadingForm({
   );
 }
 
-function PreviousReadingEvidence({ previousReading }) {
+function PreviousReadingEvidence({ previousReading, t }) {
   if (!previousReading) {
     return (
       <div className="previous-reading-panel">
-        <strong>Previous month evidence</strong>
-        <span className="table-subtext">No previous reading evidence found for this room.</span>
+        <strong>{t('forms.utilityReading.previousMonthEvidence')}</strong>
+        <span className="table-subtext">{t('forms.utilityReading.noPreviousEvidence')}</span>
       </div>
     );
   }
@@ -235,7 +237,7 @@ function PreviousReadingEvidence({ previousReading }) {
   return (
     <div className="previous-reading-panel">
       <div>
-        <strong>Previous month evidence</strong>
+        <strong>{t('forms.utilityReading.previousMonthEvidence')}</strong>
         <span className="table-subtext">
           {previousReading.month}
           {previousReading.readingDate ? ` - ${previousReading.readingDate}` : ''}
@@ -244,14 +246,14 @@ function PreviousReadingEvidence({ previousReading }) {
       <div className="previous-reading-images">
         {electricityImageUrl && (
           <a className="previous-reading-image-link" href={electricityImageUrl} target="_blank" rel="noreferrer">
-            <span>Previous electricity image</span>
-            <img src={electricityImageUrl} alt="Previous electricity meter evidence" />
+            <span>{t('forms.utilityReading.previousElectricityImage')}</span>
+            <img src={electricityImageUrl} alt={t('forms.utilityReading.previousElectricityAlt')} />
           </a>
         )}
         {waterImageUrl && (
           <a className="previous-reading-image-link" href={waterImageUrl} target="_blank" rel="noreferrer">
-            <span>Previous water image</span>
-            <img src={waterImageUrl} alt="Previous water meter evidence" />
+            <span>{t('forms.utilityReading.previousWaterImage')}</span>
+            <img src={waterImageUrl} alt={t('forms.utilityReading.previousWaterAlt')} />
           </a>
         )}
       </div>

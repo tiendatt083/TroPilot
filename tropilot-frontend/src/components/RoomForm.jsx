@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { formatEnumLabel } from '../utils/i18nFormat.js';
 import { buildFullRoomCode, stripRoomCodePrefix } from '../utils/roomDisplay.js';
 import { ROOM_STATUS_OPTIONS } from '../utils/roomStatusOptions.js';
 
@@ -15,6 +17,7 @@ const emptyForm = {
 };
 
 export default function RoomForm({ buildingOptions, initialValues, loading, submitLabel, onSubmit }) {
+  const { t } = useTranslation();
   const [form, setForm] = useState(emptyForm);
 
   useEffect(() => {
@@ -71,7 +74,7 @@ export default function RoomForm({ buildingOptions, initialValues, loading, subm
 
   return (
     <form className="panel-form" onSubmit={handleSubmit}>
-      <label htmlFor="buildingId">Building</label>
+      <label htmlFor="buildingId">{t('tables.common.building')}</label>
       <select
         id="buildingId"
         name="buildingId"
@@ -80,7 +83,7 @@ export default function RoomForm({ buildingOptions, initialValues, loading, subm
         required
         disabled={!hasBuildings}
       >
-        <option value="">{hasBuildings ? 'Select building' : 'No buildings available'}</option>
+        <option value="">{hasBuildings ? t('forms.room.selectBuilding') : t('forms.room.noBuildings')}</option>
         {buildingOptions.map((building) => (
           <option key={building.id} value={building.id}>
             {building.buildingCode} - {building.name}
@@ -88,9 +91,9 @@ export default function RoomForm({ buildingOptions, initialValues, loading, subm
         ))}
       </select>
 
-      <label htmlFor="roomCode">Room code</label>
+      <label htmlFor="roomCode">{t('forms.room.roomCode')}</label>
       <div className="room-code-input-group">
-        <span className="room-code-prefix">{roomCodePrefix || 'Select building'}</span>
+        <span className="room-code-prefix">{roomCodePrefix || t('forms.room.selectBuilding')}</span>
         <input
           id="roomCode"
           name="roomCode"
@@ -103,7 +106,7 @@ export default function RoomForm({ buildingOptions, initialValues, loading, subm
         />
       </div>
 
-      <label htmlFor="roomName">Room name</label>
+      <label htmlFor="roomName">{t('forms.room.roomName')}</label>
       <input
         id="roomName"
         name="roomName"
@@ -115,7 +118,7 @@ export default function RoomForm({ buildingOptions, initialValues, loading, subm
 
       <div className="form-grid">
         <div>
-          <label htmlFor="floor">Floor</label>
+          <label htmlFor="floor">{t('tables.common.floor')}</label>
           <input
             id="floor"
             name="floor"
@@ -127,7 +130,7 @@ export default function RoomForm({ buildingOptions, initialValues, loading, subm
           />
         </div>
         <div>
-          <label htmlFor="maxOccupants">Maximum occupants</label>
+          <label htmlFor="maxOccupants">{t('tables.common.maxOccupants')}</label>
           <input
             id="maxOccupants"
             name="maxOccupants"
@@ -142,7 +145,7 @@ export default function RoomForm({ buildingOptions, initialValues, loading, subm
 
       <div className="form-grid">
         <div>
-          <label htmlFor="price">Price</label>
+          <label htmlFor="price">{t('tables.common.price')}</label>
           <input
             id="price"
             name="price"
@@ -155,7 +158,7 @@ export default function RoomForm({ buildingOptions, initialValues, loading, subm
           />
         </div>
         <div>
-          <label htmlFor="area">Area</label>
+          <label htmlFor="area">{t('tables.common.area')}</label>
           <input
             id="area"
             name="area"
@@ -169,16 +172,16 @@ export default function RoomForm({ buildingOptions, initialValues, loading, subm
         </div>
       </div>
 
-      <label htmlFor="status">Status</label>
+      <label htmlFor="status">{t('tables.common.status')}</label>
       <select id="status" name="status" value={form.status} onChange={handleChange} required>
         {ROOM_STATUS_OPTIONS.map((status) => (
           <option key={status.value} value={status.value}>
-            {status.label}
+            {formatEnumLabel(t, 'roomStatus', status.value)}
           </option>
         ))}
       </select>
 
-      <label htmlFor="description">Description</label>
+      <label htmlFor="description">{t('tables.common.description')}</label>
       <textarea
         id="description"
         name="description"
@@ -189,7 +192,7 @@ export default function RoomForm({ buildingOptions, initialValues, loading, subm
       />
 
       <button type="submit" disabled={loading || !hasBuildings}>
-        {loading ? 'Saving...' : submitLabel}
+        {loading ? t('common.saving') : submitLabel}
       </button>
     </form>
   );

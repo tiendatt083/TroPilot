@@ -1,79 +1,79 @@
-import {
-  formatMaintenanceDateTime,
-  getMaintenanceStatusClass,
-  getMaintenanceStatusLabel
-} from '../utils/maintenanceOptions.js';
+import { useTranslation } from 'react-i18next';
+import { getMaintenanceStatusClass } from '../utils/maintenanceOptions.js';
 import { resolveFileUrl } from '../utils/fileUrl.js';
+import { formatDateTime, formatEnumLabel } from '../utils/i18nFormat.js';
 import { formatRoomLabel } from '../utils/roomDisplay.js';
 
 export default function MaintenanceRequestDetail({ request }) {
+  const { t } = useTranslation();
+
   if (!request) {
-    return <div className="empty-state">Select a maintenance request to view details.</div>;
+    return <div className="empty-state">{t('details.selectMaintenanceRequest')}</div>;
   }
 
   return (
     <section className="maintenance-detail-panel">
       <div className="detail-panel">
         <div>
-          <span>Title</span>
+          <span>{t('details.title')}</span>
           <strong>{request.title}</strong>
         </div>
         <div>
-          <span>Status</span>
+          <span>{t('tables.common.status')}</span>
           <strong>
             <span className={getMaintenanceStatusClass(request.status)}>
-              {getMaintenanceStatusLabel(request.status)}
+              {formatEnumLabel(t, 'maintenanceStatus', request.status)}
             </span>
           </strong>
         </div>
         <div>
-          <span>Room</span>
+          <span>{t('tables.common.room')}</span>
           <strong>{formatRoomLabel(request)}</strong>
         </div>
         <div>
-          <span>Building</span>
+          <span>{t('tables.common.building')}</span>
           <strong>
             {request.buildingCode} - {request.buildingName}
           </strong>
         </div>
         <div>
-          <span>Head resident</span>
+          <span>{t('tables.common.headResident')}</span>
           <strong>{request.residentHeadName}</strong>
         </div>
         <div>
-          <span>Assigned staff</span>
-          <strong>{request.assignedToName || 'Not assigned'}</strong>
+          <span>{t('tables.common.assignedStaff')}</span>
+          <strong>{request.assignedToName || t('common.notAssigned')}</strong>
         </div>
         <div>
-          <span>Created</span>
-          <strong>{formatMaintenanceDateTime(request.createdAt)}</strong>
+          <span>{t('tables.common.created')}</span>
+          <strong>{formatDateTime(request.createdAt, t)}</strong>
         </div>
         <div>
-          <span>Updated</span>
-          <strong>{formatMaintenanceDateTime(request.updatedAt)}</strong>
+          <span>{t('tables.common.updated')}</span>
+          <strong>{formatDateTime(request.updatedAt, t)}</strong>
         </div>
         <div className="detail-wide">
-          <span>Content</span>
+          <span>{t('tables.common.content')}</span>
           <p>{request.content}</p>
         </div>
         <div className="detail-wide">
-          <span>Result note</span>
-          <p>{request.resultNote || 'No result note provided.'}</p>
+          <span>{t('tables.common.resultNote')}</span>
+          <p>{request.resultNote || t('details.noResultNote')}</p>
         </div>
         <div className="detail-wide">
-          <span>Images</span>
+          <span>{t('tables.common.images')}</span>
           <div className="evidence-links">
             {request.imageUrl && (
               <a href={resolveFileUrl(request.imageUrl)} target="_blank" rel="noreferrer">
-                Issue image
+                {t('details.issueImage')}
               </a>
             )}
             {request.resultImageUrl && (
               <a href={resolveFileUrl(request.resultImageUrl)} target="_blank" rel="noreferrer">
-                Result image
+                {t('details.resultImage')}
               </a>
             )}
-            {!request.imageUrl && !request.resultImageUrl && 'Not provided'}
+            {!request.imageUrl && !request.resultImageUrl && t('common.notProvided')}
           </div>
         </div>
       </div>

@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { EXPENSE_TYPE_OPTIONS } from '../utils/expenseOptions.js';
+import { formatEnumLabel } from '../utils/i18nFormat.js';
 import { formatRoomLabel } from '../utils/roomDisplay.js';
 
 const emptyForm = {
@@ -13,6 +15,7 @@ const emptyForm = {
 };
 
 export default function ExpenseForm({ initialValues, rooms, loading, onSubmit }) {
+  const { t } = useTranslation();
   const [form, setForm] = useState(emptyForm);
 
   useEffect(() => {
@@ -50,9 +53,9 @@ export default function ExpenseForm({ initialValues, rooms, loading, onSubmit })
 
   return (
     <form className="panel-form" onSubmit={handleSubmit}>
-      <label htmlFor="roomId">Room</label>
+      <label htmlFor="roomId">{t('tables.common.room')}</label>
       <select id="roomId" name="roomId" value={form.roomId} onChange={handleChange}>
-        <option value="">No room linked</option>
+        <option value="">{t('forms.task.noRoomLinked')}</option>
         {rooms.map((room) => (
           <option key={room.id} value={room.id}>
             {formatRoomLabel(room)}
@@ -62,7 +65,7 @@ export default function ExpenseForm({ initialValues, rooms, loading, onSubmit })
 
       <div className="form-grid">
         <div>
-          <label htmlFor="taskId">Task reference</label>
+          <label htmlFor="taskId">{t('forms.expense.taskReference')}</label>
           <input
             id="taskId"
             name="taskId"
@@ -70,11 +73,11 @@ export default function ExpenseForm({ initialValues, rooms, loading, onSubmit })
             min="1"
             value={form.taskId}
             onChange={handleChange}
-            placeholder="Optional"
+            placeholder={t('common.optional')}
           />
         </div>
         <div>
-          <label htmlFor="maintenanceRequestId">Maintenance request reference</label>
+          <label htmlFor="maintenanceRequestId">{t('forms.expense.maintenanceRequestReference')}</label>
           <input
             id="maintenanceRequestId"
             name="maintenanceRequestId"
@@ -82,14 +85,14 @@ export default function ExpenseForm({ initialValues, rooms, loading, onSubmit })
             min="1"
             value={form.maintenanceRequestId}
             onChange={handleChange}
-            placeholder="Optional"
+            placeholder={t('common.optional')}
           />
         </div>
       </div>
 
       <div className="form-grid">
         <div>
-          <label htmlFor="amount">Amount</label>
+          <label htmlFor="amount">{t('tables.common.amount')}</label>
           <input
             id="amount"
             name="amount"
@@ -102,21 +105,21 @@ export default function ExpenseForm({ initialValues, rooms, loading, onSubmit })
           />
         </div>
         <div>
-          <label htmlFor="expenseType">Expense type</label>
+          <label htmlFor="expenseType">{t('forms.expense.expenseType')}</label>
           <select id="expenseType" name="expenseType" value={form.expenseType} onChange={handleChange} required>
             {EXPENSE_TYPE_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
-                {option.label}
+                {formatEnumLabel(t, 'expenseType', option.value)}
               </option>
             ))}
           </select>
         </div>
       </div>
 
-      <label htmlFor="content">Content</label>
+      <label htmlFor="content">{t('tables.common.content')}</label>
       <textarea id="content" name="content" rows="4" value={form.content} onChange={handleChange} required />
 
-      <label htmlFor="proofImage">Proof image</label>
+      <label htmlFor="proofImage">{t('forms.expense.proofImage')}</label>
       <input
         id="proofImage"
         name="proofImage"
@@ -126,7 +129,7 @@ export default function ExpenseForm({ initialValues, rooms, loading, onSubmit })
       />
 
       <button type="submit" disabled={loading}>
-        {loading ? 'Creating...' : 'Create expense'}
+        {loading ? t('forms.expense.creating') : t('forms.expense.create')}
       </button>
     </form>
   );

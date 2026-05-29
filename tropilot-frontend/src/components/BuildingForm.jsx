@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const emptyForm = {
   buildingCode: '',
@@ -9,6 +10,7 @@ const emptyForm = {
 };
 
 export default function BuildingForm({ initialValues, loading, submitLabel, onSubmit }) {
+  const { t } = useTranslation();
   const [form, setForm] = useState(emptyForm);
 
   useEffect(() => {
@@ -34,7 +36,7 @@ export default function BuildingForm({ initialValues, loading, submitLabel, onSu
 
   return (
     <form className="panel-form" onSubmit={handleSubmit}>
-      <label htmlFor="buildingCode">Building code</label>
+      <label htmlFor="buildingCode">{t('forms.building.buildingCode')}</label>
       <input
         id="buildingCode"
         name="buildingCode"
@@ -44,7 +46,7 @@ export default function BuildingForm({ initialValues, loading, submitLabel, onSu
         required
       />
 
-      <label htmlFor="name">Building name</label>
+      <label htmlFor="name">{t('forms.building.buildingName')}</label>
       <input
         id="name"
         name="name"
@@ -54,7 +56,7 @@ export default function BuildingForm({ initialValues, loading, submitLabel, onSu
         required
       />
 
-      <label htmlFor="address">Address</label>
+      <label htmlFor="address">{t('forms.building.address')}</label>
       <input
         id="address"
         name="address"
@@ -64,7 +66,7 @@ export default function BuildingForm({ initialValues, loading, submitLabel, onSu
         required
       />
 
-      <label htmlFor="floors">Floors</label>
+      <label htmlFor="floors">{t('forms.building.floors')}</label>
       <input
         id="floors"
         name="floors"
@@ -75,7 +77,7 @@ export default function BuildingForm({ initialValues, loading, submitLabel, onSu
         required
       />
 
-      <label htmlFor="description">Description</label>
+      <label htmlFor="description">{t('tables.common.description')}</label>
       <textarea
         id="description"
         name="description"
@@ -86,7 +88,7 @@ export default function BuildingForm({ initialValues, loading, submitLabel, onSu
       />
 
       <button type="submit" disabled={loading}>
-        {loading ? 'Saving...' : submitLabel}
+        {loading ? t('common.saving') : submitLabel}
       </button>
     </form>
   );

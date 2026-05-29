@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   TASK_PRIORITY_OPTIONS,
   TASK_STATUS_OPTIONS,
   TASK_TYPE_OPTIONS,
   toDateTimeInputValue
 } from '../utils/taskOptions.js';
+import { formatEnumLabel } from '../utils/i18nFormat.js';
 import { formatRoomLabel } from '../utils/roomDisplay.js';
 
 const emptyForm = {
@@ -26,9 +28,10 @@ export default function TaskForm({
   submitLabel,
   includeStatus = false,
   roomRequired = false,
-  roomPlaceholder = 'No room linked',
+  roomPlaceholder,
   onSubmit
 }) {
+  const { t } = useTranslation();
   const [form, setForm] = useState(emptyForm);
 
   useEffect(() => {
@@ -71,29 +74,29 @@ export default function TaskForm({
 
   return (
     <form className="panel-form task-form" onSubmit={handleSubmit}>
-      <label htmlFor="title">Title</label>
+      <label htmlFor="title">{t('details.title')}</label>
       <input id="title" name="title" value={form.title} onChange={handleChange} maxLength={160} required />
 
-      <label htmlFor="content">Content</label>
+      <label htmlFor="content">{t('tables.common.content')}</label>
       <textarea id="content" name="content" rows="5" value={form.content} onChange={handleChange} required />
 
       <div className="form-grid">
         <div>
-          <label htmlFor="taskType">Task type</label>
+          <label htmlFor="taskType">{t('forms.task.taskType')}</label>
           <select id="taskType" name="taskType" value={form.taskType} onChange={handleChange} required>
             {TASK_TYPE_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
-                {option.label}
+                {formatEnumLabel(t, 'taskType', option.value)}
               </option>
             ))}
           </select>
         </div>
         <div>
-          <label htmlFor="priority">Priority</label>
+          <label htmlFor="priority">{t('tables.common.priority')}</label>
           <select id="priority" name="priority" value={form.priority} onChange={handleChange} required>
             {TASK_PRIORITY_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
-                {option.label}
+                {formatEnumLabel(t, 'taskPriority', option.value)}
               </option>
             ))}
           </select>
@@ -102,9 +105,9 @@ export default function TaskForm({
 
       <div className="form-grid">
         <div>
-          <label htmlFor="assignedToId">Assigned staff</label>
+          <label htmlFor="assignedToId">{t('tables.common.assignedStaff')}</label>
           <select id="assignedToId" name="assignedToId" value={form.assignedToId} onChange={handleChange} required>
-            <option value="">Select staff</option>
+            <option value="">{t('forms.task.selectStaff')}</option>
             {staffUsers.map((staff) => (
               <option key={staff.id} value={staff.id}>
                 {staff.fullName} - {staff.email}
@@ -113,7 +116,7 @@ export default function TaskForm({
           </select>
         </div>
         <div>
-          <label htmlFor="deadline">Deadline</label>
+          <label htmlFor="deadline">{t('tables.common.deadline')}</label>
           <input
             id="deadline"
             name="deadline"
@@ -125,9 +128,9 @@ export default function TaskForm({
         </div>
       </div>
 
-      <label htmlFor="roomId">Room</label>
+      <label htmlFor="roomId">{t('tables.common.room')}</label>
       <select id="roomId" name="roomId" value={form.roomId} onChange={handleChange} required={roomRequired}>
-        <option value="">{roomPlaceholder}</option>
+        <option value="">{roomPlaceholder || t('forms.task.noRoomLinked')}</option>
         {rooms.map((room) => (
           <option key={room.id} value={room.id}>
             {formatRoomLabel(room)}
@@ -137,11 +140,11 @@ export default function TaskForm({
 
       {includeStatus && (
         <>
-          <label htmlFor="status">Status</label>
+          <label htmlFor="status">{t('tables.common.status')}</label>
           <select id="status" name="status" value={form.status} onChange={handleChange} required>
             {TASK_STATUS_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
-                {option.label}
+                {formatEnumLabel(t, 'taskStatus', option.value)}
               </option>
             ))}
           </select>
@@ -149,7 +152,7 @@ export default function TaskForm({
       )}
 
       <button type="submit" disabled={loading}>
-        {loading ? 'Saving...' : submitLabel}
+        {loading ? t('common.saving') : submitLabel}
       </button>
     </form>
   );

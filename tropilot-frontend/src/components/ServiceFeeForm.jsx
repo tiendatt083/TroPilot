@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { formatEnumLabel } from '../utils/i18nFormat.js';
 import {
   CALCULATION_TYPE_OPTIONS,
   FEE_TYPE_OPTIONS,
@@ -15,6 +17,7 @@ const emptyForm = {
 };
 
 export default function ServiceFeeForm({ initialValues, loading, submitLabel, onSubmit }) {
+  const { t } = useTranslation();
   const [form, setForm] = useState(emptyForm);
 
   useEffect(() => {
@@ -59,7 +62,7 @@ export default function ServiceFeeForm({ initialValues, loading, submitLabel, on
 
   return (
     <form className="panel-form" onSubmit={handleSubmit}>
-      <label htmlFor="feeCode">Service fee code</label>
+      <label htmlFor="feeCode">{t('forms.serviceFee.serviceFeeCode')}</label>
       <input
         id="feeCode"
         name="feeCode"
@@ -69,22 +72,22 @@ export default function ServiceFeeForm({ initialValues, loading, submitLabel, on
         required
       />
 
-      <label htmlFor="name">Service fee name</label>
+      <label htmlFor="name">{t('forms.serviceFee.serviceFeeName')}</label>
       <input id="name" name="name" value={form.name} onChange={handleChange} maxLength={120} required />
 
       <div className="form-grid">
         <div>
-          <label htmlFor="feeType">Fee type</label>
+          <label htmlFor="feeType">{t('tables.common.feeType')}</label>
           <select id="feeType" name="feeType" value={form.feeType} onChange={handleChange} required>
             {FEE_TYPE_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
-                {option.label}
+                {formatEnumLabel(t, 'feeType', option.value)}
               </option>
             ))}
           </select>
         </div>
         <div>
-          <label htmlFor="calculationType">Calculation type</label>
+          <label htmlFor="calculationType">{t('forms.serviceFee.calculationType')}</label>
           <select
             id="calculationType"
             name="calculationType"
@@ -94,14 +97,14 @@ export default function ServiceFeeForm({ initialValues, loading, submitLabel, on
           >
             {CALCULATION_TYPE_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
-                {option.label}
+                {formatEnumLabel(t, 'calculationType', option.value)}
               </option>
             ))}
           </select>
         </div>
       </div>
 
-      <label htmlFor="unitPrice">Unit price</label>
+      <label htmlFor="unitPrice">{t('tables.common.unitPrice')}</label>
       <input
         id="unitPrice"
         name="unitPrice"
@@ -115,7 +118,7 @@ export default function ServiceFeeForm({ initialValues, loading, submitLabel, on
 
       {isParkingFee && (
         <>
-          <label htmlFor="vehicleType">Vehicle type</label>
+          <label htmlFor="vehicleType">{t('tables.common.vehicleType')}</label>
           <select
             id="vehicleType"
             name="vehicleType"
@@ -123,10 +126,12 @@ export default function ServiceFeeForm({ initialValues, loading, submitLabel, on
             onChange={handleChange}
             required={requiresVehicleType}
           >
-            <option value="">{requiresVehicleType ? 'Select vehicle type' : 'No specific vehicle type'}</option>
+            <option value="">
+              {requiresVehicleType ? t('forms.serviceFee.selectVehicleType') : t('forms.serviceFee.noSpecificVehicleType')}
+            </option>
             {SERVICE_FEE_VEHICLE_TYPE_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
-                {option.label}
+                {formatEnumLabel(t, 'vehicleType', option.value)}
               </option>
             ))}
           </select>
@@ -134,7 +139,7 @@ export default function ServiceFeeForm({ initialValues, loading, submitLabel, on
       )}
 
       <button type="submit" disabled={loading}>
-        {loading ? 'Saving...' : submitLabel}
+        {loading ? t('common.saving') : submitLabel}
       </button>
     </form>
   );

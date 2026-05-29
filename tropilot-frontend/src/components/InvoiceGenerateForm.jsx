@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { formatRoomLabel } from '../utils/roomDisplay.js';
 
 const emptyForm = {
@@ -8,6 +9,7 @@ const emptyForm = {
 };
 
 export default function InvoiceGenerateForm({ rooms, loading, onSubmit }) {
+  const { t } = useTranslation();
   const [form, setForm] = useState(emptyForm);
 
   const handleChange = (event) => {
@@ -35,9 +37,9 @@ export default function InvoiceGenerateForm({ rooms, loading, onSubmit }) {
 
   return (
     <form className="panel-form" onSubmit={handleSubmit}>
-      <label htmlFor="roomId">Room</label>
+      <label htmlFor="roomId">{t('tables.common.room')}</label>
       <select id="roomId" name="roomId" value={form.roomId} onChange={handleChange} required>
-        <option value="">Select room</option>
+        <option value="">{t('forms.utilityReading.selectRoom')}</option>
         {rooms.map((room) => (
           <option key={room.id} value={room.id}>
             {formatRoomLabel(room)}
@@ -45,14 +47,14 @@ export default function InvoiceGenerateForm({ rooms, loading, onSubmit }) {
         ))}
       </select>
 
-      <label htmlFor="month">Invoice month</label>
+      <label htmlFor="month">{t('forms.invoice.invoiceMonth')}</label>
       <input id="month" name="month" type="month" value={form.month} onChange={handleChange} required />
 
-      <label htmlFor="dueDate">Due date</label>
+      <label htmlFor="dueDate">{t('tables.common.dueDate')}</label>
       <input id="dueDate" name="dueDate" type="date" value={form.dueDate} onChange={handleChange} required />
 
       <button type="submit" disabled={loading}>
-        {loading ? 'Generating...' : 'Generate invoice'}
+        {loading ? t('forms.invoice.generating') : t('forms.invoice.generate')}
       </button>
     </form>
   );

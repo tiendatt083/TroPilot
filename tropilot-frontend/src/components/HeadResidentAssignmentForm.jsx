@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const emptyForm = {
   residentHeadId: '',
@@ -8,6 +9,7 @@ const emptyForm = {
 };
 
 export default function HeadResidentAssignmentForm({ residentHeads, loading, onSubmit }) {
+  const { t } = useTranslation();
   const [form, setForm] = useState(emptyForm);
 
   const handleChange = (event) => {
@@ -32,7 +34,7 @@ export default function HeadResidentAssignmentForm({ residentHeads, loading, onS
 
   return (
     <form className="panel-form assignment-form" onSubmit={handleSubmit}>
-      <label htmlFor="residentHeadId">Head Resident</label>
+      <label htmlFor="residentHeadId">{t('tables.common.headResident')}</label>
       <select
         id="residentHeadId"
         name="residentHeadId"
@@ -41,7 +43,9 @@ export default function HeadResidentAssignmentForm({ residentHeads, loading, onS
         required
         disabled={!hasResidentHeads}
       >
-        <option value="">{hasResidentHeads ? 'Select Head Resident' : 'No active Head Residents available'}</option>
+        <option value="">
+          {hasResidentHeads ? t('forms.assignment.selectHeadResident') : t('forms.assignment.noHeadResidents')}
+        </option>
         {residentHeads.map((residentHead) => (
           <option key={residentHead.id} value={residentHead.id}>
             {residentHead.fullName} - {residentHead.email}
@@ -51,7 +55,7 @@ export default function HeadResidentAssignmentForm({ residentHeads, loading, onS
 
       <div className="form-grid">
         <div>
-          <label htmlFor="startDate">Start date</label>
+          <label htmlFor="startDate">{t('forms.assignment.startDate')}</label>
           <input
             id="startDate"
             name="startDate"
@@ -62,7 +66,7 @@ export default function HeadResidentAssignmentForm({ residentHeads, loading, onS
           />
         </div>
         <div>
-          <label htmlFor="endDate">End date</label>
+          <label htmlFor="endDate">{t('forms.assignment.endDate')}</label>
           <input
             id="endDate"
             name="endDate"
@@ -74,7 +78,7 @@ export default function HeadResidentAssignmentForm({ residentHeads, loading, onS
         </div>
       </div>
 
-      <label htmlFor="depositAmount">Deposit amount</label>
+      <label htmlFor="depositAmount">{t('tables.common.depositAmount')}</label>
       <input
         id="depositAmount"
         name="depositAmount"
@@ -87,7 +91,7 @@ export default function HeadResidentAssignmentForm({ residentHeads, loading, onS
       />
 
       <button type="submit" disabled={loading || !hasResidentHeads}>
-        {loading ? 'Assigning...' : 'Assign Head Resident'}
+        {loading ? t('forms.assignment.assigning') : t('forms.assignment.submit')}
       </button>
     </form>
   );
