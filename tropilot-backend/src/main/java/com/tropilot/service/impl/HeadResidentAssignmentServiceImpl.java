@@ -66,6 +66,8 @@ public class HeadResidentAssignmentServiceImpl implements HeadResidentAssignment
             throw new BadRequestException("Head Resident is already assigned to another active room");
         }
 
+        markRoomMembersAsLeft(room.getId(), request.getStartDate());
+
         RoomAssignment assignment = RoomAssignment.builder()
                 .room(room)
                 .residentHead(residentHead)
@@ -79,7 +81,7 @@ public class HeadResidentAssignmentServiceImpl implements HeadResidentAssignment
                 .residentHead(residentHead)
                 .startDate(request.getStartDate())
                 .endDate(request.getEndDate())
-                .depositAmount(request.getDepositAmount())
+                .depositAmount(room.getPrice())
                 .rentalStatus(RentalStatus.ACTIVE)
                 .contractStatus(ContractStatus.NOT_UPLOADED)
                 .build();
@@ -134,7 +136,7 @@ public class HeadResidentAssignmentServiceImpl implements HeadResidentAssignment
             rentalContractRepository.save(contract);
         }
 
-        markRoomMembersAsLeft(room.getId(), assignment.getResidentHead().getId(), removalDate);
+        markRoomMembersAsLeft(room.getId(), removalDate);
 
         room.setStatus(RoomStatus.EMPTY);
         roomRepository.save(room);
@@ -199,10 +201,9 @@ public class HeadResidentAssignmentServiceImpl implements HeadResidentAssignment
                 .orElse(null);
     }
 
-    private void markRoomMembersAsLeft(Long roomId, Long residentHeadId, LocalDate moveOutDate) {
-        List<RoomMember> members = roomMemberRepository.findByRoom_IdAndResidentHead_IdAndStatusIn(
+    private void markRoomMembersAsLeft(Long roomId, LocalDate moveOutDate) {
+        List<RoomMember> members = roomMemberRepository.findByRoom_IdAndStatusIn(
                 roomId,
-                residentHeadId,
                 List.of(RoomMemberStatus.PENDING, RoomMemberStatus.APPROVED)
         );
 

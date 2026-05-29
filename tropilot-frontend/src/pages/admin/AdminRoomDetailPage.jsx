@@ -117,7 +117,9 @@ export default function AdminRoomDetailPage() {
 
     try {
       await roomApi.assignHeadResident(room.id, payload);
-      setMessage('Head Resident assigned successfully.');
+      setMessage(
+        'Head Resident assigned successfully. Please create the first invoice for this room. The first invoice includes the deposit, first month room rent, and monthly service fees.'
+      );
       setShowAssignForm(false);
       await refreshRoomDetails();
     } catch (apiError) {

@@ -4,6 +4,7 @@ import com.tropilot.dto.request.InvoiceGenerateRequest;
 import com.tropilot.dto.response.InvoiceResponse;
 import com.tropilot.entity.Invoice;
 import com.tropilot.entity.InvoiceItem;
+import com.tropilot.entity.RentalContract;
 import com.tropilot.entity.Room;
 import com.tropilot.entity.RoomAssignment;
 import com.tropilot.entity.ServiceFee;
@@ -13,6 +14,7 @@ import com.tropilot.entity.Vehicle;
 import com.tropilot.enums.CalculationType;
 import com.tropilot.enums.FeeType;
 import com.tropilot.enums.InvoiceStatus;
+import com.tropilot.enums.RentalStatus;
 import com.tropilot.enums.RoomAssignmentStatus;
 import com.tropilot.enums.RoomMemberStatus;
 import com.tropilot.enums.VehicleStatus;
@@ -21,6 +23,7 @@ import com.tropilot.exception.ForbiddenException;
 import com.tropilot.exception.ResourceNotFoundException;
 import com.tropilot.repository.InvoiceRepository;
 import com.tropilot.repository.BuildingRepository;
+import com.tropilot.repository.RentalContractRepository;
 import com.tropilot.repository.RoomAssignmentRepository;
 import com.tropilot.repository.RoomMemberRepository;
 import com.tropilot.repository.RoomRepository;
@@ -50,6 +53,7 @@ public class InvoiceServiceImpl implements InvoiceService {
     private final BuildingRepository buildingRepository;
     private final RoomRepository roomRepository;
     private final UserRepository userRepository;
+    private final RentalContractRepository rentalContractRepository;
     private final RoomAssignmentRepository roomAssignmentRepository;
     private final UtilityReadingRepository utilityReadingRepository;
     private final ServiceFeeRepository serviceFeeRepository;
@@ -74,12 +78,19 @@ public class InvoiceServiceImpl implements InvoiceService {
                 .findByRoomIdAndStatus(room.getId(), RoomAssignmentStatus.ACTIVE)
                 .orElseThrow(() -> new BadRequestException("Only rooms with an active Head Resident can receive invoices"));
 
-        UtilityReading utilityReading = utilityReadingRepository
-                .findByRoomIdAndMonthWithDetails(room.getId(), month)
-                .orElseThrow(() -> new BadRequestException("Utility reading is required for this room and month"));
+        boolean firstInvoiceForCurrentHead = !invoiceRepository.existsByRoom_IdAndResidentHead_Id(
+                room.getId(),
+                assignment.getResidentHead().getId()
+        );
+        UtilityReading utilityReading = findUtilityReadingForGeneration(room, month, firstInvoiceForCurrentHead);
+        RentalContract activeContract = firstInvoiceForCurrentHead ? findActiveContract(assignment) : null;
 
         List<ServiceFee> activeFees = serviceFeeRepository.findByIsActiveTrueOrderByCreatedAtDesc();
-        long approvedMemberCount = roomMemberRepository.countByRoom_IdAndStatus(room.getId(), RoomMemberStatus.APPROVED);
+        long approvedMemberCount = roomMemberRepository.countByRoom_IdAndResidentHead_IdAndStatus(
+                room.getId(),
+                assignment.getResidentHead().getId(),
+                RoomMemberStatus.APPROVED
+        );
         BigDecimal occupantQuantity = BigDecimal.valueOf(1L + approvedMemberCount);
         List<Vehicle> activeVehicles = vehicleRepository.findByRoomIdAndStatusWithDetails(room.getId(), VehicleStatus.ACTIVE);
 
@@ -93,9 +104,14 @@ public class InvoiceServiceImpl implements InvoiceService {
                 .totalAmount(BigDecimal.ZERO)
                 .build();
 
+        if (firstInvoiceForCurrentHead) {
+            addDepositItem(invoice, activeContract.getDepositAmount());
+        }
         addRoomPriceItem(invoice, room);
-        addUtilityItem(invoice, activeFees, utilityReading, FeeType.ELECTRICITY);
-        addUtilityItem(invoice, activeFees, utilityReading, FeeType.WATER);
+        if (!firstInvoiceForCurrentHead) {
+            addUtilityItem(invoice, activeFees, utilityReading, FeeType.ELECTRICITY);
+            addUtilityItem(invoice, activeFees, utilityReading, FeeType.WATER);
+        }
         addFixedFeeItems(invoice, activeFees);
         addByPersonFeeItems(invoice, activeFees, occupantQuantity);
         addParkingFeeItems(invoice, activeFees, activeVehicles);
@@ -173,6 +189,20 @@ public class InvoiceServiceImpl implements InvoiceService {
                 .unitPrice(room.getPrice())
                 .amount(room.getPrice())
                 .note("Monthly room price")
+                .build());
+    }
+
+    private void addDepositItem(Invoice invoice, BigDecimal depositAmount) {
+        if (depositAmount == null || depositAmount.compareTo(BigDecimal.ZERO) <= 0) {
+            return;
+        }
+
+        invoice.addItem(InvoiceItem.builder()
+                .itemName("Deposit")
+                .quantity(ONE)
+                .unitPrice(depositAmount)
+                .amount(depositAmount)
+                .note("Initial refundable deposit")
                 .build());
     }
 
@@ -327,6 +357,32 @@ public class InvoiceServiceImpl implements InvoiceService {
         return utilityReadingRepository
                 .findByRoomIdAndMonthWithDetails(invoice.getRoom().getId(), invoice.getMonth())
                 .orElse(null);
+    }
+
+    private UtilityReading findUtilityReadingForGeneration(
+            Room room,
+            LocalDate month,
+            boolean firstInvoiceForCurrentHead
+    ) {
+        return utilityReadingRepository
+                .findByRoomIdAndMonthWithDetails(room.getId(), month)
+                .orElseGet(() -> {
+                    if (firstInvoiceForCurrentHead) {
+                        return null;
+                    }
+
+                    throw new BadRequestException("Utility reading is required for this room and month");
+                });
+    }
+
+    private RentalContract findActiveContract(RoomAssignment assignment) {
+        return rentalContractRepository
+                .findFirstByRoom_IdAndResidentHead_IdAndRentalStatusOrderByCreatedAtDesc(
+                        assignment.getRoom().getId(),
+                        assignment.getResidentHead().getId(),
+                        RentalStatus.ACTIVE
+                )
+                .orElseThrow(() -> new BadRequestException("Active rental contract is required for the first invoice"));
     }
 
     private LocalDate parseMonth(String month) {

@@ -87,8 +87,14 @@ public class DashboardServiceImpl implements DashboardService {
     public AdminDashboardResponse getAdminDashboard() {
         LocalDate today = LocalDate.now();
         long activeAssignedHeads = roomAssignmentRepository.countByStatus(RoomAssignmentStatus.ACTIVE);
-        long approvedMembers = roomMemberRepository.countByStatus(RoomMemberStatus.APPROVED);
-        long pendingMembers = roomMemberRepository.countByStatus(RoomMemberStatus.PENDING);
+        long approvedMembers = roomMemberRepository.countByStatusWithActiveAssignment(
+                RoomMemberStatus.APPROVED,
+                RoomAssignmentStatus.ACTIVE
+        );
+        long pendingMembers = roomMemberRepository.countByStatusWithActiveAssignment(
+                RoomMemberStatus.PENDING,
+                RoomAssignmentStatus.ACTIVE
+        );
         BigDecimal totalIncome = nonNull(receiptRepository.sumAmountByStatus(ReceiptStatus.VALID));
         BigDecimal totalExpense = nonNull(expenseRepository.sumAmountByStatus(ExpenseStatus.VALID));
 
@@ -189,7 +195,11 @@ public class DashboardServiceImpl implements DashboardService {
 
         return ResidentDashboardResponse.builder()
                 .currentRoom(currentRoom)
-                .approvedMemberCount(roomMemberRepository.countByRoom_IdAndStatus(roomId, RoomMemberStatus.APPROVED))
+                .approvedMemberCount(roomMemberRepository.countByRoom_IdAndResidentHead_IdAndStatus(
+                        roomId,
+                        residentHeadId,
+                        RoomMemberStatus.APPROVED
+                ))
                 .currentContract(currentContract)
                 .latestInvoice(latestInvoice)
                 .paymentDueDate(latestInvoice == null ? null : latestInvoice.getDueDate())

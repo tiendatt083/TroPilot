@@ -3,6 +3,7 @@ package com.tropilot.service.impl;
 import com.tropilot.dto.response.RoomMemberResponse;
 import com.tropilot.entity.Building;
 import com.tropilot.entity.Room;
+import com.tropilot.entity.RoomAssignment;
 import com.tropilot.entity.RoomMember;
 import com.tropilot.entity.User;
 import com.tropilot.enums.RoomAssignmentStatus;
@@ -23,12 +24,17 @@ public class RoomMemberMapper {
         Room room = member.getRoom();
         Building building = room.getBuilding();
         User residentHead = member.getResidentHead();
-        int approvedMemberCount = Math.toIntExact(roomMemberRepository.countByRoom_IdAndStatus(
-                room.getId(),
-                RoomMemberStatus.APPROVED
-        ));
-        int headResidentOccupantCount = roomAssignmentRepository
-                .existsByRoom_IdAndStatus(room.getId(), RoomAssignmentStatus.ACTIVE) ? 1 : 0;
+        RoomAssignment activeAssignment = roomAssignmentRepository
+                .findByRoomIdAndStatus(room.getId(), RoomAssignmentStatus.ACTIVE)
+                .orElse(null);
+        int headResidentOccupantCount = activeAssignment == null ? 0 : 1;
+        int approvedMemberCount = activeAssignment == null ? 0 : Math.toIntExact(
+                roomMemberRepository.countByRoom_IdAndResidentHead_IdAndStatus(
+                        room.getId(),
+                        activeAssignment.getResidentHead().getId(),
+                        RoomMemberStatus.APPROVED
+                )
+        );
 
         return RoomMemberResponse.builder()
                 .id(member.getId())

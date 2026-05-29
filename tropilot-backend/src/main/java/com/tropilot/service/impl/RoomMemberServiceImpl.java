@@ -138,13 +138,15 @@ public class RoomMemberServiceImpl implements RoomMemberService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public List<RoomMemberResponse> getRoomMembers(Long roomId) {
-        if (!roomRepository.existsById(roomId)) {
-            throw new ResourceNotFoundException("Room not found");
-        }
+        Room room = findRoom(roomId);
+        closeOpenMembersIfRoomHasNoActiveHeadResident(room);
 
-        return roomMemberRepository.findByRoomIdWithDetails(roomId)
+        return roomMemberRepository.findByRoomIdAndStatusInWithDetails(
+                        roomId,
+                        List.of(RoomMemberStatus.PENDING, RoomMemberStatus.APPROVED)
+                )
                 .stream()
                 .map(roomMemberMapper::toResponse)
                 .toList();
@@ -160,8 +162,8 @@ public class RoomMemberServiceImpl implements RoomMemberService {
             throw new BadRequestException("Only pending members can be approved");
         }
 
-        validateActiveHeadResidentForApproval(member);
-        validateRoomCapacity(member.getRoom());
+        RoomAssignment assignment = validateActiveHeadResidentForApproval(member);
+        validateRoomCapacity(member.getRoom(), assignment.getResidentHead().getId());
 
         member.setStatus(RoomMemberStatus.APPROVED);
         member.setMoveOutDate(null);
@@ -209,6 +211,11 @@ public class RoomMemberServiceImpl implements RoomMemberService {
                 .orElseThrow(() -> new ResourceNotFoundException("Room member not found"));
     }
 
+    private Room findRoom(Long roomId) {
+        return roomRepository.findById(roomId)
+                .orElseThrow(() -> new ResourceNotFoundException("Room not found"));
+    }
+
     private List<RoomMember> getBuildingMembersInternal(Long buildingId) {
         validateBuildingExists(buildingId);
         return roomMemberRepository.findByBuildingIdWithDetails(buildingId);
@@ -246,7 +253,7 @@ public class RoomMemberServiceImpl implements RoomMemberService {
         }
     }
 
-    private void validateActiveHeadResidentForApproval(RoomMember member) {
+    private RoomAssignment validateActiveHeadResidentForApproval(RoomMember member) {
         RoomAssignment assignment = roomAssignmentRepository
                 .findByRoomIdAndStatus(member.getRoom().getId(), RoomAssignmentStatus.ACTIVE)
                 .orElseThrow(() -> new BadRequestException("Room does not have an active Head Resident"));
@@ -254,11 +261,14 @@ public class RoomMemberServiceImpl implements RoomMemberService {
         if (!assignment.getResidentHead().getId().equals(member.getResidentHead().getId())) {
             throw new BadRequestException("Room member does not belong to the active Head Resident");
         }
+
+        return assignment;
     }
 
-    private void validateRoomCapacity(Room room) {
-        int approvedMemberCount = Math.toIntExact(roomMemberRepository.countByRoom_IdAndStatus(
+    private void validateRoomCapacity(Room room, Long residentHeadId) {
+        int approvedMemberCount = Math.toIntExact(roomMemberRepository.countByRoom_IdAndResidentHead_IdAndStatus(
                 room.getId(),
+                residentHeadId,
                 RoomMemberStatus.APPROVED
         ));
         int totalAfterApproval = 1 + approvedMemberCount + 1;
@@ -278,5 +288,35 @@ public class RoomMemberServiceImpl implements RoomMemberService {
         }
 
         return value.trim();
+    }
+
+    private void closeOpenMembersIfRoomHasNoActiveHeadResident(Room room) {
+        boolean hasActiveHeadResident = roomAssignmentRepository.existsByRoom_IdAndStatus(
+                room.getId(),
+                RoomAssignmentStatus.ACTIVE
+        );
+
+        if (hasActiveHeadResident) {
+            return;
+        }
+
+        List<RoomMember> openMembers = roomMemberRepository.findByRoom_IdAndStatusIn(
+                room.getId(),
+                List.of(RoomMemberStatus.PENDING, RoomMemberStatus.APPROVED)
+        );
+
+        if (openMembers.isEmpty()) {
+            return;
+        }
+
+        LocalDate moveOutDate = LocalDate.now();
+        openMembers.forEach(member -> {
+            member.setStatus(RoomMemberStatus.LEFT);
+            if (member.getMoveOutDate() == null || member.getMoveOutDate().isAfter(moveOutDate)) {
+                member.setMoveOutDate(moveOutDate);
+            }
+        });
+
+        roomMemberRepository.saveAll(openMembers);
     }
 }

@@ -11,7 +11,7 @@ function getBuildingLabel(notification, t) {
     : t('tables.notifications.selectedBuildings');
 }
 
-export default function NotificationTable({ notifications, onMarkRead, processingId }) {
+export default function NotificationTable({ notifications, onMarkRead, processingId, showReadStatus = true }) {
   const { t } = useTranslation();
 
   return (
@@ -23,7 +23,7 @@ export default function NotificationTable({ notifications, onMarkRead, processin
             <th>{t('tables.common.target')}</th>
             <th>{t('tables.common.createdBy')}</th>
             <th>{t('tables.common.created')}</th>
-            <th>{t('tables.notifications.readStatus')}</th>
+            {showReadStatus && <th>{t('tables.notifications.readStatus')}</th>}
             {onMarkRead && <th>{t('tables.common.actions')}</th>}
           </tr>
         </thead>
@@ -46,12 +46,14 @@ export default function NotificationTable({ notifications, onMarkRead, processin
                 <span className="table-subtext">{notification.createdByRole}</span>
               </td>
               <td>{formatDateTime(notification.createdAt, t)}</td>
-              <td>
-                <span className={notification.read ? 'status-pill read-status-read' : 'status-pill read-status-unread'}>
-                  {notification.read ? t('enum.readStatus.READ') : t('enum.readStatus.UNREAD')}
-                </span>
-                {notification.readAt && <span className="table-subtext">{formatDateTime(notification.readAt, t)}</span>}
-              </td>
+              {showReadStatus && (
+                <td>
+                  <span className={notification.read ? 'status-pill read-status-read' : 'status-pill read-status-unread'}>
+                    {notification.read ? t('enum.readStatus.READ') : t('enum.readStatus.UNREAD')}
+                  </span>
+                  {notification.readAt && <span className="table-subtext">{formatDateTime(notification.readAt, t)}</span>}
+                </td>
+              )}
               {onMarkRead && (
                 <td>
                   <button

@@ -247,8 +247,9 @@ public class VehicleServiceImpl implements VehicleService {
             throw new BadRequestException("Owner name is required for room member vehicles");
         }
 
-        boolean approvedMemberExists = roomMemberRepository.existsByRoom_IdAndStatusAndFullNameIgnoreCase(
+        boolean approvedMemberExists = roomMemberRepository.existsByRoom_IdAndResidentHead_IdAndStatusAndFullNameIgnoreCase(
                 assignment.getRoom().getId(),
+                assignment.getResidentHead().getId(),
                 RoomMemberStatus.APPROVED,
                 normalizedOwnerName
         );

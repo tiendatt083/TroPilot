@@ -273,7 +273,7 @@ export default function AdminNotificationPage() {
 
       <section className="building-section">
         <PageHeader eyebrow="Notifications" title="All notifications" />
-        <NotificationTable notifications={notifications} />
+        <NotificationTable notifications={notifications} showReadStatus={false} />
       </section>
     </section>
   );

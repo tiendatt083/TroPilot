@@ -16,7 +16,8 @@ function countText(member, room) {
   }
 
   if (room) {
-    return `0 of ${room.maxOccupants} active occupants`;
+    const headResidentCount = room.status === 'OCCUPIED' ? 1 : 0;
+    return `${headResidentCount} of ${room.maxOccupants} active occupants`;
   }
 
   return 'Occupants are not available.';

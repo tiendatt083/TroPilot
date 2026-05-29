@@ -16,6 +16,8 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
 
     boolean existsByRoom_IdAndMonth(Long roomId, LocalDate month);
 
+    boolean existsByRoom_IdAndResidentHead_Id(Long roomId, Long residentHeadId);
+
     long countByStatus(InvoiceStatus status);
 
     long countByDueDateBeforeAndStatusNot(LocalDate dueDate, InvoiceStatus status);

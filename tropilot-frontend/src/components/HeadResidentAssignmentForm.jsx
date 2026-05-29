@@ -1,11 +1,34 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+function getTodayInputValue() {
+  const now = new Date();
+  const localDate = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+  return localDate.toISOString().slice(0, 10);
+}
+
+function addMonthsToDate(dateValue, monthCount) {
+  if (!dateValue) {
+    return '';
+  }
+
+  const [year, month, day] = dateValue.split('-').map(Number);
+  const targetMonthIndex = month - 1 + monthCount;
+  const lastTargetDay = new Date(year, targetMonthIndex + 1, 0).getDate();
+  const targetDate = new Date(year, targetMonthIndex, Math.min(day, lastTargetDay));
+  const targetYear = targetDate.getFullYear();
+  const targetMonth = String(targetDate.getMonth() + 1).padStart(2, '0');
+  const targetDay = String(targetDate.getDate()).padStart(2, '0');
+
+  return `${targetYear}-${targetMonth}-${targetDay}`;
+}
+
+const today = getTodayInputValue();
+
 const emptyForm = {
   residentHeadId: '',
-  startDate: '',
-  endDate: '',
-  depositAmount: '0'
+  startDate: today,
+  endDate: addMonthsToDate(today, 6)
 };
 
 export default function HeadResidentAssignmentForm({ residentHeads, loading, onSubmit }) {
@@ -16,7 +39,8 @@ export default function HeadResidentAssignmentForm({ residentHeads, loading, onS
     const { name, value } = event.target;
     setForm((current) => ({
       ...current,
-      [name]: value
+      [name]: value,
+      ...(name === 'startDate' ? { endDate: addMonthsToDate(value, 6) } : {})
     }));
   };
 
@@ -25,8 +49,7 @@ export default function HeadResidentAssignmentForm({ residentHeads, loading, onS
     onSubmit({
       residentHeadId: Number(form.residentHeadId),
       startDate: form.startDate,
-      endDate: form.endDate,
-      depositAmount: Number(form.depositAmount)
+      endDate: form.endDate
     });
   };
 
@@ -77,18 +100,6 @@ export default function HeadResidentAssignmentForm({ residentHeads, loading, onS
           />
         </div>
       </div>
-
-      <label htmlFor="depositAmount">{t('tables.common.depositAmount')}</label>
-      <input
-        id="depositAmount"
-        name="depositAmount"
-        type="number"
-        min="0"
-        step="0.01"
-        value={form.depositAmount}
-        onChange={handleChange}
-        required
-      />
 
       <button type="submit" disabled={loading || !hasResidentHeads}>
         {loading ? t('forms.assignment.assigning') : t('forms.assignment.submit')}

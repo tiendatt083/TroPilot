@@ -1,6 +1,7 @@
 package com.tropilot.repository;
 
 import com.tropilot.entity.RoomMember;
+import com.tropilot.enums.RoomAssignmentStatus;
 import com.tropilot.enums.RoomMemberStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -12,18 +13,28 @@ import java.util.Optional;
 
 public interface RoomMemberRepository extends JpaRepository<RoomMember, Long> {
 
-    long countByRoom_IdAndStatus(Long roomId, RoomMemberStatus status);
+    List<RoomMember> findByRoom_IdAndStatusIn(Long roomId, Collection<RoomMemberStatus> statuses);
 
-    long countByStatus(RoomMemberStatus status);
+    long countByRoom_IdAndResidentHead_IdAndStatus(Long roomId, Long residentHeadId, RoomMemberStatus status);
 
-    List<RoomMember> findByRoom_IdAndResidentHead_IdAndStatusIn(
-            Long roomId,
-            Long residentHeadId,
-            Collection<RoomMemberStatus> statuses
+    @Query("""
+            select count(member) from RoomMember member
+            where member.status = :memberStatus
+              and exists (
+                  select assignment.id from RoomAssignment assignment
+                  where assignment.room = member.room
+                    and assignment.residentHead = member.residentHead
+                    and assignment.status = :assignmentStatus
+              )
+            """)
+    long countByStatusWithActiveAssignment(
+            @Param("memberStatus") RoomMemberStatus memberStatus,
+            @Param("assignmentStatus") RoomAssignmentStatus assignmentStatus
     );
 
-    boolean existsByRoom_IdAndStatusAndFullNameIgnoreCase(
+    boolean existsByRoom_IdAndResidentHead_IdAndStatusAndFullNameIgnoreCase(
             Long roomId,
+            Long residentHeadId,
             RoomMemberStatus status,
             String fullName
     );
@@ -43,9 +54,13 @@ public interface RoomMemberRepository extends JpaRepository<RoomMember, Long> {
             join fetch room.building building
             join fetch member.residentHead residentHead
             where room.id = :roomId
+              and member.status in :statuses
             order by member.createdAt desc
             """)
-    List<RoomMember> findByRoomIdWithDetails(@Param("roomId") Long roomId);
+    List<RoomMember> findByRoomIdAndStatusInWithDetails(
+            @Param("roomId") Long roomId,
+            @Param("statuses") Collection<RoomMemberStatus> statuses
+    );
 
     @Query("""
             select member from RoomMember member
