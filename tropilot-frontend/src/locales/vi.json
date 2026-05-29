@@ -572,6 +572,7 @@
         "floors": "Số tầng"
       },
       "invoice": {
+        "creationDate": "Ngày lập hóa đơn (ngày/tháng/năm)",
         "invoiceMonth": "Tháng lập hóa đơn",
         "generate": "Tạo hóa đơn",
         "generating": "Đang tạo..."

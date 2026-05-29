@@ -572,6 +572,7 @@
         "floors": "Floors"
       },
       "invoice": {
+        "creationDate": "Invoice creation date (day/month/year)",
         "invoiceMonth": "Invoice month",
         "generate": "Generate invoice",
         "generating": "Generating..."
