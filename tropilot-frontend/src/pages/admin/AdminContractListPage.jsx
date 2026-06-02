@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import * as contractApi from '../../api/contractApi.js';
 import PageHeader from '../../components/PageHeader.jsx';
+import { isActiveRentalContract } from '../../utils/contractFilters.js';
 import { getContractStatusClass, getContractStatusLabel } from '../../utils/contractStatusOptions.js';
 import { formatDisplayDate } from '../../utils/dateFormat.js';
 import { formatRoomCode } from '../../utils/roomDisplay.js';
@@ -11,10 +12,6 @@ function formatNumber(value) {
   return Number.isFinite(numberValue)
     ? numberValue.toLocaleString('en-US', { maximumFractionDigits: 2 })
     : value;
-}
-
-function isCurrentContract(contract) {
-  return contract.rentalStatus !== 'ENDED';
 }
 
 export default function AdminContractListPage() {
@@ -29,7 +26,7 @@ export default function AdminContractListPage() {
       .getAdminContracts()
       .then((response) => {
         if (active) {
-          setContracts(response.data.filter(isCurrentContract));
+          setContracts((response.data || []).filter(isActiveRentalContract));
         }
       })
       .catch((apiError) => {

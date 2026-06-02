@@ -3,6 +3,7 @@ import { useOutletContext } from 'react-router-dom';
 import * as contractApi from '../../api/contractApi.js';
 import ContractUploadForm from '../../components/ContractUploadForm.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
+import { isActiveRentalContract } from '../../utils/contractFilters.js';
 import { getContractStatusClass, getContractStatusLabel } from '../../utils/contractStatusOptions.js';
 import { formatDisplayDate } from '../../utils/dateFormat.js';
 import { resolveFileUrl } from '../../utils/fileUrl.js';
@@ -13,10 +14,6 @@ function formatNumber(value) {
   return Number.isFinite(numberValue)
     ? numberValue.toLocaleString('en-US', { maximumFractionDigits: 2 })
     : value;
-}
-
-function isCurrentContract(contract) {
-  return contract.rentalStatus !== 'ENDED';
 }
 
 export default function AdminBuildingContractPage() {
@@ -37,7 +34,7 @@ export default function AdminBuildingContractPage() {
 
     try {
       const response = await contractApi.getAdminContracts(buildingFilter);
-      setContracts(response.data.filter(isCurrentContract));
+      setContracts((response.data || []).filter(isActiveRentalContract));
     } catch (apiError) {
       setError(apiError.response?.data?.message || 'Building contracts could not be loaded');
     }

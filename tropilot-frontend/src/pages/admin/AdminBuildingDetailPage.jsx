@@ -21,6 +21,7 @@ import PaymentTable from '../../components/PaymentTable.jsx';
 import ReceiptTable from '../../components/ReceiptTable.jsx';
 import TaskTable from '../../components/TaskTable.jsx';
 import VehicleTable from '../../components/VehicleTable.jsx';
+import { isActiveRentalContract } from '../../utils/contractFilters.js';
 import { getContractStatusClass, getContractStatusLabel } from '../../utils/contractStatusOptions.js';
 import { formatDisplayDate } from '../../utils/dateFormat.js';
 import { getMemberStatusLabel } from '../../utils/memberStatusOptions.js';
@@ -110,7 +111,7 @@ export default function AdminBuildingDetailPage() {
 
         setOperations({
           rooms: roomsResponse.data || [],
-          contracts: contractsResponse.data || [],
+          contracts: (contractsResponse.data || []).filter(isActiveRentalContract),
           invoices: invoicesResponse.data || [],
           vehicles: vehiclesResponse.data || [],
           pendingPayments: paymentsResponse.data || [],
