@@ -7,6 +7,7 @@ import com.tropilot.entity.Notification;
 import com.tropilot.entity.NotificationRead;
 import com.tropilot.entity.NotificationTargetBuilding;
 import com.tropilot.entity.NotificationTargetUser;
+import com.tropilot.entity.RentalContract;
 import com.tropilot.entity.RoomAssignment;
 import com.tropilot.entity.User;
 import com.tropilot.enums.NotificationTargetType;
@@ -142,6 +143,36 @@ public class NotificationServiceImpl implements NotificationService {
                         .build()));
 
         return notificationMapper.toResponse(notification, read);
+    }
+
+    @Override
+    @Transactional
+    public void createContractUpdatedNotification(User createdBy, RentalContract contract) {
+        if (createdBy == null) {
+            throw new BadRequestException("Notification creator is required");
+        }
+        if (contract == null) {
+            throw new BadRequestException("Rental contract is required");
+        }
+
+        Notification notification = Notification.builder()
+                .title("Rental contract updated")
+                .content("The rental contract for room " + contract.getRoom().getRoomCode()
+                        + " has been updated. Please review the latest contract file.")
+                .targetType(NotificationTargetType.SELECTED_USERS)
+                .createdBy(createdBy)
+                .build();
+
+        notification.getTargetUsers().add(NotificationTargetUser.builder()
+                .notification(notification)
+                .user(contract.getResidentHead())
+                .build());
+        notification.getTargetBuildings().add(NotificationTargetBuilding.builder()
+                .notification(notification)
+                .building(contract.getRoom().getBuilding())
+                .build());
+
+        notificationRepository.save(notification);
     }
 
     private List<NotificationResponse> getVisibleNotifications(

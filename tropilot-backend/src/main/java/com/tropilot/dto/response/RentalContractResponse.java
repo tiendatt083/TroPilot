@@ -8,6 +8,7 @@ import lombok.Getter;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Builder
@@ -29,6 +30,7 @@ public class RentalContractResponse {
     private RentalStatus rentalStatus;
     private String contractFileUrl;
     private ContractStatus contractStatus;
+    private List<ContractFileHistoryResponse> previousContractFiles;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

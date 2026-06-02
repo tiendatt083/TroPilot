@@ -1,6 +1,11 @@
 import { useState } from 'react';
 
-export default function ContractUploadForm({ loading, onSubmit }) {
+export default function ContractUploadForm({
+  loading,
+  onSubmit,
+  submitLabel = 'Upload contract',
+  loadingLabel = 'Uploading...',
+}) {
   const [file, setFile] = useState(null);
 
   const handleSubmit = (event) => {
@@ -21,7 +26,7 @@ export default function ContractUploadForm({ loading, onSubmit }) {
       />
       <p className="muted-text">Allowed file types: jpg, jpeg, png, pdf. Maximum size: 10 MB.</p>
       <button type="submit" disabled={loading || !file}>
-        {loading ? 'Uploading...' : 'Upload contract'}
+        {loading ? loadingLabel : submitLabel}
       </button>
     </form>
   );

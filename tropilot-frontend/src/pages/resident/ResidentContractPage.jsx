@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import * as contractApi from '../../api/contractApi.js';
+import ContractFileHistoryList from '../../components/ContractFileHistoryList.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
 import { getContractStatusClass, getContractStatusLabel } from '../../utils/contractStatusOptions.js';
 import { formatDisplayDate } from '../../utils/dateFormat.js';
@@ -137,6 +138,8 @@ export default function ResidentContractPage() {
               Report issue
             </button>
           </div>
+
+          <ContractFileHistoryList files={contract.previousContractFiles} />
         </>
       ) : (
         <div className="empty-state">No current rental contract found.</div>

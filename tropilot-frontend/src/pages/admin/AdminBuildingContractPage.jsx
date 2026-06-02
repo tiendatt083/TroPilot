@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import * as contractApi from '../../api/contractApi.js';
+import ContractFileHistoryList from '../../components/ContractFileHistoryList.jsx';
 import ContractUploadForm from '../../components/ContractUploadForm.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
 import { isActiveRentalContract } from '../../utils/contractFilters.js';
@@ -25,7 +26,7 @@ export default function AdminBuildingContractPage() {
   const [loading, setLoading] = useState(true);
   const [loadingDetailId, setLoadingDetailId] = useState(null);
   const [uploading, setUploading] = useState(false);
-  const [marking, setMarking] = useState(false);
+  const [showUploadForm, setShowUploadForm] = useState(false);
 
   const buildingFilter = { buildingId: building.id };
 
@@ -43,6 +44,7 @@ export default function AdminBuildingContractPage() {
   useEffect(() => {
     setLoading(true);
     setSelectedContract(null);
+    setShowUploadForm(false);
     loadContracts().finally(() => setLoading(false));
   }, [building.id]);
 
@@ -54,6 +56,7 @@ export default function AdminBuildingContractPage() {
     try {
       const response = await contractApi.getAdminContract(contract.id, buildingFilter);
       setSelectedContract(response.data);
+      setShowUploadForm(false);
     } catch (apiError) {
       setError(apiError.response?.data?.message || 'Rental contract could not be loaded');
     } finally {
@@ -71,9 +74,11 @@ export default function AdminBuildingContractPage() {
     setError('');
 
     try {
+      const isChangingContract = Boolean(selectedContract.contractFileUrl);
       const response = await contractApi.uploadAdminContract(selectedContract.id, file, buildingFilter);
       setSelectedContract(response.data);
-      setMessage('Rental contract uploaded successfully.');
+      setShowUploadForm(false);
+      setMessage(isChangingContract ? 'Rental contract changed successfully.' : 'Rental contract uploaded successfully.');
       await loadContracts();
     } catch (apiError) {
       setError(apiError.response?.data?.message || 'Rental contract could not be uploaded');
@@ -82,26 +87,14 @@ export default function AdminBuildingContractPage() {
     }
   };
 
-  const handleMarkNeedUpdate = async () => {
-    if (!selectedContract) {
-      return;
-    }
-
-    setMarking(true);
+  const handleChangeContract = () => {
     setMessage('');
     setError('');
-
-    try {
-      const response = await contractApi.markContractNeedUpdate(selectedContract.id, buildingFilter);
-      setSelectedContract(response.data);
-      setMessage('Rental contract marked as needing update successfully.');
-      await loadContracts();
-    } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Rental contract could not be marked as needing update');
-    } finally {
-      setMarking(false);
-    }
+    setShowUploadForm(true);
   };
+
+  const hasSelectedContractFile = Boolean(selectedContract?.contractFileUrl);
+  const shouldShowUploadForm = Boolean(selectedContract) && (!hasSelectedContractFile || showUploadForm);
 
   return (
     <div className="building-workspace">
@@ -113,127 +106,175 @@ export default function AdminBuildingContractPage() {
       {loading ? (
         <div className="empty-state">Loading rental contracts...</div>
       ) : (
-        <section className="invoice-workspace">
-          <div className="table-wrap">
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>Room</th>
-                  <th>Head Resident</th>
-                  <th>Period</th>
-                  <th>Deposit</th>
-                  <th>Status</th>
-                  <th>Details</th>
-                </tr>
-              </thead>
-              <tbody>
-                {contracts.map((contract) => (
-                  <tr key={contract.id}>
-                    <td>{formatRoomCode(contract)}</td>
-                    <td>{contract.residentHeadName}</td>
-                    <td>
-                      {formatDisplayDate(contract.startDate)} to {formatDisplayDate(contract.endDate)}
-                    </td>
-                    <td>{formatNumber(contract.depositAmount)}</td>
-                    <td>
-                      <span className={getContractStatusClass(contract.contractStatus)}>
-                        {getContractStatusLabel(contract.contractStatus)}
-                      </span>
-                    </td>
-                    <td>
-                      <button
-                        className="secondary-button compact-button"
-                        type="button"
-                        disabled={loadingDetailId === contract.id}
-                        onClick={() => handleView(contract)}
-                      >
-                        View
-                      </button>
-                    </td>
+        <section className="building-contract-workspace">
+          <div className="building-contract-list-panel">
+            <div className="building-contract-panel-header">
+              <div>
+                <span>Current rentals</span>
+                <strong>Active contracts</strong>
+              </div>
+              <p>{contracts.length} active contract{contracts.length === 1 ? '' : 's'} in this building</p>
+            </div>
+            <div className="table-wrap building-contract-table-wrap">
+              <table className="data-table">
+                <colgroup>
+                  <col className="building-contract-room-col" />
+                  <col className="building-contract-resident-col" />
+                  <col className="building-contract-period-col" />
+                  <col className="building-contract-deposit-col" />
+                  <col className="building-contract-status-col" />
+                  <col className="building-contract-action-col" />
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th>Room</th>
+                    <th>Head Resident</th>
+                    <th>Period</th>
+                    <th>Deposit</th>
+                    <th>Status</th>
+                    <th>Details</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-            {contracts.length === 0 && <div className="empty-state flat-empty-state">No active rental contracts found.</div>}
+                </thead>
+                <tbody>
+                  {contracts.map((contract) => (
+                    <tr key={contract.id}>
+                      <td>
+                        <div className="table-primary-cell">
+                          <strong>{formatRoomCode(contract)}</strong>
+                          <span>{contract.buildingCode}</span>
+                        </div>
+                      </td>
+                      <td>
+                        <div className="table-primary-cell">
+                          <strong>{contract.residentHeadName}</strong>
+                          <span>{contract.residentHeadEmail}</span>
+                        </div>
+                      </td>
+                      <td>
+                        {formatDisplayDate(contract.startDate)} to {formatDisplayDate(contract.endDate)}
+                      </td>
+                      <td>{formatNumber(contract.depositAmount)}</td>
+                      <td>
+                        <span className={getContractStatusClass(contract.contractStatus)}>
+                          {getContractStatusLabel(contract.contractStatus)}
+                        </span>
+                      </td>
+                      <td>
+                        <button
+                          className="secondary-button compact-button"
+                          type="button"
+                          disabled={loadingDetailId === contract.id}
+                          onClick={() => handleView(contract)}
+                        >
+                          View
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {contracts.length === 0 && <div className="empty-state flat-empty-state">No active rental contracts found.</div>}
+            </div>
           </div>
 
-          <div className="invoice-list-column">
-            {selectedContract ? (
-              <>
-                <section className="detail-panel">
-                  <div>
-                    <span>Room</span>
-                    <strong>{formatRoomLabel(selectedContract)}</strong>
-                  </div>
-                  <div>
-                    <span>Building</span>
-                    <strong>
-                      {selectedContract.buildingCode} - {selectedContract.buildingName}
-                    </strong>
-                  </div>
-                  <div>
-                    <span>Head Resident</span>
-                    <strong>{selectedContract.residentHeadName}</strong>
-                  </div>
-                  <div>
-                    <span>Email</span>
-                    <strong>{selectedContract.residentHeadEmail}</strong>
-                  </div>
-                  <div>
-                    <span>Contract period</span>
-                    <strong>
-                      {formatDisplayDate(selectedContract.startDate)} to {formatDisplayDate(selectedContract.endDate)}
-                    </strong>
-                  </div>
-                  <div>
-                    <span>Deposit amount</span>
-                    <strong>{formatNumber(selectedContract.depositAmount)}</strong>
-                  </div>
-                  <div>
-                    <span>Contract status</span>
-                    <strong>
-                      <span className={getContractStatusClass(selectedContract.contractStatus)}>
-                        {getContractStatusLabel(selectedContract.contractStatus)}
-                      </span>
-                    </strong>
-                  </div>
-                  <div>
-                    <span>Rental status</span>
-                    <strong>{selectedContract.rentalStatus}</strong>
-                  </div>
-                </section>
+          {selectedContract && (
+            <div className="building-contract-detail-column">
+              <section className="detail-panel">
+                <div>
+                  <span>Room</span>
+                  <strong>{formatRoomLabel(selectedContract)}</strong>
+                </div>
+                <div>
+                  <span>Building</span>
+                  <strong>
+                    {selectedContract.buildingCode} - {selectedContract.buildingName}
+                  </strong>
+                </div>
+                <div>
+                  <span>Head Resident</span>
+                  <strong>{selectedContract.residentHeadName}</strong>
+                </div>
+                <div>
+                  <span>Email</span>
+                  <strong>{selectedContract.residentHeadEmail}</strong>
+                </div>
+                <div>
+                  <span>Contract period</span>
+                  <strong>
+                    {formatDisplayDate(selectedContract.startDate)} to {formatDisplayDate(selectedContract.endDate)}
+                  </strong>
+                </div>
+                <div>
+                  <span>Deposit amount</span>
+                  <strong>{formatNumber(selectedContract.depositAmount)}</strong>
+                </div>
+                <div>
+                  <span>Contract status</span>
+                  <strong>
+                    <span className={getContractStatusClass(selectedContract.contractStatus)}>
+                      {getContractStatusLabel(selectedContract.contractStatus)}
+                    </span>
+                  </strong>
+                </div>
+                <div>
+                  <span>Rental status</span>
+                  <strong>{selectedContract.rentalStatus}</strong>
+                </div>
+              </section>
 
-                <section className="assignment-panel">
-                  <div className="page-title-row">
-                    <PageHeader eyebrow="Upload" title="Contract file" />
-                    <div className="button-row">
-                      {selectedContract.contractFileUrl && (
-                        <a
-                          className="button-link"
-                          href={resolveFileUrl(selectedContract.contractFileUrl)}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          Open file
-                        </a>
-                      )}
+              <section className="assignment-panel">
+                <div className="page-title-row">
+                  <PageHeader
+                    eyebrow={hasSelectedContractFile ? 'Uploaded file' : 'Upload'}
+                    title={hasSelectedContractFile ? 'Current contract file' : 'Contract file'}
+                  />
+                  <div className="button-row">
+                    {hasSelectedContractFile && (
+                      <a
+                        className="button-link"
+                        href={resolveFileUrl(selectedContract.contractFileUrl)}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        Open file
+                      </a>
+                    )}
+                    {hasSelectedContractFile && !showUploadForm && (
+                      <button className="secondary-button inline-button" type="button" onClick={handleChangeContract}>
+                        Change contract
+                      </button>
+                    )}
+                    {hasSelectedContractFile && showUploadForm && (
                       <button
                         className="secondary-button inline-button"
                         type="button"
-                        disabled={marking}
-                        onClick={handleMarkNeedUpdate}
+                        disabled={uploading}
+                        onClick={() => setShowUploadForm(false)}
                       >
-                        Mark need update
+                        Cancel change
                       </button>
-                    </div>
+                    )}
                   </div>
-                  <ContractUploadForm loading={uploading} onSubmit={handleUpload} />
-                </section>
-              </>
-            ) : (
-              <div className="empty-state">Select a contract to view details.</div>
-            )}
-          </div>
+                </div>
+                {hasSelectedContractFile && !showUploadForm && (
+                  <div className="contract-file-summary">
+                    <strong>Contract file is uploaded</strong>
+                    <p>Use Change contract only when the signed contract file must be replaced.</p>
+                  </div>
+                )}
+                {shouldShowUploadForm && (
+                  <ContractUploadForm
+                    loading={uploading}
+                    loadingLabel={hasSelectedContractFile ? 'Changing contract...' : 'Uploading...'}
+                    submitLabel={hasSelectedContractFile ? 'Save new contract' : 'Upload contract'}
+                    onSubmit={handleUpload}
+                  />
+                )}
+              </section>
+
+              <ContractFileHistoryList files={selectedContract.previousContractFiles} />
+            </div>
+          )}
         </section>
       )}
     </div>

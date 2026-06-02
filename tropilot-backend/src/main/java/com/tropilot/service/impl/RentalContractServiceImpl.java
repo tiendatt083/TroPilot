@@ -2,14 +2,19 @@ package com.tropilot.service.impl;
 
 import com.tropilot.dto.response.RentalContractResponse;
 import com.tropilot.entity.RentalContract;
+import com.tropilot.entity.RentalContractFileHistory;
+import com.tropilot.entity.User;
 import com.tropilot.enums.ContractStatus;
 import com.tropilot.enums.RentalStatus;
 import com.tropilot.exception.BadRequestException;
 import com.tropilot.exception.ForbiddenException;
 import com.tropilot.exception.ResourceNotFoundException;
 import com.tropilot.repository.BuildingRepository;
+import com.tropilot.repository.RentalContractFileHistoryRepository;
 import com.tropilot.repository.RentalContractRepository;
+import com.tropilot.security.CurrentUserProvider;
 import com.tropilot.service.ActivityLogService;
+import com.tropilot.service.NotificationService;
 import com.tropilot.service.RentalContractService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,10 +29,13 @@ import java.util.Objects;
 public class RentalContractServiceImpl implements RentalContractService {
 
     private final RentalContractRepository rentalContractRepository;
+    private final RentalContractFileHistoryRepository rentalContractFileHistoryRepository;
     private final BuildingRepository buildingRepository;
     private final RentalContractMapper rentalContractMapper;
     private final ContractFileStorageService contractFileStorageService;
     private final ActivityLogService activityLogService;
+    private final NotificationService notificationService;
+    private final CurrentUserProvider currentUserProvider;
 
     @Override
     @Transactional(readOnly = true)
@@ -47,7 +55,7 @@ public class RentalContractServiceImpl implements RentalContractService {
     public RentalContractResponse getContract(Long id, Long buildingId) {
         RentalContract contract = findContract(id);
         validateContractBelongsToBuilding(contract, buildingId);
-        return rentalContractMapper.toResponse(contract);
+        return toResponseWithHistory(contract);
     }
 
     @Override
@@ -55,18 +63,37 @@ public class RentalContractServiceImpl implements RentalContractService {
     public RentalContractResponse uploadContract(Long id, Long buildingId, MultipartFile file) {
         RentalContract contract = findContract(id);
         validateContractBelongsToBuilding(contract, buildingId);
+        User currentUser = currentUserProvider.getCurrentUser();
+        String previousFileUrl = contract.getContractFileUrl();
+        boolean replacingExistingFile = hasText(previousFileUrl);
         String fileUrl = contractFileStorageService.store(file);
+
+        if (replacingExistingFile) {
+            rentalContractFileHistoryRepository.save(RentalContractFileHistory.builder()
+                    .rentalContract(contract)
+                    .fileUrl(previousFileUrl)
+                    .replacedBy(currentUser)
+                    .build());
+        }
 
         contract.setContractFileUrl(fileUrl);
         contract.setContractStatus(ContractStatus.UPLOADED);
 
         RentalContract savedContract = rentalContractRepository.save(contract);
-        activityLogService.recordCurrentUser(
-                "CONTRACT_UPLOADED",
-                "Uploaded contract for room " + savedContract.getRoom().getRoomCode()
-        );
+        if (replacingExistingFile) {
+            notificationService.createContractUpdatedNotification(currentUser, savedContract);
+            activityLogService.recordCurrentUser(
+                    "CONTRACT_UPDATED",
+                    "Changed contract file for room " + savedContract.getRoom().getRoomCode()
+            );
+        } else {
+            activityLogService.recordCurrentUser(
+                    "CONTRACT_UPLOADED",
+                    "Uploaded contract for room " + savedContract.getRoom().getRoomCode()
+            );
+        }
 
-        return rentalContractMapper.toResponse(savedContract);
+        return toResponseWithHistory(savedContract);
     }
 
     @Override
@@ -81,7 +108,7 @@ public class RentalContractServiceImpl implements RentalContractService {
     @Override
     @Transactional(readOnly = true)
     public RentalContractResponse getCurrentResidentContract(Long residentHeadId) {
-        return rentalContractMapper.toResponse(findCurrentResidentContract(residentHeadId));
+        return toResponseWithHistory(findCurrentResidentContract(residentHeadId));
     }
 
     @Override
@@ -101,7 +128,7 @@ public class RentalContractServiceImpl implements RentalContractService {
                 "Confirmed contract for room " + savedContract.getRoom().getRoomCode()
         );
 
-        return rentalContractMapper.toResponse(savedContract);
+        return toResponseWithHistory(savedContract);
     }
 
     @Override
@@ -109,7 +136,14 @@ public class RentalContractServiceImpl implements RentalContractService {
     public RentalContractResponse reportResidentContractIssue(Long residentHeadId, Long id) {
         RentalContract contract = findResidentContract(residentHeadId, id);
         contract.setContractStatus(ContractStatus.NEED_UPDATE);
-        return rentalContractMapper.toResponse(rentalContractRepository.save(contract));
+        return toResponseWithHistory(rentalContractRepository.save(contract));
+    }
+
+    private RentalContractResponse toResponseWithHistory(RentalContract contract) {
+        return rentalContractMapper.toResponse(
+                contract,
+                rentalContractFileHistoryRepository.findByRentalContract_IdOrderByReplacedAtDesc(contract.getId())
+        );
     }
 
     private RentalContract findContract(Long id) {
@@ -138,6 +172,10 @@ public class RentalContractServiceImpl implements RentalContractService {
         if (!Objects.equals(contract.getRoom().getBuilding().getId(), buildingId)) {
             throw new BadRequestException("Rental contract does not belong to the selected building");
         }
+    }
+
+    private boolean hasText(String value) {
+        return value != null && !value.isBlank();
     }
 
     private RentalContract findCurrentResidentContract(Long residentHeadId) {

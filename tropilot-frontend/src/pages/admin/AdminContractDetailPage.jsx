@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import * as contractApi from '../../api/contractApi.js';
+import ContractFileHistoryList from '../../components/ContractFileHistoryList.jsx';
 import ContractUploadForm from '../../components/ContractUploadForm.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
 import { getContractStatusClass, getContractStatusLabel } from '../../utils/contractStatusOptions.js';
@@ -22,7 +23,7 @@ export default function AdminContractDetailPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
-  const [marking, setMarking] = useState(false);
+  const [showUploadForm, setShowUploadForm] = useState(false);
 
   const loadContract = async () => {
     setError('');
@@ -30,6 +31,7 @@ export default function AdminContractDetailPage() {
     try {
       const response = await contractApi.getAdminContract(id);
       setContract(response.data);
+      setShowUploadForm(false);
     } catch (apiError) {
       setError(apiError.response?.data?.message || 'Rental contract could not be loaded');
     }
@@ -45,9 +47,11 @@ export default function AdminContractDetailPage() {
     setError('');
 
     try {
+      const isChangingContract = Boolean(contract?.contractFileUrl);
       const response = await contractApi.uploadAdminContract(id, file);
       setContract(response.data);
-      setMessage('Rental contract uploaded successfully.');
+      setShowUploadForm(false);
+      setMessage(isChangingContract ? 'Rental contract changed successfully.' : 'Rental contract uploaded successfully.');
     } catch (apiError) {
       setError(apiError.response?.data?.message || 'Rental contract could not be uploaded');
     } finally {
@@ -55,20 +59,10 @@ export default function AdminContractDetailPage() {
     }
   };
 
-  const handleMarkNeedUpdate = async () => {
-    setMarking(true);
+  const handleChangeContract = () => {
     setMessage('');
     setError('');
-
-    try {
-      const response = await contractApi.markContractNeedUpdate(id);
-      setContract(response.data);
-      setMessage('Rental contract marked as needing update successfully.');
-    } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Rental contract could not be marked as needing update');
-    } finally {
-      setMarking(false);
-    }
+    setShowUploadForm(true);
   };
 
   if (loading) {
@@ -79,6 +73,9 @@ export default function AdminContractDetailPage() {
     return <div className="empty-state">{error || 'Rental contract not found.'}</div>;
   }
 
+  const hasContractFile = Boolean(contract.contractFileUrl);
+  const shouldShowUploadForm = !hasContractFile || showUploadForm;
+
   return (
     <section className="content-section">
       <div className="page-title-row">
@@ -87,19 +84,26 @@ export default function AdminContractDetailPage() {
           <Link className="secondary-link" to="/admin/contracts">
             Back
           </Link>
-          {contract.contractFileUrl && (
+          {hasContractFile && (
             <a className="button-link" href={resolveFileUrl(contract.contractFileUrl)} target="_blank" rel="noreferrer">
               Open file
             </a>
           )}
-          <button
-            className="secondary-button inline-button"
-            type="button"
-            disabled={marking}
-            onClick={handleMarkNeedUpdate}
-          >
-            Mark need update
-          </button>
+          {hasContractFile && !showUploadForm && (
+            <button className="secondary-button inline-button" type="button" onClick={handleChangeContract}>
+              Change contract
+            </button>
+          )}
+          {hasContractFile && showUploadForm && (
+            <button
+              className="secondary-button inline-button"
+              type="button"
+              disabled={uploading}
+              onClick={() => setShowUploadForm(false)}
+            >
+              Cancel change
+            </button>
+          )}
         </div>
       </div>
 
@@ -150,9 +154,27 @@ export default function AdminContractDetailPage() {
       </div>
 
       <section className="assignment-panel">
-        <PageHeader eyebrow="Upload" title="Contract file" />
-        <ContractUploadForm loading={uploading} onSubmit={handleUpload} />
+        <PageHeader
+          eyebrow={hasContractFile ? 'Uploaded file' : 'Upload'}
+          title={hasContractFile ? 'Current contract file' : 'Contract file'}
+        />
+        {hasContractFile && !showUploadForm && (
+          <div className="contract-file-summary">
+            <strong>Contract file is uploaded</strong>
+            <p>Use Change contract only when the signed contract file must be replaced.</p>
+          </div>
+        )}
+        {shouldShowUploadForm && (
+          <ContractUploadForm
+            loading={uploading}
+            loadingLabel={hasContractFile ? 'Changing contract...' : 'Uploading...'}
+            submitLabel={hasContractFile ? 'Save new contract' : 'Upload contract'}
+            onSubmit={handleUpload}
+          />
+        )}
       </section>
+
+      <ContractFileHistoryList files={contract.previousContractFiles} />
     </section>
   );
 }

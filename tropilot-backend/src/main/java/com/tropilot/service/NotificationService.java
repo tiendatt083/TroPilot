@@ -2,6 +2,8 @@ package com.tropilot.service;
 
 import com.tropilot.dto.request.NotificationCreateRequest;
 import com.tropilot.dto.response.NotificationResponse;
+import com.tropilot.entity.RentalContract;
+import com.tropilot.entity.User;
 
 import java.util.List;
 
@@ -16,4 +18,6 @@ public interface NotificationService {
     List<NotificationResponse> getStaffNotifications(Long userId);
 
     NotificationResponse markRead(Long userId, Long notificationId);
+
+    void createContractUpdatedNotification(User createdBy, RentalContract contract);
 }
