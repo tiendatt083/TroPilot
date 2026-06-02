@@ -55,4 +55,18 @@ public interface RoomAssignmentRepository extends JpaRepository<RoomAssignment, 
             @Param("residentHeadIds") List<Long> residentHeadIds,
             @Param("status") RoomAssignmentStatus status
     );
+
+    @Query("""
+            select assignment from RoomAssignment assignment
+            join fetch assignment.room room
+            join fetch room.building building
+            join fetch assignment.residentHead residentHead
+            where building.id = :buildingId
+              and assignment.status = :status
+            order by room.roomCode asc
+            """)
+    List<RoomAssignment> findByBuildingIdAndStatusWithDetails(
+            @Param("buildingId") Long buildingId,
+            @Param("status") RoomAssignmentStatus status
+    );
 }

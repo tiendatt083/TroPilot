@@ -2,6 +2,7 @@ package com.tropilot.service.impl;
 
 import com.tropilot.dto.request.ChangePasswordFirstTimeRequest;
 import com.tropilot.dto.request.LoginRequest;
+import com.tropilot.dto.request.ProfileUpdateRequest;
 import com.tropilot.dto.response.LoginResponse;
 import com.tropilot.dto.response.UserResponse;
 import com.tropilot.entity.User;
@@ -60,6 +61,26 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
+    public UserResponse updateCurrentUser(Long userId, ProfileUpdateRequest request) {
+        User user = findUser(userId);
+        validateLoginStatus(user);
+
+        if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
+            throw new BadRequestException("Current password is incorrect");
+        }
+
+        user.setFullName(request.getFullName().trim());
+        user.setPhone(normalizeOptionalText(request.getPhone()));
+        user.setIdentityNumber(normalizeOptionalText(request.getIdentityNumber()));
+
+        User savedUser = userRepository.save(user);
+        activityLogService.record(savedUser, "PROFILE_UPDATED", "Updated profile information");
+
+        return userMapper.toResponse(savedUser);
+    }
+
+    @Override
+    @Transactional
     public UserResponse changePasswordFirstTime(Long userId, ChangePasswordFirstTimeRequest request) {
         User user = findUser(userId);
 
@@ -108,5 +129,13 @@ public class AuthServiceImpl implements AuthService {
 
     private String normalizeEmail(String email) {
         return email.trim().toLowerCase();
+    }
+
+    private String normalizeOptionalText(String value) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+
+        return value.trim();
     }
 }

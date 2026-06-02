@@ -974,6 +974,7 @@ a:focus-visible {
 .vehicle-workspace,
 .utility-reading-workspace,
 .invoice-workspace,
+.service-fee-workspace,
 .task-workspace,
 .maintenance-workspace {
   display: grid;
@@ -988,7 +989,8 @@ a:focus-visible {
 }
 
 .utility-reading-workspace,
-.invoice-workspace {
+.invoice-workspace,
+.service-fee-workspace {
   grid-template-columns: minmax(300px, 400px) minmax(0, 1fr);
 }
 
@@ -1238,6 +1240,7 @@ a:focus-visible {
 .vehicle-workspace .panel-form .form-grid,
 .utility-reading-workspace .panel-form .form-grid,
 .invoice-workspace .panel-form .form-grid,
+.service-fee-workspace .panel-form .form-grid,
 .billing-form-stack .panel-form .form-grid {
   grid-template-columns: 1fr;
 }
@@ -1246,6 +1249,7 @@ a:focus-visible {
 .vehicle-workspace .page-header,
 .utility-reading-workspace .page-header,
 .invoice-workspace .page-header,
+.service-fee-workspace .page-header,
 .task-workspace .page-header,
 .maintenance-workspace .page-header {
   margin-bottom: 0.85rem;
@@ -1255,6 +1259,7 @@ a:focus-visible {
 .vehicle-workspace .page-header h1,
 .utility-reading-workspace .page-header h1,
 .invoice-workspace .page-header h1,
+.service-fee-workspace .page-header h1,
 .task-workspace .page-header h1,
 .maintenance-workspace .page-header h1 {
   font-size: 1.35rem;
@@ -1418,6 +1423,89 @@ a:focus-visible {
 
 .form-button-row {
   justify-content: flex-start;
+}
+
+.notification-composer-shell {
+  width: min(100%, 780px);
+}
+
+.notification-composer-form {
+  position: relative;
+  gap: 1.05rem;
+  overflow: hidden;
+  padding: clamp(1.1rem, 2vw, 1.45rem);
+  background:
+    linear-gradient(135deg, rgba(232, 247, 250, 0.62), rgba(255, 255, 255, 0) 48%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(247, 251, 253, 0.98));
+  box-shadow:
+    0 18px 44px rgba(16, 32, 51, 0.075),
+    inset 0 1px 0 rgba(255, 255, 255, 0.92);
+}
+
+.notification-composer-form::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 4px;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
+}
+
+.notification-field {
+  display: grid;
+  gap: 0.45rem;
+  min-width: 0;
+}
+
+.notification-field label {
+  margin-bottom: 0;
+}
+
+.notification-field input,
+.notification-field select {
+  min-height: 46px;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.notification-field textarea {
+  min-height: 142px;
+  line-height: 1.55;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.notification-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+
+.notification-field-full,
+.notification-selection-panel {
+  grid-column: 1 / -1;
+}
+
+.notification-selection-panel {
+  border: 1px solid rgba(14, 145, 170, 0.16);
+  border-radius: var(--radius-md);
+  padding: 0.85rem;
+  background:
+    linear-gradient(180deg, rgba(232, 247, 250, 0.74), rgba(255, 255, 255, 0.72));
+}
+
+.notification-selection-panel .checkbox-list {
+  max-height: 220px;
+  background: #ffffff;
+}
+
+.notification-submit-row {
+  display: flex;
+  justify-content: flex-end;
+  border-top: 1px solid var(--color-border-soft);
+  padding-top: 0.95rem;
+}
+
+.notification-submit-row button {
+  min-width: 180px;
+  margin-top: 0;
 }
 
 .upload-form,
@@ -1876,6 +1964,26 @@ a:focus-visible {
   gap: 0.75rem;
 }
 
+.profile-grid {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.9fr) minmax(320px, 1.1fr);
+  align-items: start;
+  gap: 1rem;
+}
+
+.profile-summary-panel {
+  align-content: start;
+}
+
+.profile-detail-panel {
+  border: 0;
+  border-top: 1px solid var(--color-border-soft);
+  border-radius: 0;
+  padding: 1rem 0 0;
+  background: transparent;
+  box-shadow: none;
+}
+
 @media (max-width: 1180px) {
   .filter-row,
   .user-filter-row {
@@ -1895,6 +2003,7 @@ a:focus-visible {
   .vehicle-workspace,
   .utility-reading-workspace,
   .invoice-workspace,
+  .service-fee-workspace,
   .task-workspace,
   .maintenance-workspace,
   .dashboard-hero,
@@ -1993,10 +2102,12 @@ a:focus-visible {
   .month-filter-row,
   .cashflow-summary,
   .form-grid,
+  .notification-form-grid,
   .previous-reading-images,
   .room-code-input-group,
   .assignment-action-row,
   .dashboard-grid,
+  .profile-grid,
   .detail-panel {
     grid-template-columns: 1fr;
   }
@@ -2012,6 +2123,14 @@ a:focus-visible {
 
   .button-row {
     justify-content: stretch;
+  }
+
+  .notification-submit-row {
+    justify-content: stretch;
+  }
+
+  .notification-submit-row button {
+    width: 100%;
   }
 
   .inline-button {

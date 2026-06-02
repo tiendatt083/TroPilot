@@ -3,12 +3,13 @@ package com.tropilot.service.impl;
 import com.tropilot.dto.request.ServiceFeeRequest;
 import com.tropilot.dto.response.ServiceFeeDeleteResponse;
 import com.tropilot.dto.response.ServiceFeeResponse;
+import com.tropilot.entity.Building;
 import com.tropilot.entity.ServiceFee;
 import com.tropilot.enums.CalculationType;
 import com.tropilot.enums.FeeType;
-import com.tropilot.enums.VehicleType;
 import com.tropilot.exception.BadRequestException;
 import com.tropilot.exception.ResourceNotFoundException;
+import com.tropilot.repository.BuildingRepository;
 import com.tropilot.repository.ServiceFeeRepository;
 import com.tropilot.service.ServiceFeeService;
 import lombok.RequiredArgsConstructor;
@@ -16,12 +17,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
 public class ServiceFeeServiceImpl implements ServiceFeeService {
 
     private final ServiceFeeRepository serviceFeeRepository;
+    private final BuildingRepository buildingRepository;
     private final ServiceFeeMapper serviceFeeMapper;
     private final ServiceFeeUsageChecker serviceFeeUsageChecker;
 
@@ -34,19 +37,29 @@ public class ServiceFeeServiceImpl implements ServiceFeeService {
             throw new BadRequestException("Service fee code is already in use");
         }
 
-        FeeType feeType = parseFeeType(request.getFeeType());
-        CalculationType calculationType = parseCalculationType(request.getCalculationType());
-        VehicleType vehicleType = resolveVehicleType(feeType, calculationType, request.getVehicleType());
-
         ServiceFee serviceFee = ServiceFee.builder()
-                .name(request.getName().trim())
-                .feeCode(feeCode)
-                .feeType(feeType)
-                .unitPrice(request.getUnitPrice())
-                .calculationType(calculationType)
-                .vehicleType(vehicleType)
                 .isActive(true)
                 .build();
+        applyValues(serviceFee, request, feeCode);
+
+        return serviceFeeMapper.toResponse(serviceFeeRepository.save(serviceFee));
+    }
+
+    @Override
+    @Transactional
+    public ServiceFeeResponse createBuildingServiceFee(Long buildingId, ServiceFeeRequest request) {
+        Building building = findBuilding(buildingId);
+        String feeCode = normalizeCode(request.getFeeCode());
+
+        if (serviceFeeRepository.existsByBuilding_IdAndFeeCode(building.getId(), feeCode)) {
+            throw new BadRequestException("Service fee code is already in use in this building");
+        }
+
+        ServiceFee serviceFee = ServiceFee.builder()
+                .building(building)
+                .isActive(true)
+                .build();
+        applyValues(serviceFee, request, feeCode);
 
         return serviceFeeMapper.toResponse(serviceFeeRepository.save(serviceFee));
     }
@@ -62,8 +75,26 @@ public class ServiceFeeServiceImpl implements ServiceFeeService {
 
     @Override
     @Transactional(readOnly = true)
+    public List<ServiceFeeResponse> getBuildingServiceFees(Long buildingId) {
+        findBuilding(buildingId);
+
+        return serviceFeeRepository.findByBuilding_IdOrderByCreatedAtDesc(buildingId)
+                .stream()
+                .map(serviceFeeMapper::toResponse)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public ServiceFeeResponse getServiceFee(Long id) {
         return serviceFeeMapper.toResponse(findServiceFee(id));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ServiceFeeResponse getBuildingServiceFee(Long buildingId, Long id) {
+        ServiceFee serviceFee = findBuildingServiceFee(buildingId, id);
+        return serviceFeeMapper.toResponse(serviceFee);
     }
 
     @Override
@@ -78,16 +109,24 @@ public class ServiceFeeServiceImpl implements ServiceFeeService {
                     throw new BadRequestException("Service fee code is already in use");
                 });
 
-        FeeType feeType = parseFeeType(request.getFeeType());
-        CalculationType calculationType = parseCalculationType(request.getCalculationType());
-        VehicleType vehicleType = resolveVehicleType(feeType, calculationType, request.getVehicleType());
+        applyValues(serviceFee, request, feeCode);
 
-        serviceFee.setName(request.getName().trim());
-        serviceFee.setFeeCode(feeCode);
-        serviceFee.setFeeType(feeType);
-        serviceFee.setUnitPrice(request.getUnitPrice());
-        serviceFee.setCalculationType(calculationType);
-        serviceFee.setVehicleType(vehicleType);
+        return serviceFeeMapper.toResponse(serviceFeeRepository.save(serviceFee));
+    }
+
+    @Override
+    @Transactional
+    public ServiceFeeResponse updateBuildingServiceFee(Long buildingId, Long id, ServiceFeeRequest request) {
+        ServiceFee serviceFee = findBuildingServiceFee(buildingId, id);
+        String feeCode = normalizeCode(request.getFeeCode());
+
+        serviceFeeRepository.findByBuilding_IdAndFeeCode(buildingId, feeCode)
+                .filter(existing -> !existing.getId().equals(id))
+                .ifPresent(existing -> {
+                    throw new BadRequestException("Service fee code is already in use in this building");
+                });
+
+        applyValues(serviceFee, request, feeCode);
 
         return serviceFeeMapper.toResponse(serviceFeeRepository.save(serviceFee));
     }
@@ -96,27 +135,14 @@ public class ServiceFeeServiceImpl implements ServiceFeeService {
     @Transactional
     public ServiceFeeDeleteResponse deleteServiceFee(Long id) {
         ServiceFee serviceFee = findServiceFee(id);
+        return deleteOrDeactivate(serviceFee);
+    }
 
-        if (serviceFeeUsageChecker.hasInvoiceItems(id)) {
-            serviceFee.setIsActive(false);
-            ServiceFee savedServiceFee = serviceFeeRepository.save(serviceFee);
-
-            return ServiceFeeDeleteResponse.builder()
-                    .id(savedServiceFee.getId())
-                    .deleted(false)
-                    .deactivated(true)
-                    .isActive(savedServiceFee.getIsActive())
-                    .build();
-        }
-
-        serviceFeeRepository.delete(serviceFee);
-
-        return ServiceFeeDeleteResponse.builder()
-                .id(id)
-                .deleted(true)
-                .deactivated(false)
-                .isActive(false)
-                .build();
+    @Override
+    @Transactional
+    public ServiceFeeDeleteResponse deleteBuildingServiceFee(Long buildingId, Long id) {
+        ServiceFee serviceFee = findBuildingServiceFee(buildingId, id);
+        return deleteOrDeactivate(serviceFee);
     }
 
     @Override
@@ -128,9 +154,72 @@ public class ServiceFeeServiceImpl implements ServiceFeeService {
         return serviceFeeMapper.toResponse(serviceFeeRepository.save(serviceFee));
     }
 
+    @Override
+    @Transactional
+    public ServiceFeeResponse toggleBuildingServiceFee(Long buildingId, Long id) {
+        ServiceFee serviceFee = findBuildingServiceFee(buildingId, id);
+        serviceFee.setIsActive(!Boolean.TRUE.equals(serviceFee.getIsActive()));
+
+        return serviceFeeMapper.toResponse(serviceFeeRepository.save(serviceFee));
+    }
+
+    private void applyValues(ServiceFee serviceFee, ServiceFeeRequest request, String feeCode) {
+        FeeType feeType = parseFeeType(request.getFeeType());
+        CalculationType calculationType = parseCalculationType(request.getCalculationType());
+
+        validateServiceFeeRule(feeType, calculationType, request.getVehicleType());
+
+        serviceFee.setName(request.getName().trim());
+        serviceFee.setFeeCode(feeCode);
+        serviceFee.setFeeType(feeType);
+        serviceFee.setUnitPrice(request.getUnitPrice());
+        serviceFee.setCalculationType(calculationType);
+        serviceFee.setVehicleType(null);
+    }
+
+    private ServiceFeeDeleteResponse deleteOrDeactivate(ServiceFee serviceFee) {
+        if (serviceFeeUsageChecker.hasInvoiceItems(serviceFee.getId())) {
+            serviceFee.setIsActive(false);
+            ServiceFee savedServiceFee = serviceFeeRepository.save(serviceFee);
+
+            return ServiceFeeDeleteResponse.builder()
+                    .id(savedServiceFee.getId())
+                    .deleted(false)
+                    .deactivated(true)
+                    .isActive(savedServiceFee.getIsActive())
+                    .build();
+        }
+
+        Long id = serviceFee.getId();
+        serviceFeeRepository.delete(serviceFee);
+
+        return ServiceFeeDeleteResponse.builder()
+                .id(id)
+                .deleted(true)
+                .deactivated(false)
+                .isActive(false)
+                .build();
+    }
+
     private ServiceFee findServiceFee(Long id) {
         return serviceFeeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Service fee not found"));
+    }
+
+    private ServiceFee findBuildingServiceFee(Long buildingId, Long id) {
+        findBuilding(buildingId);
+        ServiceFee serviceFee = findServiceFee(id);
+
+        if (serviceFee.getBuilding() == null || !Objects.equals(serviceFee.getBuilding().getId(), buildingId)) {
+            throw new BadRequestException("Service fee does not belong to the selected building");
+        }
+
+        return serviceFee;
+    }
+
+    private Building findBuilding(Long buildingId) {
+        return buildingRepository.findById(buildingId)
+                .orElseThrow(() -> new ResourceNotFoundException("Building not found"));
     }
 
     private FeeType parseFeeType(String feeType) {
@@ -149,29 +238,22 @@ public class ServiceFeeServiceImpl implements ServiceFeeService {
         }
     }
 
-    private VehicleType resolveVehicleType(FeeType feeType, CalculationType calculationType, String vehicleType) {
-        String normalizedVehicleType = normalizeOptionalText(vehicleType);
-
-        if (feeType != FeeType.PARKING) {
-            if (normalizedVehicleType != null) {
-                throw new BadRequestException("Vehicle type can only be set for parking fees");
-            }
-
-            return null;
+    private void validateServiceFeeRule(FeeType feeType, CalculationType calculationType, String vehicleType) {
+        if (feeType != FeeType.ELECTRICITY && feeType != FeeType.WATER && feeType != FeeType.OTHER) {
+            throw new BadRequestException("Only electricity, water, and other service fees can be configured");
         }
 
-        if (calculationType == CalculationType.BY_QUANTITY && normalizedVehicleType == null) {
-            throw new BadRequestException("Vehicle type is required for parking fees calculated by quantity");
+        if ((feeType == FeeType.ELECTRICITY || feeType == FeeType.WATER)
+                && calculationType != CalculationType.BY_USAGE) {
+            throw new BadRequestException("Electricity and water fees must be calculated by usage");
         }
 
-        if (normalizedVehicleType == null) {
-            return null;
+        if (feeType == FeeType.OTHER && calculationType == CalculationType.BY_USAGE) {
+            throw new BadRequestException("Usage-based fees are reserved for electricity and water");
         }
 
-        try {
-            return VehicleType.valueOf(normalizedVehicleType.toUpperCase());
-        } catch (IllegalArgumentException exception) {
-            throw new BadRequestException("Invalid vehicle type");
+        if (normalizeOptionalText(vehicleType) != null) {
+            throw new BadRequestException("Vehicle type is not used for service fees. Use OTHER with BY_QUANTITY for quantity-based fees");
         }
     }
 

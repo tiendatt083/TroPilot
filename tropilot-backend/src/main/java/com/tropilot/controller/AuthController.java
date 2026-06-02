@@ -2,6 +2,7 @@ package com.tropilot.controller;
 
 import com.tropilot.dto.request.ChangePasswordFirstTimeRequest;
 import com.tropilot.dto.request.LoginRequest;
+import com.tropilot.dto.request.ProfileUpdateRequest;
 import com.tropilot.dto.response.ApiResponse;
 import com.tropilot.dto.response.LoginResponse;
 import com.tropilot.dto.response.UserResponse;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,6 +34,14 @@ public class AuthController {
     @GetMapping("/me")
     public ApiResponse<UserResponse> me(@AuthenticationPrincipal AuthenticatedUser user) {
         return ApiResponse.success("Current user loaded successfully", authService.getCurrentUser(getUserId(user)));
+    }
+
+    @PutMapping("/me")
+    public ApiResponse<UserResponse> updateMe(
+            @AuthenticationPrincipal AuthenticatedUser user,
+            @Valid @RequestBody ProfileUpdateRequest request
+    ) {
+        return ApiResponse.success("Profile updated successfully", authService.updateCurrentUser(getUserId(user), request));
     }
 
     @PostMapping("/change-password-first-time")

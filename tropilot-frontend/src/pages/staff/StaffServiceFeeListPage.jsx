@@ -43,7 +43,7 @@ export default function StaffServiceFeeListPage() {
       {loading ? (
         <div className="empty-state">Loading service fees...</div>
       ) : (
-        <ServiceFeeTable serviceFees={serviceFees} />
+        <ServiceFeeTable serviceFees={serviceFees} showBuilding />
       )}
     </section>
   );

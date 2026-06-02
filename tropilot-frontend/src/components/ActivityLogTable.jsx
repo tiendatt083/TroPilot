@@ -32,6 +32,11 @@ const DESCRIPTION_PATTERNS = [
     params: (match) => ({ target: match[1] })
   },
   {
+    pattern: /^Updated profile information$/i,
+    key: 'activityLogs.descriptions.updatedProfileInformation',
+    params: () => ({})
+  },
+  {
     pattern: /^Created room (.+) in building (.+)$/i,
     key: 'activityLogs.descriptions.createdRoom',
     params: (match) => ({ room: match[1], building: match[2] })

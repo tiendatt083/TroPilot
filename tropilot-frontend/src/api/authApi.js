@@ -10,6 +10,11 @@ export async function getCurrentUser() {
   return response.data;
 }
 
+export async function updateCurrentUser(payload) {
+  const response = await apiClient.put('/api/auth/me', payload);
+  return response.data;
+}
+
 export async function changePasswordFirstTime(payload) {
   const response = await apiClient.post('/api/auth/change-password-first-time', payload);
   return response.data;

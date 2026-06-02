@@ -17,9 +17,28 @@ function countText(member) {
   return `${member.totalOccupants} of ${member.maxOccupants} active occupants`;
 }
 
+function getTodayIsoDate() {
+  const now = new Date();
+  const localDate = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+  return localDate.toISOString().slice(0, 10);
+}
+
+function createReturnRequestDraft(member) {
+  return {
+    fullName: member.fullName || '',
+    phone: member.phone || '',
+    email: member.email || '',
+    identityNumber: member.identityNumber || '',
+    relationship: member.relationship || '',
+    moveInDate: getTodayIsoDate(),
+    sourceMemberId: member.id
+  };
+}
+
 export default function ResidentMemberPage() {
   const [members, setMembers] = useState([]);
   const [editingMember, setEditingMember] = useState(null);
+  const [returnRequestDraft, setReturnRequestDraft] = useState(null);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
@@ -49,6 +68,7 @@ export default function ResidentMemberPage() {
     try {
       await memberApi.createResidentMember(payload);
       setMessage('Room member submitted for approval successfully.');
+      setReturnRequestDraft(null);
       await loadMembers();
     } catch (apiError) {
       setError(apiError.response?.data?.message || 'Room member could not be submitted');
@@ -74,6 +94,21 @@ export default function ResidentMemberPage() {
     }
   };
 
+  const handleEdit = (member) => {
+    setReturnRequestDraft(null);
+    setEditingMember(member);
+  };
+
+  const handleRequestAgain = (member) => {
+    setEditingMember(null);
+    setReturnRequestDraft(createReturnRequestDraft(member));
+  };
+
+  const handleCancelFormAction = () => {
+    setEditingMember(null);
+    setReturnRequestDraft(null);
+  };
+
   const handleLeave = async (member) => {
     const confirmed = window.confirm(`Mark ${member.fullName} as left?`);
     if (!confirmed) {
@@ -96,6 +131,13 @@ export default function ResidentMemberPage() {
   };
 
   const firstMember = members[0];
+  const activeFormMember = editingMember || returnRequestDraft;
+  const isEditing = Boolean(editingMember);
+  const formKey = editingMember?.id
+    ? `edit-${editingMember.id}`
+    : returnRequestDraft?.sourceMemberId
+      ? `return-${returnRequestDraft.sourceMemberId}`
+      : 'new-member';
 
   return (
     <section className="content-section">
@@ -110,16 +152,16 @@ export default function ResidentMemberPage() {
       <section className="member-workspace">
         <div>
           <PageHeader
-            eyebrow={editingMember ? 'Edit member' : 'New member'}
-            title={editingMember ? editingMember.fullName : 'Add room member'}
+            eyebrow={isEditing ? 'Edit member' : 'New member'}
+            title={isEditing ? editingMember.fullName : 'Add room member'}
           />
           <MemberForm
-            key={editingMember?.id || 'new-member'}
-            initialValues={editingMember}
+            key={formKey}
+            initialValues={activeFormMember}
             loading={saving}
-            submitLabel={editingMember ? 'Save changes' : 'Submit for approval'}
-            onSubmit={editingMember ? handleUpdate : handleCreate}
-            onCancel={editingMember ? () => setEditingMember(null) : undefined}
+            submitLabel={isEditing ? 'Save changes' : returnRequestDraft ? 'Submit again for approval' : 'Submit for approval'}
+            onSubmit={isEditing ? handleUpdate : handleCreate}
+            onCancel={activeFormMember ? handleCancelFormAction : undefined}
           />
         </div>
 
@@ -154,22 +196,33 @@ export default function ResidentMemberPage() {
                       </td>
                       <td>
                         <div className="table-actions">
-                          <button
-                            className="secondary-button compact-button"
-                            type="button"
-                            disabled={member.status === 'LEFT'}
-                            onClick={() => setEditingMember(member)}
-                          >
-                            Edit
-                          </button>
-                          <button
-                            className="secondary-button compact-button"
-                            type="button"
-                            disabled={member.status === 'LEFT' || leavingId === member.id}
-                            onClick={() => handleLeave(member)}
-                          >
-                            Leave
-                          </button>
+                          {member.status === 'LEFT' ? (
+                            <button
+                              className="secondary-button compact-button"
+                              type="button"
+                              onClick={() => handleRequestAgain(member)}
+                            >
+                              Add again
+                            </button>
+                          ) : (
+                            <>
+                              <button
+                                className="secondary-button compact-button"
+                                type="button"
+                                onClick={() => handleEdit(member)}
+                              >
+                                Edit
+                              </button>
+                              <button
+                                className="secondary-button compact-button"
+                                type="button"
+                                disabled={leavingId === member.id}
+                                onClick={() => handleLeave(member)}
+                              >
+                                Leave
+                              </button>
+                            </>
+                          )}
                         </div>
                       </td>
                     </tr>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
 import * as invoiceApi from '../../api/invoiceApi.js';
 import * as roomApi from '../../api/roomApi.js';
@@ -8,6 +9,7 @@ import InvoiceTable from '../../components/InvoiceTable.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
 
 export default function AdminBuildingInvoicePage() {
+  const { t } = useTranslation();
   const { building } = useOutletContext();
   const [rooms, setRooms] = useState([]);
   const [invoices, setInvoices] = useState([]);
@@ -29,7 +31,7 @@ export default function AdminBuildingInvoicePage() {
       setRooms(roomsResponse.data);
       setInvoices(invoicesResponse.data);
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Building invoices could not be loaded');
+      setError(apiError.response?.data?.message || t('buildingInvoices.loadError'));
     }
   };
 
@@ -37,7 +39,7 @@ export default function AdminBuildingInvoicePage() {
     setLoading(true);
     setSelectedInvoice(null);
     loadData().finally(() => setLoading(false));
-  }, [building.id]);
+  }, [building.id, t]);
 
   const handleGenerate = async (payload) => {
     setGenerating(true);
@@ -50,10 +52,10 @@ export default function AdminBuildingInvoicePage() {
         buildingId: building.id
       });
       setSelectedInvoice(response.data);
-      setMessage('Invoice generated successfully.');
+      setMessage(t('buildingInvoices.generated'));
       await loadData();
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Invoice could not be generated');
+      setError(apiError.response?.data?.message || t('buildingInvoices.generateError'));
       throw apiError;
     } finally {
       setGenerating(false);
@@ -68,7 +70,7 @@ export default function AdminBuildingInvoicePage() {
       const response = await invoiceApi.getAdminInvoice(invoice.id, { buildingId: building.id });
       setSelectedInvoice(response.data);
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Invoice could not be loaded');
+      setError(apiError.response?.data?.message || t('buildingInvoices.invoiceLoadError'));
     } finally {
       setLoadingDetailId(null);
     }
@@ -81,26 +83,28 @@ export default function AdminBuildingInvoicePage() {
       disabled={loadingDetailId === invoice.id}
       onClick={() => handleView(invoice)}
     >
-      View
+      {t('common.view')}
     </button>
   );
 
   return (
     <div className="building-workspace">
-      <PageHeader eyebrow="Building invoices" title="Invoices in this building" />
+      <PageHeader eyebrow={t('buildingInvoices.eyebrow')} title={t('buildingInvoices.title')} />
+      <p className="page-support-text">{t('buildingInvoices.description')}</p>
 
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
 
       {loading ? (
-        <div className="empty-state">Loading invoices...</div>
+        <div className="empty-state">{t('buildingInvoices.loading')}</div>
       ) : (
         <section className="invoice-workspace">
           <div>
-            <PageHeader eyebrow="Generate" title="New invoice" />
+            <PageHeader eyebrow={t('buildingInvoices.generate')} title={t('buildingInvoices.newInvoice')} />
             <InvoiceGenerateForm rooms={rooms} loading={generating} onSubmit={handleGenerate} />
           </div>
           <div className="invoice-list-column">
+            <PageHeader eyebrow={t('buildingInvoices.invoiceRecords')} title={t('buildingInvoices.title')} />
             <InvoiceTable invoices={invoices} renderActions={renderActions} />
             <InvoiceDetail invoice={selectedInvoice} />
           </div>

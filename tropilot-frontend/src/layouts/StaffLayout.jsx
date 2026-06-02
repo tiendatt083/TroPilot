@@ -16,6 +16,7 @@ const STAFF_NAV_ITEMS = [
   { to: '/staff/vehicles', labelKey: 'navigation.vehicles' },
   { to: '/staff/service-fees', labelKey: 'navigation.serviceFees' },
   { to: '/staff/utility-readings', labelKey: 'navigation.utilityReadings' },
+  { to: '/staff/profile', labelKey: 'navigation.profile' },
   { to: '/staff/settings', labelKey: 'settings.title' }
 ];
 

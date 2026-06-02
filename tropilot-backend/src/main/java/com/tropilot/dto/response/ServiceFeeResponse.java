@@ -14,6 +14,9 @@ import java.time.LocalDateTime;
 public class ServiceFeeResponse {
 
     private Long id;
+    private Long buildingId;
+    private String buildingCode;
+    private String buildingName;
     private String name;
     private String feeCode;
     private FeeType feeType;

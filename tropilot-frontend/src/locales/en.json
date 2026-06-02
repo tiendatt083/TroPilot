@@ -4,6 +4,8 @@
     "clear": "Clear",
     "delete": "Delete",
     "edit": "Edit",
+    "activate": "Activate",
+    "deactivate": "Deactivate",
     "filter": "Filter",
     "notAvailable": "Not available",
     "notLinked": "Not linked",
@@ -30,6 +32,38 @@
     "currentLanguage": "Current language",
     "vietnamese": "Vietnamese",
     "english": "English"
+  },
+  "profile": {
+    "title": "Personal information",
+    "eyebrow": "Account",
+    "description": "View your account details and update basic contact information after confirming your current password.",
+    "editTitle": "Edit personal information",
+    "passwordHelp": "Enter your current password to confirm this profile update.",
+    "emailHelp": "Email is used for login and cannot be changed on this page.",
+    "sections": {
+      "account": "Account information",
+      "edit": "Update profile"
+    },
+    "fields": {
+      "fullName": "Full name",
+      "email": "Email",
+      "phone": "Phone",
+      "identityNumber": "Citizen ID",
+      "role": "Role",
+      "status": "Account status",
+      "currentPassword": "Current password"
+    },
+    "status": {
+      "locked": "Locked"
+    },
+    "actions": {
+      "save": "Save profile",
+      "saving": "Saving profile..."
+    },
+    "messages": {
+      "updated": "Profile updated successfully.",
+      "updateError": "Profile could not be updated"
+    }
   },
   "role": {
     "admin": "Admin",
@@ -60,7 +94,8 @@
     "serviceFees": "Service fees",
     "utilityReadings": "Utility readings",
     "members": "Members",
-    "contract": "Contract"
+    "contract": "Contract",
+    "profile": "Personal information"
   },
   "buildingWorkspace": {
     "eyebrow": "Building workspace",
@@ -74,8 +109,12 @@
     "createRoom": "Create room",
     "overview": "Overview",
     "rooms": "Rooms",
+    "users": "Users",
     "contracts": "Contracts",
     "billing": "Billing",
+    "utilityReadings": "Utility readings",
+    "invoices": "Invoices",
+    "serviceFees": "Service fees",
     "vehicles": "Vehicles",
     "payments": "Payments",
     "receipts": "Receipts",
@@ -87,6 +126,71 @@
     "feedbacks": "Feedbacks",
     "invoiceComplaints": "Invoice complaints",
     "notifications": "Notifications"
+  },
+  "buildingServiceFees": {
+    "eyebrow": "Building service fees",
+    "title": "Service fees in this building",
+    "description": "Configure electricity, water, and other billable fees used when generating invoices for this building.",
+    "loading": "Loading service fees...",
+    "loadError": "Building service fees could not be loaded",
+    "created": "Service fee created successfully.",
+    "createError": "Service fee could not be created",
+    "updated": "Service fee updated successfully.",
+    "updateError": "Service fee could not be updated",
+    "deleted": "Service fee deleted successfully.",
+    "deleteError": "Service fee could not be deleted",
+    "statusUpdated": "Service fee status updated successfully.",
+    "statusUpdateError": "Service fee status could not be updated",
+    "deleteConfirm": "Delete service fee {{code}}?",
+    "formEyebrow": "Fee setup",
+    "createTitle": "New service fee",
+    "editTitle": "Edit service fee",
+    "recordsEyebrow": "Billing configuration",
+    "recordsTitle": "Configured fees",
+    "create": "Create service fee",
+    "save": "Save changes",
+    "cancelEdit": "Cancel edit"
+  },
+  "buildingUsers": {
+    "eyebrow": "Building users",
+    "title": "Users in this building",
+    "loading": "Loading building users...",
+    "loadError": "Building users could not be loaded",
+    "empty": "No users found in this building.",
+    "filters": {
+      "searchPlaceholder": "Search by name, email, phone, ID, or room",
+      "searchAria": "Search building users",
+      "roleAria": "Filter by role",
+      "statusAria": "Filter by status",
+      "roomAria": "Filter by room",
+      "allRoles": "All roles",
+      "allStatuses": "All statuses",
+      "allRooms": "All rooms"
+    },
+    "columns": {
+      "user": "User",
+      "phone": "Phone",
+      "identityNumber": "Citizen ID",
+      "role": "Role",
+      "room": "Room",
+      "relationship": "Relationship",
+      "moveInDate": "Move-in date",
+      "status": "Status"
+    },
+    "recordTypes": {
+      "account": "Login account",
+      "roomMember": "Room member record"
+    },
+    "roles": {
+      "roomMember": "Household member"
+    },
+    "statuses": {
+      "locked": "Locked",
+      "approved": "Approved",
+      "pending": "Pending",
+      "rejected": "Rejected",
+      "left": "Left"
+    }
   },
   "buildingBilling": {
     "eyebrow": "Building billing",
@@ -110,6 +214,34 @@
     "billingRecords": "Billing records",
     "utilityReadings": "Utility readings",
     "invoices": "Invoices"
+  },
+  "buildingUtilityReadings": {
+    "eyebrow": "Building utility readings",
+    "title": "Utility readings in this building",
+    "description": "Record electricity and water readings with evidence images for rooms in this building.",
+    "loading": "Loading utility readings...",
+    "loadError": "Building utility readings could not be loaded",
+    "created": "Utility reading created successfully.",
+    "createError": "Utility reading could not be created",
+    "updated": "Utility reading updated successfully.",
+    "updateError": "Utility reading could not be updated",
+    "newReading": "New reading",
+    "editReading": "Edit reading",
+    "recordReading": "Record reading",
+    "saveChanges": "Save changes"
+  },
+  "buildingInvoices": {
+    "eyebrow": "Building invoices",
+    "title": "Invoices in this building",
+    "description": "Generate and review invoices for rooms in this building.",
+    "loading": "Loading invoices...",
+    "loadError": "Building invoices could not be loaded",
+    "generated": "Invoice generated successfully.",
+    "generateError": "Invoice could not be generated",
+    "invoiceLoadError": "Invoice could not be loaded",
+    "generate": "Generate",
+    "newInvoice": "New invoice",
+    "invoiceRecords": "Invoice records"
   },
   "activityLogs": {
     "title": "Activity logs",
@@ -147,6 +279,7 @@
       "TASK_CREATED": "Task created",
       "USER_CREATED": "User created",
       "USER_DELETED": "User deleted",
+      "PROFILE_UPDATED": "Profile updated",
       "USER_PASSWORD_RESET": "User password reset",
       "UTILITY_READING_RECORDED": "Utility reading recorded"
     },
@@ -160,6 +293,7 @@
       "createdAccount": "Created {{role}} account for {{target}}",
       "resetTemporaryPassword": "Reset temporary password for {{target}}",
       "deletedUserAccount": "Deleted user account for {{target}}",
+      "updatedProfileInformation": "Updated profile information",
       "createdRoom": "Created room {{room}} in building {{building}}",
       "assignedHeadResident": "Assigned Head Resident {{resident}} to room {{room}}",
       "addedRoomMemberRequest": "Added room member request for {{member}}",

@@ -4,7 +4,6 @@ import AdminLayout from '../layouts/AdminLayout.jsx';
 import ResidentLayout from '../layouts/ResidentLayout.jsx';
 import StaffLayout from '../layouts/StaffLayout.jsx';
 import AdminBuildingCreatePage from '../pages/admin/AdminBuildingCreatePage.jsx';
-import AdminBuildingBillingPage from '../pages/admin/AdminBuildingBillingPage.jsx';
 import AdminBuildingCashFlowPage from '../pages/admin/AdminBuildingCashFlowPage.jsx';
 import AdminBuildingContractPage from '../pages/admin/AdminBuildingContractPage.jsx';
 import AdminBuildingDetailPage from '../pages/admin/AdminBuildingDetailPage.jsx';
@@ -12,6 +11,7 @@ import AdminBuildingEditPage from '../pages/admin/AdminBuildingEditPage.jsx';
 import AdminBuildingExpensePage from '../pages/admin/AdminBuildingExpensePage.jsx';
 import AdminBuildingFeedbackPage from '../pages/admin/AdminBuildingFeedbackPage.jsx';
 import AdminBuildingInvoiceComplaintPage from '../pages/admin/AdminBuildingInvoiceComplaintPage.jsx';
+import AdminBuildingInvoicePage from '../pages/admin/AdminBuildingInvoicePage.jsx';
 import AdminBuildingListPage from '../pages/admin/AdminBuildingListPage.jsx';
 import AdminBuildingMaintenancePage from '../pages/admin/AdminBuildingMaintenancePage.jsx';
 import AdminBuildingMemberPage from '../pages/admin/AdminBuildingMemberPage.jsx';
@@ -19,8 +19,11 @@ import AdminBuildingNotificationPage from '../pages/admin/AdminBuildingNotificat
 import AdminBuildingPaymentPage from '../pages/admin/AdminBuildingPaymentPage.jsx';
 import AdminBuildingReceiptPage from '../pages/admin/AdminBuildingReceiptPage.jsx';
 import AdminBuildingRoomsPage from '../pages/admin/AdminBuildingRoomsPage.jsx';
+import AdminBuildingServiceFeePage from '../pages/admin/AdminBuildingServiceFeePage.jsx';
 import AdminBuildingTaskDetailPage from '../pages/admin/AdminBuildingTaskDetailPage.jsx';
 import AdminBuildingTaskPage from '../pages/admin/AdminBuildingTaskPage.jsx';
+import AdminBuildingUserPage from '../pages/admin/AdminBuildingUserPage.jsx';
+import AdminBuildingUtilityReadingPage from '../pages/admin/AdminBuildingUtilityReadingPage.jsx';
 import AdminBuildingVehiclePage from '../pages/admin/AdminBuildingVehiclePage.jsx';
 import AdminActivityLogPage from '../pages/admin/AdminActivityLogPage.jsx';
 import AdminContractDetailPage from '../pages/admin/AdminContractDetailPage.jsx';
@@ -43,6 +46,7 @@ import AdminUserCreatePage from '../pages/admin/AdminUserCreatePage.jsx';
 import AdminUserListPage from '../pages/admin/AdminUserListPage.jsx';
 import ChangePasswordPage from '../pages/auth/ChangePasswordPage.jsx';
 import LoginPage from '../pages/auth/LoginPage.jsx';
+import ProfilePage from '../pages/ProfilePage.jsx';
 import ResidentContractPage from '../pages/resident/ResidentContractPage.jsx';
 import ResidentDashboardPage from '../pages/resident/ResidentDashboardPage.jsx';
 import ResidentFeedbackPage from '../pages/resident/ResidentFeedbackPage.jsx';
@@ -92,6 +96,7 @@ export default function AppRoutes() {
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<Navigate to="/admin/dashboard" replace />} />
               <Route path="dashboard" element={<AdminDashboardPage />} />
+              <Route path="profile" element={<ProfilePage />} />
               <Route path="settings" element={<Settings />} />
               <Route path="notifications" element={<AdminNotificationPage />} />
               <Route path="activity-logs" element={<AdminActivityLogPage />} />
@@ -121,10 +126,12 @@ export default function AppRoutes() {
               <Route path="buildings/:id" element={<AdminBuildingWorkspaceLayout />}>
                 <Route index element={<AdminBuildingDetailPage />} />
                 <Route path="rooms" element={<AdminBuildingRoomsPage />} />
+                <Route path="users" element={<AdminBuildingUserPage />} />
                 <Route path="contracts" element={<AdminBuildingContractPage />} />
-                <Route path="billing" element={<AdminBuildingBillingPage />} />
-                <Route path="utility-readings" element={<Navigate to="../billing" replace />} />
-                <Route path="invoices" element={<Navigate to="../billing" replace />} />
+                <Route path="billing" element={<Navigate to="../invoices" replace />} />
+                <Route path="utility-readings" element={<AdminBuildingUtilityReadingPage />} />
+                <Route path="invoices" element={<AdminBuildingInvoicePage />} />
+                <Route path="service-fees" element={<AdminBuildingServiceFeePage />} />
                 <Route path="vehicles" element={<AdminBuildingVehiclePage />} />
                 <Route path="payments" element={<AdminBuildingPaymentPage />} />
                 <Route path="receipts" element={<AdminBuildingReceiptPage />} />
@@ -151,6 +158,7 @@ export default function AppRoutes() {
             <Route path="/staff" element={<StaffLayout />}>
               <Route index element={<Navigate to="/staff/dashboard" replace />} />
               <Route path="dashboard" element={<StaffDashboardPage />} />
+              <Route path="profile" element={<ProfilePage />} />
               <Route path="settings" element={<Settings />} />
               <Route path="notifications" element={<StaffNotificationPage />} />
               <Route path="invoices" element={<StaffInvoiceListPage />} />
@@ -176,6 +184,7 @@ export default function AppRoutes() {
             <Route path="/resident" element={<ResidentLayout />}>
               <Route index element={<Navigate to="/resident/dashboard" replace />} />
               <Route path="dashboard" element={<ResidentDashboardPage />} />
+              <Route path="profile" element={<ProfilePage />} />
               <Route path="settings" element={<Settings />} />
               <Route path="notifications" element={<ResidentNotificationPage />} />
               <Route path="feedbacks" element={<ResidentFeedbackPage />} />

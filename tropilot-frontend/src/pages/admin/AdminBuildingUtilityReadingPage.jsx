@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
 import * as roomApi from '../../api/roomApi.js';
 import * as utilityReadingApi from '../../api/utilityReadingApi.js';
@@ -9,6 +10,7 @@ import { formatDisplayMonth } from '../../utils/dateFormat.js';
 import { formatRoomCode } from '../../utils/roomDisplay.js';
 
 export default function AdminBuildingUtilityReadingPage() {
+  const { t } = useTranslation();
   const { building } = useOutletContext();
   const [rooms, setRooms] = useState([]);
   const [readings, setReadings] = useState([]);
@@ -30,14 +32,15 @@ export default function AdminBuildingUtilityReadingPage() {
       setRooms(roomsResponse.data);
       setReadings(readingsResponse.data);
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Building utility readings could not be loaded');
+      setError(apiError.response?.data?.message || t('buildingUtilityReadings.loadError'));
     }
   };
 
   useEffect(() => {
     setLoading(true);
+    setEditingReading(null);
     loadData().finally(() => setLoading(false));
-  }, [building.id]);
+  }, [building.id, t]);
 
   const handleCreate = async (payload) => {
     setSaving(true);
@@ -49,11 +52,11 @@ export default function AdminBuildingUtilityReadingPage() {
         ...payload,
         buildingId: building.id
       });
-      setMessage('Utility reading created successfully.');
+      setMessage(t('buildingUtilityReadings.created'));
       setFormKey((current) => current + 1);
       await loadData();
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Utility reading could not be created');
+      setError(apiError.response?.data?.message || t('buildingUtilityReadings.createError'));
     } finally {
       setSaving(false);
     }
@@ -69,11 +72,11 @@ export default function AdminBuildingUtilityReadingPage() {
         ...payload,
         buildingId: building.id
       });
-      setMessage('Utility reading updated successfully.');
+      setMessage(t('buildingUtilityReadings.updated'));
       setEditingReading(null);
       await loadData();
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Utility reading could not be updated');
+      setError(apiError.response?.data?.message || t('buildingUtilityReadings.updateError'));
     } finally {
       setSaving(false);
     }
@@ -82,26 +85,35 @@ export default function AdminBuildingUtilityReadingPage() {
   const renderActions = (reading) => (
     <div className="table-actions">
       <button className="secondary-button compact-button" type="button" onClick={() => setEditingReading(reading)}>
-        Edit
+        {t('common.edit')}
       </button>
     </div>
   );
 
   return (
     <div className="building-workspace">
-      <PageHeader eyebrow="Building utility readings" title="Utility readings in this building" />
+      <PageHeader eyebrow={t('buildingUtilityReadings.eyebrow')} title={t('buildingUtilityReadings.title')} />
+      <p className="page-support-text">{t('buildingUtilityReadings.description')}</p>
 
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
 
       {loading ? (
-        <div className="empty-state">Loading utility readings...</div>
+        <div className="empty-state">{t('buildingUtilityReadings.loading')}</div>
       ) : (
         <section className="utility-reading-workspace">
           <div>
             <PageHeader
-              eyebrow={editingReading ? 'Edit reading' : 'New reading'}
-              title={editingReading ? `${formatRoomCode(editingReading)} - ${formatDisplayMonth(editingReading.month)}` : 'Record reading'}
+              eyebrow={
+                editingReading
+                  ? t('buildingUtilityReadings.editReading')
+                  : t('buildingUtilityReadings.newReading')
+              }
+              title={
+                editingReading
+                  ? `${formatRoomCode(editingReading)} - ${formatDisplayMonth(editingReading.month)}`
+                  : t('buildingUtilityReadings.recordReading')
+              }
             />
             <UtilityReadingForm
               key={editingReading?.id || `new-building-reading-${building.id}-${formKey}`}
@@ -110,7 +122,11 @@ export default function AdminBuildingUtilityReadingPage() {
               initialValues={editingReading}
               loading={saving}
               mode={editingReading ? 'edit' : 'create'}
-              submitLabel={editingReading ? 'Save changes' : 'Record reading'}
+              submitLabel={
+                editingReading
+                  ? t('buildingUtilityReadings.saveChanges')
+                  : t('buildingUtilityReadings.recordReading')
+              }
               onSubmit={editingReading ? handleUpdate : handleCreate}
               onCancel={editingReading ? () => setEditingReading(null) : undefined}
             />

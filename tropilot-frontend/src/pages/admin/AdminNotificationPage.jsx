@@ -197,41 +197,49 @@ export default function AdminNotificationPage() {
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
 
-      <div className="narrow-section">
-        <form className="panel-form" onSubmit={handleSubmit}>
-          <label htmlFor="title">Title</label>
-          <input id="title" name="title" value={form.title} onChange={handleChange} maxLength={160} required />
+      <div className="notification-composer-shell">
+        <form className="panel-form notification-composer-form" onSubmit={handleSubmit}>
+          <div className="notification-field notification-field-full">
+            <label htmlFor="title">Title</label>
+            <input id="title" name="title" value={form.title} onChange={handleChange} maxLength={160} required />
+          </div>
 
-          <label htmlFor="content">Content</label>
-          <textarea id="content" name="content" rows="6" value={form.content} onChange={handleChange} required />
+          <div className="notification-field notification-field-full">
+            <label htmlFor="content">Content</label>
+            <textarea id="content" name="content" rows="6" value={form.content} onChange={handleChange} required />
+          </div>
 
-          <label htmlFor="targetType">Target</label>
-          <select id="targetType" name="targetType" value={form.targetType} onChange={handleChange} required>
-            {NOTIFICATION_TARGET_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-
-          {usesBuildingTarget && (
-            <>
-              <label htmlFor="buildingTargetType">Target buildings</label>
-              <select
-                id="buildingTargetType"
-                name="buildingTargetType"
-                value={form.buildingTargetType}
-                onChange={handleChange}
-                required
-              >
-                <option value="ALL">All buildings</option>
-                <option value="SELECTED">Selected buildings</option>
+          <div className="notification-form-grid">
+            <div className="notification-field">
+              <label htmlFor="targetType">Target</label>
+              <select id="targetType" name="targetType" value={form.targetType} onChange={handleChange} required>
+                {NOTIFICATION_TARGET_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
               </select>
-            </>
-          )}
+            </div>
+
+            {usesBuildingTarget && (
+              <div className="notification-field">
+                <label htmlFor="buildingTargetType">Target buildings</label>
+                <select
+                  id="buildingTargetType"
+                  name="buildingTargetType"
+                  value={form.buildingTargetType}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="ALL">All buildings</option>
+                  <option value="SELECTED">Selected buildings</option>
+                </select>
+              </div>
+            )}
+          </div>
 
           {needsSelectedBuildings && (
-            <>
+            <div className="notification-field notification-selection-panel">
               <label>Building receiving notification</label>
               <CheckboxList
                 ariaLabel="Building receiving notification"
@@ -242,11 +250,11 @@ export default function AdminNotificationPage() {
                 getLabel={(building) => `${building.buildingCode} - ${building.name}`}
                 emptyMessage="No buildings found."
               />
-            </>
+            </div>
           )}
 
           {needsSelectedUsers && (
-            <>
+            <div className="notification-field notification-selection-panel">
               <label>Target Head Residents</label>
               <CheckboxList
                 ariaLabel="Target Head Residents"
@@ -262,12 +270,14 @@ export default function AdminNotificationPage() {
                     : 'No assigned Head Residents found for selected buildings.'
                 }
               />
-            </>
+            </div>
           )}
 
-          <button type="submit" disabled={saving}>
-            {saving ? 'Creating...' : 'Create notification'}
-          </button>
+          <div className="notification-submit-row">
+            <button type="submit" disabled={saving}>
+              {saving ? 'Creating...' : 'Create notification'}
+            </button>
+          </div>
         </form>
       </div>
 

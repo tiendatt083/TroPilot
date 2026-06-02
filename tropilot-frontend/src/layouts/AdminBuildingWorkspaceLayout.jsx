@@ -106,11 +106,20 @@ export default function AdminBuildingWorkspaceLayout() {
           <NavLink to={`/admin/buildings/${building.id}/rooms`}>
             {t('buildingWorkspace.rooms')}
           </NavLink>
+          <NavLink to={`/admin/buildings/${building.id}/users`}>
+            {t('buildingWorkspace.users')}
+          </NavLink>
           <NavLink to={`/admin/buildings/${building.id}/contracts`}>
             {t('buildingWorkspace.contracts')}
           </NavLink>
-          <NavLink to={`/admin/buildings/${building.id}/billing`}>
-            {t('buildingWorkspace.billing')}
+          <NavLink to={`/admin/buildings/${building.id}/utility-readings`}>
+            {t('buildingWorkspace.utilityReadings')}
+          </NavLink>
+          <NavLink to={`/admin/buildings/${building.id}/invoices`}>
+            {t('buildingWorkspace.invoices')}
+          </NavLink>
+          <NavLink to={`/admin/buildings/${building.id}/service-fees`}>
+            {t('buildingWorkspace.serviceFees')}
           </NavLink>
           <NavLink to={`/admin/buildings/${building.id}/vehicles`}>
             {t('buildingWorkspace.vehicles')}

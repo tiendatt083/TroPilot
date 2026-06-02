@@ -9,7 +9,7 @@ function formatNumber(value) {
     : value;
 }
 
-export default function ServiceFeeTable({ serviceFees, renderActions }) {
+export default function ServiceFeeTable({ serviceFees, renderActions, showBuilding = false }) {
   const { t } = useTranslation();
   const hasActions = Boolean(renderActions);
 
@@ -19,10 +19,10 @@ export default function ServiceFeeTable({ serviceFees, renderActions }) {
         <thead>
           <tr>
             <th>{t('tables.common.code')}</th>
+            {showBuilding && <th>{t('tables.common.building')}</th>}
             <th>{t('tables.common.name')}</th>
             <th>{t('tables.common.feeType')}</th>
             <th>{t('tables.common.calculation')}</th>
-            <th>{t('tables.common.vehicleType')}</th>
             <th>{t('tables.common.unitPrice')}</th>
             <th>{t('tables.common.status')}</th>
             {hasActions && <th>{t('tables.common.actions')}</th>}
@@ -35,10 +35,15 @@ export default function ServiceFeeTable({ serviceFees, renderActions }) {
             return (
               <tr key={serviceFee.id}>
                 <td>{serviceFee.feeCode}</td>
+                {showBuilding && (
+                  <td>
+                    <strong>{serviceFee.buildingCode || t('common.noBuilding')}</strong>
+                    {serviceFee.buildingName && <span className="table-subtext">{serviceFee.buildingName}</span>}
+                  </td>
+                )}
                 <td>{serviceFee.name}</td>
                 <td>{formatEnumLabel(t, 'feeType', serviceFee.feeType)}</td>
                 <td>{formatEnumLabel(t, 'calculationType', serviceFee.calculationType)}</td>
-                <td>{serviceFee.vehicleType ? formatEnumLabel(t, 'vehicleType', serviceFee.vehicleType) : t('common.notApplicable')}</td>
                 <td>{formatNumber(serviceFee.unitPrice)}</td>
                 <td>
                   <span className={`status-pill status-${active ? 'active' : 'inactive'}`}>

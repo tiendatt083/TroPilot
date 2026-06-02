@@ -85,7 +85,8 @@ public class InvoiceServiceImpl implements InvoiceService {
         UtilityReading utilityReading = findUtilityReadingForGeneration(room, month, firstInvoiceForCurrentHead);
         RentalContract activeContract = firstInvoiceForCurrentHead ? findActiveContract(assignment) : null;
 
-        List<ServiceFee> activeFees = serviceFeeRepository.findByIsActiveTrueOrderByCreatedAtDesc();
+        List<ServiceFee> activeFees = serviceFeeRepository
+                .findByBuilding_IdAndIsActiveTrueOrderByCreatedAtDesc(room.getBuilding().getId());
         long approvedMemberCount = roomMemberRepository.countByRoom_IdAndResidentHead_IdAndStatus(
                 room.getId(),
                 assignment.getResidentHead().getId(),
@@ -114,7 +115,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         }
         addFixedFeeItems(invoice, activeFees);
         addByPersonFeeItems(invoice, activeFees, occupantQuantity);
-        addParkingFeeItems(invoice, activeFees, activeVehicles);
+        addQuantityFeeItems(invoice, activeFees, activeVehicles);
 
         BigDecimal totalAmount = invoice.getItems()
                 .stream()
@@ -228,11 +229,8 @@ public class InvoiceServiceImpl implements InvoiceService {
     private void addFixedFeeItems(Invoice invoice, List<ServiceFee> activeFees) {
         activeFees.stream()
                 .filter(fee -> fee.getCalculationType() == CalculationType.FIXED)
-                .filter(fee -> fee.getFeeType() != FeeType.ROOM)
-                .filter(fee -> fee.getFeeType() != FeeType.ELECTRICITY)
-                .filter(fee -> fee.getFeeType() != FeeType.WATER)
-                .filter(fee -> fee.getFeeType() != FeeType.PARKING)
-                .forEach(fee -> addServiceFeeItem(invoice, fee, ONE, "Fixed service fee"));
+                .filter(fee -> fee.getFeeType() == FeeType.OTHER)
+                .forEach(fee -> addServiceFeeItem(invoice, fee, ONE, "Other fixed service fee"));
     }
 
     private void addByPersonFeeItems(
@@ -241,26 +239,24 @@ public class InvoiceServiceImpl implements InvoiceService {
             BigDecimal occupantQuantity
     ) {
         activeFees.stream()
+                .filter(fee -> fee.getFeeType() == FeeType.OTHER)
                 .filter(fee -> fee.getCalculationType() == CalculationType.BY_PERSON)
                 .forEach(fee -> addServiceFeeItem(invoice, fee, occupantQuantity, "Head Resident plus approved room members"));
     }
 
-    private void addParkingFeeItems(
+    private void addQuantityFeeItems(
             Invoice invoice,
             List<ServiceFee> activeFees,
             List<Vehicle> activeVehicles
     ) {
         activeFees.stream()
-                .filter(fee -> fee.getFeeType() == FeeType.PARKING)
+                .filter(fee -> fee.getFeeType() == FeeType.OTHER)
                 .filter(fee -> fee.getCalculationType() == CalculationType.BY_QUANTITY)
                 .forEach(fee -> {
-                    long quantity = activeVehicles.stream()
-                            .filter(vehicle -> fee.getVehicleType() == null
-                                    || vehicle.getVehicleType() == fee.getVehicleType())
-                            .count();
+                    long quantity = activeVehicles.size();
 
                     if (quantity > 0) {
-                        addServiceFeeItem(invoice, fee, BigDecimal.valueOf(quantity), "Active vehicles");
+                        addServiceFeeItem(invoice, fee, BigDecimal.valueOf(quantity), "Quantity-based other service fee");
                     }
                 });
     }
@@ -293,7 +289,7 @@ public class InvoiceServiceImpl implements InvoiceService {
                 .filter(fee -> fee.getCalculationType() == calculationType)
                 .findFirst()
                 .orElseThrow(() -> new BadRequestException(
-                        "Active " + feeType.name().toLowerCase() + " fee is required for invoice generation"
+                        "Active " + feeType.name().toLowerCase() + " fee is required in this building for invoice generation"
                 ));
     }
 

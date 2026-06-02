@@ -90,6 +90,19 @@ export function AuthProvider({ children }) {
     return updatedUser;
   }, [token]);
 
+  const updateProfile = useCallback(async (payload) => {
+    const response = await authApi.updateCurrentUser(payload);
+    const updatedUser = response.data;
+
+    setUser(updatedUser);
+
+    if (token) {
+      setStoredAuth(token, updatedUser);
+    }
+
+    return updatedUser;
+  }, [token]);
+
   const value = useMemo(
     () => ({
       token,
@@ -98,9 +111,10 @@ export function AuthProvider({ children }) {
       isAuthenticated: Boolean(token && user),
       signIn,
       logout,
-      changeFirstPassword
+      changeFirstPassword,
+      updateProfile
     }),
-    [changeFirstPassword, loading, logout, signIn, token, user]
+    [changeFirstPassword, loading, logout, signIn, token, updateProfile, user]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

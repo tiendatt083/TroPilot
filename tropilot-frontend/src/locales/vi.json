@@ -4,6 +4,8 @@
     "clear": "Xóa lọc",
     "delete": "Xóa",
     "edit": "Sửa",
+    "activate": "Kích hoạt",
+    "deactivate": "Tắt",
     "filter": "Lọc",
     "notAvailable": "Không có dữ liệu",
     "notLinked": "Không liên kết",
@@ -30,6 +32,38 @@
     "currentLanguage": "Ngôn ngữ hiện tại",
     "vietnamese": "Tiếng Việt",
     "english": "Tiếng Anh"
+  },
+  "profile": {
+    "title": "Thông tin cá nhân",
+    "eyebrow": "Tài khoản",
+    "description": "Xem thông tin tài khoản và cập nhật thông tin liên hệ cơ bản sau khi xác nhận mật khẩu hiện tại.",
+    "editTitle": "Sửa thông tin cá nhân",
+    "passwordHelp": "Nhập mật khẩu hiện tại để xác nhận lần cập nhật hồ sơ này.",
+    "emailHelp": "Email được dùng để đăng nhập và không thể đổi tại trang này.",
+    "sections": {
+      "account": "Thông tin tài khoản",
+      "edit": "Cập nhật hồ sơ"
+    },
+    "fields": {
+      "fullName": "Họ và tên",
+      "email": "Email",
+      "phone": "Số điện thoại",
+      "identityNumber": "Căn cước công dân (ID)",
+      "role": "Vai trò",
+      "status": "Trạng thái tài khoản",
+      "currentPassword": "Mật khẩu hiện tại"
+    },
+    "status": {
+      "locked": "Đã khóa"
+    },
+    "actions": {
+      "save": "Lưu hồ sơ",
+      "saving": "Đang lưu hồ sơ..."
+    },
+    "messages": {
+      "updated": "Đã cập nhật hồ sơ thành công.",
+      "updateError": "Không thể cập nhật hồ sơ"
+    }
   },
   "role": {
     "admin": "Admin",
@@ -60,7 +94,8 @@
     "serviceFees": "Phí dịch vụ",
     "utilityReadings": "Chỉ số tiện ích",
     "members": "Thành viên",
-    "contract": "Hợp đồng"
+    "contract": "Hợp đồng",
+    "profile": "Thông tin cá nhân"
   },
   "buildingWorkspace": {
     "eyebrow": "Không gian quản lý tòa nhà",
@@ -74,8 +109,12 @@
     "createRoom": "Tạo phòng",
     "overview": "Tổng quan",
     "rooms": "Phòng",
+    "users": "Người dùng",
     "contracts": "Hợp đồng",
     "billing": "Lập hóa đơn",
+    "utilityReadings": "Chỉ số điện nước",
+    "invoices": "Hóa đơn",
+    "serviceFees": "Phí dịch vụ",
     "vehicles": "Xe",
     "payments": "Thanh toán",
     "receipts": "Biên lai",
@@ -87,6 +126,71 @@
     "feedbacks": "Phản hồi",
     "invoiceComplaints": "Khiếu nại hóa đơn",
     "notifications": "Thông báo"
+  },
+  "buildingServiceFees": {
+    "eyebrow": "Phí dịch vụ của tòa nhà",
+    "title": "Phí dịch vụ trong tòa nhà này",
+    "description": "Cấu hình phí điện, nước và các phí khác dùng khi tạo hóa đơn cho tòa nhà này.",
+    "loading": "Đang tải phí dịch vụ...",
+    "loadError": "Không thể tải phí dịch vụ của tòa nhà",
+    "created": "Tạo phí dịch vụ thành công.",
+    "createError": "Không thể tạo phí dịch vụ",
+    "updated": "Cập nhật phí dịch vụ thành công.",
+    "updateError": "Không thể cập nhật phí dịch vụ",
+    "deleted": "Xóa phí dịch vụ thành công.",
+    "deleteError": "Không thể xóa phí dịch vụ",
+    "statusUpdated": "Cập nhật trạng thái phí dịch vụ thành công.",
+    "statusUpdateError": "Không thể cập nhật trạng thái phí dịch vụ",
+    "deleteConfirm": "Xóa phí dịch vụ {{code}}?",
+    "formEyebrow": "Thiết lập phí",
+    "createTitle": "Phí dịch vụ mới",
+    "editTitle": "Sửa phí dịch vụ",
+    "recordsEyebrow": "Cấu hình hóa đơn",
+    "recordsTitle": "Danh sách phí đã cấu hình",
+    "create": "Tạo phí dịch vụ",
+    "save": "Lưu thay đổi",
+    "cancelEdit": "Hủy sửa"
+  },
+  "buildingUsers": {
+    "eyebrow": "Người dùng của tòa nhà",
+    "title": "Người dùng trong tòa nhà này",
+    "loading": "Đang tải người dùng của tòa nhà...",
+    "loadError": "Không thể tải người dùng của tòa nhà",
+    "empty": "Không tìm thấy người dùng trong tòa nhà này.",
+    "filters": {
+      "searchPlaceholder": "Tìm theo tên, email, số điện thoại, căn cước hoặc phòng",
+      "searchAria": "Tìm kiếm người dùng của tòa nhà",
+      "roleAria": "Lọc theo vai trò",
+      "statusAria": "Lọc theo trạng thái",
+      "roomAria": "Lọc theo phòng",
+      "allRoles": "Tất cả vai trò",
+      "allStatuses": "Tất cả trạng thái",
+      "allRooms": "Tất cả phòng"
+    },
+    "columns": {
+      "user": "Người dùng",
+      "phone": "Số điện thoại",
+      "identityNumber": "Căn cước công dân (ID)",
+      "role": "Vai trò",
+      "room": "Phòng",
+      "relationship": "Quan hệ",
+      "moveInDate": "Ngày chuyển vào",
+      "status": "Trạng thái"
+    },
+    "recordTypes": {
+      "account": "Tài khoản đăng nhập",
+      "roomMember": "Hồ sơ thành viên phòng"
+    },
+    "roles": {
+      "roomMember": "Thành viên hộ"
+    },
+    "statuses": {
+      "locked": "Đã khóa",
+      "approved": "Đã duyệt",
+      "pending": "Đang chờ",
+      "rejected": "Bị từ chối",
+      "left": "Đã rời đi"
+    }
   },
   "buildingBilling": {
     "eyebrow": "Lập hóa đơn của tòa nhà",
@@ -110,6 +214,34 @@
     "billingRecords": "Dữ liệu lập hóa đơn",
     "utilityReadings": "Chỉ số tiện ích",
     "invoices": "Hóa đơn"
+  },
+  "buildingUtilityReadings": {
+    "eyebrow": "Chỉ số điện nước của tòa nhà",
+    "title": "Chỉ số điện nước trong tòa nhà này",
+    "description": "Ghi chỉ số điện nước và tải ảnh bằng chứng cho các phòng trong tòa nhà này.",
+    "loading": "Đang tải chỉ số điện nước...",
+    "loadError": "Không thể tải chỉ số điện nước của tòa nhà",
+    "created": "Đã tạo chỉ số điện nước thành công.",
+    "createError": "Không thể tạo chỉ số điện nước",
+    "updated": "Đã cập nhật chỉ số điện nước thành công.",
+    "updateError": "Không thể cập nhật chỉ số điện nước",
+    "newReading": "Chỉ số mới",
+    "editReading": "Sửa chỉ số",
+    "recordReading": "Ghi chỉ số",
+    "saveChanges": "Lưu thay đổi"
+  },
+  "buildingInvoices": {
+    "eyebrow": "Hóa đơn của tòa nhà",
+    "title": "Hóa đơn trong tòa nhà này",
+    "description": "Tạo và xem hóa đơn cho các phòng trong tòa nhà này.",
+    "loading": "Đang tải hóa đơn...",
+    "loadError": "Không thể tải hóa đơn của tòa nhà",
+    "generated": "Đã tạo hóa đơn thành công.",
+    "generateError": "Không thể tạo hóa đơn",
+    "invoiceLoadError": "Không thể tải hóa đơn",
+    "generate": "Tạo hóa đơn",
+    "newInvoice": "Hóa đơn mới",
+    "invoiceRecords": "Danh sách hóa đơn"
   },
   "activityLogs": {
     "title": "Nhật ký hoạt động",
@@ -147,6 +279,7 @@
       "TASK_CREATED": "Tạo công việc",
       "USER_CREATED": "Tạo người dùng",
       "USER_DELETED": "Xóa người dùng",
+      "PROFILE_UPDATED": "Cập nhật hồ sơ",
       "USER_PASSWORD_RESET": "Tạo lại mật khẩu người dùng",
       "UTILITY_READING_RECORDED": "Ghi chỉ số tiện ích"
     },
@@ -160,6 +293,7 @@
       "createdAccount": "Đã tạo tài khoản {{role}} cho {{target}}",
       "resetTemporaryPassword": "Đã tạo lại mật khẩu tạm thời cho {{target}}",
       "deletedUserAccount": "Đã xóa tài khoản người dùng {{target}}",
+      "updatedProfileInformation": "Đã cập nhật thông tin hồ sơ",
       "createdRoom": "Đã tạo phòng {{room}} trong tòa nhà {{building}}",
       "assignedHeadResident": "Đã gán chủ hộ {{resident}} vào phòng {{room}}",
       "addedRoomMemberRequest": "Đã gửi yêu cầu thêm thành viên phòng cho {{member}}",

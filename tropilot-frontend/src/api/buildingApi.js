@@ -14,6 +14,11 @@ export async function getAdminBuilding(id) {
   return response.data;
 }
 
+export async function getAdminBuildingUsers(id) {
+  const response = await apiClient.get(`/api/admin/buildings/${id}/users`);
+  return response.data;
+}
+
 export async function createAdminBuilding(payload) {
   const response = await apiClient.post('/api/admin/buildings', payload);
   return response.data;

@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { formatEnumLabel } from '../utils/i18nFormat.js';
 import {
-  CALCULATION_TYPE_OPTIONS,
   FEE_TYPE_OPTIONS,
-  SERVICE_FEE_VEHICLE_TYPE_OPTIONS
+  getCalculationTypeOptionsForFeeType,
+  getDefaultCalculationTypeForFeeType
 } from '../utils/serviceFeeOptions.js';
 
 const emptyForm = {
@@ -12,8 +12,7 @@ const emptyForm = {
   feeCode: '',
   feeType: 'ELECTRICITY',
   unitPrice: 0,
-  calculationType: 'FIXED',
-  vehicleType: ''
+  calculationType: 'BY_USAGE'
 };
 
 export default function ServiceFeeForm({ initialValues, loading, submitLabel, onSubmit }) {
@@ -21,11 +20,18 @@ export default function ServiceFeeForm({ initialValues, loading, submitLabel, on
   const [form, setForm] = useState(emptyForm);
 
   useEffect(() => {
+    const feeType = initialValues?.feeType || emptyForm.feeType;
+    const calculationOptions = getCalculationTypeOptionsForFeeType(feeType);
+    const calculationType = calculationOptions.some((option) => option.value === initialValues?.calculationType)
+      ? initialValues.calculationType
+      : getDefaultCalculationTypeForFeeType(feeType);
+
     setForm({
       ...emptyForm,
       ...initialValues,
+      feeType,
       unitPrice: initialValues?.unitPrice ?? 0,
-      vehicleType: initialValues?.vehicleType || ''
+      calculationType
     });
   }, [initialValues]);
 
@@ -37,8 +43,8 @@ export default function ServiceFeeForm({ initialValues, loading, submitLabel, on
         [name]: name === 'unitPrice' ? value : value
       };
 
-      if (name === 'feeType' && value !== 'PARKING') {
-        nextForm.vehicleType = '';
+      if (name === 'feeType') {
+        nextForm.calculationType = getDefaultCalculationTypeForFeeType(value);
       }
 
       return nextForm;
@@ -53,12 +59,11 @@ export default function ServiceFeeForm({ initialValues, loading, submitLabel, on
       feeType: form.feeType,
       unitPrice: form.unitPrice === '' ? null : Number(form.unitPrice),
       calculationType: form.calculationType,
-      vehicleType: form.feeType === 'PARKING' && form.vehicleType ? form.vehicleType : null
+      vehicleType: null
     });
   };
 
-  const isParkingFee = form.feeType === 'PARKING';
-  const requiresVehicleType = isParkingFee && form.calculationType === 'BY_QUANTITY';
+  const calculationTypeOptions = getCalculationTypeOptionsForFeeType(form.feeType);
 
   return (
     <form className="panel-form" onSubmit={handleSubmit}>
@@ -95,7 +100,7 @@ export default function ServiceFeeForm({ initialValues, loading, submitLabel, on
             onChange={handleChange}
             required
           >
-            {CALCULATION_TYPE_OPTIONS.map((option) => (
+            {calculationTypeOptions.map((option) => (
               <option key={option.value} value={option.value}>
                 {formatEnumLabel(t, 'calculationType', option.value)}
               </option>
@@ -115,29 +120,6 @@ export default function ServiceFeeForm({ initialValues, loading, submitLabel, on
         onChange={handleChange}
         required
       />
-
-      {isParkingFee && (
-        <>
-          <label htmlFor="vehicleType">{t('tables.common.vehicleType')}</label>
-          <select
-            id="vehicleType"
-            name="vehicleType"
-            value={form.vehicleType}
-            onChange={handleChange}
-            required={requiresVehicleType}
-          >
-            <option value="">
-              {requiresVehicleType ? t('forms.serviceFee.selectVehicleType') : t('forms.serviceFee.noSpecificVehicleType')}
-            </option>
-            {SERVICE_FEE_VEHICLE_TYPE_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {formatEnumLabel(t, 'vehicleType', option.value)}
-              </option>
-            ))}
-          </select>
-        </>
-      )}
-
       <button type="submit" disabled={loading}>
         {loading ? t('common.saving') : submitLabel}
       </button>
