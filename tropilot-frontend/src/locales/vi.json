@@ -130,7 +130,7 @@
   "buildingServiceFees": {
     "eyebrow": "Phí dịch vụ của tòa nhà",
     "title": "Phí dịch vụ trong tòa nhà này",
-    "description": "Cấu hình phí điện, nước và các phí khác dùng khi tạo hóa đơn cho tòa nhà này.",
+    "description": "Thiết lập giá điện, nước mặc định và thêm các dịch vụ sẽ được đưa vào hóa đơn của tòa nhà này.",
     "loading": "Đang tải phí dịch vụ...",
     "loadError": "Không thể tải phí dịch vụ của tòa nhà",
     "created": "Tạo phí dịch vụ thành công.",
@@ -141,15 +141,43 @@
     "deleteError": "Không thể xóa phí dịch vụ",
     "statusUpdated": "Cập nhật trạng thái phí dịch vụ thành công.",
     "statusUpdateError": "Không thể cập nhật trạng thái phí dịch vụ",
-    "deleteConfirm": "Xóa phí dịch vụ {{code}}?",
-    "formEyebrow": "Thiết lập phí",
-    "createTitle": "Phí dịch vụ mới",
-    "editTitle": "Sửa phí dịch vụ",
+    "deleteConfirm": "Xóa phí dịch vụ {{name}}?",
+    "utilitySaved": "Đã lưu phí điện và nước mặc định.",
+    "utilitySaveError": "Không thể lưu phí điện và nước mặc định",
+    "defaultsEyebrow": "Giá trị mặc định cho phòng",
+    "defaultsTitle": "Giá điện nước mặc định",
+    "defaultsDescription": "Các giá trị này được dùng khi tạo hóa đơn phòng trong tòa nhà này.",
+    "additionalEyebrow": "Dịch vụ trên hóa đơn",
+    "additionalTitle": "Dịch vụ bổ sung",
+    "additionalDescription": "Thêm các dịch vụ như internet, rác, vệ sinh hoặc phí quản lý để đưa vào hóa đơn.",
+    "calculationMethod": "Phương thức tính",
+    "saveDefaultFees": "Lưu phí mặc định",
+    "addService": "Thêm dịch vụ",
     "recordsEyebrow": "Cấu hình hóa đơn",
     "recordsTitle": "Danh sách phí đã cấu hình",
     "create": "Tạo phí dịch vụ",
     "save": "Lưu thay đổi",
-    "cancelEdit": "Hủy sửa"
+    "cancelEdit": "Hủy sửa",
+    "methods": {
+      "FIXED": "Giá cố định",
+      "BY_USAGE": "Theo tiêu thụ (số x giá)",
+      "BY_PERSON": "Theo số người (người x giá)"
+    },
+    "utility": {
+      "electricityIcon": "E",
+      "electricityTitle": "Giá điện",
+      "electricityPriceLabel": "Giá điện",
+      "electricityHelp": "Dùng cho cách tính theo kWh hoặc theo số người.",
+      "waterIcon": "W",
+      "waterTitle": "Giá nước",
+      "waterPriceLabel": "Giá nước",
+      "waterHelp": "Dùng cho cách tính theo khối nước hoặc theo số người."
+    },
+    "additional": {
+      "name": "Tên dịch vụ",
+      "unitPrice": "Số tiền",
+      "empty": "Chưa cấu hình dịch vụ bổ sung nào."
+    }
   },
   "buildingUsers": {
     "eyebrow": "Người dùng của tòa nhà",

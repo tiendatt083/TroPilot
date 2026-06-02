@@ -130,7 +130,7 @@
   "buildingServiceFees": {
     "eyebrow": "Building service fees",
     "title": "Service fees in this building",
-    "description": "Configure electricity, water, and other billable fees used when generating invoices for this building.",
+    "description": "Set default electricity and water pricing, then add extra services that should appear on invoices for this building.",
     "loading": "Loading service fees...",
     "loadError": "Building service fees could not be loaded",
     "created": "Service fee created successfully.",
@@ -141,15 +141,43 @@
     "deleteError": "Service fee could not be deleted",
     "statusUpdated": "Service fee status updated successfully.",
     "statusUpdateError": "Service fee status could not be updated",
-    "deleteConfirm": "Delete service fee {{code}}?",
-    "formEyebrow": "Fee setup",
-    "createTitle": "New service fee",
-    "editTitle": "Edit service fee",
+    "deleteConfirm": "Delete service fee {{name}}?",
+    "utilitySaved": "Default electricity and water fees saved successfully.",
+    "utilitySaveError": "Default electricity and water fees could not be saved",
+    "defaultsEyebrow": "Default room values",
+    "defaultsTitle": "Default utility pricing",
+    "defaultsDescription": "These values are used when creating room invoices in this building.",
+    "additionalEyebrow": "Invoice services",
+    "additionalTitle": "Additional services",
+    "additionalDescription": "Add optional invoice services such as internet, trash, cleaning, or management fees.",
+    "calculationMethod": "Calculation method",
+    "saveDefaultFees": "Save default fees",
+    "addService": "Add service",
     "recordsEyebrow": "Billing configuration",
     "recordsTitle": "Configured fees",
     "create": "Create service fee",
     "save": "Save changes",
-    "cancelEdit": "Cancel edit"
+    "cancelEdit": "Cancel edit",
+    "methods": {
+      "FIXED": "Fixed amount",
+      "BY_USAGE": "By usage (usage x price)",
+      "BY_PERSON": "By occupant (occupants x price)"
+    },
+    "utility": {
+      "electricityIcon": "E",
+      "electricityTitle": "Electricity price",
+      "electricityPriceLabel": "Electricity price",
+      "electricityHelp": "Used for kWh-based billing or occupant-based electricity billing.",
+      "waterIcon": "W",
+      "waterTitle": "Water price",
+      "waterPriceLabel": "Water price",
+      "waterHelp": "Used for cubic-meter billing or occupant-based water billing."
+    },
+    "additional": {
+      "name": "Service name",
+      "unitPrice": "Amount",
+      "empty": "No additional service has been configured."
+    }
   },
   "buildingUsers": {
     "eyebrow": "Building users",

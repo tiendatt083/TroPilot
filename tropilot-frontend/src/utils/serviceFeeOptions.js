@@ -7,16 +7,15 @@ export const FEE_TYPE_OPTIONS = [
 export const CALCULATION_TYPE_OPTIONS = [
   { value: 'FIXED', label: 'Fixed' },
   { value: 'BY_USAGE', label: 'By usage' },
-  { value: 'BY_PERSON', label: 'By person' },
-  { value: 'BY_QUANTITY', label: 'By quantity' }
+  { value: 'BY_PERSON', label: 'By person' }
 ];
 
 export function getCalculationTypeOptionsForFeeType(feeType) {
   if (feeType === 'ELECTRICITY' || feeType === 'WATER') {
-    return CALCULATION_TYPE_OPTIONS.filter((option) => option.value === 'BY_USAGE');
+    return CALCULATION_TYPE_OPTIONS.filter((option) => option.value === 'BY_USAGE' || option.value === 'BY_PERSON');
   }
 
-  return CALCULATION_TYPE_OPTIONS.filter((option) => option.value !== 'BY_USAGE');
+  return CALCULATION_TYPE_OPTIONS.filter((option) => option.value === 'FIXED' || option.value === 'BY_PERSON');
 }
 
 export function getDefaultCalculationTypeForFeeType(feeType) {

@@ -244,16 +244,19 @@ public class ServiceFeeServiceImpl implements ServiceFeeService {
         }
 
         if ((feeType == FeeType.ELECTRICITY || feeType == FeeType.WATER)
-                && calculationType != CalculationType.BY_USAGE) {
-            throw new BadRequestException("Electricity and water fees must be calculated by usage");
+                && calculationType != CalculationType.BY_USAGE
+                && calculationType != CalculationType.BY_PERSON) {
+            throw new BadRequestException("Electricity and water fees must be calculated by usage or by person");
         }
 
-        if (feeType == FeeType.OTHER && calculationType == CalculationType.BY_USAGE) {
-            throw new BadRequestException("Usage-based fees are reserved for electricity and water");
+        if (feeType == FeeType.OTHER
+                && calculationType != CalculationType.FIXED
+                && calculationType != CalculationType.BY_PERSON) {
+            throw new BadRequestException("Additional services must be fixed or calculated by person");
         }
 
         if (normalizeOptionalText(vehicleType) != null) {
-            throw new BadRequestException("Vehicle type is not used for service fees. Use OTHER with BY_QUANTITY for quantity-based fees");
+            throw new BadRequestException("Vehicle type is not used for service fees");
         }
     }
 

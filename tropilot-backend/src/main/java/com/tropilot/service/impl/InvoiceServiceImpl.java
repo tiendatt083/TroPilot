@@ -10,14 +10,12 @@ import com.tropilot.entity.RoomAssignment;
 import com.tropilot.entity.ServiceFee;
 import com.tropilot.entity.User;
 import com.tropilot.entity.UtilityReading;
-import com.tropilot.entity.Vehicle;
 import com.tropilot.enums.CalculationType;
 import com.tropilot.enums.FeeType;
 import com.tropilot.enums.InvoiceStatus;
 import com.tropilot.enums.RentalStatus;
 import com.tropilot.enums.RoomAssignmentStatus;
 import com.tropilot.enums.RoomMemberStatus;
-import com.tropilot.enums.VehicleStatus;
 import com.tropilot.exception.BadRequestException;
 import com.tropilot.exception.ForbiddenException;
 import com.tropilot.exception.ResourceNotFoundException;
@@ -30,7 +28,6 @@ import com.tropilot.repository.RoomRepository;
 import com.tropilot.repository.ServiceFeeRepository;
 import com.tropilot.repository.UserRepository;
 import com.tropilot.repository.UtilityReadingRepository;
-import com.tropilot.repository.VehicleRepository;
 import com.tropilot.service.ActivityLogService;
 import com.tropilot.service.InvoiceService;
 import lombok.RequiredArgsConstructor;
@@ -58,7 +55,6 @@ public class InvoiceServiceImpl implements InvoiceService {
     private final UtilityReadingRepository utilityReadingRepository;
     private final ServiceFeeRepository serviceFeeRepository;
     private final RoomMemberRepository roomMemberRepository;
-    private final VehicleRepository vehicleRepository;
     private final InvoiceMapper invoiceMapper;
     private final ActivityLogService activityLogService;
 
@@ -82,9 +78,7 @@ public class InvoiceServiceImpl implements InvoiceService {
                 room.getId(),
                 assignment.getResidentHead().getId()
         );
-        UtilityReading utilityReading = findUtilityReadingForGeneration(room, month, firstInvoiceForCurrentHead);
         RentalContract activeContract = firstInvoiceForCurrentHead ? findActiveContract(assignment) : null;
-
         List<ServiceFee> activeFees = serviceFeeRepository
                 .findByBuilding_IdAndIsActiveTrueOrderByCreatedAtDesc(room.getBuilding().getId());
         long approvedMemberCount = roomMemberRepository.countByRoom_IdAndResidentHead_IdAndStatus(
@@ -93,7 +87,8 @@ public class InvoiceServiceImpl implements InvoiceService {
                 RoomMemberStatus.APPROVED
         );
         BigDecimal occupantQuantity = BigDecimal.valueOf(1L + approvedMemberCount);
-        List<Vehicle> activeVehicles = vehicleRepository.findByRoomIdAndStatusWithDetails(room.getId(), VehicleStatus.ACTIVE);
+        boolean utilityReadingRequired = !firstInvoiceForCurrentHead && hasUsageBasedUtilityFee(activeFees);
+        UtilityReading utilityReading = findUtilityReadingForGeneration(room, month, utilityReadingRequired);
 
         Invoice invoice = Invoice.builder()
                 .room(room)
@@ -110,12 +105,11 @@ public class InvoiceServiceImpl implements InvoiceService {
         }
         addRoomPriceItem(invoice, room);
         if (!firstInvoiceForCurrentHead) {
-            addUtilityItem(invoice, activeFees, utilityReading, FeeType.ELECTRICITY);
-            addUtilityItem(invoice, activeFees, utilityReading, FeeType.WATER);
+            addUtilityItem(invoice, activeFees, utilityReading, FeeType.ELECTRICITY, occupantQuantity);
+            addUtilityItem(invoice, activeFees, utilityReading, FeeType.WATER, occupantQuantity);
         }
         addFixedFeeItems(invoice, activeFees);
         addByPersonFeeItems(invoice, activeFees, occupantQuantity);
-        addQuantityFeeItems(invoice, activeFees, activeVehicles);
 
         BigDecimal totalAmount = invoice.getItems()
                 .stream()
@@ -211,19 +205,40 @@ public class InvoiceServiceImpl implements InvoiceService {
             Invoice invoice,
             List<ServiceFee> activeFees,
             UtilityReading utilityReading,
-            FeeType feeType
+            FeeType feeType,
+            BigDecimal occupantQuantity
     ) {
-        ServiceFee serviceFee = findRequiredFee(activeFees, feeType, CalculationType.BY_USAGE);
-        BigDecimal usage = feeType == FeeType.ELECTRICITY
-                ? utilityReading.getNewElectricity().subtract(utilityReading.getOldElectricity())
-                : utilityReading.getNewWater().subtract(utilityReading.getOldWater());
+        ServiceFee serviceFee = findRequiredFee(activeFees, feeType);
 
-        addServiceFeeItem(
-                invoice,
-                serviceFee,
-                usage,
-                feeType == FeeType.ELECTRICITY ? "Electricity usage" : "Water usage"
-        );
+        if (serviceFee.getCalculationType() == CalculationType.BY_USAGE) {
+            if (utilityReading == null) {
+                throw new BadRequestException("Utility reading is required for usage-based electricity or water fees");
+            }
+
+            BigDecimal usage = feeType == FeeType.ELECTRICITY
+                    ? utilityReading.getNewElectricity().subtract(utilityReading.getOldElectricity())
+                    : utilityReading.getNewWater().subtract(utilityReading.getOldWater());
+
+            addServiceFeeItem(
+                    invoice,
+                    serviceFee,
+                    usage,
+                    feeType == FeeType.ELECTRICITY ? "Electricity usage" : "Water usage"
+            );
+            return;
+        }
+
+        if (serviceFee.getCalculationType() == CalculationType.BY_PERSON) {
+            addServiceFeeItem(
+                    invoice,
+                    serviceFee,
+                    occupantQuantity,
+                    feeType == FeeType.ELECTRICITY ? "Electricity charged by occupant" : "Water charged by occupant"
+            );
+            return;
+        }
+
+        throw new BadRequestException("Electricity and water fees must be calculated by usage or by person");
     }
 
     private void addFixedFeeItems(Invoice invoice, List<ServiceFee> activeFees) {
@@ -244,23 +259,6 @@ public class InvoiceServiceImpl implements InvoiceService {
                 .forEach(fee -> addServiceFeeItem(invoice, fee, occupantQuantity, "Head Resident plus approved room members"));
     }
 
-    private void addQuantityFeeItems(
-            Invoice invoice,
-            List<ServiceFee> activeFees,
-            List<Vehicle> activeVehicles
-    ) {
-        activeFees.stream()
-                .filter(fee -> fee.getFeeType() == FeeType.OTHER)
-                .filter(fee -> fee.getCalculationType() == CalculationType.BY_QUANTITY)
-                .forEach(fee -> {
-                    long quantity = activeVehicles.size();
-
-                    if (quantity > 0) {
-                        addServiceFeeItem(invoice, fee, BigDecimal.valueOf(quantity), "Quantity-based other service fee");
-                    }
-                });
-    }
-
     private void addServiceFeeItem(
             Invoice invoice,
             ServiceFee serviceFee,
@@ -279,18 +277,19 @@ public class InvoiceServiceImpl implements InvoiceService {
                 .build());
     }
 
-    private ServiceFee findRequiredFee(
-            List<ServiceFee> activeFees,
-            FeeType feeType,
-            CalculationType calculationType
-    ) {
+    private ServiceFee findRequiredFee(List<ServiceFee> activeFees, FeeType feeType) {
         return activeFees.stream()
                 .filter(fee -> fee.getFeeType() == feeType)
-                .filter(fee -> fee.getCalculationType() == calculationType)
                 .findFirst()
                 .orElseThrow(() -> new BadRequestException(
                         "Active " + feeType.name().toLowerCase() + " fee is required in this building for invoice generation"
                 ));
+    }
+
+    private boolean hasUsageBasedUtilityFee(List<ServiceFee> activeFees) {
+        return activeFees.stream()
+                .filter(fee -> fee.getFeeType() == FeeType.ELECTRICITY || fee.getFeeType() == FeeType.WATER)
+                .anyMatch(fee -> fee.getCalculationType() == CalculationType.BY_USAGE);
     }
 
     private Invoice findInvoice(Long id) {
@@ -358,12 +357,12 @@ public class InvoiceServiceImpl implements InvoiceService {
     private UtilityReading findUtilityReadingForGeneration(
             Room room,
             LocalDate month,
-            boolean firstInvoiceForCurrentHead
+            boolean utilityReadingRequired
     ) {
         return utilityReadingRepository
                 .findByRoomIdAndMonthWithDetails(room.getId(), month)
                 .orElseGet(() -> {
-                    if (firstInvoiceForCurrentHead) {
+                    if (!utilityReadingRequired) {
                         return null;
                     }
 

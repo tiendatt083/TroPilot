@@ -1,29 +1,111 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
 import * as serviceFeeApi from '../../api/serviceFeeApi.js';
 import PageHeader from '../../components/PageHeader.jsx';
-import ServiceFeeForm from '../../components/ServiceFeeForm.jsx';
-import ServiceFeeTable from '../../components/ServiceFeeTable.jsx';
+import { formatEnumLabel } from '../../utils/i18nFormat.js';
 import { isServiceFeeActive } from '../../utils/serviceFeeOptions.js';
+
+const utilityFeeConfigs = [
+  {
+    key: 'electricity',
+    feeType: 'ELECTRICITY',
+    codeSuffix: 'ELECTRICITY',
+    name: 'Electricity'
+  },
+  {
+    key: 'water',
+    feeType: 'WATER',
+    codeSuffix: 'WATER',
+    name: 'Water'
+  }
+];
+
+const utilityCalculationTypes = ['BY_USAGE', 'BY_PERSON'];
+const additionalCalculationTypes = ['FIXED', 'BY_PERSON'];
+
+const emptyUtilityForm = {
+  electricity: {
+    unitPrice: '',
+    calculationType: 'BY_USAGE'
+  },
+  water: {
+    unitPrice: '',
+    calculationType: 'BY_USAGE'
+  }
+};
+
+const emptyAdditionalForm = {
+  name: '',
+  unitPrice: '',
+  calculationType: 'FIXED'
+};
+
+function normalizeCodePart(value) {
+  return String(value || '')
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-Z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '');
+}
+
+function buildFeeCode(buildingCode, suffix) {
+  const baseCode = (normalizeCodePart(buildingCode) || 'BUILDING').slice(0, 28);
+  const normalizedSuffix = normalizeCodePart(suffix) || 'SERVICE';
+  return `${baseCode}_${normalizedSuffix}`.slice(0, 50);
+}
+
+function buildAdditionalFeeCode(buildingCode, serviceName) {
+  const baseCode = (normalizeCodePart(buildingCode) || 'BUILDING').slice(0, 16);
+  const serviceCode = normalizeCodePart(serviceName).slice(0, 18) || 'SERVICE';
+  const uniqueSuffix = Date.now().toString().slice(-8);
+  return `${baseCode}_SERVICE_${serviceCode}_${uniqueSuffix}`.slice(0, 50);
+}
+
+function formatMoney(value) {
+  const numberValue = Number(value);
+  return Number.isFinite(numberValue)
+    ? numberValue.toLocaleString('en-US', { maximumFractionDigits: 2 })
+    : value;
+}
+
+function findFirstFeeByType(serviceFees, feeType) {
+  return serviceFees.find((serviceFee) => serviceFee.feeType === feeType) || null;
+}
 
 export default function AdminBuildingServiceFeePage() {
   const { t } = useTranslation();
   const { building } = useOutletContext();
   const [serviceFees, setServiceFees] = useState([]);
-  const [editingServiceFee, setEditingServiceFee] = useState(null);
+  const [utilityForm, setUtilityForm] = useState(emptyUtilityForm);
+  const [additionalForm, setAdditionalForm] = useState(emptyAdditionalForm);
+  const [editingAdditionalFee, setEditingAdditionalFee] = useState(null);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+  const [savingUtilityFees, setSavingUtilityFees] = useState(false);
+  const [savingAdditionalFee, setSavingAdditionalFee] = useState(false);
   const [processingId, setProcessingId] = useState(null);
+
+  const utilityFees = useMemo(
+    () => ({
+      electricity: findFirstFeeByType(serviceFees, 'ELECTRICITY'),
+      water: findFirstFeeByType(serviceFees, 'WATER')
+    }),
+    [serviceFees]
+  );
+
+  const additionalFees = useMemo(
+    () => serviceFees.filter((serviceFee) => serviceFee.feeType === 'OTHER'),
+    [serviceFees]
+  );
 
   const loadServiceFees = async () => {
     setError('');
 
     try {
       const response = await serviceFeeApi.getAdminBuildingServiceFees(building.id);
-      setServiceFees(response.data);
+      setServiceFees(response.data || []);
     } catch (apiError) {
       setError(apiError.response?.data?.message || t('buildingServiceFees.loadError'));
     }
@@ -31,34 +113,140 @@ export default function AdminBuildingServiceFeePage() {
 
   useEffect(() => {
     setLoading(true);
-    setEditingServiceFee(null);
+    setEditingAdditionalFee(null);
+    setAdditionalForm(emptyAdditionalForm);
     loadServiceFees().finally(() => setLoading(false));
   }, [building.id, t]);
 
-  const handleSubmit = async (payload) => {
-    setSaving(true);
+  useEffect(() => {
+    setUtilityForm({
+      electricity: {
+        unitPrice: utilityFees.electricity?.unitPrice ?? '',
+        calculationType: utilityCalculationTypes.includes(utilityFees.electricity?.calculationType)
+          ? utilityFees.electricity.calculationType
+          : 'BY_USAGE'
+      },
+      water: {
+        unitPrice: utilityFees.water?.unitPrice ?? '',
+        calculationType: utilityCalculationTypes.includes(utilityFees.water?.calculationType)
+          ? utilityFees.water.calculationType
+          : 'BY_USAGE'
+      }
+    });
+  }, [utilityFees.electricity, utilityFees.water]);
+
+  const handleUtilityChange = (feeKey, field, value) => {
+    setUtilityForm((current) => ({
+      ...current,
+      [feeKey]: {
+        ...current[feeKey],
+        [field]: value
+      }
+    }));
+  };
+
+  const saveUtilityFee = async (config) => {
+    const existingFee = utilityFees[config.key];
+    const payload = {
+      name: config.name,
+      feeCode: existingFee?.feeCode || buildFeeCode(building.buildingCode, config.codeSuffix),
+      feeType: config.feeType,
+      unitPrice: Number(utilityForm[config.key].unitPrice),
+      calculationType: utilityForm[config.key].calculationType,
+      vehicleType: null
+    };
+
+    if (existingFee) {
+      const response = await serviceFeeApi.updateAdminBuildingServiceFee(building.id, existingFee.id, payload);
+      if (!isServiceFeeActive(existingFee)) {
+        await serviceFeeApi.toggleAdminBuildingServiceFee(building.id, existingFee.id);
+      }
+      return response;
+    }
+
+    return serviceFeeApi.createAdminBuildingServiceFee(building.id, payload);
+  };
+
+  const handleSaveUtilityFees = async (event) => {
+    event.preventDefault();
+    setSavingUtilityFees(true);
     setMessage('');
     setError('');
 
     try {
-      if (editingServiceFee) {
-        await serviceFeeApi.updateAdminBuildingServiceFee(building.id, editingServiceFee.id, payload);
+      for (const config of utilityFeeConfigs) {
+        await saveUtilityFee(config);
+      }
+
+      setMessage(t('buildingServiceFees.utilitySaved'));
+      await loadServiceFees();
+    } catch (apiError) {
+      setError(apiError.response?.data?.message || t('buildingServiceFees.utilitySaveError'));
+    } finally {
+      setSavingUtilityFees(false);
+    }
+  };
+
+  const handleAdditionalChange = (event) => {
+    const { name, value } = event.target;
+    setAdditionalForm((current) => ({
+      ...current,
+      [name]: value
+    }));
+  };
+
+  const handleAdditionalSubmit = async (event) => {
+    event.preventDefault();
+    setSavingAdditionalFee(true);
+    setMessage('');
+    setError('');
+
+    const trimmedName = additionalForm.name.trim();
+    const payload = {
+      name: trimmedName,
+      feeCode: editingAdditionalFee?.feeCode || buildAdditionalFeeCode(building.buildingCode, trimmedName),
+      feeType: 'OTHER',
+      unitPrice: Number(additionalForm.unitPrice),
+      calculationType: additionalForm.calculationType,
+      vehicleType: null
+    };
+
+    try {
+      if (editingAdditionalFee) {
+        await serviceFeeApi.updateAdminBuildingServiceFee(building.id, editingAdditionalFee.id, payload);
         setMessage(t('buildingServiceFees.updated'));
       } else {
         await serviceFeeApi.createAdminBuildingServiceFee(building.id, payload);
         setMessage(t('buildingServiceFees.created'));
       }
 
-      setEditingServiceFee(null);
+      setEditingAdditionalFee(null);
+      setAdditionalForm(emptyAdditionalForm);
       await loadServiceFees();
     } catch (apiError) {
       setError(
         apiError.response?.data?.message ||
-          (editingServiceFee ? t('buildingServiceFees.updateError') : t('buildingServiceFees.createError'))
+          (editingAdditionalFee ? t('buildingServiceFees.updateError') : t('buildingServiceFees.createError'))
       );
     } finally {
-      setSaving(false);
+      setSavingAdditionalFee(false);
     }
+  };
+
+  const handleEditAdditional = (serviceFee) => {
+    setEditingAdditionalFee(serviceFee);
+    setAdditionalForm({
+      name: serviceFee.name,
+      unitPrice: serviceFee.unitPrice ?? '',
+      calculationType: additionalCalculationTypes.includes(serviceFee.calculationType)
+        ? serviceFee.calculationType
+        : 'FIXED'
+    });
+  };
+
+  const handleCancelAdditionalEdit = () => {
+    setEditingAdditionalFee(null);
+    setAdditionalForm(emptyAdditionalForm);
   };
 
   const handleToggle = async (serviceFee) => {
@@ -78,7 +266,7 @@ export default function AdminBuildingServiceFeePage() {
   };
 
   const handleDelete = async (serviceFee) => {
-    const confirmed = window.confirm(t('buildingServiceFees.deleteConfirm', { code: serviceFee.feeCode }));
+    const confirmed = window.confirm(t('buildingServiceFees.deleteConfirm', { name: serviceFee.name }));
     if (!confirmed) {
       return;
     }
@@ -90,8 +278,8 @@ export default function AdminBuildingServiceFeePage() {
     try {
       const response = await serviceFeeApi.deleteAdminBuildingServiceFee(building.id, serviceFee.id);
       setMessage(response.message || t('buildingServiceFees.deleted'));
-      if (editingServiceFee?.id === serviceFee.id) {
-        setEditingServiceFee(null);
+      if (editingAdditionalFee?.id === serviceFee.id) {
+        handleCancelAdditionalEdit();
       }
       await loadServiceFees();
     } catch (apiError) {
@@ -101,34 +289,50 @@ export default function AdminBuildingServiceFeePage() {
     }
   };
 
-  const renderActions = (serviceFee) => (
-    <div className="table-actions">
-      <button
-        className="secondary-button compact-button"
-        type="button"
-        disabled={processingId === serviceFee.id}
-        onClick={() => setEditingServiceFee(serviceFee)}
-      >
-        {t('common.edit')}
-      </button>
-      <button
-        className="secondary-button compact-button"
-        type="button"
-        disabled={processingId === serviceFee.id}
-        onClick={() => handleToggle(serviceFee)}
-      >
-        {isServiceFeeActive(serviceFee) ? t('common.deactivate') : t('common.activate')}
-      </button>
-      <button
-        className="secondary-button compact-button"
-        type="button"
-        disabled={processingId === serviceFee.id}
-        onClick={() => handleDelete(serviceFee)}
-      >
-        {t('common.delete')}
-      </button>
+  const renderCalculationOptions = (feeKey, selectedValue, onChange) => (
+    <div className="service-fee-radio-group">
+      {utilityCalculationTypes.map((calculationType) => (
+        <label className="radio-option" key={`${feeKey}-${calculationType}`}>
+          <input
+            type="radio"
+            name={`${feeKey}CalculationType`}
+            value={calculationType}
+            checked={selectedValue === calculationType}
+            onChange={(event) => onChange(event.target.value)}
+          />
+          <span>{t(`buildingServiceFees.methods.${calculationType}`)}</span>
+        </label>
+      ))}
     </div>
   );
+
+  const renderUtilityCard = (config) => {
+    const feeForm = utilityForm[config.key];
+
+    return (
+      <article className="billing-setting-card" key={config.key}>
+        <div className="billing-setting-title-row">
+          <span className="billing-setting-icon">{t(`buildingServiceFees.utility.${config.key}Icon`)}</span>
+          <h2>{t(`buildingServiceFees.utility.${config.key}Title`)}</h2>
+        </div>
+        <label htmlFor={`${config.key}UnitPrice`}>{t(`buildingServiceFees.utility.${config.key}PriceLabel`)}</label>
+        <input
+          id={`${config.key}UnitPrice`}
+          type="number"
+          min="0"
+          step="0.01"
+          value={feeForm.unitPrice}
+          onChange={(event) => handleUtilityChange(config.key, 'unitPrice', event.target.value)}
+          required
+        />
+        <span className="field-help-text">{t(`buildingServiceFees.utility.${config.key}Help`)}</span>
+        <h3>{t('buildingServiceFees.calculationMethod')}</h3>
+        {renderCalculationOptions(config.key, feeForm.calculationType, (value) =>
+          handleUtilityChange(config.key, 'calculationType', value)
+        )}
+      </article>
+    );
+  };
 
   return (
     <div className="building-workspace">
@@ -141,33 +345,150 @@ export default function AdminBuildingServiceFeePage() {
       {loading ? (
         <div className="empty-state">{t('buildingServiceFees.loading')}</div>
       ) : (
-        <section className="service-fee-workspace">
-          <div>
-            <PageHeader
-              eyebrow={t('buildingServiceFees.formEyebrow')}
-              title={editingServiceFee ? t('buildingServiceFees.editTitle') : t('buildingServiceFees.createTitle')}
-            />
-            <ServiceFeeForm
-              initialValues={editingServiceFee}
-              loading={saving}
-              submitLabel={editingServiceFee ? t('buildingServiceFees.save') : t('buildingServiceFees.create')}
-              onSubmit={handleSubmit}
-            />
-            {editingServiceFee && (
-              <button
-                className="secondary-button inline-button"
-                type="button"
-                disabled={saving}
-                onClick={() => setEditingServiceFee(null)}
-              >
-                {t('buildingServiceFees.cancelEdit')}
-              </button>
-            )}
-          </div>
-          <div>
-            <PageHeader eyebrow={t('buildingServiceFees.recordsEyebrow')} title={t('buildingServiceFees.recordsTitle')} />
-            <ServiceFeeTable serviceFees={serviceFees} renderActions={renderActions} />
-          </div>
+        <section className="building-service-fee-page">
+          <form className="settings-card building-fee-defaults-card" onSubmit={handleSaveUtilityFees}>
+            <div className="settings-card-heading">
+              <span>{t('buildingServiceFees.defaultsEyebrow')}</span>
+              <h2>{t('buildingServiceFees.defaultsTitle')}</h2>
+              <p>{t('buildingServiceFees.defaultsDescription')}</p>
+            </div>
+            <div className="service-fee-utility-grid">{utilityFeeConfigs.map(renderUtilityCard)}</div>
+            <button type="submit" disabled={savingUtilityFees}>
+              {savingUtilityFees ? t('common.saving') : t('buildingServiceFees.saveDefaultFees')}
+            </button>
+          </form>
+
+          <section className="settings-card additional-service-card">
+            <div className="settings-card-heading">
+              <span>{t('buildingServiceFees.additionalEyebrow')}</span>
+              <h2>{t('buildingServiceFees.additionalTitle')}</h2>
+              <p>{t('buildingServiceFees.additionalDescription')}</p>
+            </div>
+
+            <div className="additional-service-layout">
+              <form className="panel-form additional-service-form" onSubmit={handleAdditionalSubmit}>
+                <label htmlFor="additionalServiceName">{t('buildingServiceFees.additional.name')}</label>
+                <input
+                  id="additionalServiceName"
+                  name="name"
+                  value={additionalForm.name}
+                  onChange={handleAdditionalChange}
+                  maxLength={120}
+                  required
+                />
+
+                <label htmlFor="additionalServiceUnitPrice">{t('buildingServiceFees.additional.unitPrice')}</label>
+                <input
+                  id="additionalServiceUnitPrice"
+                  name="unitPrice"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={additionalForm.unitPrice}
+                  onChange={handleAdditionalChange}
+                  required
+                />
+
+                <label htmlFor="additionalServiceCalculationType">
+                  {t('buildingServiceFees.calculationMethod')}
+                </label>
+                <select
+                  id="additionalServiceCalculationType"
+                  name="calculationType"
+                  value={additionalForm.calculationType}
+                  onChange={handleAdditionalChange}
+                  required
+                >
+                  {additionalCalculationTypes.map((calculationType) => (
+                    <option key={calculationType} value={calculationType}>
+                      {t(`buildingServiceFees.methods.${calculationType}`)}
+                    </option>
+                  ))}
+                </select>
+
+                <button type="submit" disabled={savingAdditionalFee}>
+                  {savingAdditionalFee
+                    ? t('common.saving')
+                    : editingAdditionalFee
+                      ? t('buildingServiceFees.save')
+                      : t('buildingServiceFees.addService')}
+                </button>
+                {editingAdditionalFee && (
+                  <button
+                    className="secondary-button"
+                    type="button"
+                    disabled={savingAdditionalFee}
+                    onClick={handleCancelAdditionalEdit}
+                  >
+                    {t('buildingServiceFees.cancelEdit')}
+                  </button>
+                )}
+              </form>
+
+              <div className="table-wrap additional-service-table-wrap">
+                <table className="data-table additional-service-table">
+                  <thead>
+                    <tr>
+                      <th>{t('buildingServiceFees.additional.name')}</th>
+                      <th>{t('buildingServiceFees.additional.unitPrice')}</th>
+                      <th>{t('buildingServiceFees.calculationMethod')}</th>
+                      <th>{t('tables.common.status')}</th>
+                      <th>{t('tables.common.actions')}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {additionalFees.map((serviceFee) => {
+                      const active = isServiceFeeActive(serviceFee);
+
+                      return (
+                        <tr key={serviceFee.id}>
+                          <td>{serviceFee.name}</td>
+                          <td>{formatMoney(serviceFee.unitPrice)}</td>
+                          <td>{formatEnumLabel(t, 'calculationType', serviceFee.calculationType)}</td>
+                          <td>
+                            <span className={`status-pill status-${active ? 'active' : 'inactive'}`}>
+                              {active ? t('common.active') : t('common.inactive')}
+                            </span>
+                          </td>
+                          <td>
+                            <div className="table-actions">
+                              <button
+                                className="secondary-button compact-button"
+                                type="button"
+                                disabled={processingId === serviceFee.id}
+                                onClick={() => handleEditAdditional(serviceFee)}
+                              >
+                                {t('common.edit')}
+                              </button>
+                              <button
+                                className="secondary-button compact-button"
+                                type="button"
+                                disabled={processingId === serviceFee.id}
+                                onClick={() => handleToggle(serviceFee)}
+                              >
+                                {active ? t('common.deactivate') : t('common.activate')}
+                              </button>
+                              <button
+                                className="secondary-button compact-button"
+                                type="button"
+                                disabled={processingId === serviceFee.id}
+                                onClick={() => handleDelete(serviceFee)}
+                              >
+                                {t('common.delete')}
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+                {additionalFees.length === 0 && (
+                  <div className="empty-state flat-empty-state">{t('buildingServiceFees.additional.empty')}</div>
+                )}
+              </div>
+            </div>
+          </section>
         </section>
       )}
     </div>
