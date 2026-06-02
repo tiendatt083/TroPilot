@@ -128,7 +128,7 @@ export default function AdminBuildingMemberPage() {
                 <tr key={member.id}>
                   <td>
                     <strong>{member.fullName}</strong>
-                    <span className="table-subtext">{member.relationship || 'Not provided'}</span>
+                    <span className="table-subtext">{member.email || 'Not provided'}</span>
                   </td>
                   <td>{member.phone}</td>
                   <td>

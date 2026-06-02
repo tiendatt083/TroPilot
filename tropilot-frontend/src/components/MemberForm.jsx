@@ -4,11 +4,10 @@ import { useTranslation } from 'react-i18next';
 const emptyForm = {
   fullName: '',
   phone: '',
+  email: '',
   identityNumber: '',
-  dateOfBirth: '',
   relationship: '',
-  moveInDate: '',
-  note: ''
+  moveInDate: ''
 };
 
 export default function MemberForm({ initialValues, loading, submitLabel, onSubmit, onCancel }) {
@@ -19,7 +18,6 @@ export default function MemberForm({ initialValues, loading, submitLabel, onSubm
     setForm({
       ...emptyForm,
       ...initialValues,
-      dateOfBirth: initialValues?.dateOfBirth || '',
       moveInDate: initialValues?.moveInDate || ''
     });
   }, [initialValues]);
@@ -37,11 +35,10 @@ export default function MemberForm({ initialValues, loading, submitLabel, onSubm
     onSubmit({
       fullName: form.fullName,
       phone: form.phone,
-      identityNumber: form.identityNumber || null,
-      dateOfBirth: form.dateOfBirth || null,
-      relationship: form.relationship || null,
-      moveInDate: form.moveInDate || null,
-      note: form.note || null
+      email: form.email,
+      identityNumber: form.identityNumber,
+      relationship: form.relationship,
+      moveInDate: form.moveInDate
     });
   };
 
@@ -60,6 +57,17 @@ export default function MemberForm({ initialValues, loading, submitLabel, onSubm
       <label htmlFor="phone">{t('forms.member.phone')}</label>
       <input id="phone" name="phone" value={form.phone} onChange={handleChange} maxLength={30} required />
 
+      <label htmlFor="email">{t('forms.member.email')}</label>
+      <input
+        id="email"
+        name="email"
+        type="email"
+        value={form.email || ''}
+        onChange={handleChange}
+        maxLength={120}
+        required
+      />
+
       <div className="form-grid">
         <div>
           <label htmlFor="identityNumber">{t('forms.member.identityNumber')}</label>
@@ -69,6 +77,7 @@ export default function MemberForm({ initialValues, loading, submitLabel, onSubm
             value={form.identityNumber || ''}
             onChange={handleChange}
             maxLength={60}
+            required
           />
         </div>
         <div>
@@ -79,37 +88,21 @@ export default function MemberForm({ initialValues, loading, submitLabel, onSubm
             value={form.relationship || ''}
             onChange={handleChange}
             maxLength={80}
+            required
           />
         </div>
       </div>
 
-      <div className="form-grid">
-        <div>
-          <label htmlFor="dateOfBirth">{t('forms.member.dateOfBirth')}</label>
-          <input
-            id="dateOfBirth"
-            name="dateOfBirth"
-            type="date"
-            lang="en-GB"
-            value={form.dateOfBirth || ''}
-            onChange={handleChange}
-          />
-        </div>
-        <div>
-          <label htmlFor="moveInDate">{t('forms.member.moveInDate')}</label>
-          <input
-            id="moveInDate"
-            name="moveInDate"
-            type="date"
-            lang="en-GB"
-            value={form.moveInDate || ''}
-            onChange={handleChange}
-          />
-        </div>
-      </div>
-
-      <label htmlFor="note">{t('tables.common.note')}</label>
-      <textarea id="note" name="note" value={form.note || ''} onChange={handleChange} maxLength={1000} rows="4" />
+      <label htmlFor="moveInDate">{t('forms.member.moveInDate')}</label>
+      <input
+        id="moveInDate"
+        name="moveInDate"
+        type="date"
+        lang="en-GB"
+        value={form.moveInDate || ''}
+        onChange={handleChange}
+        required
+      />
 
       <div className="button-row form-button-row">
         {onCancel && (

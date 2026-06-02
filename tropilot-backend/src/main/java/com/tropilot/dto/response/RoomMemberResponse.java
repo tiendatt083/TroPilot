@@ -23,6 +23,7 @@ public class RoomMemberResponse {
     private String residentHeadEmail;
     private String fullName;
     private String phone;
+    private String email;
     private String identityNumber;
     private LocalDate dateOfBirth;
     private String relationship;

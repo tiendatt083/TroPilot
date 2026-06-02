@@ -50,6 +50,9 @@ public class RoomMember {
     @Column(nullable = false, length = 30)
     private String phone;
 
+    @Column(length = 120)
+    private String email;
+
     @Column(length = 60)
     private String identityNumber;
 

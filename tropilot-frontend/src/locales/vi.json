@@ -587,7 +587,8 @@
       "member": {
         "fullName": "Họ và tên",
         "phone": "Số điện thoại",
-        "identityNumber": "Số giấy tờ",
+        "email": "Gmail",
+        "identityNumber": "Căn cước công dân (ID)",
         "relationship": "Quan hệ",
         "dateOfBirth": "Ngày sinh",
         "moveInDate": "Ngày chuyển vào"

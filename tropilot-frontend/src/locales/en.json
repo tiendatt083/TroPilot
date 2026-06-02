@@ -587,7 +587,8 @@
       "member": {
         "fullName": "Full name",
         "phone": "Phone",
-        "identityNumber": "Identity number",
+        "email": "Email",
+        "identityNumber": "Citizen ID",
         "relationship": "Relationship",
         "dateOfBirth": "Date of birth",
         "moveInDate": "Move-in date"

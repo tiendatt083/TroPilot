@@ -426,7 +426,10 @@ export default function AdminBuildingDetailPage() {
             <tbody>
               {operations.members.map((member) => (
                 <tr key={member.id}>
-                  <td>{member.fullName}</td>
+                  <td>
+                    <strong>{member.fullName}</strong>
+                    <span className="table-subtext">{member.email || 'Not provided'}</span>
+                  </td>
                   <td>{member.phone}</td>
                   <td>{formatRoomCode(member)}</td>
                   <td>{member.residentHeadName}</td>

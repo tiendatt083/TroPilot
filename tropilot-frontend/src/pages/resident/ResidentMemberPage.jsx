@@ -142,7 +142,10 @@ export default function ResidentMemberPage() {
                 <tbody>
                   {members.map((member) => (
                     <tr key={member.id}>
-                      <td>{member.fullName}</td>
+                      <td>
+                        <strong>{member.fullName}</strong>
+                        <span className="table-subtext">{member.email || 'Not provided'}</span>
+                      </td>
                       <td>{member.phone}</td>
                       <td>{member.relationship || 'Not provided'}</td>
                       <td>{formatDisplayDate(member.moveInDate)}</td>

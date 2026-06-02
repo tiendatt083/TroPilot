@@ -49,6 +49,7 @@ public class RoomMemberMapper {
                 .residentHeadEmail(residentHead.getEmail())
                 .fullName(member.getFullName())
                 .phone(member.getPhone())
+                .email(member.getEmail())
                 .identityNumber(member.getIdentityNumber())
                 .dateOfBirth(member.getDateOfBirth())
                 .relationship(member.getRelationship())
