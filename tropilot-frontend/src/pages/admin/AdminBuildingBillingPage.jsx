@@ -10,6 +10,7 @@ import InvoiceTable from '../../components/InvoiceTable.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
 import UtilityReadingForm from '../../components/UtilityReadingForm.jsx';
 import UtilityReadingTable from '../../components/UtilityReadingTable.jsx';
+import { formatDisplayMonth } from '../../utils/dateFormat.js';
 import { formatRoomCode } from '../../utils/roomDisplay.js';
 
 export default function AdminBuildingBillingPage() {
@@ -163,7 +164,11 @@ export default function AdminBuildingBillingPage() {
             <section className="building-section">
               <PageHeader
                 eyebrow={editingReading ? t('buildingBilling.editReading') : t('buildingBilling.readingEntry')}
-                title={editingReading ? `${formatRoomCode(editingReading)} - ${editingReading.month}` : t('buildingBilling.recordReading')}
+                title={
+                  editingReading
+                    ? `${formatRoomCode(editingReading)} - ${formatDisplayMonth(editingReading.month)}`
+                    : t('buildingBilling.recordReading')
+                }
               />
               <UtilityReadingForm
                 key={editingReading?.id || `new-building-reading-${building.id}-${formKey}`}

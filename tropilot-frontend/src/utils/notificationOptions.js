@@ -1,3 +1,5 @@
+import { formatDisplayDateTime } from './dateFormat.js';
+
 export const NOTIFICATION_TARGET_OPTIONS = [
   { value: 'ALL_RESIDENT_HEADS', label: 'All Head Residents' },
   { value: 'ALL', label: 'All users' },
@@ -32,5 +34,5 @@ export function formatNotificationDateTime(value) {
     return 'Not provided';
   }
 
-  return String(value).replace('T', ' ').slice(0, 16);
+  return formatDisplayDateTime(value, 'Not provided');
 }

@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { getPaymentStatusClass } from '../utils/paymentStatusOptions.js';
 import { resolveFileUrl } from '../utils/fileUrl.js';
+import { formatDisplayDateTime, formatDisplayMonth } from '../utils/dateFormat.js';
 import { formatEnumLabel } from '../utils/i18nFormat.js';
 import { formatRoomCode } from '../utils/roomDisplay.js';
 
@@ -36,7 +37,7 @@ export default function PaymentTable({ payments, renderActions }) {
             <tr key={payment.id}>
               <td>
                 <strong>#{payment.invoiceId}</strong>
-                <span className="table-subtext">{payment.invoiceMonth}</span>
+                <span className="table-subtext">{formatDisplayMonth(payment.invoiceMonth)}</span>
               </td>
               <td>
                 <strong>{formatRoomCode(payment)}</strong>
@@ -57,7 +58,7 @@ export default function PaymentTable({ payments, renderActions }) {
                   {t('common.view')}
                 </a>
               </td>
-              <td>{payment.uploadedAt}</td>
+              <td>{formatDisplayDateTime(payment.uploadedAt)}</td>
               <td>{payment.note || t('common.notProvided')}</td>
               {hasActions && <td>{renderActions(payment)}</td>}
             </tr>

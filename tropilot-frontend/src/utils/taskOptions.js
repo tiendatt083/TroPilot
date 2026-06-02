@@ -1,3 +1,5 @@
+import { formatDisplayDateTime } from './dateFormat.js';
+
 export const TASK_TYPE_OPTIONS = [
   { value: 'METER_READING', label: 'Meter reading' },
   { value: 'INVOICE_CREATION', label: 'Invoice creation' },
@@ -48,7 +50,7 @@ export function formatTaskDateTime(value) {
     return 'Not provided';
   }
 
-  return String(value).replace('T', ' ').slice(0, 16);
+  return formatDisplayDateTime(value, 'Not provided');
 }
 
 export function toDateTimeInputValue(value) {

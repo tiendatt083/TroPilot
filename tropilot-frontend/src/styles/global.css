@@ -291,27 +291,24 @@ a:focus-visible {
   box-shadow: 12px 0 32px rgba(15, 23, 42, 0.1);
 }
 
-.sidebar strong {
+.sidebar-brand {
   display: flex;
   align-items: center;
   gap: 0.7rem;
   min-height: 42px;
   margin: 0;
+}
+
+.sidebar-brand strong {
   font-size: 1.15rem;
   letter-spacing: 0;
 }
 
-.sidebar strong::before {
-  display: inline-grid;
+.sidebar-logo {
   width: 34px;
   height: 34px;
-  place-items: center;
   border-radius: var(--radius-sm);
-  color: #ffffff;
-  background: var(--color-primary);
-  content: "T";
-  font-size: 0.95rem;
-  font-weight: 900;
+  object-fit: contain;
 }
 
 .sidebar-user {

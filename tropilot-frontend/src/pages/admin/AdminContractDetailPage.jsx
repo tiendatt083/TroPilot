@@ -4,6 +4,7 @@ import * as contractApi from '../../api/contractApi.js';
 import ContractUploadForm from '../../components/ContractUploadForm.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
 import { getContractStatusClass, getContractStatusLabel } from '../../utils/contractStatusOptions.js';
+import { formatDisplayDate } from '../../utils/dateFormat.js';
 import { resolveFileUrl } from '../../utils/fileUrl.js';
 import { formatRoomCode, formatRoomLabel } from '../../utils/roomDisplay.js';
 
@@ -127,7 +128,7 @@ export default function AdminContractDetailPage() {
         <div>
           <span>Contract period</span>
           <strong>
-            {contract.startDate} to {contract.endDate}
+            {formatDisplayDate(contract.startDate)} to {formatDisplayDate(contract.endDate)}
           </strong>
         </div>
         <div>

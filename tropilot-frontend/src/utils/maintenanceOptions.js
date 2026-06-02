@@ -1,3 +1,5 @@
+import { formatDisplayDateTime } from './dateFormat.js';
+
 export const MAINTENANCE_STATUS_OPTIONS = [
   { value: 'PENDING', label: 'Pending' },
   { value: 'ASSIGNED', label: 'Assigned' },
@@ -19,5 +21,5 @@ export function formatMaintenanceDateTime(value) {
     return 'Not provided';
   }
 
-  return String(value).replace('T', ' ').slice(0, 16);
+  return formatDisplayDateTime(value, 'Not provided');
 }

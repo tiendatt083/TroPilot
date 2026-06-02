@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { getInvoiceStatusClass } from '../utils/invoiceStatusOptions.js';
 import { resolveFileUrl } from '../utils/fileUrl.js';
+import { formatDisplayDate, formatDisplayMonth } from '../utils/dateFormat.js';
 import { formatEnumLabel } from '../utils/i18nFormat.js';
 import { formatRoomLabel } from '../utils/roomDisplay.js';
 
@@ -37,11 +38,11 @@ export default function InvoiceDetail({ invoice }) {
         </div>
         <div>
           <span>{t('tables.common.month')}</span>
-          <strong>{invoice.month}</strong>
+          <strong>{formatDisplayMonth(invoice.month)}</strong>
         </div>
         <div>
           <span>{t('tables.common.dueDate')}</span>
-          <strong>{invoice.dueDate}</strong>
+          <strong>{formatDisplayDate(invoice.dueDate)}</strong>
         </div>
         <div>
           <span>{t('tables.common.status')}</span>

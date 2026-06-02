@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useOutletContext } from 'react-router-dom';
 import * as memberApi from '../../api/memberApi.js';
 import PageHeader from '../../components/PageHeader.jsx';
+import { formatDisplayDate } from '../../utils/dateFormat.js';
 import { getMemberStatusLabel } from '../../utils/memberStatusOptions.js';
 import { formatRoomCode } from '../../utils/roomDisplay.js';
 
@@ -143,7 +144,7 @@ export default function AdminBuildingMemberPage() {
                     <span className={statusClass(member.status)}>{getMemberStatusLabel(member.status)}</span>
                   </td>
                   <td>{countText(member)}</td>
-                  <td>{member.moveInDate}</td>
+                  <td>{formatDisplayDate(member.moveInDate)}</td>
                   <td>{renderActions(member)}</td>
                 </tr>
               ))}

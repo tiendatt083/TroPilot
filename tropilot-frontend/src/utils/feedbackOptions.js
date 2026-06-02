@@ -1,3 +1,5 @@
+import { formatDisplayDateTime } from './dateFormat.js';
+
 export const FEEDBACK_TYPE_OPTIONS = [
   { value: 'GENERAL', label: 'General' },
   { value: 'CONTRACT_ERROR', label: 'Contract error' },
@@ -32,5 +34,5 @@ export function formatFeedbackDateTime(value) {
     return 'Not provided';
   }
 
-  return String(value).replace('T', ' ').slice(0, 16);
+  return formatDisplayDateTime(value, 'Not provided');
 }

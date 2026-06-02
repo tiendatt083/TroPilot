@@ -3,6 +3,7 @@ import {
   formatFeedbackDateTime,
   getFeedbackStatusClass,
 } from '../utils/feedbackOptions.js';
+import { formatDisplayMonth } from '../utils/dateFormat.js';
 import { formatEnumLabel } from '../utils/i18nFormat.js';
 import { formatRoomLabel } from '../utils/roomDisplay.js';
 
@@ -54,7 +55,7 @@ export default function FeedbackTable({ feedbacks, renderActions }) {
                   <>
                     <strong>#{feedback.invoiceId}</strong>
                     <span className="table-subtext">
-                      {feedback.invoiceMonth} - {formatNumber(feedback.invoiceTotalAmount)}
+                      {formatDisplayMonth(feedback.invoiceMonth)} - {formatNumber(feedback.invoiceTotalAmount)}
                     </span>
                   </>
                 ) : (

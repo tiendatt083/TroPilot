@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { getInvoiceStatusClass } from '../utils/invoiceStatusOptions.js';
+import { formatDisplayDate, formatDisplayMonth } from '../utils/dateFormat.js';
 import { formatEnumLabel } from '../utils/i18nFormat.js';
 import { formatRoomCode } from '../utils/roomDisplay.js';
 
@@ -40,8 +41,8 @@ export default function InvoiceTable({ invoices, renderActions, detailPathBase }
                 <strong>{invoice.residentHeadName}</strong>
                 <span className="table-subtext">{invoice.residentHeadEmail}</span>
               </td>
-              <td>{invoice.month}</td>
-              <td>{invoice.dueDate}</td>
+              <td>{formatDisplayMonth(invoice.month)}</td>
+              <td>{formatDisplayDate(invoice.dueDate)}</td>
               <td>
                 <span className={getInvoiceStatusClass(invoice.status)}>
                   {formatEnumLabel(t, 'invoiceStatus', invoice.status)}

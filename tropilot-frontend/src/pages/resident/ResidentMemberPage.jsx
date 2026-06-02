@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import * as memberApi from '../../api/memberApi.js';
 import MemberForm from '../../components/MemberForm.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
+import { formatDisplayDate } from '../../utils/dateFormat.js';
 import { getMemberStatusLabel } from '../../utils/memberStatusOptions.js';
 
 function statusClass(status) {
@@ -144,7 +145,7 @@ export default function ResidentMemberPage() {
                       <td>{member.fullName}</td>
                       <td>{member.phone}</td>
                       <td>{member.relationship || 'Not provided'}</td>
-                      <td>{member.moveInDate}</td>
+                      <td>{formatDisplayDate(member.moveInDate)}</td>
                       <td>
                         <span className={statusClass(member.status)}>{getMemberStatusLabel(member.status)}</span>
                       </td>

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import * as contractApi from '../../api/contractApi.js';
 import PageHeader from '../../components/PageHeader.jsx';
 import { getContractStatusClass, getContractStatusLabel } from '../../utils/contractStatusOptions.js';
+import { formatDisplayDate } from '../../utils/dateFormat.js';
 import { resolveFileUrl } from '../../utils/fileUrl.js';
 import { formatRoomLabel } from '../../utils/roomDisplay.js';
 
@@ -93,7 +94,7 @@ export default function ResidentContractPage() {
             <div>
               <span>Contract period</span>
               <strong>
-                {contract.startDate} to {contract.endDate}
+                {formatDisplayDate(contract.startDate)} to {formatDisplayDate(contract.endDate)}
               </strong>
             </div>
             <div>

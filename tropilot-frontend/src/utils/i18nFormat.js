@@ -1,3 +1,5 @@
+import { formatDisplayDateTime } from './dateFormat.js';
+
 export function formatFallbackEnumLabel(value) {
   if (!value) {
     return '';
@@ -23,5 +25,5 @@ export function formatDateTime(value, t) {
     return t('common.notProvided');
   }
 
-  return String(value).replace('T', ' ').slice(0, 16);
+  return formatDisplayDateTime(value, t('common.notProvided'));
 }

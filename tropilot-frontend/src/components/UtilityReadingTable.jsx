@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { resolveFileUrl } from '../utils/fileUrl.js';
+import { formatDisplayDate, formatDisplayMonth } from '../utils/dateFormat.js';
 import { formatRoomCode } from '../utils/roomDisplay.js';
 
 function formatNumber(value) {
@@ -49,8 +50,8 @@ export default function UtilityReadingTable({ readings, renderActions }) {
                 <strong>{formatRoomCode(reading)}</strong>
                 <span className="table-subtext">{reading.buildingCode}</span>
               </td>
-              <td>{reading.month}</td>
-              <td>{reading.readingDate || t('common.notSet')}</td>
+              <td>{formatDisplayMonth(reading.month)}</td>
+              <td>{formatDisplayDate(reading.readingDate, t('common.notSet'))}</td>
               <td>
                 {formatNumber(reading.oldElectricity)} {t('common.to')} {formatNumber(reading.newElectricity)}
                 <span className="table-subtext">{t('tables.utilityReadings.usage')}: {formatNumber(reading.electricityUsage)}</span>

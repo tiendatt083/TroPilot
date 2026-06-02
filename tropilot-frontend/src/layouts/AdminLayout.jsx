@@ -1,5 +1,6 @@
 import { NavLink, Outlet } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import SidebarBrand from '../components/SidebarBrand.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 
 const ADMIN_NAV_ITEMS = [
@@ -25,7 +26,7 @@ export default function AdminLayout() {
   return (
     <div className="app-shell">
       <aside className="sidebar">
-        <strong>Tropilot</strong>
+        <SidebarBrand />
         <div className="sidebar-user">
           <span>{user?.fullName}</span>
           <small>{t('role.admin')}</small>

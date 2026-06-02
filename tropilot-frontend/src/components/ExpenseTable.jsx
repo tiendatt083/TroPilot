@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { getExpenseStatusClass } from '../utils/expenseOptions.js';
 import { resolveFileUrl } from '../utils/fileUrl.js';
+import { formatDisplayDateTime } from '../utils/dateFormat.js';
 import { formatEnumLabel } from '../utils/i18nFormat.js';
 import { formatRoomLabel } from '../utils/roomDisplay.js';
 
@@ -44,7 +45,7 @@ export default function ExpenseTable({ expenses, renderActions }) {
             <tr key={expense.id}>
               <td>
                 <strong>{expense.expenseCode}</strong>
-                <span className="table-subtext">{expense.createdAt}</span>
+                <span className="table-subtext">{formatDisplayDateTime(expense.createdAt)}</span>
               </td>
               <td>
                 <strong>{roomText(expense, t)}</strong>

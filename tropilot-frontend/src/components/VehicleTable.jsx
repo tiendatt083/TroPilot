@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { getVehicleStatusClass } from '../utils/vehicleOptions.js';
+import { formatDisplayDate } from '../utils/dateFormat.js';
 import { formatEnumLabel } from '../utils/i18nFormat.js';
 import { formatRoomCode } from '../utils/roomDisplay.js';
 
@@ -8,8 +9,8 @@ function displayText(value, fallback) {
 }
 
 function periodText(vehicle, t) {
-  const startDate = vehicle.startDate || t('common.notSet');
-  const endDate = vehicle.endDate || t('common.open');
+  const startDate = formatDisplayDate(vehicle.startDate, t('common.notSet'));
+  const endDate = formatDisplayDate(vehicle.endDate, t('common.open'));
   return `${startDate} ${t('common.to')} ${endDate}`;
 }
 

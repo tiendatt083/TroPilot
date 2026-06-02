@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { formatDisplayDate, formatDisplayDateTime, formatDisplayMonth } from '../utils/dateFormat.js';
 
 const ROLE_LABEL_KEYS = {
   ADMIN: 'role.admin',
@@ -68,12 +69,12 @@ const DESCRIPTION_PATTERNS = [
   {
     pattern: /^Recorded utility reading for room (.+) on (.+)$/i,
     key: 'activityLogs.descriptions.recordedUtilityReading',
-    params: (match) => ({ room: match[1], date: match[2] })
+    params: (match) => ({ room: match[1], date: formatDisplayDate(match[2]) })
   },
   {
     pattern: /^Generated invoice for room (.+) and month (.+)$/i,
     key: 'activityLogs.descriptions.generatedInvoice',
-    params: (match) => ({ room: match[1], month: match[2] })
+    params: (match) => ({ room: match[1], month: formatDisplayMonth(match[2]) })
   },
   {
     pattern: /^Uploaded payment proof for invoice (.+)$/i,
@@ -127,7 +128,7 @@ function formatDateTime(value, t) {
     return t('activityLogs.notAvailable');
   }
 
-  return String(value).replace('T', ' ').slice(0, 16);
+  return formatDisplayDateTime(value, t('activityLogs.notAvailable'));
 }
 
 function formatFallbackAction(action) {

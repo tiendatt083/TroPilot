@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { getReceiptStatusClass } from '../utils/paymentStatusOptions.js';
+import { formatDisplayDateTime, formatDisplayMonth } from '../utils/dateFormat.js';
 import { formatEnumLabel } from '../utils/i18nFormat.js';
 import { formatRoomCode } from '../utils/roomDisplay.js';
 
@@ -34,11 +35,11 @@ export default function ReceiptTable({ receipts, renderActions }) {
             <tr key={receipt.id}>
               <td>
                 <strong>{receipt.receiptCode}</strong>
-                <span className="table-subtext">{receipt.createdAt}</span>
+                <span className="table-subtext">{formatDisplayDateTime(receipt.createdAt)}</span>
               </td>
               <td>
                 <strong>#{receipt.invoiceId}</strong>
-                <span className="table-subtext">{receipt.invoiceMonth}</span>
+                <span className="table-subtext">{formatDisplayMonth(receipt.invoiceMonth)}</span>
               </td>
               <td>
                 <strong>{formatRoomCode(receipt)}</strong>

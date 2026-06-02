@@ -22,6 +22,7 @@ import ReceiptTable from '../../components/ReceiptTable.jsx';
 import TaskTable from '../../components/TaskTable.jsx';
 import VehicleTable from '../../components/VehicleTable.jsx';
 import { getContractStatusClass, getContractStatusLabel } from '../../utils/contractStatusOptions.js';
+import { formatDisplayDate } from '../../utils/dateFormat.js';
 import { getMemberStatusLabel } from '../../utils/memberStatusOptions.js';
 import { formatRoomCode } from '../../utils/roomDisplay.js';
 import { getRoomStatusLabel } from '../../utils/roomStatusOptions.js';
@@ -338,7 +339,7 @@ export default function AdminBuildingDetailPage() {
                   <td>{formatRoomCode(contract)}</td>
                   <td>{contract.residentHeadName}</td>
                   <td>
-                    {contract.startDate} to {contract.endDate}
+                    {formatDisplayDate(contract.startDate)} to {formatDisplayDate(contract.endDate)}
                   </td>
                   <td>{formatNumber(contract.depositAmount)}</td>
                   <td>

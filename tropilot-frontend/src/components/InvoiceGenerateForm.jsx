@@ -84,13 +84,22 @@ export default function InvoiceGenerateForm({ rooms, loading, onSubmit }) {
         id="creationDate"
         name="creationDate"
         type="date"
+        lang="en-GB"
         value={form.creationDate}
         onChange={handleChange}
         required
       />
 
       <label htmlFor="dueDate">{t('tables.common.dueDate')}</label>
-      <input id="dueDate" name="dueDate" type="date" value={form.dueDate} onChange={handleChange} required />
+      <input
+        id="dueDate"
+        name="dueDate"
+        type="date"
+        lang="en-GB"
+        value={form.dueDate}
+        onChange={handleChange}
+        required
+      />
 
       <button type="submit" disabled={loading}>
         {loading ? t('forms.invoice.generating') : t('forms.invoice.generate')}

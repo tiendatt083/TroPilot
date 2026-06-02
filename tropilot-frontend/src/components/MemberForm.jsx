@@ -90,6 +90,7 @@ export default function MemberForm({ initialValues, loading, submitLabel, onSubm
             id="dateOfBirth"
             name="dateOfBirth"
             type="date"
+            lang="en-GB"
             value={form.dateOfBirth || ''}
             onChange={handleChange}
           />
@@ -100,6 +101,7 @@ export default function MemberForm({ initialValues, loading, submitLabel, onSubm
             id="moveInDate"
             name="moveInDate"
             type="date"
+            lang="en-GB"
             value={form.moveInDate || ''}
             onChange={handleChange}
           />

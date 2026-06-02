@@ -47,7 +47,7 @@ export default function AdminBuildingCashFlowPage() {
       {error && <div className="alert error-alert">{error}</div>}
 
       <form className="month-filter-row" onSubmit={handleSubmit}>
-        <input type="month" value={month} onChange={(event) => setMonth(event.target.value)} required />
+        <input type="month" lang="en-GB" value={month} onChange={(event) => setMonth(event.target.value)} required />
         <button className="inline-button" type="submit">
           View cash flow
         </button>

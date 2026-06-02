@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import * as contractApi from '../../api/contractApi.js';
 import PageHeader from '../../components/PageHeader.jsx';
 import { getContractStatusClass, getContractStatusLabel } from '../../utils/contractStatusOptions.js';
+import { formatDisplayDate } from '../../utils/dateFormat.js';
 import { formatRoomCode } from '../../utils/roomDisplay.js';
 
 function formatNumber(value) {
@@ -74,7 +75,7 @@ export default function AdminContractListPage() {
                   <td>{formatRoomCode(contract)}</td>
                   <td>{contract.residentHeadName}</td>
                   <td>
-                    {contract.startDate} to {contract.endDate}
+                    {formatDisplayDate(contract.startDate)} to {formatDisplayDate(contract.endDate)}
                   </td>
                   <td>{formatNumber(contract.depositAmount)}</td>
                   <td>

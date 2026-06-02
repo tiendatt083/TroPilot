@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { formatDisplayDate, formatDisplayMonth } from '../utils/dateFormat.js';
 import { resolveFileUrl } from '../utils/fileUrl.js';
 import { formatRoomLabel } from '../utils/roomDisplay.js';
 
@@ -196,6 +197,7 @@ export default function UtilityReadingForm({
           id="readingDate"
           name="readingDate"
           type="date"
+          lang="en-GB"
           value={form.readingDate}
           onChange={handleChange}
           required
@@ -239,8 +241,8 @@ function PreviousReadingEvidence({ previousReading, t }) {
       <div>
         <strong>{t('forms.utilityReading.previousMonthEvidence')}</strong>
         <span className="table-subtext">
-          {previousReading.month}
-          {previousReading.readingDate ? ` - ${previousReading.readingDate}` : ''}
+          {formatDisplayMonth(previousReading.month)}
+          {previousReading.readingDate ? ` - ${formatDisplayDate(previousReading.readingDate)}` : ''}
         </span>
       </div>
       <div className="previous-reading-images">

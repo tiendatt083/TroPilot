@@ -4,6 +4,7 @@ import * as adminUserApi from '../../api/adminUserApi.js';
 import * as roomApi from '../../api/roomApi.js';
 import HeadResidentAssignmentForm from '../../components/HeadResidentAssignmentForm.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
+import { formatDisplayDate } from '../../utils/dateFormat.js';
 import { formatRoomCode } from '../../utils/roomDisplay.js';
 import { getRoomStatusLabel } from '../../utils/roomStatusOptions.js';
 
@@ -49,7 +50,7 @@ function getEndContractConfirmationMessage(room, headInfo) {
   const roomCode = formatRoomCode(room);
 
   if (isFutureDate(endDate)) {
-    return `The contract has not reached its end date yet (${endDate}). Do you want to end it now and remove the Head Resident and room members from room ${roomCode}?`;
+    return `The contract has not reached its end date yet (${formatDisplayDate(endDate)}). Do you want to end it now and remove the Head Resident and room members from room ${roomCode}?`;
   }
 
   return `End the contract and remove the Head Resident and room members from room ${roomCode}?`;

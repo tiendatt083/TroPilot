@@ -3,6 +3,7 @@ import { useOutletContext } from 'react-router-dom';
 import * as paymentApi from '../../api/paymentApi.js';
 import PageHeader from '../../components/PageHeader.jsx';
 import ReceiptTable from '../../components/ReceiptTable.jsx';
+import { formatDisplayMonth } from '../../utils/dateFormat.js';
 import { getReceiptStatusClass, getReceiptStatusLabel } from '../../utils/paymentStatusOptions.js';
 import { formatRoomLabel } from '../../utils/roomDisplay.js';
 
@@ -36,7 +37,7 @@ function ReceiptDetail({ receipt }) {
         <div>
           <span>Invoice</span>
           <strong>
-            #{receipt.invoiceId} - {receipt.invoiceMonth}
+            #{receipt.invoiceId} - {formatDisplayMonth(receipt.invoiceMonth)}
           </strong>
         </div>
         <div>

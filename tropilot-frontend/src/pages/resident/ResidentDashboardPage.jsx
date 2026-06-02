@@ -4,6 +4,7 @@ import * as dashboardApi from '../../api/dashboardApi.js';
 import DashboardMetricGrid from '../../components/DashboardMetricGrid.jsx';
 import DashboardSection from '../../components/DashboardSection.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
+import { formatDisplayDate, formatDisplayMonth } from '../../utils/dateFormat.js';
 import { getInvoiceStatusClass } from '../../utils/invoiceStatusOptions.js';
 import { getMaintenanceStatusClass } from '../../utils/maintenanceOptions.js';
 import { formatRoomLabel } from '../../utils/roomDisplay.js';
@@ -127,7 +128,8 @@ export default function ResidentDashboardPage() {
               <div>
                 <span>{t('dashboard.resident.labels.assignmentPeriod')}</span>
                 <strong>
-                  {currentRoom.assignmentStartDate} {t('common.to')} {currentRoom.assignmentEndDate}
+                  {formatDisplayDate(currentRoom.assignmentStartDate)} {t('common.to')}{' '}
+                  {formatDisplayDate(currentRoom.assignmentEndDate)}
                 </strong>
               </div>
               <div>
@@ -149,7 +151,8 @@ export default function ResidentDashboardPage() {
                   <div>
                     <dt>{t('dashboard.resident.labels.period')}</dt>
                     <dd>
-                      {currentContract.startDate} {t('common.to')} {currentContract.endDate}
+                      {formatDisplayDate(currentContract.startDate)} {t('common.to')}{' '}
+                      {formatDisplayDate(currentContract.endDate)}
                     </dd>
                   </div>
                   <div>
@@ -172,11 +175,11 @@ export default function ResidentDashboardPage() {
                 <dl>
                   <div>
                     <dt>{t('dashboard.resident.labels.month')}</dt>
-                    <dd>{latestInvoice.month}</dd>
+                    <dd>{formatDisplayMonth(latestInvoice.month)}</dd>
                   </div>
                   <div>
                     <dt>{t('dashboard.resident.labels.dueDate')}</dt>
-                    <dd>{dashboard.paymentDueDate || latestInvoice.dueDate}</dd>
+                    <dd>{formatDisplayDate(dashboard.paymentDueDate || latestInvoice.dueDate)}</dd>
                   </div>
                   <div>
                     <dt>{t('dashboard.resident.labels.totalAmount')}</dt>

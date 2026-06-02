@@ -83,6 +83,7 @@ export default function HeadResidentAssignmentForm({ residentHeads, loading, onS
             id="startDate"
             name="startDate"
             type="date"
+            lang="en-GB"
             value={form.startDate}
             onChange={handleChange}
             required
@@ -94,6 +95,7 @@ export default function HeadResidentAssignmentForm({ residentHeads, loading, onS
             id="endDate"
             name="endDate"
             type="date"
+            lang="en-GB"
             value={form.endDate}
             onChange={handleChange}
             required

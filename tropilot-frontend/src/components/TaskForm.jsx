@@ -121,6 +121,7 @@ export default function TaskForm({
             id="deadline"
             name="deadline"
             type="datetime-local"
+            lang="en-GB"
             value={form.deadline}
             onChange={handleChange}
             required

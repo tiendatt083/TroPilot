@@ -113,11 +113,11 @@ export default function VehicleForm({ approvedMembers, loading, onSubmit }) {
       <div className="form-grid">
         <div>
           <label htmlFor="startDate">Start date</label>
-          <input id="startDate" name="startDate" type="date" value={form.startDate} onChange={handleChange} />
+          <input id="startDate" name="startDate" type="date" lang="en-GB" value={form.startDate} onChange={handleChange} />
         </div>
         <div>
           <label htmlFor="endDate">End date</label>
-          <input id="endDate" name="endDate" type="date" value={form.endDate} onChange={handleChange} />
+          <input id="endDate" name="endDate" type="date" lang="en-GB" value={form.endDate} onChange={handleChange} />
         </div>
       </div>
 

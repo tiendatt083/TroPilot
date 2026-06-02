@@ -4,6 +4,7 @@ import * as utilityReadingApi from '../../api/utilityReadingApi.js';
 import PageHeader from '../../components/PageHeader.jsx';
 import UtilityReadingForm from '../../components/UtilityReadingForm.jsx';
 import UtilityReadingTable from '../../components/UtilityReadingTable.jsx';
+import { formatDisplayMonth } from '../../utils/dateFormat.js';
 import { formatRoomCode } from '../../utils/roomDisplay.js';
 
 export default function AdminUtilityReadingPage() {
@@ -91,7 +92,7 @@ export default function AdminUtilityReadingPage() {
           <div>
             <PageHeader
               eyebrow={editingReading ? 'Edit reading' : 'New reading'}
-              title={editingReading ? `${formatRoomCode(editingReading)} - ${editingReading.month}` : 'Record reading'}
+              title={editingReading ? `${formatRoomCode(editingReading)} - ${formatDisplayMonth(editingReading.month)}` : 'Record reading'}
             />
             <UtilityReadingForm
               key={editingReading?.id || `new-reading-${formKey}`}
