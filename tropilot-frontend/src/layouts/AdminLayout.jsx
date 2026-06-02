@@ -15,7 +15,6 @@ const ADMIN_NAV_ITEMS = [
   { to: '/admin/tasks', labelKey: 'navigation.tasks' },
   { to: '/admin/maintenance', labelKey: 'navigation.maintenance' },
   { to: '/admin/buildings', labelKey: 'navigation.buildings' },
-  { to: '/admin/rooms', labelKey: 'navigation.rooms' },
   { to: '/admin/settings', labelKey: 'settings.title' }
 ];
 
