@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import * as adminUserApi from '../../api/adminUserApi.js';
 import * as buildingApi from '../../api/buildingApi.js';
+import * as memberApi from '../../api/memberApi.js';
 import PageHeader from '../../components/PageHeader.jsx';
 
 const emptyFilters = {
@@ -24,7 +25,9 @@ function userMatchesSearch(user, searchValue) {
     user.phone,
     formatRole(user.role),
     user.assignedBuildingCode,
-    user.assignedBuildingName
+    user.assignedBuildingName,
+    user.assignedRoomCode,
+    user.assignedRoomName
   ];
 
   return searchableValues.some((value) => normalizeSearchValue(value).includes(searchValue));
@@ -41,7 +44,7 @@ function filterUsers(users, filters) {
 }
 
 export default function AdminUserListPage() {
-  const [users, setUsers] = useState([]);
+  const [records, setRecords] = useState([]);
   const [buildings, setBuildings] = useState([]);
   const [filters, setFilters] = useState(emptyFilters);
   const [message, setMessage] = useState('');
@@ -58,8 +61,12 @@ export default function AdminUserListPage() {
         adminUserApi.getUsers(),
         buildingApi.getAdminBuildings()
       ]);
+      const memberResponses = await Promise.all(
+        buildingsResponse.data.map((building) => memberApi.getAdminBuildingMembers({ buildingId: building.id }))
+      );
+      const members = memberResponses.flatMap((response) => response.data);
 
-      setUsers(usersResponse.data);
+      setRecords(createUserRecords(usersResponse.data, members));
       setBuildings(buildingsResponse.data);
     } catch (apiError) {
       setError(apiError.response?.data?.message || 'Users could not be loaded');
@@ -143,7 +150,7 @@ export default function AdminUserListPage() {
     }
   };
 
-  const filteredUsers = filterUsers(users, filters);
+  const filteredUsers = filterUsers(records, filters);
 
   return (
     <section className="content-section">
@@ -201,17 +208,19 @@ export default function AdminUserListPage() {
             </thead>
             <tbody>
               {filteredUsers.map((user) => (
-                <tr key={user.id}>
+                <tr key={user.rowId}>
                   <td>{user.fullName}</td>
                   <td>{user.email}</td>
                   <td>{formatRole(user.role)}</td>
                   <td>
-                    <span className={`status-pill status-${user.status.toLowerCase()}`}>
+                    <span className={statusClass(user)}>
                       {formatStatus(user.status)}
                     </span>
                   </td>
                   <td>
-                    {user.mustChangePassword ? (
+                    {user.recordType === 'ROOM_MEMBER' ? (
+                      <span className="muted-text">Not applicable</span>
+                    ) : user.mustChangePassword ? (
                       <span className="temporary-password-value">
                         {user.temporaryPassword || 'Temporary password unavailable'}
                       </span>
@@ -220,35 +229,39 @@ export default function AdminUserListPage() {
                     )}
                   </td>
                   <td>
-                    <div className="table-actions">
-                      {user.status === 'LOCKED' ? (
-                        <button
-                          className="secondary-button compact-button"
-                          type="button"
-                          disabled={actionId === user.id}
-                          onClick={() => handleStatusAction(user, 'unlock')}
-                        >
-                          Unlock
-                        </button>
-                      ) : (
+                    {user.recordType === 'ROOM_MEMBER' ? (
+                      <span className="muted-text">No action</span>
+                    ) : (
+                      <div className="table-actions">
+                        {user.status === 'LOCKED' ? (
+                          <button
+                            className="secondary-button compact-button"
+                            type="button"
+                            disabled={actionId === user.id}
+                            onClick={() => handleStatusAction(user, 'unlock')}
+                          >
+                            Unlock
+                          </button>
+                        ) : (
+                          <button
+                            className="secondary-button compact-button"
+                            type="button"
+                            disabled={actionId === user.id || user.role === 'ADMIN'}
+                            onClick={() => handleStatusAction(user, 'lock')}
+                          >
+                            Lock
+                          </button>
+                        )}
                         <button
                           className="secondary-button compact-button"
                           type="button"
                           disabled={actionId === user.id || user.role === 'ADMIN'}
-                          onClick={() => handleStatusAction(user, 'lock')}
+                          onClick={() => handleResetPassword(user)}
                         >
-                          Lock
+                          Regenerate
                         </button>
-                      )}
-                      <button
-                        className="secondary-button compact-button"
-                        type="button"
-                        disabled={actionId === user.id || user.role === 'ADMIN'}
-                        onClick={() => handleResetPassword(user)}
-                      >
-                        Regenerate
-                      </button>
-                    </div>
+                      </div>
+                    )}
                   </td>
                 </tr>
               ))}
@@ -261,7 +274,49 @@ export default function AdminUserListPage() {
   );
 }
 
+function createUserRecords(users, members) {
+  const accountRecords = users.map((user) => ({
+    ...user,
+    rowId: `user-${user.id}`,
+    recordType: 'ACCOUNT'
+  }));
+
+  const approvedMemberRecords = members
+    .filter((member) => member.status === 'APPROVED')
+    .map((member) => ({
+      rowId: `room-member-${member.id}`,
+      recordType: 'ROOM_MEMBER',
+      id: member.id,
+      fullName: member.fullName,
+      email: member.email || 'Not provided',
+      phone: member.phone,
+      role: 'ROOM_MEMBER',
+      status: 'NO_LOGIN_ACCOUNT',
+      mustChangePassword: false,
+      assignedRoomId: member.roomId,
+      assignedRoomCode: member.roomCode,
+      assignedRoomName: member.roomName,
+      assignedBuildingId: member.buildingId,
+      assignedBuildingCode: member.buildingCode,
+      assignedBuildingName: member.buildingName
+    }));
+
+  return [...accountRecords, ...approvedMemberRecords];
+}
+
+function statusClass(user) {
+  if (user.status === 'NO_LOGIN_ACCOUNT') {
+    return 'status-pill status-inactive';
+  }
+
+  return `status-pill status-${user.status.toLowerCase()}`;
+}
+
 function formatRole(role) {
+  if (role === 'ROOM_MEMBER') {
+    return 'Household member';
+  }
+
   if (role === 'RESIDENT_HEAD') {
     return 'Head resident';
   }
@@ -274,5 +329,9 @@ function formatRole(role) {
 }
 
 function formatStatus(status) {
+  if (status === 'NO_LOGIN_ACCOUNT') {
+    return 'No login account';
+  }
+
   return status.charAt(0) + status.slice(1).toLowerCase();
 }
