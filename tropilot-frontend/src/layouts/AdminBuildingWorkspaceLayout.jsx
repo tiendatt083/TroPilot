@@ -121,9 +121,6 @@ export default function AdminBuildingWorkspaceLayout() {
           <NavLink to={`/admin/buildings/${building.id}/receipts`}>
             {t('buildingWorkspace.receipts')}
           </NavLink>
-          <NavLink to={`/admin/buildings/${building.id}/members`}>
-            {t('buildingWorkspace.roomMembers')}
-          </NavLink>
           <NavLink to={`/admin/buildings/${building.id}/maintenance`}>
             {t('buildingWorkspace.maintenance')}
           </NavLink>

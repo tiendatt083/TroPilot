@@ -11,22 +11,23 @@ function statusClass(status) {
   return `status-pill member-status-${status.toLowerCase()}`;
 }
 
-function countText(member, room) {
-  if (member) {
-    return `${member.totalOccupants} of ${member.maxOccupants} active occupants`;
+function countText(headResident, members, room) {
+  const maxOccupants = members[0]?.maxOccupants || room?.maxOccupants;
+
+  if (!maxOccupants) {
+    return 'Occupants are not available.';
   }
 
-  if (room) {
-    const headResidentCount = room.status === 'OCCUPIED' ? 1 : 0;
-    return `${headResidentCount} of ${room.maxOccupants} active occupants`;
-  }
+  const activeHeadResidentCount = headResident?.assigned ? 1 : 0;
+  const approvedMemberCount = members.filter((member) => member.status === 'APPROVED').length;
 
-  return 'Occupants are not available.';
+  return `${activeHeadResidentCount + approvedMemberCount} of ${maxOccupants} active occupants`;
 }
 
 export default function AdminRoomMembersPage() {
   const { id } = useParams();
   const [room, setRoom] = useState(null);
+  const [headResident, setHeadResident] = useState(null);
   const [members, setMembers] = useState([]);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
@@ -37,11 +38,13 @@ export default function AdminRoomMembersPage() {
     setError('');
 
     try {
-      const [roomResponse, membersResponse] = await Promise.all([
+      const [roomResponse, headResponse, membersResponse] = await Promise.all([
         roomApi.getAdminRoom(id),
+        roomApi.getRoomHead(id),
         memberApi.getAdminRoomMembers(id)
       ]);
       setRoom(roomResponse.data);
+      setHeadResident(headResponse.data);
       setMembers(membersResponse.data);
     } catch (apiError) {
       setError(apiError.response?.data?.message || 'Room members could not be loaded');
@@ -84,8 +87,6 @@ export default function AdminRoomMembersPage() {
     }
   };
 
-  const firstMember = members[0];
-
   if (loading) {
     return <div className="empty-state">Loading room members...</div>;
   }
@@ -98,7 +99,7 @@ export default function AdminRoomMembersPage() {
           <Link className="secondary-link" to={`/admin/rooms/${id}`}>
             Back to room
           </Link>
-          <div className="count-summary">{countText(firstMember, room)}</div>
+          <div className="count-summary">{countText(headResident, members, room)}</div>
         </div>
       </div>
 
@@ -119,6 +120,24 @@ export default function AdminRoomMembersPage() {
             </tr>
           </thead>
           <tbody>
+            {headResident?.assigned && (
+              <tr>
+                <td>
+                  <strong>{headResident.residentHeadName}</strong>
+                  <div className="muted-text">{headResident.residentHeadEmail}</div>
+                </td>
+                <td>{headResident.residentHeadPhone || 'Not provided'}</td>
+                <td>Head Resident</td>
+                <td>{formatDisplayDate(headResident.assignmentStartDate)}</td>
+                <td>{formatDisplayDate(headResident.assignmentEndDate, 'Not set')}</td>
+                <td>
+                  <span className={statusClass('APPROVED')}>Active</span>
+                </td>
+                <td>
+                  <span className="muted-text">No action</span>
+                </td>
+              </tr>
+            )}
             {members.map((member) => (
               <tr key={member.id}>
                 <td>{member.fullName}</td>
@@ -157,7 +176,9 @@ export default function AdminRoomMembersPage() {
             ))}
           </tbody>
         </table>
-        {members.length === 0 && <div className="empty-state flat-empty-state">No room members found.</div>}
+        {!headResident?.assigned && members.length === 0 && (
+          <div className="empty-state flat-empty-state">No room members found.</div>
+        )}
       </div>
     </section>
   );
