@@ -105,8 +105,12 @@ public class NotificationServiceImpl implements NotificationService {
     public List<NotificationResponse> getResidentNotifications(Long userId) {
         User user = findUser(userId);
         RoomAssignment activeAssignment = findActiveAssignment(user.getId()).orElse(null);
-        Long roomId = activeAssignment == null ? null : activeAssignment.getRoom().getId();
-        Long buildingId = activeAssignment == null ? null : activeAssignment.getRoom().getBuilding().getId();
+        if (activeAssignment == null) {
+            return List.of();
+        }
+
+        Long roomId = activeAssignment.getRoom().getId();
+        Long buildingId = activeAssignment.getRoom().getBuilding().getId();
 
         return getVisibleNotifications(
                 user.getId(),
@@ -285,11 +289,19 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     private boolean isVisibleToUser(Notification notification, User user, Long activeRoomId, Long activeBuildingId) {
+        if (isUnassignedResidentHead(user, activeRoomId, activeBuildingId)) {
+            return false;
+        }
+
         if (!matchesNotificationTarget(notification, user, activeRoomId, activeBuildingId)) {
             return false;
         }
 
         return matchesBuildingScope(notification, user, activeBuildingId);
+    }
+
+    private boolean isUnassignedResidentHead(User user, Long activeRoomId, Long activeBuildingId) {
+        return user.getRole() == UserRole.RESIDENT_HEAD && (activeRoomId == null || activeBuildingId == null);
     }
 
     private boolean matchesNotificationTarget(Notification notification, User user, Long activeRoomId, Long activeBuildingId) {

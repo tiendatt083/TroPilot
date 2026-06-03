@@ -35,6 +35,10 @@
     "vietnamese": "Tiếng Việt",
     "english": "Tiếng Anh"
   },
+  "residentAccess": {
+    "checking": "Đang kiểm tra trạng thái gán phòng...",
+    "checkFailed": "Không thể kiểm tra trạng thái gán phòng. Vui lòng thử lại sau."
+  },
   "profile": {
     "title": "Thông tin cá nhân",
     "eyebrow": "Tài khoản",

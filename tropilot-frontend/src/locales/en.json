@@ -35,6 +35,10 @@
     "vietnamese": "Vietnamese",
     "english": "English"
   },
+  "residentAccess": {
+    "checking": "Checking room assignment...",
+    "checkFailed": "Room assignment could not be checked. Please try again later."
+  },
   "profile": {
     "title": "Personal information",
     "eyebrow": "Account",
