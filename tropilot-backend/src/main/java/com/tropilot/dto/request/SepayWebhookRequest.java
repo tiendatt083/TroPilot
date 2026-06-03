@@ -25,8 +25,9 @@ public class SepayWebhookRequest {
 
     private String code;
 
-    @JsonAlias({"content", "description"})
     private String content;
+
+    private String description;
 
     @JsonAlias({"transferType", "transfer_type"})
     private String transferType;

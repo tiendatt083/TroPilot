@@ -12,5 +12,5 @@ public interface SepayPaymentService {
 
     Optional<SepayPayment> findByInvoiceId(Long invoiceId);
 
-    SepayPayment handleWebhook(SepayWebhookRequest request, String authorizationHeader);
+    void handleWebhook(SepayWebhookRequest request, String authorizationHeader);
 }

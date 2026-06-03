@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import * as feedbackApi from '../../api/feedbackApi.js';
 import { Link, useParams } from 'react-router-dom';
 import * as invoiceApi from '../../api/invoiceApi.js';
@@ -7,6 +7,7 @@ import InvoiceDetail from '../../components/InvoiceDetail.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
 import PaymentProofUploadForm from '../../components/PaymentProofUploadForm.jsx';
 import PaymentTable from '../../components/PaymentTable.jsx';
+import useInvoicePaymentPolling from '../../hooks/useInvoicePaymentPolling.js';
 
 export default function ResidentInvoiceDetailPage() {
   const { id } = useParams();
@@ -32,6 +33,20 @@ export default function ResidentInvoiceDetailPage() {
     setInvoice(invoiceResponse.data);
     setPayments(paymentsResponse.data.filter((payment) => payment.invoiceId === Number(id)));
   };
+
+  const fetchCurrentInvoice = useCallback(() => {
+    return invoiceApi.getResidentInvoice(id);
+  }, [id]);
+
+  const handleInvoicePollingUpdate = useCallback((updatedInvoice) => {
+    setInvoice(updatedInvoice);
+  }, []);
+
+  useInvoicePaymentPolling({
+    invoice,
+    fetchInvoice: fetchCurrentInvoice,
+    onInvoiceUpdate: handleInvoicePollingUpdate
+  });
 
   useEffect(() => {
     let active = true;

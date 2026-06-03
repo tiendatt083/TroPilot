@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
 import * as invoiceApi from '../../api/invoiceApi.js';
@@ -6,6 +6,7 @@ import * as roomApi from '../../api/roomApi.js';
 import InvoiceDetail from '../../components/InvoiceDetail.jsx';
 import InvoiceTable from '../../components/InvoiceTable.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
+import useInvoicePaymentPolling from '../../hooks/useInvoicePaymentPolling.js';
 import { formatDisplayDate, formatDisplayMonth } from '../../utils/dateFormat.js';
 import { formatInvoiceAmount, formatInvoiceText } from '../../utils/invoiceDisplay.js';
 import { formatRoomCode, formatRoomLabel } from '../../utils/roomDisplay.js';
@@ -416,6 +417,23 @@ export default function AdminBuildingInvoicePage() {
       setProcessing(false);
     }
   };
+
+  const fetchSelectedInvoice = useCallback(() => {
+    return invoiceApi.getAdminInvoice(selectedInvoice.id, { buildingId: building.id });
+  }, [building.id, selectedInvoice?.id]);
+
+  const handleInvoicePollingUpdate = useCallback((updatedInvoice) => {
+    setSelectedInvoice(updatedInvoice);
+    setInvoices((current) => current.map((invoice) => (
+      invoice.id === updatedInvoice.id ? { ...invoice, ...updatedInvoice } : invoice
+    )));
+  }, []);
+
+  useInvoicePaymentPolling({
+    invoice: selectedInvoice,
+    fetchInvoice: fetchSelectedInvoice,
+    onInvoiceUpdate: handleInvoicePollingUpdate
+  });
 
   const renderActions = (invoice) => (
     <div className="table-action-group">

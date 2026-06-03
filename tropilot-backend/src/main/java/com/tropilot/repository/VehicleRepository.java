@@ -17,6 +17,8 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 
     long countByStatus(VehicleStatus status);
 
+    List<Vehicle> findByRoom_IdAndStatusIn(Long roomId, List<VehicleStatus> statuses);
+
     @Query("""
             select vehicle from Vehicle vehicle
             join fetch vehicle.room room
@@ -37,10 +39,32 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
             select vehicle from Vehicle vehicle
             join fetch vehicle.room room
             join fetch room.building building
+            where vehicle.status in :statuses
+            order by vehicle.createdAt desc
+            """)
+    List<Vehicle> findByStatusInWithDetails(@Param("statuses") List<VehicleStatus> statuses);
+
+    @Query("""
+            select vehicle from Vehicle vehicle
+            join fetch vehicle.room room
+            join fetch room.building building
             where building.id = :buildingId
             order by vehicle.createdAt desc
             """)
     List<Vehicle> findByBuildingIdWithDetails(@Param("buildingId") Long buildingId);
+
+    @Query("""
+            select vehicle from Vehicle vehicle
+            join fetch vehicle.room room
+            join fetch room.building building
+            where building.id = :buildingId
+              and vehicle.status in :statuses
+            order by vehicle.createdAt desc
+            """)
+    List<Vehicle> findByBuildingIdAndStatusInWithDetails(
+            @Param("buildingId") Long buildingId,
+            @Param("statuses") List<VehicleStatus> statuses
+    );
 
     @Query("""
             select vehicle from Vehicle vehicle

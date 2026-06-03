@@ -130,6 +130,47 @@ APP_TEMPORARY_PASSWORD_ENCRYPTION_SECRET=change_this_demo_encryption_secret
 
 Do not commit real production credentials or private secrets.
 
+For local development, the backend can load environment variables from:
+
+```text
+tropilot-backend/.env
+```
+
+This file is ignored by Git. Keep real database passwords, bank account data, and webhook secrets only in this local file.
+
+Use this command to run the backend with local environment variables:
+
+```powershell
+cd tropilot-backend
+.\run-local.ps1
+```
+
+Use `tropilot-backend/.env.example` as the safe template for local setup.
+
+### SePay Local Payment Test
+
+For a real SePay transfer test, configure these values in `tropilot-backend/.env`:
+
+```bash
+APP_SEPAY_ENABLED=true
+APP_SEPAY_BANK_CODE=YOUR_BANK_CODE
+APP_SEPAY_ACCOUNT_NUMBER=YOUR_BANK_ACCOUNT_NUMBER
+APP_SEPAY_ACCOUNT_NAME=YOUR_BANK_ACCOUNT_NAME
+APP_SEPAY_WEBHOOK_SECRET=YOUR_SEPAY_WEBHOOK_API_KEY
+```
+
+Expose the backend webhook URL with a tunneling tool such as ngrok:
+
+```powershell
+ngrok http 8080
+```
+
+Then configure the SePay webhook URL:
+
+```text
+https://your-ngrok-domain.ngrok-free.app/api/sepay/webhook
+```
+
 ### Build Backend
 
 ```bash

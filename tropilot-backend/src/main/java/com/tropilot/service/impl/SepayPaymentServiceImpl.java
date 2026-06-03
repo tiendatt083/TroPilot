@@ -16,6 +16,7 @@ import com.tropilot.service.NotificationService;
 import com.tropilot.service.ReceiptCreationService;
 import com.tropilot.service.SepayPaymentService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -28,6 +29,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class SepayPaymentServiceImpl implements SepayPaymentService {
 
@@ -78,12 +80,17 @@ public class SepayPaymentServiceImpl implements SepayPaymentService {
 
     @Override
     @Transactional
-    public SepayPayment handleWebhook(SepayWebhookRequest request, String authorizationHeader) {
+    public void handleWebhook(SepayWebhookRequest request, String authorizationHeader) {
         validateWebhookSecret(authorizationHeader);
+
+        if (isSepayTestWebhook(request)) {
+            log.info("Accepted SePay test webhook.");
+            return;
+        }
 
         SepayPayment payment = findPaymentFromWebhook(request);
         if (payment.getStatus() == SepayPaymentStatus.PAID) {
-            return payment;
+            return;
         }
 
         Invoice invoice = payment.getInvoice();
@@ -95,7 +102,7 @@ public class SepayPaymentServiceImpl implements SepayPaymentService {
         payment.setReferenceCode(clean(request.getReferenceCode()));
         payment.setPaidAmount(request.getTransferAmount());
         payment.setPaidAt(paidAt);
-        payment.setWebhookContent(clean(request.getContent()));
+        payment.setWebhookContent(webhookContent(request));
         payment.setLastWebhookError(null);
 
         invoice.setStatus(InvoiceStatus.PAID);
@@ -119,7 +126,7 @@ public class SepayPaymentServiceImpl implements SepayPaymentService {
         );
         notificationService.createInvoicePaidNotification(invoice.getCreatedBy(), invoice, payment);
 
-        return sepayPaymentRepository.save(payment);
+        sepayPaymentRepository.save(payment);
     }
 
     private String buildQrImageUrl(String paymentCode, BigDecimal amount) {
@@ -151,6 +158,11 @@ public class SepayPaymentServiceImpl implements SepayPaymentService {
         }
     }
 
+    private boolean isSepayTestWebhook(SepayWebhookRequest request) {
+        return "SEPAYTEST".equalsIgnoreCase(clean(request.getCode()))
+                && "SEPAY TEST WEBHOOK".equalsIgnoreCase(clean(request.getContent()));
+    }
+
     private SepayPayment findPaymentFromWebhook(SepayWebhookRequest request) {
         String referenceCode = clean(request.getReferenceCode());
         if (referenceCode != null) {
@@ -168,7 +180,7 @@ public class SepayPaymentServiceImpl implements SepayPaymentService {
             }
         }
 
-        paymentCode = extractPaymentCode(request.getContent());
+        paymentCode = extractPaymentCode(webhookContent(request));
         if (paymentCode == null) {
             throw new BadRequestException("SePay payment code was not found in webhook content");
         }
@@ -215,5 +227,10 @@ public class SepayPaymentServiceImpl implements SepayPaymentService {
 
     private String clean(String value) {
         return value == null || value.isBlank() ? null : value.trim();
+    }
+
+    private String webhookContent(SepayWebhookRequest request) {
+        String content = clean(request.getContent());
+        return content != null ? content : clean(request.getDescription());
     }
 }
