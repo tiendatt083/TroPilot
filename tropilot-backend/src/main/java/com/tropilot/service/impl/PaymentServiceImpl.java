@@ -5,7 +5,6 @@ import com.tropilot.dto.request.PaymentUploadRequest;
 import com.tropilot.dto.response.PaymentResponse;
 import com.tropilot.entity.Invoice;
 import com.tropilot.entity.Payment;
-import com.tropilot.entity.Receipt;
 import com.tropilot.entity.RoomAssignment;
 import com.tropilot.entity.User;
 import com.tropilot.enums.InvoiceStatus;
@@ -23,22 +22,18 @@ import com.tropilot.repository.RoomAssignmentRepository;
 import com.tropilot.repository.UserRepository;
 import com.tropilot.service.ActivityLogService;
 import com.tropilot.service.PaymentService;
+import com.tropilot.service.ReceiptCreationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
-
-    private static final DateTimeFormatter RECEIPT_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
-    private static final DateTimeFormatter MONTH_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM");
 
     private final PaymentRepository paymentRepository;
     private final BuildingRepository buildingRepository;
@@ -48,6 +43,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final UserRepository userRepository;
     private final PaymentProofStorageService paymentProofStorageService;
     private final PaymentMapper paymentMapper;
+    private final ReceiptCreationService receiptCreationService;
     private final ActivityLogService activityLogService;
 
     @Override
@@ -131,7 +127,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         invoice.setStatus(InvoiceStatus.PAID);
         invoiceRepository.save(invoice);
-        Receipt receipt = receiptRepository.save(createReceipt(invoice, confirmedBy, now));
+        receiptRepository.save(receiptCreationService.createValidReceipt(invoice, confirmedBy, now));
         activityLogService.record(
                 confirmedBy,
                 "PAYMENT_APPROVED",
@@ -140,7 +136,7 @@ public class PaymentServiceImpl implements PaymentService {
         activityLogService.record(
                 confirmedBy,
                 "RECEIPT_CREATED",
-                "System created receipt " + receipt.getReceiptCode() + " for invoice " + invoice.getId()
+                "System created receipt for invoice " + invoice.getId()
         );
 
         return paymentMapper.toResponse(paymentRepository.save(payment));
@@ -207,29 +203,6 @@ public class PaymentServiceImpl implements PaymentService {
         if (invoice.getStatus() != InvoiceStatus.PENDING_CONFIRMATION) {
             throw new BadRequestException("Invoice is not pending payment confirmation");
         }
-    }
-
-    private Receipt createReceipt(Invoice invoice, User createdBy, LocalDateTime now) {
-        String content = "Payment receipt for invoice " + invoice.getId()
-                + ", room " + invoice.getRoom().getRoomCode()
-                + ", month " + invoice.getMonth().format(MONTH_FORMATTER);
-
-        return Receipt.builder()
-                .receiptCode(generateReceiptCode(now))
-                .invoice(invoice)
-                .room(invoice.getRoom())
-                .residentHead(invoice.getResidentHead())
-                .amount(invoice.getTotalAmount())
-                .content(content)
-                .createdBy(createdBy)
-                .createdAt(now)
-                .status(ReceiptStatus.VALID)
-                .build();
-    }
-
-    private String generateReceiptCode(LocalDateTime now) {
-        return "RCT-" + now.format(RECEIPT_DATE_FORMATTER) + "-"
-                + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
     }
 
     private void updateDecisionNote(Payment payment, PaymentDecisionRequest request) {

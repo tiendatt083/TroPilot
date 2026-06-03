@@ -2,7 +2,9 @@ package com.tropilot.service;
 
 import com.tropilot.dto.request.NotificationCreateRequest;
 import com.tropilot.dto.response.NotificationResponse;
+import com.tropilot.entity.Invoice;
 import com.tropilot.entity.RentalContract;
+import com.tropilot.entity.SepayPayment;
 import com.tropilot.entity.User;
 
 import java.util.List;
@@ -20,4 +22,8 @@ public interface NotificationService {
     NotificationResponse markRead(Long userId, Long notificationId);
 
     void createContractUpdatedNotification(User createdBy, RentalContract contract);
+
+    void createInvoiceIssuedNotification(User createdBy, Invoice invoice, SepayPayment payment);
+
+    void createInvoicePaidNotification(User createdBy, Invoice invoice, SepayPayment payment);
 }

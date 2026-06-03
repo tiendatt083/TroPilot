@@ -15,6 +15,10 @@ public interface FeedbackRepository extends JpaRepository<Feedback, Long> {
 
     long countByStatusIn(Collection<com.tropilot.enums.FeedbackStatus> statuses);
 
+    Optional<Feedback> findFirstByInvoice_IdAndTypeOrderByCreatedAtDesc(Long invoiceId, FeedbackType type);
+
+    List<Feedback> findByInvoice_Id(Long invoiceId);
+
     @EntityGraph(attributePaths = {
             "residentHead",
             "room",

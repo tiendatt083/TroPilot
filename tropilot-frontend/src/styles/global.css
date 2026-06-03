@@ -273,6 +273,12 @@ a:focus-visible {
   background: var(--color-success-bg);
 }
 
+.warning-alert {
+  border: 1px solid #fde68a;
+  color: var(--color-warning);
+  background: var(--color-warning-bg);
+}
+
 .route-state {
   display: grid;
   min-height: 100vh;
@@ -433,6 +439,23 @@ a:focus-visible {
 .secondary-button:disabled {
   color: #98a2b3;
   background: #eef2f6;
+}
+
+.danger-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #fecaca;
+  color: var(--color-danger);
+  background: var(--color-danger-bg);
+  font-weight: 750;
+}
+
+.danger-button:hover:not(:disabled) {
+  border-color: #fca5a5;
+  color: #991b1b;
+  background: #fee2e2;
+  box-shadow: 0 8px 20px rgba(153, 27, 27, 0.08);
 }
 
 .sidebar .secondary-button {
@@ -788,6 +811,13 @@ a:focus-visible {
   min-width: 74px;
 }
 
+.warning-status-pill {
+  min-width: auto;
+  margin-left: 0.45rem;
+  color: var(--color-warning);
+  background: var(--color-warning-bg);
+}
+
 .priority-pill {
   min-width: 72px;
 }
@@ -895,6 +925,13 @@ a:focus-visible {
   flex-wrap: wrap;
 }
 
+.table-action-group {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
 .table-actions .secondary-button,
 .table-actions .secondary-link {
   width: auto;
@@ -992,6 +1029,141 @@ a:focus-visible {
 .invoice-workspace,
 .service-fee-workspace {
   grid-template-columns: minmax(300px, 400px) minmax(0, 1fr);
+}
+
+.invoice-management-workspace {
+  display: grid;
+  grid-template-columns: minmax(300px, 390px) minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+  min-width: 0;
+}
+
+.invoice-command-panel,
+.invoice-preview-panel {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-md);
+  padding: clamp(1rem, 2vw, 1.15rem);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(247, 251, 253, 0.96));
+  box-shadow: var(--shadow-soft);
+}
+
+.invoice-list-column {
+  grid-column: 1 / -1;
+}
+
+.invoice-preview-column {
+  min-width: 0;
+}
+
+.segmented-control {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.35rem;
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-sm);
+  padding: 0.28rem;
+  background: #eef6fa;
+}
+
+.segmented-control button {
+  border-color: transparent;
+  color: var(--color-text);
+  background: transparent;
+  box-shadow: none;
+}
+
+.segmented-control button.active {
+  color: #ffffff;
+  background: var(--color-primary);
+  box-shadow: 0 8px 18px rgba(14, 145, 170, 0.18);
+}
+
+.primary-action-button {
+  width: 100%;
+}
+
+.invoice-preview-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid var(--color-border-soft);
+  padding-bottom: 0.85rem;
+}
+
+.invoice-preview-header span {
+  color: var(--color-primary);
+  font-size: 0.72rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.invoice-preview-header h2 {
+  margin: 0.2rem 0 0;
+  color: var(--color-text);
+  font-size: clamp(1.15rem, 2vw, 1.4rem);
+}
+
+.invoice-preview-header strong {
+  color: var(--color-text);
+  font-size: clamp(1.3rem, 2.6vw, 1.65rem);
+}
+
+.compact-detail-panel {
+  grid-template-columns: repeat(4, minmax(160px, 1fr));
+  box-shadow: none;
+}
+
+.invoice-preview-notes {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.invoice-preview-notes span {
+  border-left: 3px solid var(--color-info);
+  padding: 0.55rem 0.7rem;
+  color: var(--color-text-muted);
+  background: var(--color-info-bg);
+  font-weight: 700;
+}
+
+.invoice-bulk-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(130px, 1fr));
+  gap: 0.75rem;
+}
+
+.invoice-bulk-summary div {
+  display: grid;
+  gap: 0.2rem;
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-sm);
+  padding: 0.8rem;
+  background: #ffffff;
+}
+
+.invoice-bulk-summary span {
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.invoice-bulk-summary strong {
+  color: var(--color-text);
+  font-size: 1.2rem;
+}
+
+.invoice-bulk-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  min-width: 0;
 }
 
 .building-contract-workspace {
@@ -1314,6 +1486,55 @@ a:focus-visible {
   display: flex;
   flex-wrap: wrap;
   gap: 0.65rem;
+}
+
+.sepay-payment-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 220px;
+  gap: 1.25rem;
+  align-items: stretch;
+  padding: 1rem;
+  border: 1px solid rgba(10, 132, 153, 0.18);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, rgba(10, 132, 153, 0.09), rgba(255, 255, 255, 0.9));
+}
+
+.sepay-payment-copy h3 {
+  margin: 0.2rem 0 0.35rem;
+  font-size: 1.15rem;
+}
+
+.sepay-payment-copy p {
+  margin: 0 0 1rem;
+  color: var(--muted-text);
+}
+
+.sepay-qr-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.85rem;
+  border: 1px solid rgba(15, 44, 71, 0.12);
+  border-radius: var(--radius-md);
+  background: #fff;
+  text-align: center;
+  color: var(--muted-text);
+  font-size: 0.82rem;
+}
+
+.sepay-qr-card img {
+  width: 176px;
+  height: 176px;
+  object-fit: contain;
+  border-radius: 0.75rem;
+}
+
+@media (max-width: 860px) {
+  .sepay-payment-panel {
+    grid-template-columns: 1fr;
+  }
 }
 
 .previous-reading-panel {
@@ -2147,6 +2368,7 @@ a:focus-visible {
   .vehicle-workspace,
   .utility-reading-workspace,
   .invoice-workspace,
+  .invoice-management-workspace,
   .service-fee-workspace,
   .task-workspace,
   .maintenance-workspace,
@@ -2174,7 +2396,9 @@ a:focus-visible {
   }
 
   .service-fee-utility-grid,
-  .additional-service-layout {
+  .additional-service-layout,
+  .invoice-bulk-columns,
+  .compact-detail-panel {
     grid-template-columns: 1fr;
   }
 }
@@ -2255,6 +2479,7 @@ a:focus-visible {
   .previous-reading-images,
   .room-code-input-group,
   .assignment-action-row,
+  .invoice-bulk-summary,
   .dashboard-grid,
   .profile-grid,
   .detail-panel {

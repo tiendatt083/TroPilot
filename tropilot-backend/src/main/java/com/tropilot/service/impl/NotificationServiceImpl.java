@@ -3,12 +3,14 @@ package com.tropilot.service.impl;
 import com.tropilot.dto.request.NotificationCreateRequest;
 import com.tropilot.dto.response.NotificationResponse;
 import com.tropilot.entity.Building;
+import com.tropilot.entity.Invoice;
 import com.tropilot.entity.Notification;
 import com.tropilot.entity.NotificationRead;
 import com.tropilot.entity.NotificationTargetBuilding;
 import com.tropilot.entity.NotificationTargetUser;
 import com.tropilot.entity.RentalContract;
 import com.tropilot.entity.RoomAssignment;
+import com.tropilot.entity.SepayPayment;
 import com.tropilot.entity.User;
 import com.tropilot.enums.NotificationTargetType;
 import com.tropilot.enums.RoomAssignmentStatus;
@@ -170,6 +172,74 @@ public class NotificationServiceImpl implements NotificationService {
         notification.getTargetBuildings().add(NotificationTargetBuilding.builder()
                 .notification(notification)
                 .building(contract.getRoom().getBuilding())
+                .build());
+
+        notificationRepository.save(notification);
+    }
+
+    @Override
+    @Transactional
+    public void createInvoiceIssuedNotification(User createdBy, Invoice invoice, SepayPayment payment) {
+        if (createdBy == null) {
+            throw new BadRequestException("Notification creator is required");
+        }
+        if (invoice == null) {
+            throw new BadRequestException("Invoice is required");
+        }
+        if (payment == null) {
+            throw new BadRequestException("SePay payment is required");
+        }
+
+        Notification notification = Notification.builder()
+                .title("New invoice issued")
+                .content("Invoice " + invoice.getId() + " for room " + invoice.getRoom().getRoomCode()
+                        + " is ready. Transfer exactly " + payment.getAmount().toPlainString()
+                        + " with payment code " + payment.getPaymentCode() + ".")
+                .targetType(NotificationTargetType.SELECTED_USERS)
+                .createdBy(createdBy)
+                .build();
+
+        notification.getTargetUsers().add(NotificationTargetUser.builder()
+                .notification(notification)
+                .user(invoice.getResidentHead())
+                .build());
+        notification.getTargetBuildings().add(NotificationTargetBuilding.builder()
+                .notification(notification)
+                .building(invoice.getRoom().getBuilding())
+                .build());
+
+        notificationRepository.save(notification);
+    }
+
+    @Override
+    @Transactional
+    public void createInvoicePaidNotification(User createdBy, Invoice invoice, SepayPayment payment) {
+        if (createdBy == null) {
+            throw new BadRequestException("Notification creator is required");
+        }
+        if (invoice == null) {
+            throw new BadRequestException("Invoice is required");
+        }
+        if (payment == null) {
+            throw new BadRequestException("SePay payment is required");
+        }
+
+        Notification notification = Notification.builder()
+                .title("Payment received")
+                .content("Payment for invoice " + invoice.getId()
+                        + " in room " + invoice.getRoom().getRoomCode()
+                        + " has been received successfully.")
+                .targetType(NotificationTargetType.SELECTED_USERS)
+                .createdBy(createdBy)
+                .build();
+
+        notification.getTargetUsers().add(NotificationTargetUser.builder()
+                .notification(notification)
+                .user(invoice.getResidentHead())
+                .build());
+        notification.getTargetBuildings().add(NotificationTargetBuilding.builder()
+                .notification(notification)
+                .building(invoice.getRoom().getBuilding())
                 .build());
 
         notificationRepository.save(notification);

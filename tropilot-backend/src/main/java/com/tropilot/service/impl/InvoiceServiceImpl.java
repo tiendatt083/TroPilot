@@ -1,18 +1,29 @@
 package com.tropilot.service.impl;
 
+import com.tropilot.dto.request.BulkInvoiceRequest;
 import com.tropilot.dto.request.InvoiceGenerateRequest;
+import com.tropilot.dto.request.InvoicePreviewRequest;
+import com.tropilot.dto.response.BulkInvoicePreviewResponse;
+import com.tropilot.dto.response.InvoiceBulkBlockedRoomResponse;
+import com.tropilot.dto.response.InvoiceItemResponse;
+import com.tropilot.dto.response.InvoicePreviewResponse;
 import com.tropilot.dto.response.InvoiceResponse;
+import com.tropilot.entity.Building;
+import com.tropilot.entity.Feedback;
 import com.tropilot.entity.Invoice;
 import com.tropilot.entity.InvoiceItem;
 import com.tropilot.entity.RentalContract;
 import com.tropilot.entity.Room;
 import com.tropilot.entity.RoomAssignment;
 import com.tropilot.entity.ServiceFee;
+import com.tropilot.entity.SepayPayment;
 import com.tropilot.entity.User;
 import com.tropilot.entity.UtilityReading;
 import com.tropilot.enums.CalculationType;
+import com.tropilot.enums.FeedbackType;
 import com.tropilot.enums.FeeType;
 import com.tropilot.enums.InvoiceStatus;
+import com.tropilot.enums.PaymentStatus;
 import com.tropilot.enums.RentalStatus;
 import com.tropilot.enums.RoomAssignmentStatus;
 import com.tropilot.enums.RoomMemberStatus;
@@ -21,15 +32,20 @@ import com.tropilot.exception.ForbiddenException;
 import com.tropilot.exception.ResourceNotFoundException;
 import com.tropilot.repository.InvoiceRepository;
 import com.tropilot.repository.BuildingRepository;
+import com.tropilot.repository.FeedbackRepository;
+import com.tropilot.repository.PaymentRepository;
 import com.tropilot.repository.RentalContractRepository;
+import com.tropilot.repository.ReceiptRepository;
 import com.tropilot.repository.RoomAssignmentRepository;
 import com.tropilot.repository.RoomMemberRepository;
 import com.tropilot.repository.RoomRepository;
+import com.tropilot.repository.SepayPaymentRepository;
 import com.tropilot.repository.ServiceFeeRepository;
 import com.tropilot.repository.UserRepository;
 import com.tropilot.repository.UtilityReadingRepository;
 import com.tropilot.service.ActivityLogService;
 import com.tropilot.service.InvoiceService;
+import com.tropilot.service.SepayPaymentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,36 +53,300 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class InvoiceServiceImpl implements InvoiceService {
 
     private static final BigDecimal ONE = BigDecimal.ONE;
+    private static final DateTimeFormatter MONTH_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM");
+    private static final String BLOCKED_ALREADY_INVOICED = "ALREADY_INVOICED";
+    private static final String BLOCKED_NO_ACTIVE_HEAD_RESIDENT = "NO_ACTIVE_HEAD_RESIDENT";
+    private static final String BLOCKED_MISSING_UTILITY_READING = "MISSING_UTILITY_READING";
+    private static final String BLOCKED_INVALID_CONFIGURATION = "INVALID_CONFIGURATION";
 
     private final InvoiceRepository invoiceRepository;
     private final BuildingRepository buildingRepository;
+    private final FeedbackRepository feedbackRepository;
+    private final PaymentRepository paymentRepository;
     private final RoomRepository roomRepository;
+    private final ReceiptRepository receiptRepository;
     private final UserRepository userRepository;
     private final RentalContractRepository rentalContractRepository;
     private final RoomAssignmentRepository roomAssignmentRepository;
     private final UtilityReadingRepository utilityReadingRepository;
     private final ServiceFeeRepository serviceFeeRepository;
     private final RoomMemberRepository roomMemberRepository;
+    private final SepayPaymentRepository sepayPaymentRepository;
     private final InvoiceMapper invoiceMapper;
+    private final SepayPaymentService sepayPaymentService;
     private final ActivityLogService activityLogService;
 
     @Override
     @Transactional
     public InvoiceResponse generateInvoice(InvoiceGenerateRequest request, Long createdById) {
-        Room room = findRoom(request.getRoomId());
-        validateRoomBelongsToBuilding(room, request.getBuildingId());
         User createdBy = findUser(createdById);
-        LocalDate month = parseMonth(request.getMonth());
+        LocalDate invoiceMonth = parseMonth(request.getMonth());
+        InvoiceCalculation calculation = calculateInvoice(
+                findRoom(request.getRoomId()),
+                request.getBuildingId(),
+                invoiceMonth,
+                request.getDueDate(),
+                true
+        );
 
-        if (invoiceRepository.existsByRoom_IdAndMonth(room.getId(), month)) {
+        return saveInvoice(calculation, createdBy);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public InvoicePreviewResponse previewBuildingInvoice(Long buildingId, InvoicePreviewRequest request) {
+        InvoiceCalculation calculation = calculateInvoice(
+                findRoom(request.getRoomId()),
+                buildingId,
+                getInvoiceMonth(request.getInvoiceDate()),
+                request.getDueDate(),
+                true
+        );
+
+        return toPreviewResponse(calculation, request.getInvoiceDate());
+    }
+
+    @Override
+    @Transactional
+    public InvoiceResponse generateBuildingInvoice(Long buildingId, InvoicePreviewRequest request, Long createdById) {
+        User createdBy = findUser(createdById);
+        InvoiceCalculation calculation = calculateInvoice(
+                findRoom(request.getRoomId()),
+                buildingId,
+                getInvoiceMonth(request.getInvoiceDate()),
+                request.getDueDate(),
+                true
+        );
+
+        return saveInvoice(calculation, createdBy);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public BulkInvoicePreviewResponse previewBuildingInvoices(Long buildingId, BulkInvoiceRequest request) {
+        Building building = findBuilding(buildingId);
+        LocalDate invoiceMonth = getInvoiceMonth(request.getInvoiceDate());
+        LocalDate utilityMonth = invoiceMonth.minusMonths(1);
+        List<Room> rooms = roomRepository.findByFilters(buildingId, null, null)
+                .stream()
+                .sorted(Comparator.comparing(Room::getRoomCode))
+                .toList();
+        Map<Long, RoomAssignment> activeAssignments = roomAssignmentRepository
+                .findByBuildingIdAndStatusWithDetails(buildingId, RoomAssignmentStatus.ACTIVE)
+                .stream()
+                .collect(Collectors.toMap(
+                        assignment -> assignment.getRoom().getId(),
+                        Function.identity()
+                ));
+
+        List<InvoicePreviewResponse> eligibleInvoices = new ArrayList<>();
+        List<InvoiceBulkBlockedRoomResponse> blockedRooms = new ArrayList<>();
+
+        for (Room room : rooms) {
+            RoomAssignment assignment = activeAssignments.get(room.getId());
+            if (assignment == null) {
+                blockedRooms.add(toBlockedRoom(room, BLOCKED_NO_ACTIVE_HEAD_RESIDENT, "Room has no active Head Resident"));
+                continue;
+            }
+
+            if (invoiceRepository.existsByRoom_IdAndMonth(room.getId(), invoiceMonth)) {
+                blockedRooms.add(toBlockedRoom(room, BLOCKED_ALREADY_INVOICED, "Invoice already exists for this room and month"));
+                continue;
+            }
+
+            try {
+                InvoiceCalculation calculation = calculateInvoice(room, buildingId, invoiceMonth, request.getDueDate(), false);
+                eligibleInvoices.add(toPreviewResponse(calculation, request.getInvoiceDate()));
+            } catch (BadRequestException exception) {
+                String reasonCode = exception.getMessage().toLowerCase().contains("utility reading")
+                        ? BLOCKED_MISSING_UTILITY_READING
+                        : BLOCKED_INVALID_CONFIGURATION;
+                blockedRooms.add(toBlockedRoom(room, reasonCode, exception.getMessage()));
+            }
+        }
+
+        BigDecimal totalAmount = eligibleInvoices.stream()
+                .map(InvoicePreviewResponse::getTotalAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        return BulkInvoicePreviewResponse.builder()
+                .buildingId(building.getId())
+                .buildingCode(building.getBuildingCode())
+                .buildingName(building.getName())
+                .invoiceDate(request.getInvoiceDate())
+                .invoiceMonth(invoiceMonth.format(MONTH_FORMATTER))
+                .utilityMonth(utilityMonth.format(MONTH_FORMATTER))
+                .dueDate(request.getDueDate())
+                .eligibleCount(eligibleInvoices.size())
+                .blockedCount(blockedRooms.size())
+                .totalAmount(totalAmount)
+                .eligibleInvoices(eligibleInvoices)
+                .blockedRooms(blockedRooms)
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public List<InvoiceResponse> generateBuildingInvoices(Long buildingId, BulkInvoiceRequest request, Long createdById) {
+        User createdBy = findUser(createdById);
+        BulkInvoicePreviewResponse preview = previewBuildingInvoices(buildingId, request);
+
+        boolean hasFatalBlock = preview.getBlockedRooms()
+                .stream()
+                .anyMatch(room -> BLOCKED_MISSING_UTILITY_READING.equals(room.getReasonCode())
+                        || BLOCKED_INVALID_CONFIGURATION.equals(room.getReasonCode()));
+
+        if (hasFatalBlock) {
+            throw new BadRequestException("Bulk invoice generation requires valid billing configuration and required utility readings");
+        }
+
+        if (preview.getEligibleInvoices().isEmpty()) {
+            throw new BadRequestException("No room is eligible for bulk invoice generation");
+        }
+
+        return preview.getEligibleInvoices()
+                .stream()
+                .map(previewInvoice -> {
+                    InvoiceCalculation calculation = calculateInvoice(
+                            findRoom(previewInvoice.getRoomId()),
+                            buildingId,
+                            parseMonth(previewInvoice.getInvoiceMonth()),
+                            request.getDueDate(),
+                            true
+                    );
+                    return saveInvoice(calculation, createdBy);
+                })
+                .toList();
+    }
+
+    @Override
+    @Transactional
+    public void deleteBuildingInvoice(Long buildingId, Long invoiceId, Long deletedById) {
+        User deletedBy = findUser(deletedById);
+        Invoice invoice = findInvoice(invoiceId);
+        validateInvoiceBelongsToBuilding(invoice, buildingId);
+
+        if (!canDeleteInvoice(invoice.getStatus())) {
+            throw new BadRequestException("Only unpaid, pending confirmation, overdue, or rejected invoices can be deleted");
+        }
+
+        if (receiptRepository.existsByInvoice_Id(invoiceId)
+                || paymentRepository.existsByInvoice_IdAndStatus(invoiceId, PaymentStatus.APPROVED)) {
+            throw new BadRequestException("Invoice cannot be deleted because it has an approved payment or receipt");
+        }
+
+        List<Feedback> invoiceFeedbacks = feedbackRepository.findByInvoice_Id(invoiceId);
+        invoiceFeedbacks.forEach(feedback -> feedback.setInvoice(null));
+        feedbackRepository.saveAll(invoiceFeedbacks);
+
+        String roomCode = invoice.getRoom().getRoomCode();
+        String invoiceMonth = invoice.getMonth().format(MONTH_FORMATTER);
+        paymentRepository.deleteByInvoice_Id(invoiceId);
+        sepayPaymentRepository.deleteByInvoice_Id(invoiceId);
+        invoiceRepository.delete(invoice);
+        activityLogService.record(
+                deletedBy,
+                "INVOICE_DELETED",
+                "Deleted invoice for room " + roomCode + " and month " + invoiceMonth
+        );
+    }
+
+    private boolean canDeleteInvoice(InvoiceStatus status) {
+        return status == InvoiceStatus.UNPAID
+                || status == InvoiceStatus.PENDING_CONFIRMATION
+                || status == InvoiceStatus.OVERDUE
+                || status == InvoiceStatus.REJECTED;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<InvoiceResponse> getInvoices(Long buildingId) {
+        List<Invoice> invoices = buildingId == null
+                ? invoiceRepository.findAllWithDetails()
+                : getBuildingInvoices(buildingId);
+
+        return invoices
+                .stream()
+                .map(invoice -> invoiceMapper.toResponse(
+                        invoice,
+                        findUtilityReadingForInvoice(invoice),
+                        findInvoiceComplaint(invoice),
+                        findSepayPayment(invoice)
+                ))
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public InvoiceResponse getInvoice(Long id, Long buildingId) {
+        Invoice invoice = findInvoice(id);
+        validateInvoiceBelongsToBuilding(invoice, buildingId);
+        return invoiceMapper.toResponse(
+                invoice,
+                findUtilityReadingForInvoice(invoice),
+                findInvoiceComplaint(invoice),
+                findSepayPayment(invoice)
+        );
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<InvoiceResponse> getResidentInvoices(Long residentHeadId) {
+        RoomAssignment assignment = findResidentAssignment(residentHeadId);
+
+        return invoiceRepository.findByRoomIdWithDetails(assignment.getRoom().getId())
+                .stream()
+                .map(invoice -> invoiceMapper.toResponse(
+                        invoice,
+                        findUtilityReadingForInvoice(invoice),
+                        findInvoiceComplaint(invoice),
+                        findSepayPayment(invoice)
+                ))
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public InvoiceResponse getResidentInvoice(Long residentHeadId, Long id) {
+        RoomAssignment assignment = findResidentAssignment(residentHeadId);
+        Invoice invoice = findInvoice(id);
+
+        if (!invoice.getRoom().getId().equals(assignment.getRoom().getId())) {
+            throw new ForbiddenException("Invoice does not belong to the current Head Resident room");
+        }
+
+        return invoiceMapper.toResponse(
+                invoice,
+                findUtilityReadingForInvoice(invoice),
+                findInvoiceComplaint(invoice),
+                findSepayPayment(invoice)
+        );
+    }
+
+    private InvoiceCalculation calculateInvoice(
+            Room room,
+            Long buildingId,
+            LocalDate invoiceMonth,
+            LocalDate dueDate,
+            boolean validateDuplicate
+    ) {
+        validateRoomBelongsToBuilding(room, buildingId);
+
+        if (validateDuplicate && invoiceRepository.existsByRoom_IdAndMonth(room.getId(), invoiceMonth)) {
             throw new BadRequestException("Invoice already exists for this room and month");
         }
 
@@ -88,30 +368,30 @@ public class InvoiceServiceImpl implements InvoiceService {
         );
         BigDecimal occupantQuantity = BigDecimal.valueOf(1L + approvedMemberCount);
         boolean utilityReadingRequired = !firstInvoiceForCurrentHead && hasUsageBasedUtilityFee(activeFees);
-        UtilityReading utilityReading = findUtilityReadingForGeneration(room, month, utilityReadingRequired);
+        LocalDate utilityMonth = invoiceMonth.minusMonths(1);
+        UtilityReading utilityReading = findUtilityReadingForGeneration(room, utilityMonth, utilityReadingRequired);
 
-        Invoice invoice = Invoice.builder()
+        Invoice draftInvoice = Invoice.builder()
                 .room(room)
                 .residentHead(assignment.getResidentHead())
-                .month(month)
-                .dueDate(request.getDueDate())
+                .month(invoiceMonth)
+                .dueDate(dueDate)
                 .status(InvoiceStatus.UNPAID)
-                .createdBy(createdBy)
                 .totalAmount(BigDecimal.ZERO)
                 .build();
 
         if (firstInvoiceForCurrentHead) {
-            addDepositItem(invoice, activeContract.getDepositAmount());
+            addDepositItem(draftInvoice, activeContract.getDepositAmount());
         }
-        addRoomPriceItem(invoice, room);
+        addRoomPriceItem(draftInvoice, room);
         if (!firstInvoiceForCurrentHead) {
-            addUtilityItem(invoice, activeFees, utilityReading, FeeType.ELECTRICITY, occupantQuantity);
-            addUtilityItem(invoice, activeFees, utilityReading, FeeType.WATER, occupantQuantity);
+            addUtilityItem(draftInvoice, activeFees, utilityReading, FeeType.ELECTRICITY, occupantQuantity);
+            addUtilityItem(draftInvoice, activeFees, utilityReading, FeeType.WATER, occupantQuantity);
         }
-        addFixedFeeItems(invoice, activeFees);
-        addByPersonFeeItems(invoice, activeFees, occupantQuantity);
+        addFixedFeeItems(draftInvoice, activeFees);
+        addByPersonFeeItems(draftInvoice, activeFees, occupantQuantity);
 
-        BigDecimal totalAmount = invoice.getItems()
+        BigDecimal totalAmount = draftInvoice.getItems()
                 .stream()
                 .map(InvoiceItem::getAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -120,61 +400,109 @@ public class InvoiceServiceImpl implements InvoiceService {
             throw new BadRequestException("Invoice total amount must not be negative");
         }
 
-        invoice.setTotalAmount(totalAmount);
+        draftInvoice.setTotalAmount(totalAmount);
+
+        return new InvoiceCalculation(
+                room,
+                assignment,
+                invoiceMonth,
+                utilityMonth,
+                dueDate,
+                firstInvoiceForCurrentHead,
+                utilityReadingRequired,
+                utilityReading,
+                draftInvoice.getItems(),
+                totalAmount
+        );
+    }
+
+    private InvoiceResponse saveInvoice(InvoiceCalculation calculation, User createdBy) {
+        Invoice invoice = Invoice.builder()
+                .room(calculation.room())
+                .residentHead(calculation.assignment().getResidentHead())
+                .month(calculation.invoiceMonth())
+                .dueDate(calculation.dueDate())
+                .status(InvoiceStatus.UNPAID)
+                .createdBy(createdBy)
+                .totalAmount(calculation.totalAmount())
+                .build();
+
+        calculation.items().forEach(invoice::addItem);
 
         Invoice savedInvoice = invoiceRepository.save(invoice);
         activityLogService.record(
                 createdBy,
                 "INVOICE_GENERATED",
-                "Generated invoice for room " + room.getRoomCode() + " and month " + month
+                "Generated invoice for room " + calculation.room().getRoomCode()
+                        + " and month " + calculation.invoiceMonth().format(MONTH_FORMATTER)
         );
 
-        return invoiceMapper.toResponse(savedInvoice, utilityReading);
+        SepayPayment sepayPayment = sepayPaymentService.createForInvoice(savedInvoice).orElse(null);
+        return invoiceMapper.toResponse(savedInvoice, calculation.utilityReading(), findInvoiceComplaint(savedInvoice), sepayPayment);
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public List<InvoiceResponse> getInvoices(Long buildingId) {
-        List<Invoice> invoices = buildingId == null
-                ? invoiceRepository.findAllWithDetails()
-                : getBuildingInvoices(buildingId);
+    private InvoicePreviewResponse toPreviewResponse(InvoiceCalculation calculation, LocalDate invoiceDate) {
+        Room room = calculation.room();
+        Building building = room.getBuilding();
+        User residentHead = calculation.assignment().getResidentHead();
+        List<String> warnings = new ArrayList<>();
 
-        return invoices
-                .stream()
-                .map(invoice -> invoiceMapper.toResponse(invoice, findUtilityReadingForInvoice(invoice)))
-                .toList();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public InvoiceResponse getInvoice(Long id, Long buildingId) {
-        Invoice invoice = findInvoice(id);
-        validateInvoiceBelongsToBuilding(invoice, buildingId);
-        return invoiceMapper.toResponse(invoice, findUtilityReadingForInvoice(invoice));
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<InvoiceResponse> getResidentInvoices(Long residentHeadId) {
-        RoomAssignment assignment = findResidentAssignment(residentHeadId);
-
-        return invoiceRepository.findByRoomIdWithDetails(assignment.getRoom().getId())
-                .stream()
-                .map(invoice -> invoiceMapper.toResponse(invoice, findUtilityReadingForInvoice(invoice)))
-                .toList();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public InvoiceResponse getResidentInvoice(Long residentHeadId, Long id) {
-        RoomAssignment assignment = findResidentAssignment(residentHeadId);
-        Invoice invoice = findInvoice(id);
-
-        if (!invoice.getRoom().getId().equals(assignment.getRoom().getId())) {
-            throw new ForbiddenException("Invoice does not belong to the current Head Resident room");
+        if (calculation.firstInvoiceForCurrentHead()) {
+            warnings.add("First invoice includes the deposit and excludes usage-based utility charges");
         }
 
-        return invoiceMapper.toResponse(invoice, findUtilityReadingForInvoice(invoice));
+        if (calculation.utilityReadingRequired()) {
+            warnings.add("Usage-based electricity or water uses the previous month utility reading");
+        }
+
+        return InvoicePreviewResponse.builder()
+                .roomId(room.getId())
+                .roomCode(room.getRoomCode())
+                .roomName(room.getRoomName())
+                .buildingId(building.getId())
+                .buildingCode(building.getBuildingCode())
+                .buildingName(building.getName())
+                .residentHeadId(residentHead.getId())
+                .residentHeadName(residentHead.getFullName())
+                .residentHeadEmail(residentHead.getEmail())
+                .invoiceDate(invoiceDate)
+                .invoiceMonth(calculation.invoiceMonth().format(MONTH_FORMATTER))
+                .utilityMonth(calculation.utilityMonth().format(MONTH_FORMATTER))
+                .dueDate(calculation.dueDate())
+                .firstInvoiceForCurrentHead(calculation.firstInvoiceForCurrentHead())
+                .depositIncluded(hasDepositItem(calculation.items()))
+                .utilityReadingRequired(calculation.utilityReadingRequired())
+                .totalAmount(calculation.totalAmount())
+                .items(calculation.items().stream().map(this::toItemResponse).toList())
+                .warnings(warnings)
+                .build();
+    }
+
+    private InvoiceItemResponse toItemResponse(InvoiceItem item) {
+        ServiceFee serviceFee = item.getServiceFee();
+
+        return InvoiceItemResponse.builder()
+                .serviceFeeId(serviceFee == null ? null : serviceFee.getId())
+                .itemName(item.getItemName())
+                .quantity(item.getQuantity())
+                .unitPrice(item.getUnitPrice())
+                .amount(item.getAmount())
+                .note(item.getNote())
+                .build();
+    }
+
+    private InvoiceBulkBlockedRoomResponse toBlockedRoom(Room room, String reasonCode, String reason) {
+        return InvoiceBulkBlockedRoomResponse.builder()
+                .roomId(room.getId())
+                .roomCode(room.getRoomCode())
+                .roomName(room.getRoomName())
+                .reasonCode(reasonCode)
+                .reason(reason)
+                .build();
+    }
+
+    private boolean hasDepositItem(List<InvoiceItem> items) {
+        return items.stream().anyMatch(item -> "Deposit".equals(item.getItemName()));
     }
 
     private void addRoomPriceItem(Invoice invoice, Room room) {
@@ -302,6 +630,11 @@ public class InvoiceServiceImpl implements InvoiceService {
         return invoiceRepository.findByBuildingIdWithDetails(buildingId);
     }
 
+    private Building findBuilding(Long buildingId) {
+        return buildingRepository.findById(buildingId)
+                .orElseThrow(() -> new ResourceNotFoundException("Building not found"));
+    }
+
     private void validateBuildingExists(Long buildingId) {
         if (!buildingRepository.existsById(buildingId)) {
             throw new ResourceNotFoundException("Building not found");
@@ -349,24 +682,37 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     private UtilityReading findUtilityReadingForInvoice(Invoice invoice) {
+        if (!invoiceUsesUsageBasedUtility(invoice)) {
+            return null;
+        }
+
         return utilityReadingRepository
-                .findByRoomIdAndMonthWithDetails(invoice.getRoom().getId(), invoice.getMonth())
+                .findByRoomIdAndMonthWithDetails(invoice.getRoom().getId(), invoice.getMonth().minusMonths(1))
                 .orElse(null);
+    }
+
+    private boolean invoiceUsesUsageBasedUtility(Invoice invoice) {
+        return invoice.getItems()
+                .stream()
+                .map(InvoiceItem::getServiceFee)
+                .filter(Objects::nonNull)
+                .filter(fee -> fee.getFeeType() == FeeType.ELECTRICITY || fee.getFeeType() == FeeType.WATER)
+                .anyMatch(fee -> fee.getCalculationType() == CalculationType.BY_USAGE);
     }
 
     private UtilityReading findUtilityReadingForGeneration(
             Room room,
-            LocalDate month,
+            LocalDate utilityMonth,
             boolean utilityReadingRequired
     ) {
         return utilityReadingRepository
-                .findByRoomIdAndMonthWithDetails(room.getId(), month)
+                .findByRoomIdAndMonthWithDetails(room.getId(), utilityMonth)
                 .orElseGet(() -> {
                     if (!utilityReadingRequired) {
                         return null;
                     }
 
-                    throw new BadRequestException("Utility reading is required for this room and month");
+                    throw new BadRequestException("Utility reading is required for this room and previous month");
                 });
     }
 
@@ -386,5 +732,45 @@ public class InvoiceServiceImpl implements InvoiceService {
         } catch (RuntimeException exception) {
             throw new BadRequestException("Invoice month must use YYYY-MM format");
         }
+    }
+
+    private LocalDate getInvoiceMonth(LocalDate invoiceDate) {
+        if (invoiceDate == null) {
+            throw new BadRequestException("Invoice date is required");
+        }
+
+        return YearMonth.from(invoiceDate).atDay(1);
+    }
+
+    private Feedback findInvoiceComplaint(Invoice invoice) {
+        if (invoice.getId() == null) {
+            return null;
+        }
+
+        return feedbackRepository
+                .findFirstByInvoice_IdAndTypeOrderByCreatedAtDesc(invoice.getId(), FeedbackType.INVOICE_COMPLAINT)
+                .orElse(null);
+    }
+
+    private SepayPayment findSepayPayment(Invoice invoice) {
+        if (invoice.getId() == null) {
+            return null;
+        }
+
+        return sepayPaymentService.findByInvoiceId(invoice.getId()).orElse(null);
+    }
+
+    private record InvoiceCalculation(
+            Room room,
+            RoomAssignment assignment,
+            LocalDate invoiceMonth,
+            LocalDate utilityMonth,
+            LocalDate dueDate,
+            boolean firstInvoiceForCurrentHead,
+            boolean utilityReadingRequired,
+            UtilityReading utilityReading,
+            List<InvoiceItem> items,
+            BigDecimal totalAmount
+    ) {
     }
 }

@@ -3,12 +3,15 @@ package com.tropilot.service.impl;
 import com.tropilot.dto.response.InvoiceItemResponse;
 import com.tropilot.dto.response.InvoiceResponse;
 import com.tropilot.entity.Building;
+import com.tropilot.entity.Feedback;
 import com.tropilot.entity.Invoice;
 import com.tropilot.entity.InvoiceItem;
 import com.tropilot.entity.Room;
 import com.tropilot.entity.ServiceFee;
+import com.tropilot.entity.SepayPayment;
 import com.tropilot.entity.User;
 import com.tropilot.entity.UtilityReading;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.format.DateTimeFormatter;
@@ -16,11 +19,27 @@ import java.util.Comparator;
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class InvoiceMapper {
 
     private static final DateTimeFormatter MONTH_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM");
 
+    private final SepayPaymentMapper sepayPaymentMapper;
+
     public InvoiceResponse toResponse(Invoice invoice, UtilityReading utilityReading) {
+        return toResponse(invoice, utilityReading, null);
+    }
+
+    public InvoiceResponse toResponse(Invoice invoice, UtilityReading utilityReading, Feedback invoiceComplaint) {
+        return toResponse(invoice, utilityReading, invoiceComplaint, null);
+    }
+
+    public InvoiceResponse toResponse(
+            Invoice invoice,
+            UtilityReading utilityReading,
+            Feedback invoiceComplaint,
+            SepayPayment sepayPayment
+    ) {
         Room room = invoice.getRoom();
         Building building = room.getBuilding();
         User residentHead = invoice.getResidentHead();
@@ -41,6 +60,9 @@ public class InvoiceMapper {
                 .totalAmount(invoice.getTotalAmount())
                 .dueDate(invoice.getDueDate())
                 .status(invoice.getStatus())
+                .hasInvoiceComplaint(invoiceComplaint != null)
+                .invoiceComplaintStatus(invoiceComplaint == null ? null : invoiceComplaint.getStatus().name())
+                .sepayPayment(sepayPaymentMapper.toResponse(sepayPayment))
                 .createdById(createdBy.getId())
                 .createdByName(createdBy.getFullName())
                 .createdByRole(createdBy.getRole().name())

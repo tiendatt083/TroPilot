@@ -14,6 +14,10 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
     boolean existsByInvoice_IdAndStatus(Long invoiceId, PaymentStatus status);
 
+    boolean existsByInvoice_Id(Long invoiceId);
+
+    void deleteByInvoice_Id(Long invoiceId);
+
     long countByStatus(PaymentStatus status);
 
     @EntityGraph(attributePaths = {

@@ -3,14 +3,8 @@ import { getInvoiceStatusClass } from '../utils/invoiceStatusOptions.js';
 import { resolveFileUrl } from '../utils/fileUrl.js';
 import { formatDisplayDate, formatDisplayMonth } from '../utils/dateFormat.js';
 import { formatEnumLabel } from '../utils/i18nFormat.js';
+import { formatInvoiceAmount, formatInvoiceText } from '../utils/invoiceDisplay.js';
 import { formatRoomLabel } from '../utils/roomDisplay.js';
-
-function formatNumber(value) {
-  const numberValue = Number(value);
-  return Number.isFinite(numberValue)
-    ? numberValue.toLocaleString('en-US', { maximumFractionDigits: 2 })
-    : value;
-}
 
 export default function InvoiceDetail({ invoice }) {
   const { t } = useTranslation();
@@ -21,6 +15,10 @@ export default function InvoiceDetail({ invoice }) {
 
   return (
     <section className="invoice-detail-panel">
+      {invoice.hasInvoiceComplaint && (
+        <div className="alert warning-alert">{t('buildingInvoices.complaintBadge')}</div>
+      )}
+
       <div className="detail-panel">
         <div>
           <span>{t('tables.common.room')}</span>
@@ -54,7 +52,7 @@ export default function InvoiceDetail({ invoice }) {
         </div>
         <div>
           <span>{t('tables.common.totalAmount')}</span>
-          <strong>{formatNumber(invoice.totalAmount)}</strong>
+          <strong>{formatInvoiceAmount(invoice.totalAmount)}</strong>
         </div>
         <div>
           <span>{t('tables.common.createdBy')}</span>
@@ -75,6 +73,48 @@ export default function InvoiceDetail({ invoice }) {
         )}
       </div>
 
+      {invoice.sepayPayment && (
+        <section className="sepay-payment-panel">
+          <div className="sepay-payment-copy">
+            <span className="section-eyebrow">{t('sepayPayment.eyebrow')}</span>
+            <h3>{t('sepayPayment.title')}</h3>
+            <p>{t('sepayPayment.description')}</p>
+
+            <div className="detail-panel compact-detail-panel">
+              <div>
+                <span>{t('sepayPayment.amount')}</span>
+                <strong>{formatInvoiceAmount(invoice.sepayPayment.amount)}</strong>
+              </div>
+              <div>
+                <span>{t('sepayPayment.content')}</span>
+                <strong>{invoice.sepayPayment.paymentCode}</strong>
+              </div>
+              <div>
+                <span>{t('sepayPayment.bank')}</span>
+                <strong>{invoice.sepayPayment.bankCode}</strong>
+              </div>
+              <div>
+                <span>{t('sepayPayment.accountNumber')}</span>
+                <strong>{invoice.sepayPayment.accountNumber}</strong>
+              </div>
+              <div>
+                <span>{t('sepayPayment.accountName')}</span>
+                <strong>{invoice.sepayPayment.accountName}</strong>
+              </div>
+              <div>
+                <span>{t('tables.common.status')}</span>
+                <strong>{t(`sepayPayment.status.${invoice.sepayPayment.status}`)}</strong>
+              </div>
+            </div>
+          </div>
+
+          <div className="sepay-qr-card">
+            <img src={invoice.sepayPayment.qrImageUrl} alt={t('sepayPayment.qrAlt')} />
+            <span>{t('sepayPayment.qrCaption')}</span>
+          </div>
+        </section>
+      )}
+
       <div className="table-wrap">
         <table className="data-table invoice-item-table">
           <thead>
@@ -89,11 +129,11 @@ export default function InvoiceDetail({ invoice }) {
           <tbody>
             {(invoice.items || []).map((item) => (
               <tr key={item.id || item.itemName}>
-                <td>{item.itemName}</td>
-                <td>{formatNumber(item.quantity)}</td>
-                <td>{formatNumber(item.unitPrice)}</td>
-                <td>{formatNumber(item.amount)}</td>
-                <td>{item.note || t('common.notProvided')}</td>
+                <td>{formatInvoiceText(t, item.itemName)}</td>
+                <td>{formatInvoiceAmount(item.quantity)}</td>
+                <td>{formatInvoiceAmount(item.unitPrice)}</td>
+                <td>{formatInvoiceAmount(item.amount)}</td>
+                <td>{item.note ? formatInvoiceText(t, item.note) : t('common.notProvided')}</td>
               </tr>
             ))}
           </tbody>

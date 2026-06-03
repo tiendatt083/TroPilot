@@ -27,6 +27,9 @@ public class InvoiceResponse {
     private BigDecimal totalAmount;
     private LocalDate dueDate;
     private InvoiceStatus status;
+    private boolean hasInvoiceComplaint;
+    private String invoiceComplaintStatus;
+    private SepayPaymentResponse sepayPayment;
     private Long createdById;
     private String createdByName;
     private String createdByRole;

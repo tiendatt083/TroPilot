@@ -82,6 +82,11 @@ const DESCRIPTION_PATTERNS = [
     params: (match) => ({ room: match[1], month: formatDisplayMonth(match[2]) })
   },
   {
+    pattern: /^Deleted invoice for room (.+) and month (.+)$/i,
+    key: 'activityLogs.descriptions.deletedInvoice',
+    params: (match) => ({ room: match[1], month: formatDisplayMonth(match[2]) })
+  },
+  {
     pattern: /^Uploaded payment proof for invoice (.+)$/i,
     key: 'activityLogs.descriptions.uploadedPaymentProof',
     params: (match) => ({ invoice: match[1] })
@@ -100,6 +105,21 @@ const DESCRIPTION_PATTERNS = [
     pattern: /^System created receipt (.+) for invoice (.+)$/i,
     key: 'activityLogs.descriptions.createdReceipt',
     params: (match) => ({ receipt: match[1], invoice: match[2] })
+  },
+  {
+    pattern: /^System created receipt for invoice (.+)$/i,
+    key: 'activityLogs.descriptions.createdReceiptWithoutCode',
+    params: (match) => ({ invoice: match[1] })
+  },
+  {
+    pattern: /^System created receipt for SePay invoice (.+)$/i,
+    key: 'activityLogs.descriptions.createdSepayReceipt',
+    params: (match) => ({ invoice: match[1] })
+  },
+  {
+    pattern: /^Received SePay transfer for invoice (.+), room (.+), month (.+)$/i,
+    key: 'activityLogs.descriptions.receivedSepayTransfer',
+    params: (match) => ({ invoice: match[1], room: match[2], month: formatDisplayMonth(match[3]) })
   },
   {
     pattern: /^Created expense (.+)$/i,
