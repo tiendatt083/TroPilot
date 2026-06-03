@@ -8,6 +8,7 @@ import com.tropilot.entity.Room;
 import com.tropilot.entity.RoomAssignment;
 import com.tropilot.entity.RoomMember;
 import com.tropilot.entity.User;
+import com.tropilot.entity.Vehicle;
 import com.tropilot.enums.ContractStatus;
 import com.tropilot.enums.RentalStatus;
 import com.tropilot.enums.RoomAssignmentStatus;
@@ -15,6 +16,7 @@ import com.tropilot.enums.RoomMemberStatus;
 import com.tropilot.enums.RoomStatus;
 import com.tropilot.enums.UserRole;
 import com.tropilot.enums.UserStatus;
+import com.tropilot.enums.VehicleStatus;
 import com.tropilot.exception.BadRequestException;
 import com.tropilot.exception.ResourceNotFoundException;
 import com.tropilot.repository.RentalContractRepository;
@@ -22,6 +24,7 @@ import com.tropilot.repository.RoomAssignmentRepository;
 import com.tropilot.repository.RoomMemberRepository;
 import com.tropilot.repository.RoomRepository;
 import com.tropilot.repository.UserRepository;
+import com.tropilot.repository.VehicleRepository;
 import com.tropilot.service.ActivityLogService;
 import com.tropilot.service.HeadResidentAssignmentService;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +43,7 @@ public class HeadResidentAssignmentServiceImpl implements HeadResidentAssignment
     private final RoomAssignmentRepository roomAssignmentRepository;
     private final RentalContractRepository rentalContractRepository;
     private final RoomMemberRepository roomMemberRepository;
+    private final VehicleRepository vehicleRepository;
     private final ActivityLogService activityLogService;
 
     @Override
@@ -67,6 +71,7 @@ public class HeadResidentAssignmentServiceImpl implements HeadResidentAssignment
         }
 
         markRoomMembersAsLeft(room.getId(), request.getStartDate());
+        deactivateRoomVehicles(room.getId(), request.getStartDate());
 
         RoomAssignment assignment = RoomAssignment.builder()
                 .room(room)
@@ -137,6 +142,7 @@ public class HeadResidentAssignmentServiceImpl implements HeadResidentAssignment
         }
 
         markRoomMembersAsLeft(room.getId(), removalDate);
+        deactivateRoomVehicles(room.getId(), removalDate);
 
         room.setStatus(RoomStatus.EMPTY);
         roomRepository.save(room);
@@ -215,6 +221,22 @@ public class HeadResidentAssignmentServiceImpl implements HeadResidentAssignment
         });
 
         roomMemberRepository.saveAll(members);
+    }
+
+    private void deactivateRoomVehicles(Long roomId, LocalDate endDate) {
+        List<Vehicle> vehicles = vehicleRepository.findByRoom_IdAndStatusIn(
+                roomId,
+                List.of(VehicleStatus.PENDING, VehicleStatus.ACTIVE)
+        );
+
+        vehicles.forEach(vehicle -> {
+            vehicle.setStatus(VehicleStatus.INACTIVE);
+            if (vehicle.getEndDate() == null || vehicle.getEndDate().isAfter(endDate)) {
+                vehicle.setEndDate(endDate);
+            }
+        });
+
+        vehicleRepository.saveAll(vehicles);
     }
 
     private RoomHeadResponse toAssignedResponse(

@@ -30,6 +30,11 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class VehicleServiceImpl implements VehicleService {
 
+    private static final List<VehicleStatus> CURRENT_VEHICLE_STATUSES = List.of(
+            VehicleStatus.PENDING,
+            VehicleStatus.ACTIVE
+    );
+
     private final VehicleRepository vehicleRepository;
     private final BuildingRepository buildingRepository;
     private final RoomAssignmentRepository roomAssignmentRepository;
@@ -68,8 +73,11 @@ public class VehicleServiceImpl implements VehicleService {
     public List<VehicleResponse> getResidentVehicles(Long residentHeadId) {
         RoomAssignment assignment = findActiveAssignment(residentHeadId);
 
-        return vehicleRepository.findByRoomIdWithDetails(assignment.getRoom().getId())
-                .stream()
+        return CURRENT_VEHICLE_STATUSES.stream()
+                .flatMap(status -> vehicleRepository
+                        .findByRoomIdAndStatusWithDetails(assignment.getRoom().getId(), status)
+                        .stream()
+                )
                 .map(vehicleMapper::toResponse)
                 .toList();
     }
@@ -99,8 +107,8 @@ public class VehicleServiceImpl implements VehicleService {
     @Transactional(readOnly = true)
     public List<VehicleResponse> getVehicles(Long buildingId) {
         List<Vehicle> vehicles = buildingId == null
-                ? vehicleRepository.findAllWithDetails()
-                : getBuildingVehicles(buildingId);
+                ? vehicleRepository.findByStatusInWithDetails(CURRENT_VEHICLE_STATUSES)
+                : getCurrentBuildingVehicles(buildingId);
 
         return vehicles
                 .stream()
@@ -191,9 +199,9 @@ public class VehicleServiceImpl implements VehicleService {
                 .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found"));
     }
 
-    private List<Vehicle> getBuildingVehicles(Long buildingId) {
+    private List<Vehicle> getCurrentBuildingVehicles(Long buildingId) {
         validateBuildingExists(buildingId);
-        return vehicleRepository.findByBuildingIdWithDetails(buildingId);
+        return vehicleRepository.findByBuildingIdAndStatusInWithDetails(buildingId, CURRENT_VEHICLE_STATUSES);
     }
 
     private List<Vehicle> getBuildingVehiclesByStatus(Long buildingId, VehicleStatus status) {
