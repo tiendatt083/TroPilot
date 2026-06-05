@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import * as roomApi from '../../api/roomApi.js';
 import * as utilityReadingApi from '../../api/utilityReadingApi.js';
 import PageHeader from '../../components/PageHeader.jsx';
 import UtilityReadingForm from '../../components/UtilityReadingForm.jsx';
+import { isOccupiedRoom } from '../../utils/roomEligibility.js';
 
 export default function StaffUtilityReadingCreatePage() {
   const navigate = useNavigate();
@@ -12,6 +13,7 @@ export default function StaffUtilityReadingCreatePage() {
   const [error, setError] = useState('');
   const [loadingData, setLoadingData] = useState(true);
   const [saving, setSaving] = useState(false);
+  const occupiedRooms = useMemo(() => rooms.filter(isOccupiedRoom), [rooms]);
 
   useEffect(() => {
     Promise.all([
@@ -56,7 +58,7 @@ export default function StaffUtilityReadingCreatePage() {
       {error && <div className="alert error-alert">{error}</div>}
 
       <UtilityReadingForm
-        rooms={rooms}
+        rooms={occupiedRooms}
         readings={readings}
         loading={saving}
         submitLabel="Record reading"

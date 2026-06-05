@@ -170,7 +170,7 @@ public class DashboardServiceImpl implements DashboardService {
                     .currentRoom(currentRoom)
                     .approvedMemberCount(0)
                     .activeVehicles(List.of())
-                    .unreadNotifications(0)
+                    .unreadNotifications(countUnreadResidentNotifications(residentHeadId))
                     .recentMaintenanceRequests(List.of())
                     .build();
         }

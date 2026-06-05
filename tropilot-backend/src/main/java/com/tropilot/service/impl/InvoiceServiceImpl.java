@@ -27,6 +27,7 @@ import com.tropilot.enums.PaymentStatus;
 import com.tropilot.enums.RentalStatus;
 import com.tropilot.enums.RoomAssignmentStatus;
 import com.tropilot.enums.RoomMemberStatus;
+import com.tropilot.enums.RoomStatus;
 import com.tropilot.exception.BadRequestException;
 import com.tropilot.exception.ForbiddenException;
 import com.tropilot.exception.ResourceNotFoundException;
@@ -69,6 +70,7 @@ public class InvoiceServiceImpl implements InvoiceService {
     private static final BigDecimal ONE = BigDecimal.ONE;
     private static final DateTimeFormatter MONTH_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM");
     private static final String BLOCKED_ALREADY_INVOICED = "ALREADY_INVOICED";
+    private static final String BLOCKED_ROOM_NOT_OCCUPIED = "ROOM_NOT_OCCUPIED";
     private static final String BLOCKED_NO_ACTIVE_HEAD_RESIDENT = "NO_ACTIVE_HEAD_RESIDENT";
     private static final String BLOCKED_MISSING_UTILITY_READING = "MISSING_UTILITY_READING";
     private static final String BLOCKED_INVALID_CONFIGURATION = "INVALID_CONFIGURATION";
@@ -157,6 +159,11 @@ public class InvoiceServiceImpl implements InvoiceService {
         List<InvoiceBulkBlockedRoomResponse> blockedRooms = new ArrayList<>();
 
         for (Room room : rooms) {
+            if (room.getStatus() != RoomStatus.OCCUPIED) {
+                blockedRooms.add(toBlockedRoom(room, BLOCKED_ROOM_NOT_OCCUPIED, "Only occupied rooms can receive invoices"));
+                continue;
+            }
+
             RoomAssignment assignment = activeAssignments.get(room.getId());
             if (assignment == null) {
                 blockedRooms.add(toBlockedRoom(room, BLOCKED_NO_ACTIVE_HEAD_RESIDENT, "Room has no active Head Resident"));
@@ -345,6 +352,7 @@ public class InvoiceServiceImpl implements InvoiceService {
             boolean validateDuplicate
     ) {
         validateRoomBelongsToBuilding(room, buildingId);
+        validateRoomCanReceiveInvoice(room);
 
         if (validateDuplicate && invoiceRepository.existsByRoom_IdAndMonth(room.getId(), invoiceMonth)) {
             throw new BadRequestException("Invoice already exists for this room and month");
@@ -662,6 +670,12 @@ public class InvoiceServiceImpl implements InvoiceService {
 
         if (!Objects.equals(invoice.getRoom().getBuilding().getId(), buildingId)) {
             throw new BadRequestException("Invoice does not belong to the selected building");
+        }
+    }
+
+    private void validateRoomCanReceiveInvoice(Room room) {
+        if (room.getStatus() != RoomStatus.OCCUPIED) {
+            throw new BadRequestException("Only occupied rooms can receive invoices");
         }
     }
 

@@ -6,16 +6,10 @@ import { useAuth } from '../context/AuthContext.jsx';
 const STAFF_NAV_ITEMS = [
   { to: '/staff/dashboard', labelKey: 'navigation.dashboard' },
   { to: '/staff/notifications', labelKey: 'navigation.notifications' },
-  { to: '/staff/invoices', labelKey: 'navigation.invoices' },
-  { to: '/staff/payments/pending', labelKey: 'navigation.pendingPayments' },
-  { to: '/staff/expenses', labelKey: 'navigation.expenses' },
-  { to: '/staff/tasks', labelKey: 'navigation.tasks' },
-  { to: '/staff/maintenance', labelKey: 'navigation.maintenance' },
   { to: '/staff/buildings', labelKey: 'navigation.buildings' },
   { to: '/staff/rooms', labelKey: 'navigation.rooms' },
-  { to: '/staff/vehicles', labelKey: 'navigation.vehicles' },
-  { to: '/staff/service-fees', labelKey: 'navigation.serviceFees' },
-  { to: '/staff/utility-readings', labelKey: 'navigation.utilityReadings' },
+  { to: '/staff/tasks', labelKey: 'navigation.tasks' },
+  { to: '/staff/maintenance', labelKey: 'navigation.maintenance' },
   { to: '/staff/profile', labelKey: 'navigation.profile' },
   { to: '/staff/settings', labelKey: 'settings.title' }
 ];

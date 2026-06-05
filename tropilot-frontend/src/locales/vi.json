@@ -35,10 +35,6 @@
     "vietnamese": "Tiếng Việt",
     "english": "Tiếng Anh"
   },
-  "residentAccess": {
-    "checking": "Đang kiểm tra trạng thái gán phòng...",
-    "checkFailed": "Không thể kiểm tra trạng thái gán phòng. Vui lòng thử lại sau."
-  },
   "profile": {
     "title": "Thông tin cá nhân",
     "eyebrow": "Tài khoản",
@@ -308,6 +304,7 @@
     "complaintBadge": "Khách báo sai hóa đơn",
     "blockReasons": {
       "ALREADY_INVOICED": "Phòng này đã có hóa đơn trong tháng",
+      "ROOM_NOT_OCCUPIED": "Chỉ phòng đang được thuê mới có thể lập hóa đơn",
       "NO_ACTIVE_HEAD_RESIDENT": "Phòng chưa có chủ hộ đang thuê",
       "MISSING_UTILITY_READING": "Thiếu chỉ số điện nước của tháng trước",
       "INVALID_CONFIGURATION": "Cấu hình hóa đơn chưa đầy đủ"

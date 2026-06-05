@@ -1,0 +1,150 @@
+import { useEffect, useState } from 'react';
+import { useOutletContext } from 'react-router-dom';
+import * as expenseApi from '../../api/expenseApi.js';
+import * as invoiceApi from '../../api/invoiceApi.js';
+import * as maintenanceApi from '../../api/maintenanceApi.js';
+import * as roomApi from '../../api/roomApi.js';
+import * as taskApi from '../../api/taskApi.js';
+import * as vehicleApi from '../../api/vehicleApi.js';
+import PageHeader from '../../components/PageHeader.jsx';
+import { formatNumber } from '../../utils/numberFormat.js';
+
+const emptySummary = {
+  rooms: [],
+  invoices: [],
+  vehicles: [],
+  maintenanceRequests: [],
+  expenses: [],
+  tasks: []
+};
+
+function matchesBuilding(item, building) {
+  if (!item || !building) {
+    return false;
+  }
+
+  return (
+    String(item.buildingId || item.roomBuildingId || '') === String(building.id) ||
+    item.buildingCode === building.buildingCode
+  );
+}
+
+export default function StaffBuildingOverviewPage() {
+  const { building } = useOutletContext();
+  const [summary, setSummary] = useState(emptySummary);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    const buildingFilter = { buildingId: building.id };
+
+    async function loadSummary() {
+      setLoading(true);
+      setError('');
+
+      try {
+        const [roomsResponse, invoicesResponse, vehiclesResponse, maintenanceResponse, expensesResponse, tasksResponse] =
+          await Promise.all([
+            roomApi.getStaffRooms(buildingFilter),
+            invoiceApi.getStaffInvoices(buildingFilter),
+            vehicleApi.getStaffVehicles(buildingFilter),
+            maintenanceApi.getStaffMaintenanceRequests(buildingFilter),
+            expenseApi.getStaffExpenses(buildingFilter),
+            taskApi.getStaffTasks()
+          ]);
+
+        if (!active) {
+          return;
+        }
+
+        setSummary({
+          rooms: roomsResponse.data || [],
+          invoices: invoicesResponse.data || [],
+          vehicles: vehiclesResponse.data || [],
+          maintenanceRequests: maintenanceResponse.data || [],
+          expenses: expensesResponse.data || [],
+          tasks: (tasksResponse.data || []).filter((task) => matchesBuilding(task, building))
+        });
+      } catch (apiError) {
+        if (active) {
+          setError(apiError.response?.data?.message || 'Building summary could not be loaded');
+        }
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
+      }
+    }
+
+    loadSummary();
+
+    return () => {
+      active = false;
+    };
+  }, [building]);
+
+  if (loading) {
+    return <div className="empty-state">Loading building summary...</div>;
+  }
+
+  const activeVehicles = summary.vehicles.filter((vehicle) => vehicle.status === 'ACTIVE').length;
+  const unpaidInvoices = summary.invoices.filter((invoice) => invoice.status !== 'PAID').length;
+  const openMaintenance = summary.maintenanceRequests.filter((request) =>
+    ['PENDING', 'ASSIGNED', 'IN_PROGRESS'].includes(request.status)
+  ).length;
+  const openTasks = summary.tasks.filter((task) => ['NEW', 'IN_PROGRESS', 'OVERDUE'].includes(task.status)).length;
+
+  return (
+    <div className="building-workspace">
+      {error && <div className="alert error-alert">{error}</div>}
+
+      <div className="detail-panel">
+        <div>
+          <span>Building code</span>
+          <strong>{building.buildingCode}</strong>
+        </div>
+        <div>
+          <span>Address</span>
+          <strong>{building.address}</strong>
+        </div>
+        <div>
+          <span>Floors</span>
+          <strong>{building.floors}</strong>
+        </div>
+        <div className="detail-wide">
+          <span>Description</span>
+          <p>{building.description || 'No description provided.'}</p>
+        </div>
+      </div>
+
+      <PageHeader eyebrow="Staff workspace" title="Building operations" />
+      <div className="dashboard-grid building-summary-grid">
+        <div className="dashboard-card">
+          <span>Total rooms</span>
+          <strong>{formatNumber(summary.rooms.length)}</strong>
+        </div>
+        <div className="dashboard-card">
+          <span>Unpaid invoices</span>
+          <strong>{formatNumber(unpaidInvoices)}</strong>
+        </div>
+        <div className="dashboard-card">
+          <span>Active vehicles</span>
+          <strong>{formatNumber(activeVehicles)}</strong>
+        </div>
+        <div className="dashboard-card">
+          <span>Open maintenance</span>
+          <strong>{formatNumber(openMaintenance)}</strong>
+        </div>
+        <div className="dashboard-card">
+          <span>Created expenses</span>
+          <strong>{formatNumber(summary.expenses.length)}</strong>
+        </div>
+        <div className="dashboard-card">
+          <span>Open tasks</span>
+          <strong>{formatNumber(openTasks)}</strong>
+        </div>
+      </div>
+    </div>
+  );
+}

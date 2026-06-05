@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useOutletContext } from 'react-router-dom';
 import * as maintenanceApi from '../../api/maintenanceApi.js';
 import MaintenanceRequestDetail from '../../components/MaintenanceRequestDetail.jsx';
 import MaintenanceRequestTable from '../../components/MaintenanceRequestTable.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
 
 export default function StaffMaintenancePage() {
+  const outletContext = useOutletContext();
+  const building = outletContext?.building;
   const [requests, setRequests] = useState([]);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [message, setMessage] = useState('');
@@ -22,7 +24,7 @@ export default function StaffMaintenancePage() {
     setError('');
 
     try {
-      const response = await maintenanceApi.getStaffMaintenanceRequests();
+      const response = await maintenanceApi.getStaffMaintenanceRequests(building?.id ? { buildingId: building.id } : undefined);
       setRequests(response.data);
       setSelectedRequest((current) => {
         if (!current) {
@@ -38,7 +40,7 @@ export default function StaffMaintenancePage() {
 
   useEffect(() => {
     loadRequests().finally(() => setLoading(false));
-  }, []);
+  }, [building?.id]);
 
   const refreshSelectedRequest = (request) => {
     setSelectedRequest(request);
@@ -113,8 +115,11 @@ export default function StaffMaintenancePage() {
   const canReject = selectedRequest?.status === 'ASSIGNED' || selectedRequest?.status === 'IN_PROGRESS';
 
   return (
-    <section className="content-section">
-      <PageHeader eyebrow="Operations staff" title="Maintenance requests" />
+    <section className={building ? 'building-workspace' : 'content-section'}>
+      <PageHeader
+        eyebrow={building ? 'Building maintenance' : 'Operations staff'}
+        title={building ? 'Maintenance requests in this building' : 'Maintenance requests'}
+      />
 
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
@@ -187,7 +192,7 @@ export default function StaffMaintenancePage() {
 
                 <Link
                   className="secondary-link"
-                  to="/staff/expenses/create"
+                  to={building ? `/staff/buildings/${building.id}/expenses` : '/staff/expenses/create'}
                   state={{
                     roomId: selectedRequest.roomId,
                     maintenanceRequestId: selectedRequest.id,

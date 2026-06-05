@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
 import * as roomApi from '../../api/roomApi.js';
@@ -7,6 +7,7 @@ import PageHeader from '../../components/PageHeader.jsx';
 import UtilityReadingForm from '../../components/UtilityReadingForm.jsx';
 import UtilityReadingTable from '../../components/UtilityReadingTable.jsx';
 import { formatDisplayMonth } from '../../utils/dateFormat.js';
+import { isOccupiedRoom } from '../../utils/roomEligibility.js';
 import { formatRoomCode } from '../../utils/roomDisplay.js';
 
 export default function AdminBuildingUtilityReadingPage() {
@@ -20,6 +21,7 @@ export default function AdminBuildingUtilityReadingPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [formKey, setFormKey] = useState(0);
+  const occupiedRooms = useMemo(() => rooms.filter(isOccupiedRoom), [rooms]);
 
   const loadData = async () => {
     setError('');
@@ -117,7 +119,7 @@ export default function AdminBuildingUtilityReadingPage() {
             />
             <UtilityReadingForm
               key={editingReading?.id || `new-building-reading-${building.id}-${formKey}`}
-              rooms={rooms}
+              rooms={editingReading ? rooms : occupiedRooms}
               readings={readings}
               initialValues={editingReading}
               loading={saving}

@@ -8,6 +8,7 @@ import com.tropilot.entity.RoomAssignment;
 import com.tropilot.entity.User;
 import com.tropilot.entity.UtilityReading;
 import com.tropilot.enums.RoomAssignmentStatus;
+import com.tropilot.enums.RoomStatus;
 import com.tropilot.exception.BadRequestException;
 import com.tropilot.exception.ResourceNotFoundException;
 import com.tropilot.repository.RoomAssignmentRepository;
@@ -44,6 +45,7 @@ public class UtilityReadingServiceImpl implements UtilityReadingService {
     public UtilityReadingResponse createReading(UtilityReadingCreateRequest request, Long createdById) {
         Room room = findRoom(request.getRoomId());
         validateRoomBelongsToBuilding(room, request.getBuildingId());
+        validateRoomCanReceiveUtilityReading(room);
         User createdBy = findUser(createdById);
         LocalDate readingDate = parseReadingDate(request.getReadingDate(), request.getMonth());
         LocalDate month = readingDate.withDayOfMonth(1);
@@ -116,6 +118,7 @@ public class UtilityReadingServiceImpl implements UtilityReadingService {
         Room room = findRoom(request.getRoomId());
         validateReadingBelongsToBuilding(reading, request.getBuildingId());
         validateRoomBelongsToBuilding(room, request.getBuildingId());
+        validateRoomCanReceiveUtilityReading(room);
         LocalDate readingDate = parseReadingDate(request.getReadingDate(), request.getMonth());
         LocalDate month = readingDate.withDayOfMonth(1);
 
@@ -219,6 +222,16 @@ public class UtilityReadingServiceImpl implements UtilityReadingService {
 
         if (!reading.getRoom().getBuilding().getId().equals(buildingId)) {
             throw new BadRequestException("Utility reading does not belong to the selected building");
+        }
+    }
+
+    private void validateRoomCanReceiveUtilityReading(Room room) {
+        if (room.getStatus() != RoomStatus.OCCUPIED) {
+            throw new BadRequestException("Only occupied rooms can receive utility readings");
+        }
+
+        if (!roomAssignmentRepository.existsByRoom_IdAndStatus(room.getId(), RoomAssignmentStatus.ACTIVE)) {
+            throw new BadRequestException("Only rooms with an active Head Resident can receive utility readings");
         }
     }
 

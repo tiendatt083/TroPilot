@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import * as invoiceApi from '../../api/invoiceApi.js';
 import * as roomApi from '../../api/roomApi.js';
 import InvoiceGenerateForm from '../../components/InvoiceGenerateForm.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
+import { isOccupiedRoom } from '../../utils/roomEligibility.js';
 
 export default function StaffInvoiceGeneratePage() {
   const navigate = useNavigate();
@@ -11,6 +12,7 @@ export default function StaffInvoiceGeneratePage() {
   const [error, setError] = useState('');
   const [loadingRooms, setLoadingRooms] = useState(true);
   const [generating, setGenerating] = useState(false);
+  const occupiedRooms = useMemo(() => rooms.filter(isOccupiedRoom), [rooms]);
 
   useEffect(() => {
     roomApi
@@ -50,7 +52,7 @@ export default function StaffInvoiceGeneratePage() {
 
       {error && <div className="alert error-alert">{error}</div>}
 
-      <InvoiceGenerateForm rooms={rooms} loading={generating} onSubmit={handleSubmit} />
+      <InvoiceGenerateForm rooms={occupiedRooms} loading={generating} onSubmit={handleSubmit} />
     </section>
   );
 }

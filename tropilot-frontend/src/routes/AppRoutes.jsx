@@ -2,6 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import AdminBuildingWorkspaceLayout from '../layouts/AdminBuildingWorkspaceLayout.jsx';
 import AdminLayout from '../layouts/AdminLayout.jsx';
 import ResidentLayout from '../layouts/ResidentLayout.jsx';
+import StaffBuildingWorkspaceLayout from '../layouts/StaffBuildingWorkspaceLayout.jsx';
 import StaffLayout from '../layouts/StaffLayout.jsx';
 import AdminBuildingCreatePage from '../pages/admin/AdminBuildingCreatePage.jsx';
 import AdminBuildingCashFlowPage from '../pages/admin/AdminBuildingCashFlowPage.jsx';
@@ -58,8 +59,17 @@ import ResidentMemberPage from '../pages/resident/ResidentMemberPage.jsx';
 import ResidentNotificationPage from '../pages/resident/ResidentNotificationPage.jsx';
 import ResidentUtilityReadingPage from '../pages/resident/ResidentUtilityReadingPage.jsx';
 import ResidentVehiclePage from '../pages/resident/ResidentVehiclePage.jsx';
-import StaffBuildingDetailPage from '../pages/staff/StaffBuildingDetailPage.jsx';
+import StaffBuildingCashFlowPage from '../pages/staff/StaffBuildingCashFlowPage.jsx';
+import StaffBuildingExpensePage from '../pages/staff/StaffBuildingExpensePage.jsx';
+import StaffBuildingInvoicePage from '../pages/staff/StaffBuildingInvoicePage.jsx';
 import StaffBuildingListPage from '../pages/staff/StaffBuildingListPage.jsx';
+import StaffBuildingOverviewPage from '../pages/staff/StaffBuildingOverviewPage.jsx';
+import StaffBuildingPaymentPage from '../pages/staff/StaffBuildingPaymentPage.jsx';
+import StaffBuildingRoomsPage from '../pages/staff/StaffBuildingRoomsPage.jsx';
+import StaffBuildingServiceFeePage from '../pages/staff/StaffBuildingServiceFeePage.jsx';
+import StaffBuildingTaskPage from '../pages/staff/StaffBuildingTaskPage.jsx';
+import StaffBuildingUtilityReadingPage from '../pages/staff/StaffBuildingUtilityReadingPage.jsx';
+import StaffBuildingVehiclePage from '../pages/staff/StaffBuildingVehiclePage.jsx';
 import StaffDashboardPage from '../pages/staff/StaffDashboardPage.jsx';
 import StaffExpenseCreatePage from '../pages/staff/StaffExpenseCreatePage.jsx';
 import StaffExpenseListPage from '../pages/staff/StaffExpenseListPage.jsx';
@@ -170,7 +180,19 @@ export default function AppRoutes() {
               <Route path="tasks/:id" element={<StaffTaskDetailPage />} />
               <Route path="maintenance" element={<StaffMaintenancePage />} />
               <Route path="buildings" element={<StaffBuildingListPage />} />
-              <Route path="buildings/:id" element={<StaffBuildingDetailPage />} />
+              <Route path="buildings/:id" element={<StaffBuildingWorkspaceLayout />}>
+                <Route index element={<StaffBuildingOverviewPage />} />
+                <Route path="rooms" element={<StaffBuildingRoomsPage />} />
+                <Route path="utility-readings" element={<StaffBuildingUtilityReadingPage />} />
+                <Route path="invoices" element={<StaffBuildingInvoicePage />} />
+                <Route path="service-fees" element={<StaffBuildingServiceFeePage />} />
+                <Route path="vehicles" element={<StaffBuildingVehiclePage />} />
+                <Route path="payments" element={<StaffBuildingPaymentPage />} />
+                <Route path="maintenance" element={<StaffMaintenancePage />} />
+                <Route path="expenses" element={<StaffBuildingExpensePage />} />
+                <Route path="cashflow" element={<StaffBuildingCashFlowPage />} />
+                <Route path="tasks" element={<StaffBuildingTaskPage />} />
+              </Route>
               <Route path="rooms" element={<StaffRoomListPage />} />
               <Route path="rooms/:id" element={<StaffRoomDetailPage />} />
               <Route path="vehicles" element={<StaffVehicleListPage />} />

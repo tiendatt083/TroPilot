@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import * as invoiceApi from '../../api/invoiceApi.js';
 import * as roomApi from '../../api/roomApi.js';
 import InvoiceDetail from '../../components/InvoiceDetail.jsx';
 import InvoiceGenerateForm from '../../components/InvoiceGenerateForm.jsx';
 import InvoiceTable from '../../components/InvoiceTable.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
+import { isOccupiedRoom } from '../../utils/roomEligibility.js';
 
 export default function AdminInvoiceListPage() {
   const [rooms, setRooms] = useState([]);
@@ -15,6 +16,7 @@ export default function AdminInvoiceListPage() {
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
   const [loadingDetailId, setLoadingDetailId] = useState(null);
+  const occupiedRooms = useMemo(() => rooms.filter(isOccupiedRoom), [rooms]);
 
   const loadData = async () => {
     setError('');
@@ -91,7 +93,7 @@ export default function AdminInvoiceListPage() {
         <section className="invoice-workspace">
           <div>
             <PageHeader eyebrow="Generate" title="New invoice" />
-            <InvoiceGenerateForm rooms={rooms} loading={generating} onSubmit={handleGenerate} />
+            <InvoiceGenerateForm rooms={occupiedRooms} loading={generating} onSubmit={handleGenerate} />
           </div>
           <div className="invoice-list-column">
             <InvoiceTable invoices={invoices} renderActions={renderActions} />

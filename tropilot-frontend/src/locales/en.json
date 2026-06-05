@@ -35,10 +35,6 @@
     "vietnamese": "Vietnamese",
     "english": "English"
   },
-  "residentAccess": {
-    "checking": "Checking room assignment...",
-    "checkFailed": "Room assignment could not be checked. Please try again later."
-  },
   "profile": {
     "title": "Personal information",
     "eyebrow": "Account",
@@ -308,6 +304,7 @@
     "complaintBadge": "Complaint reported",
     "blockReasons": {
       "ALREADY_INVOICED": "Invoice already exists for this room and month",
+      "ROOM_NOT_OCCUPIED": "Only occupied rooms can receive invoices",
       "NO_ACTIVE_HEAD_RESIDENT": "Room has no active Head Resident",
       "MISSING_UTILITY_READING": "Required previous-month utility reading is missing",
       "INVALID_CONFIGURATION": "Billing configuration is incomplete"

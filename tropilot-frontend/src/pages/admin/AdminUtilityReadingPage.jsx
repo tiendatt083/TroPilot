@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import * as roomApi from '../../api/roomApi.js';
 import * as utilityReadingApi from '../../api/utilityReadingApi.js';
 import PageHeader from '../../components/PageHeader.jsx';
 import UtilityReadingForm from '../../components/UtilityReadingForm.jsx';
 import UtilityReadingTable from '../../components/UtilityReadingTable.jsx';
 import { formatDisplayMonth } from '../../utils/dateFormat.js';
+import { isOccupiedRoom } from '../../utils/roomEligibility.js';
 import { formatRoomCode } from '../../utils/roomDisplay.js';
 
 export default function AdminUtilityReadingPage() {
@@ -16,6 +17,7 @@ export default function AdminUtilityReadingPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [formKey, setFormKey] = useState(0);
+  const occupiedRooms = useMemo(() => rooms.filter(isOccupiedRoom), [rooms]);
 
   const loadData = async () => {
     setError('');
@@ -96,7 +98,7 @@ export default function AdminUtilityReadingPage() {
             />
             <UtilityReadingForm
               key={editingReading?.id || `new-reading-${formKey}`}
-              rooms={rooms}
+              rooms={editingReading ? rooms : occupiedRooms}
               readings={readings}
               initialValues={editingReading}
               loading={saving}

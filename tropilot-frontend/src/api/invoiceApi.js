@@ -25,6 +25,26 @@ export async function getStaffInvoice(id, filters) {
   return response.data;
 }
 
+export async function previewStaffBuildingInvoice(buildingId, payload) {
+  const response = await apiClient.post(`/api/staff/buildings/${buildingId}/invoices/preview`, payload);
+  return response.data;
+}
+
+export async function generateStaffBuildingInvoice(buildingId, payload) {
+  const response = await apiClient.post(`/api/staff/buildings/${buildingId}/invoices/generate`, payload);
+  return response.data;
+}
+
+export async function previewStaffBuildingBulkInvoices(buildingId, payload) {
+  const response = await apiClient.post(`/api/staff/buildings/${buildingId}/invoices/bulk-preview`, payload);
+  return response.data;
+}
+
+export async function generateStaffBuildingBulkInvoices(buildingId, payload) {
+  const response = await apiClient.post(`/api/staff/buildings/${buildingId}/invoices/bulk-generate`, payload);
+  return response.data;
+}
+
 export async function getAdminInvoices(filters) {
   const response = await apiClient.get('/api/admin/invoices', filterConfig(filters));
   return response.data;
