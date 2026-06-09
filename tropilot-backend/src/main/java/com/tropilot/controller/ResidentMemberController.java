@@ -1,6 +1,6 @@
 package com.tropilot.controller;
 
-import com.tropilot.dto.request.RoomMemberRequest;
+import com.tropilot.dto.request.RoomMemberUpsertRequest;
 import com.tropilot.dto.response.ApiResponse;
 import com.tropilot.dto.response.RoomMemberResponse;
 import com.tropilot.exception.UnauthorizedException;
@@ -31,7 +31,7 @@ public class ResidentMemberController {
     @PostMapping
     public ApiResponse<RoomMemberResponse> createMember(
             @AuthenticationPrincipal AuthenticatedUser user,
-            @Valid @RequestBody RoomMemberRequest request
+            @Valid @RequestBody RoomMemberUpsertRequest request
     ) {
         return ApiResponse.success(
                 "Room member submitted for approval successfully",
@@ -51,7 +51,7 @@ public class ResidentMemberController {
     public ApiResponse<RoomMemberResponse> updateMember(
             @AuthenticationPrincipal AuthenticatedUser user,
             @PathVariable Long id,
-            @Valid @RequestBody RoomMemberRequest request
+            @Valid @RequestBody RoomMemberUpsertRequest request
     ) {
         return ApiResponse.success(
                 "Room member updated successfully",

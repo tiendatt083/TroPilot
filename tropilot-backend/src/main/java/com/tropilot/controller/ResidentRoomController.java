@@ -1,7 +1,7 @@
 package com.tropilot.controller;
 
 import com.tropilot.dto.response.ApiResponse;
-import com.tropilot.dto.response.RoomHeadResponse;
+import com.tropilot.dto.response.HeadResidentAssignmentResponse;
 import com.tropilot.exception.UnauthorizedException;
 import com.tropilot.security.AuthenticatedUser;
 import com.tropilot.service.HeadResidentAssignmentService;
@@ -21,7 +21,7 @@ public class ResidentRoomController {
     private final HeadResidentAssignmentService headResidentAssignmentService;
 
     @GetMapping("/room")
-    public ApiResponse<RoomHeadResponse> getAssignedRoom(@AuthenticationPrincipal AuthenticatedUser user) {
+    public ApiResponse<HeadResidentAssignmentResponse> getAssignedRoom(@AuthenticationPrincipal AuthenticatedUser user) {
         if (user == null) {
             throw new UnauthorizedException("Authentication is required");
         }

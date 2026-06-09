@@ -92,7 +92,7 @@ export default function AdminBuildingDetailPage() {
         ] = await Promise.all([
           roomApi.getAdminRooms({ buildingId }),
           contractApi.getAdminContracts({ buildingId }),
-          invoiceApi.getAdminInvoices({ buildingId }),
+          invoiceApi.getAdminBuildingInvoices(buildingId),
           vehicleApi.getAdminVehicles({ buildingId }),
           paymentApi.getPendingPayments({ buildingId }),
           paymentApi.getAdminReceipts({ buildingId }),

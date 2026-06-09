@@ -44,17 +44,17 @@ export async function deleteAdminRoom(id) {
 }
 
 export async function assignHeadResident(roomId, payload) {
-  const response = await apiClient.post(`/api/admin/rooms/${roomId}/assign-head`, payload);
+  const response = await apiClient.post(`/api/admin/rooms/${roomId}/head-resident`, payload);
   return response.data;
 }
 
-export async function getRoomHead(roomId) {
-  const response = await apiClient.get(`/api/admin/rooms/${roomId}/head`);
+export async function getHeadResidentAssignment(roomId) {
+  const response = await apiClient.get(`/api/admin/rooms/${roomId}/head-resident`);
   return response.data;
 }
 
 export async function removeHeadResident(roomId) {
-  const response = await apiClient.put(`/api/admin/rooms/${roomId}/remove-head`);
+  const response = await apiClient.delete(`/api/admin/rooms/${roomId}/head-resident`);
   return response.data;
 }
 

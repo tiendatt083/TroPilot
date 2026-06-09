@@ -1,15 +1,15 @@
 package com.tropilot.service;
 
 import com.tropilot.dto.request.AssignHeadResidentRequest;
-import com.tropilot.dto.response.RoomHeadResponse;
+import com.tropilot.dto.response.HeadResidentAssignmentResponse;
 
 public interface HeadResidentAssignmentService {
 
-    RoomHeadResponse assignHeadResident(Long roomId, AssignHeadResidentRequest request);
+    HeadResidentAssignmentResponse assignHeadResident(Long roomId, AssignHeadResidentRequest request);
 
-    RoomHeadResponse getRoomHead(Long roomId);
+    HeadResidentAssignmentResponse getHeadResidentAssignment(Long roomId);
 
-    RoomHeadResponse removeHeadResident(Long roomId);
+    HeadResidentAssignmentResponse removeHeadResident(Long roomId);
 
-    RoomHeadResponse getResidentAssignedRoom(Long residentHeadId);
+    HeadResidentAssignmentResponse getResidentAssignedRoom(Long residentHeadId);
 }

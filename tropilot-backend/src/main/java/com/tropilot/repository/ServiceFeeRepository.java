@@ -8,19 +8,11 @@ import java.util.Optional;
 
 public interface ServiceFeeRepository extends JpaRepository<ServiceFee, Long> {
 
-    boolean existsByFeeCode(String feeCode);
-
     boolean existsByBuilding_IdAndFeeCode(Long buildingId, String feeCode);
-
-    Optional<ServiceFee> findByFeeCode(String feeCode);
 
     Optional<ServiceFee> findByBuilding_IdAndFeeCode(Long buildingId, String feeCode);
 
-    List<ServiceFee> findByIsActiveTrueOrderByCreatedAtDesc();
-
     List<ServiceFee> findByBuilding_IdAndIsActiveTrueOrderByCreatedAtDesc(Long buildingId);
-
-    List<ServiceFee> findAllByOrderByCreatedAtDesc();
 
     List<ServiceFee> findByBuilding_IdOrderByCreatedAtDesc(Long buildingId);
 }

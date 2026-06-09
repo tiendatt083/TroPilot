@@ -1,7 +1,7 @@
 package com.tropilot.service.impl;
 
+import com.tropilot.mapper.InvoiceMapper;
 import com.tropilot.dto.request.BulkInvoiceRequest;
-import com.tropilot.dto.request.InvoiceGenerateRequest;
 import com.tropilot.dto.request.InvoicePreviewRequest;
 import com.tropilot.dto.response.BulkInvoicePreviewResponse;
 import com.tropilot.dto.response.InvoiceBulkBlockedRoomResponse;
@@ -91,22 +91,6 @@ public class InvoiceServiceImpl implements InvoiceService {
     private final InvoiceMapper invoiceMapper;
     private final SepayPaymentService sepayPaymentService;
     private final ActivityLogService activityLogService;
-
-    @Override
-    @Transactional
-    public InvoiceResponse generateInvoice(InvoiceGenerateRequest request, Long createdById) {
-        User createdBy = findUser(createdById);
-        LocalDate invoiceMonth = parseMonth(request.getMonth());
-        InvoiceCalculation calculation = calculateInvoice(
-                findRoom(request.getRoomId()),
-                request.getBuildingId(),
-                invoiceMonth,
-                request.getDueDate(),
-                true
-        );
-
-        return saveInvoice(calculation, createdBy);
-    }
 
     @Override
     @Transactional(readOnly = true)
@@ -281,12 +265,8 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<InvoiceResponse> getInvoices(Long buildingId) {
-        List<Invoice> invoices = buildingId == null
-                ? invoiceRepository.findAllWithDetails()
-                : getBuildingInvoices(buildingId);
-
-        return invoices
+    public List<InvoiceResponse> getBuildingInvoices(Long buildingId) {
+        return findBuildingInvoices(buildingId)
                 .stream()
                 .map(invoice -> invoiceMapper.toResponse(
                         invoice,
@@ -299,8 +279,8 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     @Override
     @Transactional(readOnly = true)
-    public InvoiceResponse getInvoice(Long id, Long buildingId) {
-        Invoice invoice = findInvoice(id);
+    public InvoiceResponse getBuildingInvoice(Long buildingId, Long invoiceId) {
+        Invoice invoice = findInvoice(invoiceId);
         validateInvoiceBelongsToBuilding(invoice, buildingId);
         return invoiceMapper.toResponse(
                 invoice,
@@ -633,7 +613,7 @@ public class InvoiceServiceImpl implements InvoiceService {
                 .orElseThrow(() -> new ResourceNotFoundException("Invoice not found"));
     }
 
-    private List<Invoice> getBuildingInvoices(Long buildingId) {
+    private List<Invoice> findBuildingInvoices(Long buildingId) {
         validateBuildingExists(buildingId);
         return invoiceRepository.findByBuildingIdWithDetails(buildingId);
     }

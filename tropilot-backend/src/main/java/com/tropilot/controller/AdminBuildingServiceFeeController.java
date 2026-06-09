@@ -1,6 +1,6 @@
 package com.tropilot.controller;
 
-import com.tropilot.dto.request.ServiceFeeRequest;
+import com.tropilot.dto.request.ServiceFeeUpsertRequest;
 import com.tropilot.dto.response.ApiResponse;
 import com.tropilot.dto.response.ServiceFeeDeleteResponse;
 import com.tropilot.dto.response.ServiceFeeResponse;
@@ -30,7 +30,7 @@ public class AdminBuildingServiceFeeController {
     @PostMapping
     public ApiResponse<ServiceFeeResponse> createServiceFee(
             @PathVariable Long buildingId,
-            @Valid @RequestBody ServiceFeeRequest request
+            @Valid @RequestBody ServiceFeeUpsertRequest request
     ) {
         return ApiResponse.success(
                 "Service fee created successfully",
@@ -61,7 +61,7 @@ public class AdminBuildingServiceFeeController {
     public ApiResponse<ServiceFeeResponse> updateServiceFee(
             @PathVariable Long buildingId,
             @PathVariable Long id,
-            @Valid @RequestBody ServiceFeeRequest request
+            @Valid @RequestBody ServiceFeeUpsertRequest request
     ) {
         return ApiResponse.success(
                 "Service fee updated successfully",

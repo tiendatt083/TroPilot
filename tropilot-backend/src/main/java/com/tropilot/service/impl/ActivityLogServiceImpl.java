@@ -1,5 +1,6 @@
 package com.tropilot.service.impl;
 
+import com.tropilot.mapper.ActivityLogMapper;
 import com.tropilot.dto.response.ActivityLogResponse;
 import com.tropilot.entity.ActivityLog;
 import com.tropilot.entity.User;

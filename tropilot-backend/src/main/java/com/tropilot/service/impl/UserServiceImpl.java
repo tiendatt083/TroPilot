@@ -1,5 +1,6 @@
 package com.tropilot.service.impl;
 
+import com.tropilot.mapper.UserMapper;
 import com.tropilot.dto.request.AdminCreateUserRequest;
 import com.tropilot.dto.request.AdminUpdateUserRequest;
 import com.tropilot.dto.response.PasswordResetResponse;
@@ -17,7 +18,6 @@ import com.tropilot.service.ActivityLogService;
 import com.tropilot.service.UserService;
 import com.tropilot.util.TemporaryPasswordCipher;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -169,23 +169,6 @@ public class UserServiceImpl implements UserService {
                 .build();
     }
 
-    @Override
-    @Transactional
-    public void deleteUser(Long id) {
-        User user = findUser(id);
-        preventAdminDelete(user);
-        String email = user.getEmail();
-
-        try {
-            userRepository.delete(user);
-            userRepository.flush();
-        } catch (DataIntegrityViolationException exception) {
-            throw new BadRequestException("User cannot be deleted because it has related system data");
-        }
-
-        activityLogService.recordCurrentUser("USER_DELETED", "Deleted user account for " + email);
-    }
-
     private User findUser(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
@@ -234,12 +217,6 @@ public class UserServiceImpl implements UserService {
     private void preventAdminPasswordReset(User user) {
         if (user.getRole() == UserRole.ADMIN) {
             throw new BadRequestException("Admin password cannot be reset through this API");
-        }
-    }
-
-    private void preventAdminDelete(User user) {
-        if (user.getRole() == UserRole.ADMIN) {
-            throw new BadRequestException("Admin account cannot be deleted");
         }
     }
 

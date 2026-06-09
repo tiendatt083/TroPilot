@@ -10,7 +10,7 @@ import java.util.List;
 @Builder
 public class ResidentDashboardResponse {
 
-    private RoomHeadResponse currentRoom;
+    private HeadResidentAssignmentResponse currentRoom;
     private long approvedMemberCount;
     private RentalContractResponse currentContract;
     private InvoiceResponse latestInvoice;

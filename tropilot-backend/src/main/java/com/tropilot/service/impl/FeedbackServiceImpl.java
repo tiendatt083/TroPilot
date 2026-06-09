@@ -1,5 +1,6 @@
 package com.tropilot.service.impl;
 
+import com.tropilot.mapper.FeedbackMapper;
 import com.tropilot.dto.request.FeedbackCreateRequest;
 import com.tropilot.dto.request.FeedbackReplyRequest;
 import com.tropilot.dto.request.FeedbackStatusUpdateRequest;

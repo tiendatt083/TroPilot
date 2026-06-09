@@ -1,6 +1,6 @@
 package com.tropilot.controller;
 
-import com.tropilot.dto.request.ExpenseRequest;
+import com.tropilot.dto.request.ExpenseCreateRequest;
 import com.tropilot.dto.response.ApiResponse;
 import com.tropilot.dto.response.ExpenseResponse;
 import com.tropilot.exception.UnauthorizedException;
@@ -31,7 +31,7 @@ public class StaffExpenseController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<ExpenseResponse> createExpense(
             @AuthenticationPrincipal AuthenticatedUser user,
-            @Valid @ModelAttribute ExpenseRequest request
+            @Valid @ModelAttribute ExpenseCreateRequest request
     ) {
         return ApiResponse.success("Expense created successfully", expenseService.createExpense(request, getUserId(user)));
     }

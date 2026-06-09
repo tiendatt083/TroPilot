@@ -47,7 +47,7 @@ export default function StaffBuildingOverviewPage() {
         const [roomsResponse, invoicesResponse, vehiclesResponse, maintenanceResponse, expensesResponse, tasksResponse] =
           await Promise.all([
             roomApi.getStaffRooms(buildingFilter),
-            invoiceApi.getStaffInvoices(buildingFilter),
+            invoiceApi.getStaffBuildingInvoices(building.id),
             vehicleApi.getStaffVehicles(buildingFilter),
             maintenanceApi.getStaffMaintenanceRequests(buildingFilter),
             expenseApi.getStaffExpenses(buildingFilter),

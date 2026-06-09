@@ -1,6 +1,7 @@
 package com.tropilot.service.impl;
 
-import com.tropilot.dto.request.RoomMemberRequest;
+import com.tropilot.mapper.RoomMemberMapper;
+import com.tropilot.dto.request.RoomMemberUpsertRequest;
 import com.tropilot.dto.response.RoomMemberResponse;
 import com.tropilot.entity.Room;
 import com.tropilot.entity.RoomAssignment;
@@ -37,7 +38,7 @@ public class RoomMemberServiceImpl implements RoomMemberService {
 
     @Override
     @Transactional
-    public RoomMemberResponse createResidentMember(Long residentHeadId, RoomMemberRequest request) {
+    public RoomMemberResponse createResidentMember(Long residentHeadId, RoomMemberUpsertRequest request) {
         RoomAssignment assignment = findActiveAssignment(residentHeadId);
 
         RoomMember member = RoomMember.builder()
@@ -79,7 +80,7 @@ public class RoomMemberServiceImpl implements RoomMemberService {
 
     @Override
     @Transactional
-    public RoomMemberResponse updateResidentMember(Long residentHeadId, Long memberId, RoomMemberRequest request) {
+    public RoomMemberResponse updateResidentMember(Long residentHeadId, Long memberId, RoomMemberUpsertRequest request) {
         RoomAssignment assignment = findActiveAssignment(residentHeadId);
         RoomMember member = findMember(memberId);
         validateResidentMemberOwnership(member, assignment);

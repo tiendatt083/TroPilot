@@ -1,6 +1,8 @@
 package com.tropilot.service.impl;
 
-import com.tropilot.dto.request.ServiceFeeRequest;
+import com.tropilot.validation.ServiceFeeUsageChecker;
+import com.tropilot.mapper.ServiceFeeMapper;
+import com.tropilot.dto.request.ServiceFeeUpsertRequest;
 import com.tropilot.dto.response.ServiceFeeDeleteResponse;
 import com.tropilot.dto.response.ServiceFeeResponse;
 import com.tropilot.entity.Building;
@@ -30,24 +32,7 @@ public class ServiceFeeServiceImpl implements ServiceFeeService {
 
     @Override
     @Transactional
-    public ServiceFeeResponse createServiceFee(ServiceFeeRequest request) {
-        String feeCode = normalizeCode(request.getFeeCode());
-
-        if (serviceFeeRepository.existsByFeeCode(feeCode)) {
-            throw new BadRequestException("Service fee code is already in use");
-        }
-
-        ServiceFee serviceFee = ServiceFee.builder()
-                .isActive(true)
-                .build();
-        applyValues(serviceFee, request, feeCode);
-
-        return serviceFeeMapper.toResponse(serviceFeeRepository.save(serviceFee));
-    }
-
-    @Override
-    @Transactional
-    public ServiceFeeResponse createBuildingServiceFee(Long buildingId, ServiceFeeRequest request) {
+    public ServiceFeeResponse createBuildingServiceFee(Long buildingId, ServiceFeeUpsertRequest request) {
         Building building = findBuilding(buildingId);
         String feeCode = normalizeCode(request.getFeeCode());
 
@@ -66,15 +51,6 @@ public class ServiceFeeServiceImpl implements ServiceFeeService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ServiceFeeResponse> getServiceFees() {
-        return serviceFeeRepository.findAllByOrderByCreatedAtDesc()
-                .stream()
-                .map(serviceFeeMapper::toResponse)
-                .toList();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public List<ServiceFeeResponse> getBuildingServiceFees(Long buildingId) {
         findBuilding(buildingId);
 
@@ -86,12 +62,6 @@ public class ServiceFeeServiceImpl implements ServiceFeeService {
 
     @Override
     @Transactional(readOnly = true)
-    public ServiceFeeResponse getServiceFee(Long id) {
-        return serviceFeeMapper.toResponse(findServiceFee(id));
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public ServiceFeeResponse getBuildingServiceFee(Long buildingId, Long id) {
         ServiceFee serviceFee = findBuildingServiceFee(buildingId, id);
         return serviceFeeMapper.toResponse(serviceFee);
@@ -99,24 +69,7 @@ public class ServiceFeeServiceImpl implements ServiceFeeService {
 
     @Override
     @Transactional
-    public ServiceFeeResponse updateServiceFee(Long id, ServiceFeeRequest request) {
-        ServiceFee serviceFee = findServiceFee(id);
-        String feeCode = normalizeCode(request.getFeeCode());
-
-        serviceFeeRepository.findByFeeCode(feeCode)
-                .filter(existing -> !existing.getId().equals(id))
-                .ifPresent(existing -> {
-                    throw new BadRequestException("Service fee code is already in use");
-                });
-
-        applyValues(serviceFee, request, feeCode);
-
-        return serviceFeeMapper.toResponse(serviceFeeRepository.save(serviceFee));
-    }
-
-    @Override
-    @Transactional
-    public ServiceFeeResponse updateBuildingServiceFee(Long buildingId, Long id, ServiceFeeRequest request) {
+    public ServiceFeeResponse updateBuildingServiceFee(Long buildingId, Long id, ServiceFeeUpsertRequest request) {
         ServiceFee serviceFee = findBuildingServiceFee(buildingId, id);
         String feeCode = normalizeCode(request.getFeeCode());
 
@@ -133,25 +86,9 @@ public class ServiceFeeServiceImpl implements ServiceFeeService {
 
     @Override
     @Transactional
-    public ServiceFeeDeleteResponse deleteServiceFee(Long id) {
-        ServiceFee serviceFee = findServiceFee(id);
-        return deleteOrDeactivate(serviceFee);
-    }
-
-    @Override
-    @Transactional
     public ServiceFeeDeleteResponse deleteBuildingServiceFee(Long buildingId, Long id) {
         ServiceFee serviceFee = findBuildingServiceFee(buildingId, id);
         return deleteOrDeactivate(serviceFee);
-    }
-
-    @Override
-    @Transactional
-    public ServiceFeeResponse toggleServiceFee(Long id) {
-        ServiceFee serviceFee = findServiceFee(id);
-        serviceFee.setIsActive(!Boolean.TRUE.equals(serviceFee.getIsActive()));
-
-        return serviceFeeMapper.toResponse(serviceFeeRepository.save(serviceFee));
     }
 
     @Override
@@ -163,7 +100,7 @@ public class ServiceFeeServiceImpl implements ServiceFeeService {
         return serviceFeeMapper.toResponse(serviceFeeRepository.save(serviceFee));
     }
 
-    private void applyValues(ServiceFee serviceFee, ServiceFeeRequest request, String feeCode) {
+    private void applyValues(ServiceFee serviceFee, ServiceFeeUpsertRequest request, String feeCode) {
         FeeType feeType = parseFeeType(request.getFeeType());
         CalculationType calculationType = parseCalculationType(request.getCalculationType());
 

@@ -1,13 +1,13 @@
 package com.tropilot.service;
 
-import com.tropilot.dto.request.VehicleRequest;
+import com.tropilot.dto.request.VehicleRegistrationRequest;
 import com.tropilot.dto.response.VehicleResponse;
 
 import java.util.List;
 
 public interface VehicleService {
 
-    VehicleResponse requestVehicle(Long residentHeadId, VehicleRequest request);
+    VehicleResponse requestVehicle(Long residentHeadId, VehicleRegistrationRequest request);
 
     List<VehicleResponse> getResidentVehicles(Long residentHeadId);
 

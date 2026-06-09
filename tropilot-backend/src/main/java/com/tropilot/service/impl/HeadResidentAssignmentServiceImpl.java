@@ -1,7 +1,7 @@
 package com.tropilot.service.impl;
 
 import com.tropilot.dto.request.AssignHeadResidentRequest;
-import com.tropilot.dto.response.RoomHeadResponse;
+import com.tropilot.dto.response.HeadResidentAssignmentResponse;
 import com.tropilot.entity.Building;
 import com.tropilot.entity.RentalContract;
 import com.tropilot.entity.Room;
@@ -48,7 +48,7 @@ public class HeadResidentAssignmentServiceImpl implements HeadResidentAssignment
 
     @Override
     @Transactional
-    public RoomHeadResponse assignHeadResident(Long roomId, AssignHeadResidentRequest request) {
+    public HeadResidentAssignmentResponse assignHeadResident(Long roomId, AssignHeadResidentRequest request) {
         Room room = findRoom(roomId);
         User residentHead = findUser(request.getResidentHeadId());
 
@@ -106,7 +106,7 @@ public class HeadResidentAssignmentServiceImpl implements HeadResidentAssignment
 
     @Override
     @Transactional(readOnly = true)
-    public RoomHeadResponse getRoomHead(Long roomId) {
+    public HeadResidentAssignmentResponse getHeadResidentAssignment(Long roomId) {
         Room room = findRoom(roomId);
 
         return roomAssignmentRepository.findByRoomIdAndStatus(roomId, RoomAssignmentStatus.ACTIVE)
@@ -120,7 +120,7 @@ public class HeadResidentAssignmentServiceImpl implements HeadResidentAssignment
 
     @Override
     @Transactional
-    public RoomHeadResponse removeHeadResident(Long roomId) {
+    public HeadResidentAssignmentResponse removeHeadResident(Long roomId) {
         Room room = findRoom(roomId);
         RoomAssignment assignment = roomAssignmentRepository
                 .findByRoomIdAndStatus(roomId, RoomAssignmentStatus.ACTIVE)
@@ -153,7 +153,7 @@ public class HeadResidentAssignmentServiceImpl implements HeadResidentAssignment
 
     @Override
     @Transactional(readOnly = true)
-    public RoomHeadResponse getResidentAssignedRoom(Long residentHeadId) {
+    public HeadResidentAssignmentResponse getResidentAssignedRoom(Long residentHeadId) {
         return roomAssignmentRepository
                 .findByResidentHeadIdAndStatus(residentHeadId, RoomAssignmentStatus.ACTIVE)
                 .map(assignment -> toAssignedResponse(
@@ -161,7 +161,7 @@ public class HeadResidentAssignmentServiceImpl implements HeadResidentAssignment
                         assignment,
                         findActiveOrLatestContract(assignment)
                 ))
-                .orElseGet(() -> RoomHeadResponse.builder().assigned(false).build());
+                .orElseGet(() -> HeadResidentAssignmentResponse.builder().assigned(false).build());
     }
 
     private Room findRoom(Long roomId) {
@@ -239,14 +239,15 @@ public class HeadResidentAssignmentServiceImpl implements HeadResidentAssignment
         vehicleRepository.saveAll(vehicles);
     }
 
-    private RoomHeadResponse toAssignedResponse(
+    private HeadResidentAssignmentResponse toAssignedResponse(
             Room room,
             RoomAssignment assignment,
             RentalContract contract
     ) {
         Building building = room.getBuilding();
         User residentHead = assignment.getResidentHead();
-        RoomHeadResponse.RoomHeadResponseBuilder builder = RoomHeadResponse.builder()
+        HeadResidentAssignmentResponse.HeadResidentAssignmentResponseBuilder builder =
+                HeadResidentAssignmentResponse.builder()
                 .assigned(true)
                 .roomId(room.getId())
                 .roomCode(room.getRoomCode())
@@ -277,10 +278,10 @@ public class HeadResidentAssignmentServiceImpl implements HeadResidentAssignment
         return builder.build();
     }
 
-    private RoomHeadResponse toUnassignedResponse(Room room) {
+    private HeadResidentAssignmentResponse toUnassignedResponse(Room room) {
         Building building = room.getBuilding();
 
-        return RoomHeadResponse.builder()
+        return HeadResidentAssignmentResponse.builder()
                 .assigned(false)
                 .roomId(room.getId())
                 .roomCode(room.getRoomCode())

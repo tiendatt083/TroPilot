@@ -1,6 +1,8 @@
 package com.tropilot.service.impl;
 
-import com.tropilot.dto.request.BuildingRequest;
+import com.tropilot.validation.RoomReferenceChecker;
+import com.tropilot.mapper.BuildingMapper;
+import com.tropilot.dto.request.BuildingUpsertRequest;
 import com.tropilot.dto.response.BuildingResponse;
 import com.tropilot.entity.Building;
 import com.tropilot.exception.BadRequestException;
@@ -23,7 +25,7 @@ public class BuildingServiceImpl implements BuildingService {
 
     @Override
     @Transactional
-    public BuildingResponse createBuilding(BuildingRequest request) {
+    public BuildingResponse createBuilding(BuildingUpsertRequest request) {
         String buildingCode = normalizeCode(request.getBuildingCode());
 
         if (buildingRepository.existsByBuildingCode(buildingCode)) {
@@ -62,7 +64,7 @@ public class BuildingServiceImpl implements BuildingService {
 
     @Override
     @Transactional
-    public BuildingResponse updateBuilding(Long id, BuildingRequest request) {
+    public BuildingResponse updateBuilding(Long id, BuildingUpsertRequest request) {
         Building building = findBuilding(id);
         String buildingCode = normalizeCode(request.getBuildingCode());
 

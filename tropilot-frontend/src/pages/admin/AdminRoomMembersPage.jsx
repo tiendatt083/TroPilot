@@ -40,7 +40,7 @@ export default function AdminRoomMembersPage() {
     try {
       const [roomResponse, headResponse, membersResponse] = await Promise.all([
         roomApi.getAdminRoom(id),
-        roomApi.getRoomHead(id),
+        roomApi.getHeadResidentAssignment(id),
         memberApi.getAdminRoomMembers(id)
       ]);
       setRoom(roomResponse.data);

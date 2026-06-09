@@ -82,11 +82,6 @@ function translateDynamicValue(trimmedValue, isEnglish) {
       return `Remove Head Resident from room ${removeHeadResidentMatch[1]}?`;
     }
 
-    const deleteUserMatch = trimmedValue.match(/^Bạn có chắc muốn xóa (.+)\? Thao tác này không thể hoàn tác\.$/i);
-    if (deleteUserMatch) {
-      return `Are you sure you want to delete ${deleteUserMatch[1]}? This action cannot be undone.`;
-    }
-
     const regeneratePasswordMatch = trimmedValue.match(/^Bạn có chắc muốn tạo lại mật khẩu tạm thời cho (.+)\?$/i);
     if (regeneratePasswordMatch) {
       return `Are you sure you want to regenerate a temporary password for ${regeneratePasswordMatch[1]}?`;
@@ -170,11 +165,6 @@ function translateDynamicValue(trimmedValue, isEnglish) {
   const markMemberLeftMatch = trimmedValue.match(/^Mark (.+) as left\?$/i);
   if (markMemberLeftMatch) {
     return `Đánh dấu ${markMemberLeftMatch[1]} đã rời đi?`;
-  }
-
-  const deleteUserMatch = trimmedValue.match(/^Are you sure you want to delete (.+)\? This action cannot be undone\.$/i);
-  if (deleteUserMatch) {
-    return `Bạn có chắc muốn xóa ${deleteUserMatch[1]}? Thao tác này không thể hoàn tác.`;
   }
 
   const regeneratePasswordMatch = trimmedValue.match(/^Are you sure you want to regenerate a temporary password for (.+)\?$/i);

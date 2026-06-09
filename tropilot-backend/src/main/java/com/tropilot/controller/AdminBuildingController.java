@@ -1,6 +1,6 @@
 package com.tropilot.controller;
 
-import com.tropilot.dto.request.BuildingRequest;
+import com.tropilot.dto.request.BuildingUpsertRequest;
 import com.tropilot.dto.response.ApiResponse;
 import com.tropilot.dto.response.BuildingResponse;
 import com.tropilot.service.BuildingService;
@@ -28,7 +28,7 @@ public class AdminBuildingController {
     private final BuildingService buildingService;
 
     @PostMapping
-    public ApiResponse<BuildingResponse> createBuilding(@Valid @RequestBody BuildingRequest request) {
+    public ApiResponse<BuildingResponse> createBuilding(@Valid @RequestBody BuildingUpsertRequest request) {
         return ApiResponse.success("Building created successfully", buildingService.createBuilding(request));
     }
 
@@ -45,7 +45,7 @@ public class AdminBuildingController {
     @PutMapping("/{id}")
     public ApiResponse<BuildingResponse> updateBuilding(
             @PathVariable Long id,
-            @Valid @RequestBody BuildingRequest request
+            @Valid @RequestBody BuildingUpsertRequest request
     ) {
         return ApiResponse.success("Building updated successfully", buildingService.updateBuilding(id, request));
     }

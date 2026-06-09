@@ -1,6 +1,8 @@
 package com.tropilot.service.impl;
 
-import com.tropilot.dto.request.ExpenseRequest;
+import com.tropilot.storage.ExpenseProofStorageService;
+import com.tropilot.mapper.ExpenseMapper;
+import com.tropilot.dto.request.ExpenseCreateRequest;
 import com.tropilot.dto.response.ExpenseResponse;
 import com.tropilot.entity.Expense;
 import com.tropilot.entity.MaintenanceRequest;
@@ -47,7 +49,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     @Override
     @Transactional
-    public ExpenseResponse createExpense(ExpenseRequest request, Long createdById) {
+    public ExpenseResponse createExpense(ExpenseCreateRequest request, Long createdById) {
         User createdBy = findUser(createdById);
         Room room = request.getRoomId() == null ? null : findRoom(request.getRoomId());
         MaintenanceRequest maintenanceRequest = resolveMaintenanceRequest(request.getMaintenanceRequestId(), createdBy, room);

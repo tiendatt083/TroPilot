@@ -1,5 +1,6 @@
 package com.tropilot.service.impl;
 
+import com.tropilot.mapper.UserMapper;
 import com.tropilot.dto.request.ChangePasswordFirstTimeRequest;
 import com.tropilot.dto.request.LoginRequest;
 import com.tropilot.dto.request.ProfileUpdateRequest;

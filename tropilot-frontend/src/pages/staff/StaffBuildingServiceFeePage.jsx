@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
 import * as serviceFeeApi from '../../api/serviceFeeApi.js';
@@ -12,10 +12,6 @@ export default function StaffBuildingServiceFeePage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
 
-  const buildingServiceFees = useMemo(() => {
-    return serviceFees.filter((serviceFee) => serviceFee.buildingId === building.id);
-  }, [serviceFees, building.id]);
-
   useEffect(() => {
     let active = true;
 
@@ -23,7 +19,7 @@ export default function StaffBuildingServiceFeePage() {
     setError('');
 
     serviceFeeApi
-      .getStaffServiceFees()
+      .getStaffBuildingServiceFees(building.id)
       .then((response) => {
         if (active) {
           setServiceFees(response.data);
@@ -43,7 +39,7 @@ export default function StaffBuildingServiceFeePage() {
     return () => {
       active = false;
     };
-  }, [t]);
+  }, [building.id, t]);
 
   return (
     <section className="building-workspace">
@@ -54,7 +50,7 @@ export default function StaffBuildingServiceFeePage() {
       {loading ? (
         <div className="empty-state">{t('buildingServiceFees.loading')}</div>
       ) : (
-        <ServiceFeeTable serviceFees={buildingServiceFees} />
+        <ServiceFeeTable serviceFees={serviceFees} />
       )}
     </section>
   );

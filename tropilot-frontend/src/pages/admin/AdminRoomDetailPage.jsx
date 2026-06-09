@@ -74,7 +74,7 @@ export default function AdminRoomDetailPage() {
   const loadRoomDetails = async () => {
     const [roomResponse, headResponse, usersResponse] = await Promise.all([
       roomApi.getAdminRoom(id),
-      roomApi.getRoomHead(id),
+      roomApi.getHeadResidentAssignment(id),
       adminUserApi.getUsers()
     ]);
 

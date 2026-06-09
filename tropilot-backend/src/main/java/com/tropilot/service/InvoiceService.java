@@ -1,6 +1,5 @@
 package com.tropilot.service;
 
-import com.tropilot.dto.request.InvoiceGenerateRequest;
 import com.tropilot.dto.request.InvoicePreviewRequest;
 import com.tropilot.dto.request.BulkInvoiceRequest;
 import com.tropilot.dto.response.BulkInvoicePreviewResponse;
@@ -10,8 +9,6 @@ import com.tropilot.dto.response.InvoiceResponse;
 import java.util.List;
 
 public interface InvoiceService {
-
-    InvoiceResponse generateInvoice(InvoiceGenerateRequest request, Long createdById);
 
     InvoicePreviewResponse previewBuildingInvoice(Long buildingId, InvoicePreviewRequest request);
 
@@ -23,9 +20,9 @@ public interface InvoiceService {
 
     void deleteBuildingInvoice(Long buildingId, Long invoiceId, Long deletedById);
 
-    List<InvoiceResponse> getInvoices(Long buildingId);
+    List<InvoiceResponse> getBuildingInvoices(Long buildingId);
 
-    InvoiceResponse getInvoice(Long id, Long buildingId);
+    InvoiceResponse getBuildingInvoice(Long buildingId, Long invoiceId);
 
     List<InvoiceResponse> getResidentInvoices(Long residentHeadId);
 

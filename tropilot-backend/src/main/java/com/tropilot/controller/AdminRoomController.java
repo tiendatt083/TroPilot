@@ -1,6 +1,6 @@
 package com.tropilot.controller;
 
-import com.tropilot.dto.request.RoomRequest;
+import com.tropilot.dto.request.RoomUpsertRequest;
 import com.tropilot.dto.response.ApiResponse;
 import com.tropilot.dto.response.RoomResponse;
 import com.tropilot.service.RoomService;
@@ -28,7 +28,7 @@ public class AdminRoomController {
     private final RoomService roomService;
 
     @PostMapping
-    public ApiResponse<RoomResponse> createRoom(@Valid @RequestBody RoomRequest request) {
+    public ApiResponse<RoomResponse> createRoom(@Valid @RequestBody RoomUpsertRequest request) {
         return ApiResponse.success("Room created successfully", roomService.createRoom(request));
     }
 
@@ -49,7 +49,7 @@ public class AdminRoomController {
     @PutMapping("/{id}")
     public ApiResponse<RoomResponse> updateRoom(
             @PathVariable Long id,
-            @Valid @RequestBody RoomRequest request
+            @Valid @RequestBody RoomUpsertRequest request
     ) {
         return ApiResponse.success("Room updated successfully", roomService.updateRoom(id, request));
     }

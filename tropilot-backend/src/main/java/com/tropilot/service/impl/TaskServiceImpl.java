@@ -1,5 +1,7 @@
 package com.tropilot.service.impl;
 
+import com.tropilot.storage.TaskResultImageStorageService;
+import com.tropilot.mapper.TaskMapper;
 import com.tropilot.dto.request.TaskCompleteRequest;
 import com.tropilot.dto.request.TaskCreateRequest;
 import com.tropilot.dto.request.TaskRejectRequest;

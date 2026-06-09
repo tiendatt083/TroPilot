@@ -13,6 +13,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,6 +29,25 @@ import java.util.List;
 public class StaffBuildingInvoiceController {
 
     private final InvoiceService invoiceService;
+
+    @GetMapping
+    public ApiResponse<List<InvoiceResponse>> getInvoices(@PathVariable Long buildingId) {
+        return ApiResponse.success(
+                "Invoices loaded successfully",
+                invoiceService.getBuildingInvoices(buildingId)
+        );
+    }
+
+    @GetMapping("/{invoiceId}")
+    public ApiResponse<InvoiceResponse> getInvoice(
+            @PathVariable Long buildingId,
+            @PathVariable Long invoiceId
+    ) {
+        return ApiResponse.success(
+                "Invoice loaded successfully",
+                invoiceService.getBuildingInvoice(buildingId, invoiceId)
+        );
+    }
 
     @PostMapping("/preview")
     public ApiResponse<InvoicePreviewResponse> previewInvoice(

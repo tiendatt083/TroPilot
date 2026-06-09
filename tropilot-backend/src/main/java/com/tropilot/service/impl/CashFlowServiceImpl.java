@@ -1,5 +1,7 @@
 package com.tropilot.service.impl;
 
+import com.tropilot.mapper.ReceiptMapper;
+import com.tropilot.mapper.ExpenseMapper;
 import com.tropilot.dto.response.CashFlowResponse;
 import com.tropilot.dto.response.ExpenseResponse;
 import com.tropilot.dto.response.ReceiptResponse;

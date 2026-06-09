@@ -1,27 +1,12 @@
 import apiClient from './axiosClient.js';
 
-function filterConfig(filters = {}) {
-  const params = {};
-
-  if (filters.buildingId) {
-    params.buildingId = filters.buildingId;
-  }
-
-  return Object.keys(params).length ? { params } : {};
-}
-
-export async function generateInvoice(payload) {
-  const response = await apiClient.post('/api/staff/invoices/generate', payload);
+export async function getStaffBuildingInvoices(buildingId) {
+  const response = await apiClient.get(`/api/staff/buildings/${buildingId}/invoices`);
   return response.data;
 }
 
-export async function getStaffInvoices(filters) {
-  const response = await apiClient.get('/api/staff/invoices', filterConfig(filters));
-  return response.data;
-}
-
-export async function getStaffInvoice(id, filters) {
-  const response = await apiClient.get(`/api/staff/invoices/${id}`, filterConfig(filters));
+export async function getStaffBuildingInvoice(buildingId, invoiceId) {
+  const response = await apiClient.get(`/api/staff/buildings/${buildingId}/invoices/${invoiceId}`);
   return response.data;
 }
 
@@ -45,13 +30,13 @@ export async function generateStaffBuildingBulkInvoices(buildingId, payload) {
   return response.data;
 }
 
-export async function getAdminInvoices(filters) {
-  const response = await apiClient.get('/api/admin/invoices', filterConfig(filters));
+export async function getAdminBuildingInvoices(buildingId) {
+  const response = await apiClient.get(`/api/admin/buildings/${buildingId}/invoices`);
   return response.data;
 }
 
-export async function getAdminInvoice(id, filters) {
-  const response = await apiClient.get(`/api/admin/invoices/${id}`, filterConfig(filters));
+export async function getAdminBuildingInvoice(buildingId, invoiceId) {
+  const response = await apiClient.get(`/api/admin/buildings/${buildingId}/invoices/${invoiceId}`);
   return response.data;
 }
 

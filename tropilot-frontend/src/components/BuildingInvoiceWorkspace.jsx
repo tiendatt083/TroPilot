@@ -268,7 +268,9 @@ export default function BuildingInvoiceWorkspace({ role = 'admin' }) {
     try {
       const [roomsResponse, invoicesResponse] = await Promise.all([
         isAdmin ? roomApi.getAdminRooms({ buildingId: building.id }) : roomApi.getStaffRooms({ buildingId: building.id }),
-        isAdmin ? invoiceApi.getAdminInvoices({ buildingId: building.id }) : invoiceApi.getStaffInvoices({ buildingId: building.id })
+        isAdmin
+          ? invoiceApi.getAdminBuildingInvoices(building.id)
+          : invoiceApi.getStaffBuildingInvoices(building.id)
       ]);
       setRooms(roomsResponse.data);
       setInvoices(invoicesResponse.data);
@@ -394,8 +396,8 @@ export default function BuildingInvoiceWorkspace({ role = 'admin' }) {
 
   const loadInvoiceDetail = async (invoiceId) => {
     return isAdmin
-      ? invoiceApi.getAdminInvoice(invoiceId, { buildingId: building.id })
-      : invoiceApi.getStaffInvoice(invoiceId, { buildingId: building.id });
+      ? invoiceApi.getAdminBuildingInvoice(building.id, invoiceId)
+      : invoiceApi.getStaffBuildingInvoice(building.id, invoiceId);
   };
 
   const handleView = async (invoice) => {

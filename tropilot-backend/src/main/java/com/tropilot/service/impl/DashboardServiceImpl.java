@@ -1,12 +1,16 @@
 package com.tropilot.service.impl;
 
+import com.tropilot.mapper.VehicleMapper;
+import com.tropilot.mapper.RentalContractMapper;
+import com.tropilot.mapper.MaintenanceRequestMapper;
+import com.tropilot.mapper.InvoiceMapper;
 import com.tropilot.dto.response.AdminDashboardResponse;
 import com.tropilot.dto.response.InvoiceResponse;
 import com.tropilot.dto.response.MaintenanceRequestResponse;
 import com.tropilot.dto.response.NotificationResponse;
 import com.tropilot.dto.response.RentalContractResponse;
 import com.tropilot.dto.response.ResidentDashboardResponse;
-import com.tropilot.dto.response.RoomHeadResponse;
+import com.tropilot.dto.response.HeadResidentAssignmentResponse;
 import com.tropilot.dto.response.StaffDashboardResponse;
 import com.tropilot.dto.response.VehicleResponse;
 import com.tropilot.entity.Invoice;
@@ -163,7 +167,7 @@ public class DashboardServiceImpl implements DashboardService {
     @Override
     @Transactional(readOnly = true)
     public ResidentDashboardResponse getResidentDashboard(Long residentHeadId) {
-        RoomHeadResponse currentRoom = headResidentAssignmentService.getResidentAssignedRoom(residentHeadId);
+        HeadResidentAssignmentResponse currentRoom = headResidentAssignmentService.getResidentAssignedRoom(residentHeadId);
 
         if (!currentRoom.isAssigned()) {
             return ResidentDashboardResponse.builder()

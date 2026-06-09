@@ -1,6 +1,8 @@
 package com.tropilot.service.impl;
 
-import com.tropilot.dto.request.RoomRequest;
+import com.tropilot.validation.RoomDeletionGuard;
+import com.tropilot.mapper.RoomMapper;
+import com.tropilot.dto.request.RoomUpsertRequest;
 import com.tropilot.dto.response.RoomResponse;
 import com.tropilot.entity.Building;
 import com.tropilot.entity.Room;
@@ -29,7 +31,7 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     @Transactional
-    public RoomResponse createRoom(RoomRequest request) {
+    public RoomResponse createRoom(RoomUpsertRequest request) {
         Building building = findBuilding(request.getBuildingId());
         String roomCode = buildRoomCode(building, request.getRoomCode());
         RoomStatus roomStatus = parseRequiredStatus(request.getStatus());
@@ -85,7 +87,7 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     @Transactional
-    public RoomResponse updateRoom(Long id, RoomRequest request) {
+    public RoomResponse updateRoom(Long id, RoomUpsertRequest request) {
         Room room = findRoom(id);
         Building building = findBuilding(request.getBuildingId());
         String roomCode = buildRoomCode(building, request.getRoomCode());

@@ -1,6 +1,6 @@
 package com.tropilot.controller;
 
-import com.tropilot.dto.request.VehicleRequest;
+import com.tropilot.dto.request.VehicleRegistrationRequest;
 import com.tropilot.dto.response.ApiResponse;
 import com.tropilot.dto.response.VehicleResponse;
 import com.tropilot.exception.UnauthorizedException;
@@ -31,7 +31,7 @@ public class ResidentVehicleController {
     @PostMapping("/request")
     public ApiResponse<VehicleResponse> requestVehicle(
             @AuthenticationPrincipal AuthenticatedUser user,
-            @Valid @RequestBody VehicleRequest request
+            @Valid @RequestBody VehicleRegistrationRequest request
     ) {
         return ApiResponse.success(
                 "Vehicle registration requested successfully",

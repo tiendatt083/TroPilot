@@ -1,5 +1,6 @@
 package com.tropilot.service.impl;
 
+import com.tropilot.mapper.ReceiptMapper;
 import com.tropilot.dto.response.ReceiptResponse;
 import com.tropilot.entity.Receipt;
 import com.tropilot.exception.BadRequestException;

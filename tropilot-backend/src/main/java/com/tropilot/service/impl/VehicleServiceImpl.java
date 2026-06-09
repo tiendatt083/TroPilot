@@ -1,6 +1,7 @@
 package com.tropilot.service.impl;
 
-import com.tropilot.dto.request.VehicleRequest;
+import com.tropilot.mapper.VehicleMapper;
+import com.tropilot.dto.request.VehicleRegistrationRequest;
 import com.tropilot.dto.response.VehicleResponse;
 import com.tropilot.entity.Room;
 import com.tropilot.entity.RoomAssignment;
@@ -43,7 +44,7 @@ public class VehicleServiceImpl implements VehicleService {
 
     @Override
     @Transactional
-    public VehicleResponse requestVehicle(Long residentHeadId, VehicleRequest request) {
+    public VehicleResponse requestVehicle(Long residentHeadId, VehicleRegistrationRequest request) {
         RoomAssignment assignment = findActiveAssignment(residentHeadId);
         VehicleOwnerType ownerType = parseOwnerType(request.getOwnerType());
         VehicleType vehicleType = parseVehicleType(request.getVehicleType());
