@@ -15,6 +15,19 @@ const emptyForm = {
   calculationType: 'BY_USAGE'
 };
 
+function buildInternalFeeCode(name, feeType) {
+  const normalizedName = String(name || '')
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-Z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '')
+    .slice(0, 24);
+  const normalizedType = String(feeType || 'OTHER').toUpperCase().slice(0, 12);
+  const uniqueSuffix = Date.now().toString().slice(-10);
+
+  return `${normalizedType}_${normalizedName || 'SERVICE'}_${uniqueSuffix}`.slice(0, 50);
+}
+
 export default function ServiceFeeForm({ initialValues, loading, submitLabel, onSubmit }) {
   const { t } = useTranslation();
   const [form, setForm] = useState(emptyForm);
@@ -55,7 +68,7 @@ export default function ServiceFeeForm({ initialValues, loading, submitLabel, on
     event.preventDefault();
     onSubmit({
       name: form.name,
-      feeCode: form.feeCode,
+      feeCode: form.feeCode || buildInternalFeeCode(form.name, form.feeType),
       feeType: form.feeType,
       unitPrice: form.unitPrice === '' ? null : Number(form.unitPrice),
       calculationType: form.calculationType,
@@ -67,16 +80,6 @@ export default function ServiceFeeForm({ initialValues, loading, submitLabel, on
 
   return (
     <form className="panel-form" onSubmit={handleSubmit}>
-      <label htmlFor="feeCode">{t('forms.serviceFee.serviceFeeCode')}</label>
-      <input
-        id="feeCode"
-        name="feeCode"
-        value={form.feeCode}
-        onChange={handleChange}
-        maxLength={50}
-        required
-      />
-
       <label htmlFor="name">{t('forms.serviceFee.serviceFeeName')}</label>
       <input id="name" name="name" value={form.name} onChange={handleChange} maxLength={120} required />
 

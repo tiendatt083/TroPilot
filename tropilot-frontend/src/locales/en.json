@@ -161,9 +161,9 @@
     "save": "Save changes",
     "cancelEdit": "Cancel edit",
     "methods": {
-      "FIXED": "Fixed amount",
-      "BY_USAGE": "By usage (usage x price)",
-      "BY_PERSON": "By occupant (occupants x price)"
+      "FIXED": "Per room",
+      "BY_USAGE": "By usage",
+      "BY_PERSON": "Per person"
     },
     "utility": {
       "electricityIcon": "E",
@@ -258,7 +258,16 @@
     "newReading": "New reading",
     "editReading": "Edit reading",
     "recordReading": "Record reading",
-    "saveChanges": "Save changes"
+    "saveChanges": "Save changes",
+    "readingMonth": "Reading month",
+    "readingMonthHelp": "Statistics and eligible rooms are calculated for the selected month.",
+    "noEligibleRooms": "No rooms need a reading for this month",
+    "metrics": {
+      "totalRooms": "Total rooms",
+      "recordedRooms": "Recorded this month",
+      "pendingRooms": "Not recorded",
+      "emptyRooms": "Empty rooms"
+    }
   },
   "buildingInvoices": {
     "eyebrow": "Building invoices",
@@ -636,9 +645,9 @@
       "OTHER": "Other"
     },
     "calculationType": {
-      "FIXED": "Fixed",
+      "FIXED": "Per room",
       "BY_USAGE": "By usage",
-      "BY_PERSON": "By person",
+      "BY_PERSON": "Per person",
       "BY_QUANTITY": "By quantity"
     },
     "vehicleOwnerType": {

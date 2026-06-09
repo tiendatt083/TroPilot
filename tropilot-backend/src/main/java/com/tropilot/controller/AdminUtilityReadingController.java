@@ -2,6 +2,7 @@ package com.tropilot.controller;
 
 import com.tropilot.dto.request.UtilityReadingUpdateRequest;
 import com.tropilot.dto.response.ApiResponse;
+import com.tropilot.dto.response.UtilityReadingOverviewResponse;
 import com.tropilot.dto.response.UtilityReadingResponse;
 import com.tropilot.service.UtilityReadingService;
 import jakarta.validation.Valid;
@@ -29,6 +30,17 @@ public class AdminUtilityReadingController {
     @GetMapping
     public ApiResponse<List<UtilityReadingResponse>> getReadings(@RequestParam(required = false) Long buildingId) {
         return ApiResponse.success("Utility readings loaded successfully", utilityReadingService.getReadings(buildingId));
+    }
+
+    @GetMapping("/overview")
+    public ApiResponse<UtilityReadingOverviewResponse> getOverview(
+            @RequestParam Long buildingId,
+            @RequestParam String month
+    ) {
+        return ApiResponse.success(
+                "Utility reading overview loaded successfully",
+                utilityReadingService.getOverview(buildingId, month)
+        );
     }
 
     @PutMapping(path = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

@@ -2,6 +2,7 @@ package com.tropilot.controller;
 
 import com.tropilot.dto.request.UtilityReadingCreateRequest;
 import com.tropilot.dto.response.ApiResponse;
+import com.tropilot.dto.response.UtilityReadingOverviewResponse;
 import com.tropilot.dto.response.UtilityReadingResponse;
 import com.tropilot.exception.UnauthorizedException;
 import com.tropilot.security.AuthenticatedUser;
@@ -43,6 +44,17 @@ public class StaffUtilityReadingController {
     @GetMapping
     public ApiResponse<List<UtilityReadingResponse>> getReadings(@RequestParam(required = false) Long buildingId) {
         return ApiResponse.success("Utility readings loaded successfully", utilityReadingService.getReadings(buildingId));
+    }
+
+    @GetMapping("/overview")
+    public ApiResponse<UtilityReadingOverviewResponse> getOverview(
+            @RequestParam Long buildingId,
+            @RequestParam String month
+    ) {
+        return ApiResponse.success(
+                "Utility reading overview loaded successfully",
+                utilityReadingService.getOverview(buildingId, month)
+        );
     }
 
     @GetMapping("/{id}")

@@ -1,19 +1,19 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
-import * as roomApi from '../../api/roomApi.js';
 import * as utilityReadingApi from '../../api/utilityReadingApi.js';
 import PageHeader from '../../components/PageHeader.jsx';
 import UtilityReadingForm from '../../components/UtilityReadingForm.jsx';
+import UtilityReadingOverview from '../../components/UtilityReadingOverview.jsx';
 import UtilityReadingTable from '../../components/UtilityReadingTable.jsx';
 import { formatDisplayMonth } from '../../utils/dateFormat.js';
-import { isOccupiedRoom } from '../../utils/roomEligibility.js';
 import { formatRoomCode } from '../../utils/roomDisplay.js';
 
 export default function AdminBuildingUtilityReadingPage() {
   const { t } = useTranslation();
   const { building } = useOutletContext();
-  const [rooms, setRooms] = useState([]);
+  const [selectedMonth, setSelectedMonth] = useState(getCurrentMonth());
+  const [overview, setOverview] = useState(null);
   const [readings, setReadings] = useState([]);
   const [editingReading, setEditingReading] = useState(null);
   const [message, setMessage] = useState('');
@@ -21,17 +21,17 @@ export default function AdminBuildingUtilityReadingPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [formKey, setFormKey] = useState(0);
-  const occupiedRooms = useMemo(() => rooms.filter(isOccupiedRoom), [rooms]);
+  const monthlyReadings = readings.filter((reading) => reading.month === selectedMonth);
 
-  const loadData = async () => {
+  const loadData = async (month = selectedMonth) => {
     setError('');
 
     try {
-      const [roomsResponse, readingsResponse] = await Promise.all([
-        roomApi.getAdminRooms({ buildingId: building.id }),
+      const [overviewResponse, readingsResponse] = await Promise.all([
+        utilityReadingApi.getAdminUtilityReadingOverview({ buildingId: building.id, month }),
         utilityReadingApi.getAdminUtilityReadings({ buildingId: building.id })
       ]);
-      setRooms(roomsResponse.data);
+      setOverview(overviewResponse.data);
       setReadings(readingsResponse.data);
     } catch (apiError) {
       setError(apiError.response?.data?.message || t('buildingUtilityReadings.loadError'));
@@ -41,8 +41,8 @@ export default function AdminBuildingUtilityReadingPage() {
   useEffect(() => {
     setLoading(true);
     setEditingReading(null);
-    loadData().finally(() => setLoading(false));
-  }, [building.id, t]);
+    loadData(selectedMonth).finally(() => setLoading(false));
+  }, [building.id, selectedMonth, t]);
 
   const handleCreate = async (payload) => {
     setSaving(true);
@@ -56,7 +56,7 @@ export default function AdminBuildingUtilityReadingPage() {
       });
       setMessage(t('buildingUtilityReadings.created'));
       setFormKey((current) => current + 1);
-      await loadData();
+      await loadData(selectedMonth);
     } catch (apiError) {
       setError(apiError.response?.data?.message || t('buildingUtilityReadings.createError'));
     } finally {
@@ -76,7 +76,7 @@ export default function AdminBuildingUtilityReadingPage() {
       });
       setMessage(t('buildingUtilityReadings.updated'));
       setEditingReading(null);
-      await loadData();
+      await loadData(selectedMonth);
     } catch (apiError) {
       setError(apiError.response?.data?.message || t('buildingUtilityReadings.updateError'));
     } finally {
@@ -84,9 +84,14 @@ export default function AdminBuildingUtilityReadingPage() {
     }
   };
 
+  const handleEdit = (reading) => {
+    setSelectedMonth(reading.month);
+    setEditingReading(reading);
+  };
+
   const renderActions = (reading) => (
     <div className="table-actions">
-      <button className="secondary-button compact-button" type="button" onClick={() => setEditingReading(reading)}>
+      <button className="secondary-button compact-button" type="button" onClick={() => handleEdit(reading)}>
         {t('common.edit')}
       </button>
     </div>
@@ -99,6 +104,13 @@ export default function AdminBuildingUtilityReadingPage() {
 
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
+
+      <UtilityReadingOverview
+        month={selectedMonth}
+        overview={overview}
+        loading={loading}
+        onMonthChange={setSelectedMonth}
+      />
 
       {loading ? (
         <div className="empty-state">{t('buildingUtilityReadings.loading')}</div>
@@ -118,10 +130,11 @@ export default function AdminBuildingUtilityReadingPage() {
               }
             />
             <UtilityReadingForm
-              key={editingReading?.id || `new-building-reading-${building.id}-${formKey}`}
-              rooms={editingReading ? rooms : occupiedRooms}
+              key={editingReading?.id || `new-building-reading-${building.id}-${selectedMonth}-${formKey}`}
+              rooms={editingReading ? [toRoomOption(editingReading)] : (overview?.eligibleRooms || [])}
               readings={readings}
               initialValues={editingReading}
+              selectedMonth={selectedMonth}
               loading={saving}
               mode={editingReading ? 'edit' : 'create'}
               submitLabel={
@@ -134,9 +147,24 @@ export default function AdminBuildingUtilityReadingPage() {
             />
           </div>
 
-          <UtilityReadingTable readings={readings} renderActions={renderActions} />
+          <UtilityReadingTable readings={monthlyReadings} renderActions={renderActions} />
         </section>
       )}
     </div>
   );
+}
+
+function getCurrentMonth() {
+  const now = new Date();
+  const localDate = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+  return localDate.toISOString().slice(0, 7);
+}
+
+function toRoomOption(reading) {
+  return {
+    id: reading.roomId,
+    roomCode: reading.roomCode,
+    roomName: reading.roomName,
+    buildingCode: reading.buildingCode
+  };
 }

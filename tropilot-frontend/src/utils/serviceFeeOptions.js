@@ -5,9 +5,9 @@ export const FEE_TYPE_OPTIONS = [
 ];
 
 export const CALCULATION_TYPE_OPTIONS = [
-  { value: 'FIXED', label: 'Fixed' },
+  { value: 'FIXED', label: 'Per room' },
   { value: 'BY_USAGE', label: 'By usage' },
-  { value: 'BY_PERSON', label: 'By person' }
+  { value: 'BY_PERSON', label: 'Per person' }
 ];
 
 export function getCalculationTypeOptionsForFeeType(feeType) {

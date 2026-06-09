@@ -18,6 +18,17 @@ public interface UtilityReadingRepository extends JpaRepository<UtilityReading, 
     Optional<UtilityReading> findFirstByRoom_IdAndMonthBeforeOrderByMonthDescCreatedAtDesc(Long roomId, LocalDate month);
 
     @Query("""
+            select distinct reading.room.id
+            from UtilityReading reading
+            where reading.room.building.id = :buildingId
+              and reading.month = :month
+            """)
+    List<Long> findRoomIdsByBuildingIdAndMonth(
+            @Param("buildingId") Long buildingId,
+            @Param("month") LocalDate month
+    );
+
+    @Query("""
             select reading from UtilityReading reading
             join fetch reading.room room
             join fetch room.building building

@@ -19,6 +19,7 @@ export default function UtilityReadingForm({
   rooms,
   readings = [],
   initialValues,
+  selectedMonth,
   loading,
   mode = 'create',
   submitLabel,
@@ -31,7 +32,7 @@ export default function UtilityReadingForm({
   const [waterImage, setWaterImage] = useState(null);
 
   useEffect(() => {
-    const readingDate = normalizeReadingDate(initialValues);
+    const readingDate = normalizeReadingDate(initialValues, selectedMonth);
 
     setForm({
       ...emptyForm,
@@ -47,7 +48,7 @@ export default function UtilityReadingForm({
     });
     setElectricityImage(null);
     setWaterImage(null);
-  }, [initialValues]);
+  }, [initialValues, selectedMonth]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -81,12 +82,25 @@ export default function UtilityReadingForm({
   };
 
   const editing = mode === 'edit';
+  const noEligibleRooms = !editing && rooms.length === 0;
+  const readingDateRange = getMonthDateRange(selectedMonth);
 
   return (
     <form className="panel-form" onSubmit={handleSubmit}>
       <label htmlFor="roomId">{t('tables.common.room')}</label>
-      <select id="roomId" name="roomId" value={form.roomId} onChange={handleChange} required>
-        <option value="">{t('forms.utilityReading.selectRoom')}</option>
+      <select
+        id="roomId"
+        name="roomId"
+        value={form.roomId}
+        onChange={handleChange}
+        required
+        disabled={editing || noEligibleRooms}
+      >
+        <option value="">
+          {noEligibleRooms
+            ? t('buildingUtilityReadings.noEligibleRooms')
+            : t('forms.utilityReading.selectRoom')}
+        </option>
         {rooms.map((room) => (
           <option key={room.id} value={room.id}>
             {formatRoomLabel(room)}
@@ -200,13 +214,15 @@ export default function UtilityReadingForm({
           lang="en-GB"
           value={form.readingDate}
           onChange={handleChange}
+          min={readingDateRange.min}
+          max={readingDateRange.max}
           required
         />
         <span className="field-help">{t('forms.utilityReading.readingDateHelp')}</span>
       </div>
 
       <div className="button-row form-button-row">
-        <button type="submit" disabled={loading}>
+        <button type="submit" disabled={loading || noEligibleRooms}>
           {loading ? t('common.saving') : submitLabel}
         </button>
         {onCancel && (
@@ -283,13 +299,18 @@ function getReadingSortValue(reading) {
   return reading.readingDate || (reading.month ? `${reading.month}-01` : '');
 }
 
-function normalizeReadingDate(values) {
+function normalizeReadingDate(values, selectedMonth) {
   if (values?.readingDate) {
     return values.readingDate;
   }
 
   if (values?.month) {
     return `${values.month}-01`;
+  }
+
+  if (selectedMonth) {
+    const today = getTodayInputValue();
+    return today.startsWith(selectedMonth) ? today : `${selectedMonth}-01`;
   }
 
   return getTodayInputValue();
@@ -303,4 +324,18 @@ function getTodayInputValue() {
   const now = new Date();
   const localDate = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
   return localDate.toISOString().slice(0, 10);
+}
+
+function getMonthDateRange(month) {
+  if (!month) {
+    return { min: undefined, max: undefined };
+  }
+
+  const [year, monthNumber] = month.split('-').map(Number);
+  const lastDay = new Date(year, monthNumber, 0).getDate();
+
+  return {
+    min: `${month}-01`,
+    max: `${month}-${String(lastDay).padStart(2, '0')}`
+  };
 }

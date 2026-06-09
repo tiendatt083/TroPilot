@@ -45,7 +45,7 @@ export default function AdminServiceFeeListPage() {
   };
 
   const handleDelete = async (serviceFee) => {
-    const confirmed = window.confirm(`Delete service fee ${serviceFee.feeCode}?`);
+    const confirmed = window.confirm(`Delete service fee ${serviceFee.name}?`);
     if (!confirmed) {
       return;
     }

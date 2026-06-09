@@ -2,6 +2,8 @@ package com.tropilot.service.impl;
 
 import com.tropilot.dto.request.UtilityReadingCreateRequest;
 import com.tropilot.dto.request.UtilityReadingUpdateRequest;
+import com.tropilot.dto.response.RoomResponse;
+import com.tropilot.dto.response.UtilityReadingOverviewResponse;
 import com.tropilot.dto.response.UtilityReadingResponse;
 import com.tropilot.entity.Room;
 import com.tropilot.entity.RoomAssignment;
@@ -25,7 +27,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +41,7 @@ public class UtilityReadingServiceImpl implements UtilityReadingService {
     private final BuildingRepository buildingRepository;
     private final UserRepository userRepository;
     private final RoomAssignmentRepository roomAssignmentRepository;
+    private final RoomMapper roomMapper;
     private final UtilityReadingMapper utilityReadingMapper;
     private final UtilityReadingImageStorageService imageStorageService;
     private final ActivityLogService activityLogService;
@@ -103,6 +109,43 @@ public class UtilityReadingServiceImpl implements UtilityReadingService {
                 .stream()
                 .map(this::toResponseWithPreviousReading)
                 .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UtilityReadingOverviewResponse getOverview(Long buildingId, String month) {
+        validateBuildingExists(buildingId);
+        LocalDate readingMonth = parseMonth(month);
+        List<Room> rooms = roomRepository.findByFilters(buildingId, null, null);
+        Set<Long> activeRoomIds = roomAssignmentRepository
+                .findByBuildingIdAndStatusWithDetails(buildingId, RoomAssignmentStatus.ACTIVE)
+                .stream()
+                .map(assignment -> assignment.getRoom().getId())
+                .collect(Collectors.toSet());
+        Set<Long> recordedRoomIds = Set.copyOf(
+                utilityReadingRepository.findRoomIdsByBuildingIdAndMonth(buildingId, readingMonth)
+        );
+
+        List<RoomResponse> eligibleRooms = rooms.stream()
+                .filter(room -> room.getStatus() == RoomStatus.OCCUPIED)
+                .filter(room -> activeRoomIds.contains(room.getId()))
+                .filter(room -> !recordedRoomIds.contains(room.getId()))
+                .sorted(Comparator.comparing(Room::getRoomCode))
+                .map(roomMapper::toResponse)
+                .toList();
+
+        long emptyRooms = rooms.stream()
+                .filter(room -> room.getStatus() == RoomStatus.EMPTY)
+                .count();
+
+        return UtilityReadingOverviewResponse.builder()
+                .month(readingMonth.toString().substring(0, 7))
+                .totalRooms(rooms.size())
+                .recordedRooms(recordedRoomIds.size())
+                .pendingRooms(eligibleRooms.size())
+                .emptyRooms(emptyRooms)
+                .eligibleRooms(eligibleRooms)
+                .build();
     }
 
     @Override

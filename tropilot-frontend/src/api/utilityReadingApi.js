@@ -25,6 +25,10 @@ function filterConfig(filters = {}) {
     params.buildingId = filters.buildingId;
   }
 
+  if (filters.month) {
+    params.month = filters.month;
+  }
+
   return Object.keys(params).length > 0 ? { params } : {};
 }
 
@@ -47,8 +51,18 @@ export async function getStaffUtilityReading(id) {
   return response.data;
 }
 
+export async function getStaffUtilityReadingOverview(filters) {
+  const response = await apiClient.get('/api/staff/utility-readings/overview', filterConfig(filters));
+  return response.data;
+}
+
 export async function getAdminUtilityReadings(filters) {
   const response = await apiClient.get('/api/admin/utility-readings', filterConfig(filters));
+  return response.data;
+}
+
+export async function getAdminUtilityReadingOverview(filters) {
+  const response = await apiClient.get('/api/admin/utility-readings/overview', filterConfig(filters));
   return response.data;
 }
 

@@ -83,8 +83,6 @@ import StaffRoomListPage from '../pages/staff/StaffRoomListPage.jsx';
 import StaffServiceFeeListPage from '../pages/staff/StaffServiceFeeListPage.jsx';
 import StaffTaskDetailPage from '../pages/staff/StaffTaskDetailPage.jsx';
 import StaffTaskListPage from '../pages/staff/StaffTaskListPage.jsx';
-import StaffUtilityReadingCreatePage from '../pages/staff/StaffUtilityReadingCreatePage.jsx';
-import StaffUtilityReadingListPage from '../pages/staff/StaffUtilityReadingListPage.jsx';
 import StaffVehicleListPage from '../pages/staff/StaffVehicleListPage.jsx';
 import Settings from '../pages/Settings.jsx';
 import HomeRedirect from './HomeRedirect.jsx';
@@ -197,8 +195,8 @@ export default function AppRoutes() {
               <Route path="rooms/:id" element={<StaffRoomDetailPage />} />
               <Route path="vehicles" element={<StaffVehicleListPage />} />
               <Route path="service-fees" element={<StaffServiceFeeListPage />} />
-              <Route path="utility-readings" element={<StaffUtilityReadingListPage />} />
-              <Route path="utility-readings/create" element={<StaffUtilityReadingCreatePage />} />
+              <Route path="utility-readings" element={<Navigate to="/staff/buildings" replace />} />
+              <Route path="utility-readings/create" element={<Navigate to="/staff/buildings" replace />} />
             </Route>
           </Route>
 

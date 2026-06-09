@@ -18,7 +18,6 @@ export default function ServiceFeeTable({ serviceFees, renderActions, showBuildi
       <table className="data-table service-fee-table">
         <thead>
           <tr>
-            <th>{t('tables.common.code')}</th>
             {showBuilding && <th>{t('tables.common.building')}</th>}
             <th>{t('tables.common.name')}</th>
             <th>{t('tables.common.feeType')}</th>
@@ -34,7 +33,6 @@ export default function ServiceFeeTable({ serviceFees, renderActions, showBuildi
 
             return (
               <tr key={serviceFee.id}>
-                <td>{serviceFee.feeCode}</td>
                 {showBuilding && (
                   <td>
                     <strong>{serviceFee.buildingCode || t('common.noBuilding')}</strong>

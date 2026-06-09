@@ -161,9 +161,9 @@
     "save": "Lưu thay đổi",
     "cancelEdit": "Hủy sửa",
     "methods": {
-      "FIXED": "Giá cố định",
-      "BY_USAGE": "Theo tiêu thụ (số x giá)",
-      "BY_PERSON": "Theo số người (người x giá)"
+      "FIXED": "Theo phòng",
+      "BY_USAGE": "Theo mức dùng",
+      "BY_PERSON": "Theo người"
     },
     "utility": {
       "electricityIcon": "E",
@@ -258,7 +258,16 @@
     "newReading": "Chỉ số mới",
     "editReading": "Sửa chỉ số",
     "recordReading": "Ghi chỉ số",
-    "saveChanges": "Lưu thay đổi"
+    "saveChanges": "Lưu thay đổi",
+    "readingMonth": "Tháng ghi chỉ số",
+    "readingMonthHelp": "Thống kê và danh sách phòng được tính theo tháng đã chọn.",
+    "noEligibleRooms": "Không còn phòng nào cần ghi chỉ số trong tháng này",
+    "metrics": {
+      "totalRooms": "Tổng số phòng",
+      "recordedRooms": "Đã ghi trong tháng",
+      "pendingRooms": "Chưa ghi",
+      "emptyRooms": "Phòng trống"
+    }
   },
   "buildingInvoices": {
     "eyebrow": "Hóa đơn của tòa nhà",
@@ -636,7 +645,7 @@
       "OTHER": "Khác"
     },
     "calculationType": {
-      "FIXED": "Cố định",
+      "FIXED": "Theo phòng",
       "BY_USAGE": "Theo mức dùng",
       "BY_PERSON": "Theo người",
       "BY_QUANTITY": "Theo số lượng"
