@@ -24,11 +24,19 @@
   --color-warning-bg: #fff7e8;
   --color-info: #244ea0;
   --color-info-bg: #eef4ff;
+  --color-input: #fbfdff;
+  --color-input-disabled: #eef2f6;
+  --color-placeholder: #8a98aa;
+  --color-table-header: #f4f8fb;
+  --color-row-hover: #f1fbfd;
   --shadow-sm: 0 8px 24px rgba(16, 32, 51, 0.06);
   --shadow-md: 0 20px 52px rgba(16, 32, 51, 0.1);
   --shadow-focus: 0 14px 34px rgba(14, 145, 170, 0.14);
+  --shadow-soft: var(--shadow-sm);
   --radius-sm: 6px;
   --radius-md: 8px;
+  --radius-lg: var(--radius-md);
+  --muted-text: var(--color-text-muted);
   --content-max-width: 1360px;
   --sidebar-width: 248px;
   color: var(--color-text);
@@ -45,6 +53,42 @@
   font-synthesis: none;
   line-height: 1.5;
   text-rendering: optimizeLegibility;
+}
+
+html[data-theme="dark"] {
+  --color-bg: #08111f;
+  --color-surface: #101b2d;
+  --color-surface-muted: #152238;
+  --color-sidebar: #06101f;
+  --color-sidebar-soft: #10233d;
+  --color-sidebar-muted: #9fb2c7;
+  --color-sidebar-active: #159ab2;
+  --color-text: #e8eef6;
+  --color-text-muted: #9caec2;
+  --color-border: #344860;
+  --color-border-soft: #263950;
+  --color-primary: #24a8be;
+  --color-primary-hover: #3ab8cc;
+  --color-primary-soft: #12333f;
+  --color-primary-ring: rgba(36, 168, 190, 0.28);
+  --color-accent: #7697e8;
+  --color-accent-soft: #192943;
+  --color-danger: #fda4af;
+  --color-danger-bg: #3d1d28;
+  --color-success: #67e8c5;
+  --color-success-bg: #12352f;
+  --color-warning: #f8c46b;
+  --color-warning-bg: #3b2b17;
+  --color-info: #9bb6ff;
+  --color-info-bg: #1a2949;
+  --color-input: #111f32;
+  --color-input-disabled: #1a283a;
+  --color-placeholder: #788ba1;
+  --color-table-header: #15243a;
+  --color-row-hover: #142b3d;
+  --shadow-sm: 0 8px 24px rgba(0, 0, 0, 0.18);
+  --shadow-md: 0 20px 52px rgba(0, 0, 0, 0.28);
+  --shadow-focus: 0 14px 34px rgba(19, 129, 151, 0.2);
 }
 
 * {
@@ -152,7 +196,7 @@ textarea {
   border-radius: var(--radius-sm);
   padding: 0.58rem 0.72rem;
   color: var(--color-text);
-  background: #fbfdff;
+  background: var(--color-input);
   line-height: 1.35;
   outline: none;
   transition:
@@ -168,14 +212,14 @@ textarea {
 
 input::placeholder,
 textarea::placeholder {
-  color: #8a98aa;
+  color: var(--color-placeholder);
 }
 
 input:disabled,
 select:disabled,
 textarea:disabled {
   color: #8b97a6;
-  background: #eef2f6;
+  background: var(--color-input-disabled);
   cursor: not-allowed;
 }
 
@@ -530,7 +574,7 @@ a:focus-visible {
   border: 0;
   border-top: 1px solid var(--color-border-soft);
   border-radius: 0;
-  background: #ffffff;
+  background: var(--color-surface);
   box-shadow: none;
 }
 
@@ -601,7 +645,7 @@ a:focus-visible {
   overflow-y: auto;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
-  background: #fbfdff;
+  background: var(--color-input);
 }
 
 .checkbox-list-item {
@@ -745,7 +789,7 @@ a:focus-visible {
   min-width: 820px;
   border-collapse: separate;
   border-spacing: 0;
-  background: #ffffff;
+  background: var(--color-surface);
 }
 
 .data-table th,
@@ -770,9 +814,8 @@ a:focus-visible {
   position: sticky;
   top: 0;
   z-index: 1;
-  color: #42556d;
-  background:
-    linear-gradient(180deg, #f8fbfd, #f2f7fa);
+  color: var(--color-text-muted);
+  background: var(--color-table-header);
   font-size: 0.74rem;
   font-weight: 850;
   letter-spacing: 0;
@@ -784,7 +827,7 @@ a:focus-visible {
 }
 
 .data-table tbody tr:hover {
-  background: #f1fbfd;
+  background: var(--color-row-hover);
 }
 
 .data-table tr:last-child td {
@@ -1183,7 +1226,7 @@ a:focus-visible {
   border: 1px solid var(--color-border-soft);
   border-radius: var(--radius-sm);
   padding: 0.8rem;
-  background: #ffffff;
+  background: var(--color-surface);
 }
 
 .invoice-bulk-summary span {
@@ -1612,7 +1655,7 @@ a:focus-visible {
   border-radius: var(--radius-sm);
   padding: 0.36rem 0.58rem;
   color: var(--color-text);
-  background: #fbfdff;
+  background: var(--color-input);
   font-weight: 750;
 }
 
@@ -1737,7 +1780,7 @@ a:focus-visible {
   padding: 0.5rem 0.65rem;
   border: 1px solid var(--color-border-soft);
   border-radius: var(--radius-sm);
-  background: #ffffff;
+  background: var(--color-surface);
   cursor: pointer;
 }
 
@@ -1897,7 +1940,7 @@ a:focus-visible {
 
 .notification-selection-panel .checkbox-list {
   max-height: 220px;
-  background: #ffffff;
+  background: var(--color-surface);
 }
 
 .notification-submit-row {
@@ -2362,10 +2405,35 @@ a:focus-visible {
   font-size: 1.2rem;
 }
 
+.settings-language-summary p {
+  max-width: 520px;
+  margin: 0.25rem 0 0;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+.settings-group {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.settings-divider {
+  height: 1px;
+  background: var(--color-border-soft);
+}
+
 .settings-language-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
+}
+
+.settings-language-actions button {
+  min-width: 112px;
+}
+
+.settings-language-actions button[aria-pressed="true"] {
+  box-shadow: var(--shadow-focus);
 }
 
 .profile-grid {
@@ -2386,6 +2454,145 @@ a:focus-visible {
   padding: 1rem 0 0;
   background: transparent;
   box-shadow: none;
+}
+
+html[data-theme="dark"] body {
+  background:
+    linear-gradient(135deg, rgba(36, 168, 190, 0.08), rgba(118, 151, 232, 0.035) 42%, transparent 68%),
+    linear-gradient(180deg, #0b1627 0%, #08111f 100%);
+}
+
+html[data-theme="dark"] .auth-page,
+html[data-theme="dark"] .app-shell {
+  background:
+    linear-gradient(135deg, rgba(36, 168, 190, 0.08), rgba(118, 151, 232, 0.04) 42%, transparent 70%),
+    var(--color-bg);
+}
+
+html[data-theme="dark"] .auth-panel,
+html[data-theme="dark"] .panel-form,
+html[data-theme="dark"] .detail-panel,
+html[data-theme="dark"] .invoice-command-panel,
+html[data-theme="dark"] .invoice-preview-panel,
+html[data-theme="dark"] .settings-card,
+html[data-theme="dark"] .settings-panel,
+html[data-theme="dark"] .count-summary,
+html[data-theme="dark"] .dashboard-section-panel,
+html[data-theme="dark"] .dashboard-card,
+html[data-theme="dark"] .dashboard-panel,
+html[data-theme="dark"] .cashflow-summary div,
+html[data-theme="dark"] .utility-reading-overview,
+html[data-theme="dark"] .building-contract-list-panel,
+html[data-theme="dark"] .contract-history-panel,
+html[data-theme="dark"] .search-row,
+html[data-theme="dark"] .filter-row,
+html[data-theme="dark"] .user-filter-row,
+html[data-theme="dark"] .month-filter-row,
+html[data-theme="dark"] .building-filter-row {
+  background: var(--color-surface);
+  box-shadow:
+    var(--shadow-sm),
+    inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+html[data-theme="dark"] .secondary-button,
+html[data-theme="dark"] .secondary-link {
+  color: var(--color-text);
+  background: var(--color-surface-muted);
+}
+
+html[data-theme="dark"] button:disabled,
+html[data-theme="dark"] .secondary-button:disabled {
+  color: #708197;
+  border-color: var(--color-border-soft);
+  background: var(--color-input-disabled);
+}
+
+html[data-theme="dark"] .empty-state,
+html[data-theme="dark"] .previous-reading-panel,
+html[data-theme="dark"] .notification-selection-panel {
+  background: var(--color-primary-soft);
+  box-shadow: none;
+}
+
+html[data-theme="dark"] .notification-composer-form {
+  background:
+    linear-gradient(135deg, rgba(36, 168, 190, 0.08), transparent 48%),
+    var(--color-surface);
+}
+
+html[data-theme="dark"] .notification-field input,
+html[data-theme="dark"] .notification-field select,
+html[data-theme="dark"] .notification-field textarea {
+  background: var(--color-input);
+}
+
+html[data-theme="dark"] .building-contract-panel-header {
+  background:
+    radial-gradient(circle at top right, rgba(36, 168, 190, 0.14), transparent 36%),
+    var(--color-surface-muted);
+}
+
+html[data-theme="dark"] .sepay-payment-panel {
+  background:
+    linear-gradient(135deg, rgba(36, 168, 190, 0.12), transparent 62%),
+    var(--color-surface);
+}
+
+html[data-theme="dark"] .sepay-qr-card {
+  color: var(--color-text-muted);
+  background: #ffffff;
+}
+
+html[data-theme="dark"] .workspace-tabs {
+  background: var(--color-surface);
+  box-shadow:
+    var(--shadow-sm),
+    inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+html[data-theme="dark"] .dashboard-hero {
+  background:
+    linear-gradient(135deg, rgba(36, 168, 190, 0.1), rgba(118, 151, 232, 0.04) 44%, transparent 68%),
+    var(--color-surface);
+}
+
+html[data-theme="dark"] .dashboard-card-warning {
+  background: #2e271c;
+}
+
+html[data-theme="dark"] .dashboard-card-danger {
+  background: #312027;
+}
+
+html[data-theme="dark"] .dashboard-card-warning strong {
+  color: #f8c46b;
+}
+
+html[data-theme="dark"] .dashboard-card-danger strong {
+  color: #fda4af;
+}
+
+html[data-theme="dark"] .status-inactive,
+html[data-theme="dark"] .member-status-left,
+html[data-theme="dark"] .contract-status-not-uploaded,
+html[data-theme="dark"] .vehicle-status-inactive,
+html[data-theme="dark"] .billable-inactive {
+  color: #b2c1d1;
+  background: #233247;
+}
+
+html[data-theme="dark"] .segmented-control {
+  background: var(--color-input-disabled);
+}
+
+html[data-theme="dark"] .table-primary-cell span {
+  color: var(--color-text-muted);
+}
+
+html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator,
+html[data-theme="dark"] input[type="month"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
 }
 
 @media (max-width: 1180px) {

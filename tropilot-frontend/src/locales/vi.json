@@ -32,8 +32,16 @@
     "title": "Cài đặt",
     "language": "Ngôn ngữ",
     "currentLanguage": "Ngôn ngữ hiện tại",
+    "languageDescription": "Chọn ngôn ngữ được sử dụng trên toàn bộ Tropilot.",
     "vietnamese": "Tiếng Việt",
-    "english": "Tiếng Anh"
+    "english": "Tiếng Anh",
+    "appearance": "Giao diện",
+    "themeDescription": "Giao diện hiện đang sử dụng chế độ {{theme}}.",
+    "themes": {
+      "light": "Sáng",
+      "dark": "Tối",
+      "system": "Theo hệ thống"
+    }
   },
   "profile": {
     "title": "Thông tin cá nhân",
