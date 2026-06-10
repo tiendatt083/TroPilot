@@ -80,6 +80,13 @@
     "staff": "Nhân viên",
     "residentHead": "Chủ hộ"
   },
+  "sidebar": {
+    "access": {
+      "admin": "admin",
+      "staff": "kỹ thuật viên",
+      "residentHead": "chủ hộ"
+    }
+  },
   "navigation": {
     "admin": "Điều hướng Admin",
     "staff": "Điều hướng nhân viên",

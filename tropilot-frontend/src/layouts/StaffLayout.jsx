@@ -15,7 +15,7 @@ const STAFF_NAV_ITEMS = [
 ];
 
 export default function StaffLayout() {
-  const { logout, user } = useAuth();
+  const { logout } = useAuth();
   const { t } = useTranslation();
 
   return (
@@ -23,8 +23,8 @@ export default function StaffLayout() {
       <aside className="sidebar">
         <SidebarBrand />
         <div className="sidebar-user">
-          <span>{user?.fullName}</span>
-          <small>{t('role.staff')}</small>
+          <span>TroPilot</span>
+          <small>{t('sidebar.access.staff')}</small>
         </div>
         <nav aria-label={t('navigation.staff')}>
           {STAFF_NAV_ITEMS.map((item) => (

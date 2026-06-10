@@ -25,7 +25,7 @@ const ADMIN_NAV_ITEMS = [
 ];
 
 export default function AdminLayout() {
-  const { logout, user } = useAuth();
+  const { logout } = useAuth();
   const { t } = useTranslation();
   const location = useLocation();
   const accountSectionActive = ADMIN_ACCOUNT_ITEMS.some((item) => location.pathname.startsWith(item.to));
@@ -59,8 +59,8 @@ export default function AdminLayout() {
           <span aria-hidden="true">{sidebarCollapsed ? '›' : '‹'}</span>
         </button>
         <div className="sidebar-user">
-          <span>{user?.fullName}</span>
-          <small>{t('role.admin')}</small>
+          <span>TroPilot</span>
+          <small>{t('sidebar.access.admin')}</small>
         </div>
         <nav aria-label={t('navigation.admin')}>
           <NavLink to="/admin/dashboard">

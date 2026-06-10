@@ -19,7 +19,7 @@ const RESIDENT_NAV_ITEMS = [
 ];
 
 export default function ResidentLayout() {
-  const { logout, user } = useAuth();
+  const { logout } = useAuth();
   const { t } = useTranslation();
 
   return (
@@ -27,8 +27,8 @@ export default function ResidentLayout() {
       <aside className="sidebar">
         <SidebarBrand />
         <div className="sidebar-user">
-          <span>{user?.fullName}</span>
-          <small>{t('role.residentHead')}</small>
+          <span>TroPilot</span>
+          <small>{t('sidebar.access.residentHead')}</small>
         </div>
         <nav aria-label={t('navigation.resident')}>
           {RESIDENT_NAV_ITEMS.map((item) => (

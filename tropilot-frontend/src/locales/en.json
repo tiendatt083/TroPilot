@@ -80,6 +80,13 @@
     "staff": "Staff",
     "residentHead": "Head Resident"
   },
+  "sidebar": {
+    "access": {
+      "admin": "admin",
+      "staff": "technician",
+      "residentHead": "head resident"
+    }
+  },
   "navigation": {
     "admin": "Admin navigation",
     "staff": "Staff navigation",
