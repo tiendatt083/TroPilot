@@ -13,7 +13,6 @@ import java.time.LocalDate;
 @Setter
 public class EquipmentUpsertRequest {
 
-    @NotBlank(message = "Equipment code is required")
     @Size(max = 60, message = "Equipment code must not exceed 60 characters")
     private String equipmentCode;
 

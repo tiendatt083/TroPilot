@@ -11,6 +11,13 @@ public interface EquipmentService {
 
     EquipmentResponse createEquipment(Long buildingId, EquipmentUpsertRequest request);
 
+    List<EquipmentResponse> getAdminEquipment(
+            Long buildingId,
+            String scope,
+            Long roomId,
+            String condition
+    );
+
     List<EquipmentResponse> getAdminBuildingEquipment(
             Long buildingId,
             String scope,

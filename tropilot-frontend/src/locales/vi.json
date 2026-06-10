@@ -85,6 +85,8 @@
     "staff": "Điều hướng nhân viên",
     "resident": "Điều hướng chủ hộ",
     "buildingWorkspace": "Điều hướng quản lý tòa nhà",
+    "collapseSidebar": "Thu gọn thanh điều hướng",
+    "expandSidebar": "Mở rộng thanh điều hướng",
     "dashboard": "Trang chủ",
     "notifications": "Thông báo",
     "activityLogs": "Nhật ký hoạt động",
@@ -644,12 +646,20 @@
   },
   "dashboard": {
     "admin": {
-      "title": "Bảng điều khiển",
+      "title": "Trang chủ",
       "eyebrow": "Admin",
       "loading": "Đang tải bảng điều khiển...",
       "loadError": "Không thể tải bảng điều khiển Admin",
-      "heroDescription": "Tổng quan vận hành toàn hệ thống về tòa nhà, phòng, cư dân, hóa đơn, bảo trì và dòng tiền.",
+      "heroDescription": "Xin chào {{name}}. Đây là tổng quan vận hành toàn hệ thống về tòa nhà, phòng, cư dân, hóa đơn, bảo trì và dòng tiền.",
+      "today": "Hôm nay",
+      "trackedItems": "{{count}} mục cần theo dõi",
       "sections": {
+        "todayLabel": "Tổng quan",
+        "todayTitle": "Vận hành hôm nay",
+        "trackingCount": "{{count}} mục cần theo dõi",
+        "roomStatusTitle": "Tình trạng phòng",
+        "roomStatusDescription": "Cơ cấu phòng đang thuê, phòng trống và phòng bảo trì.",
+        "summaryTitle": "Tổng hợp vận hành",
         "portfolioTitle": "Tổng quan danh mục",
         "portfolioDescription": "Tình hình nguồn phòng và tỷ lệ sử dụng trên tất cả tòa nhà.",
         "residentsTitle": "Cư dân và xe",
@@ -684,6 +694,25 @@
         "rooms": "Phòng",
         "openIssues": "Vấn đề đang mở",
         "cashPosition": "Tình hình tiền mặt"
+      },
+      "cards": {
+        "buildingHelper": "Tòa nhà đang quản lý",
+        "roomHelper": "{{percent}}% phòng đang có người thuê",
+        "occupantHelper": "Chủ hộ và thành viên đã duyệt",
+        "unpaidHelper": "Cần theo dõi thu tiền",
+        "vehicleHelper": "Xe đang tính phí",
+        "trackedItems": "Mục cần theo dõi",
+        "trackedHelper": "Hóa đơn, bảo trì, phản hồi và thành viên chờ duyệt"
+      },
+      "tables": {
+        "group": "Nhóm",
+        "primary": "Chỉ số chính",
+        "secondary": "Chỉ số phụ",
+        "tertiary": "Theo dõi",
+        "portfolio": "Tòa nhà và phòng",
+        "residents": "Cư dân",
+        "finance": "Tài chính",
+        "operations": "Vận hành"
       },
       "notes": {
         "next30Days": "30 ngày tới"

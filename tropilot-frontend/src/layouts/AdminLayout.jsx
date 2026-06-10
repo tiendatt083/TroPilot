@@ -6,7 +6,8 @@ import { useAuth } from '../context/AuthContext.jsx';
 
 const ADMIN_ACCOUNT_ITEMS = [
   { to: '/admin/users', labelKey: 'navigation.users' },
-  { to: '/admin/residents', labelKey: 'navigation.residents' }
+  { to: '/admin/residents', labelKey: 'navigation.residents' },
+  { to: '/admin/members/pending', labelKey: 'navigation.pendingMembers' }
 ];
 
 const ADMIN_NAV_ITEMS = [
@@ -14,7 +15,6 @@ const ADMIN_NAV_ITEMS = [
   { to: '/admin/activity-logs', labelKey: 'navigation.activityLogs' },
   { to: '/admin/feedbacks', labelKey: 'navigation.feedbacks' },
   { to: '/admin/invoice-complaints', labelKey: 'navigation.invoiceComplaints' },
-  { to: '/admin/members/pending', labelKey: 'navigation.pendingMembers' },
   { to: '/admin/contracts', labelKey: 'navigation.contracts' },
   { to: '/admin/tasks', labelKey: 'navigation.tasks' },
   { to: '/admin/maintenance', labelKey: 'navigation.maintenance' },
@@ -29,6 +29,9 @@ export default function AdminLayout() {
   const location = useLocation();
   const accountSectionActive = ADMIN_ACCOUNT_ITEMS.some((item) => location.pathname.startsWith(item.to));
   const [accountSectionOpen, setAccountSectionOpen] = useState(accountSectionActive);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(
+    () => localStorage.getItem('adminSidebarCollapsed') === 'true'
+  );
 
   useEffect(() => {
     if (accountSectionActive) {
@@ -36,10 +39,24 @@ export default function AdminLayout() {
     }
   }, [accountSectionActive]);
 
+  useEffect(() => {
+    localStorage.setItem('adminSidebarCollapsed', String(sidebarCollapsed));
+  }, [sidebarCollapsed]);
+
   return (
-    <div className="app-shell">
+    <div className={`app-shell${sidebarCollapsed ? ' sidebar-collapsed' : ''}`}>
       <aside className="sidebar">
         <SidebarBrand />
+        <button
+          className="sidebar-toggle"
+          type="button"
+          aria-expanded={!sidebarCollapsed}
+          aria-label={sidebarCollapsed ? t('navigation.expandSidebar') : t('navigation.collapseSidebar')}
+          title={sidebarCollapsed ? t('navigation.expandSidebar') : t('navigation.collapseSidebar')}
+          onClick={() => setSidebarCollapsed((current) => !current)}
+        >
+          <span aria-hidden="true">{sidebarCollapsed ? '›' : '‹'}</span>
+        </button>
         <div className="sidebar-user">
           <span>{user?.fullName}</span>
           <small>{t('role.admin')}</small>

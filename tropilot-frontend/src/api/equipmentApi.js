@@ -21,6 +21,10 @@ function filterConfig(filters = {}) {
     params.condition = filters.condition;
   }
 
+  if (filters.buildingId) {
+    params.buildingId = filters.buildingId;
+  }
+
   return Object.keys(params).length ? { params } : {};
 }
 
@@ -42,6 +46,11 @@ export async function getAdminBuildingEquipment(buildingId, filters) {
     `/api/admin/buildings/${buildingId}/equipment`,
     filterConfig(filters)
   );
+  return response.data;
+}
+
+export async function getAdminEquipment(filters) {
+  const response = await apiClient.get('/api/admin/equipment', filterConfig(filters));
   return response.data;
 }
 

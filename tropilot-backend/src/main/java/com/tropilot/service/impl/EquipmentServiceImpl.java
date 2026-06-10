@@ -46,18 +46,33 @@ public class EquipmentServiceImpl implements EquipmentService {
     @Transactional
     public EquipmentResponse createEquipment(Long buildingId, EquipmentUpsertRequest request) {
         Building building = findBuilding(buildingId);
-        String equipmentCode = normalizeCode(request.getEquipmentCode());
-
-        if (equipmentRepository.existsByBuilding_IdAndEquipmentCode(buildingId, equipmentCode)) {
-            throw new BadRequestException("Equipment code is already in use in this building");
-        }
-
         Equipment equipment = Equipment.builder()
                 .building(building)
                 .build();
-        applyValues(equipment, request, equipmentCode);
+        applyValues(equipment, request);
 
         return equipmentMapper.toResponse(equipmentRepository.save(equipment));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<EquipmentResponse> getAdminEquipment(
+            Long buildingId,
+            String scope,
+            Long roomId,
+            String condition
+    ) {
+        if (buildingId != null) {
+            findBuilding(buildingId);
+        }
+
+        return filterEquipment(
+                equipmentRepository.findAllWithBuildingAndRoom(),
+                buildingId,
+                scope,
+                roomId,
+                condition
+        );
     }
 
     @Override
@@ -71,6 +86,7 @@ public class EquipmentServiceImpl implements EquipmentService {
         findBuilding(buildingId);
         return filterEquipment(
                 equipmentRepository.findByBuilding_IdOrderByScopeAscNameAsc(buildingId),
+                null,
                 scope,
                 roomId,
                 condition
@@ -91,6 +107,7 @@ public class EquipmentServiceImpl implements EquipmentService {
                         buildingId,
                         EquipmentCondition.INACTIVE
                 ),
+                null,
                 scope,
                 roomId,
                 condition
@@ -129,15 +146,7 @@ public class EquipmentServiceImpl implements EquipmentService {
     @Transactional
     public EquipmentResponse updateEquipment(Long buildingId, Long id, EquipmentUpsertRequest request) {
         Equipment equipment = findBuildingEquipment(buildingId, id);
-        String equipmentCode = normalizeCode(request.getEquipmentCode());
-
-        equipmentRepository.findByBuilding_IdAndEquipmentCode(buildingId, equipmentCode)
-                .filter(existing -> !Objects.equals(existing.getId(), id))
-                .ifPresent(existing -> {
-                    throw new BadRequestException("Equipment code is already in use in this building");
-                });
-
-        applyValues(equipment, request, equipmentCode);
+        applyValues(equipment, request);
         return equipmentMapper.toResponse(equipmentRepository.save(equipment));
     }
 
@@ -178,6 +187,7 @@ public class EquipmentServiceImpl implements EquipmentService {
 
     private List<EquipmentResponse> filterEquipment(
             List<Equipment> equipmentList,
+            Long buildingId,
             String scopeValue,
             Long roomId,
             String conditionValue
@@ -186,6 +196,7 @@ public class EquipmentServiceImpl implements EquipmentService {
         EquipmentCondition condition = parseOptionalCondition(conditionValue);
 
         return equipmentList.stream()
+                .filter(equipment -> buildingId == null || Objects.equals(equipment.getBuilding().getId(), buildingId))
                 .filter(equipment -> scope == null || equipment.getScope() == scope)
                 .filter(equipment -> roomId == null
                         || (equipment.getRoom() != null && Objects.equals(equipment.getRoom().getId(), roomId)))
@@ -194,12 +205,14 @@ public class EquipmentServiceImpl implements EquipmentService {
                 .toList();
     }
 
-    private void applyValues(Equipment equipment, EquipmentUpsertRequest request, String equipmentCode) {
+    private void applyValues(Equipment equipment, EquipmentUpsertRequest request) {
         EquipmentScope scope = parseScope(request.getScope());
         EquipmentCondition condition = parseCondition(request.getCondition());
         Room room = resolveRoom(equipment.getBuilding(), scope, request.getRoomId());
+        String equipmentCode = resolveEquipmentCode(equipment, request.getEquipmentCode(), scope, room);
 
         validateMaintenanceDates(request.getLastMaintenanceDate(), request.getNextMaintenanceDate());
+        validateEquipmentCodeAvailability(equipment.getBuilding().getId(), equipmentCode, equipment.getId());
 
         equipment.setRoom(room);
         equipment.setEquipmentCode(equipmentCode);
@@ -243,6 +256,50 @@ public class EquipmentServiceImpl implements EquipmentService {
                 && nextMaintenanceDate.isBefore(lastMaintenanceDate)) {
             throw new BadRequestException("Next maintenance date must not be before the last maintenance date");
         }
+    }
+
+    private String resolveEquipmentCode(
+            Equipment equipment,
+            String requestedCode,
+            EquipmentScope scope,
+            Room room
+    ) {
+        if (requestedCode != null && !requestedCode.isBlank()) {
+            return normalizeCode(requestedCode);
+        }
+
+        if (equipment.getId() != null && equipment.getEquipmentCode() != null) {
+            return equipment.getEquipmentCode();
+        }
+
+        String prefix = scope == EquipmentScope.ROOM
+                ? room.getRoomCode() + "-EQ"
+                : equipment.getBuilding().getBuildingCode() + "-EQ";
+        return generateEquipmentCode(equipment.getBuilding().getId(), normalizeCode(prefix));
+    }
+
+    private String generateEquipmentCode(Long buildingId, String prefix) {
+        long existingCount = equipmentRepository.countByBuilding_IdAndEquipmentCodeStartingWith(
+                buildingId,
+                prefix + "-"
+        );
+        long sequence = existingCount + 1;
+
+        while (true) {
+            String candidate = "%s-%03d".formatted(prefix, sequence);
+            if (!equipmentRepository.existsByBuilding_IdAndEquipmentCode(buildingId, candidate)) {
+                return candidate;
+            }
+            sequence++;
+        }
+    }
+
+    private void validateEquipmentCodeAvailability(Long buildingId, String equipmentCode, Long currentEquipmentId) {
+        equipmentRepository.findByBuilding_IdAndEquipmentCode(buildingId, equipmentCode)
+                .filter(existing -> !Objects.equals(existing.getId(), currentEquipmentId))
+                .ifPresent(existing -> {
+                    throw new BadRequestException("Equipment code is already in use in this building");
+                });
     }
 
     private Equipment findBuildingEquipment(Long buildingId, Long id) {

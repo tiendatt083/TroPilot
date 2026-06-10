@@ -1,16 +1,17 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useOutletContext } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import * as equipmentApi from '../api/equipmentApi.js';
-import * as roomApi from '../api/roomApi.js';
-import EquipmentForm from './EquipmentForm.jsx';
-import EquipmentMaintenancePanel from './EquipmentMaintenancePanel.jsx';
-import EquipmentTable from './EquipmentTable.jsx';
-import PageHeader from './PageHeader.jsx';
-import { EQUIPMENT_CONDITIONS, EQUIPMENT_SCOPES } from '../utils/equipmentOptions.js';
-import { formatRoomLabel } from '../utils/roomDisplay.js';
+import * as buildingApi from '../../api/buildingApi.js';
+import * as equipmentApi from '../../api/equipmentApi.js';
+import * as roomApi from '../../api/roomApi.js';
+import EquipmentForm from '../../components/EquipmentForm.jsx';
+import EquipmentMaintenancePanel from '../../components/EquipmentMaintenancePanel.jsx';
+import EquipmentTable from '../../components/EquipmentTable.jsx';
+import PageHeader from '../../components/PageHeader.jsx';
+import { EQUIPMENT_CONDITIONS, EQUIPMENT_SCOPES } from '../../utils/equipmentOptions.js';
+import { formatRoomLabel } from '../../utils/roomDisplay.js';
 
 const EMPTY_FILTERS = {
+  buildingId: '',
   scope: '',
   roomId: '',
   condition: ''
@@ -18,33 +19,16 @@ const EMPTY_FILTERS = {
 
 function toEquipmentPayload(payload) {
   const { buildingId, ...equipmentPayload } = payload;
-  return equipmentPayload;
-}
-
-function apiForRole(role) {
-  if (role === 'admin') {
-    return {
-      list: equipmentApi.getAdminBuildingEquipment,
-      rooms: roomApi.getAdminRooms,
-      request: equipmentApi.requestAdminEquipmentMaintenance,
-      history: equipmentApi.getAdminEquipmentHistory
-    };
-  }
-
   return {
-    list: equipmentApi.getStaffBuildingEquipment,
-    rooms: roomApi.getStaffRooms,
-    request: equipmentApi.requestStaffEquipmentMaintenance,
-    history: equipmentApi.getStaffEquipmentHistory
+    buildingId,
+    equipmentPayload
   };
 }
 
-export default function BuildingEquipmentPage({ role }) {
+export default function AdminEquipmentPage() {
   const { t } = useTranslation();
-  const { building } = useOutletContext();
-  const api = useMemo(() => apiForRole(role), [role]);
-  const canManage = role === 'admin';
   const [equipment, setEquipment] = useState([]);
+  const [buildings, setBuildings] = useState([]);
   const [rooms, setRooms] = useState([]);
   const [filters, setFilters] = useState(EMPTY_FILTERS);
   const [editingEquipment, setEditingEquipment] = useState(null);
@@ -57,34 +41,49 @@ export default function BuildingEquipmentPage({ role }) {
   const [processingId, setProcessingId] = useState(null);
   const [historyLoading, setHistoryLoading] = useState(false);
   const [requestLoading, setRequestLoading] = useState(false);
+
+  const filteredRooms = useMemo(() => {
+    if (!filters.buildingId) {
+      return [];
+    }
+
+    return rooms.filter((room) => String(room.buildingId) === filters.buildingId);
+  }, [rooms, filters.buildingId]);
+
   const sharedEquipment = equipment.filter((item) => item.scope === 'BUILDING');
   const roomEquipment = equipment.filter((item) => item.scope === 'ROOM');
 
-  const loadData = async (activeFilters = filters) => {
+  const loadEquipment = async (activeFilters = filters) => {
     setError('');
 
     try {
-      const [equipmentResponse, roomsResponse] = await Promise.all([
-        api.list(building.id, activeFilters),
-        api.rooms({ buildingId: building.id })
-      ]);
-      setEquipment(equipmentResponse.data);
-      setRooms(roomsResponse.data);
+      const response = await equipmentApi.getAdminEquipment(activeFilters);
+      setEquipment(response.data);
     } catch (apiError) {
       setError(apiError.response?.data?.message || t('equipment.messages.loadError'));
     }
   };
 
+  const loadReferenceData = async () => {
+    const [buildingResponse, roomResponse] = await Promise.all([
+      buildingApi.getAdminBuildings(''),
+      roomApi.getAdminRooms({})
+    ]);
+    setBuildings(buildingResponse.data);
+    setRooms(roomResponse.data);
+  };
+
   useEffect(() => {
     setLoading(true);
-    loadData(EMPTY_FILTERS).finally(() => setLoading(false));
-  }, [building.id, api]);
+    Promise.all([loadReferenceData(), loadEquipment(EMPTY_FILTERS)]).finally(() => setLoading(false));
+  }, []);
 
   const handleFilterChange = (event) => {
     const { name, value } = event.target;
     setFilters((current) => ({
       ...current,
       [name]: value,
+      ...(name === 'buildingId' ? { roomId: '' } : {}),
       ...(name === 'scope' && value !== 'ROOM' ? { roomId: '' } : {})
     }));
   };
@@ -92,34 +91,41 @@ export default function BuildingEquipmentPage({ role }) {
   const handleApplyFilters = async (event) => {
     event.preventDefault();
     setLoading(true);
-    await loadData(filters);
+    await loadEquipment(filters);
     setLoading(false);
   };
 
   const handleClearFilters = async () => {
     setFilters(EMPTY_FILTERS);
     setLoading(true);
-    await loadData(EMPTY_FILTERS);
+    await loadEquipment(EMPTY_FILTERS);
     setLoading(false);
   };
 
   const handleSave = async (payload) => {
+    const { buildingId, equipmentPayload } = toEquipmentPayload(payload);
+    const targetBuildingId = editingEquipment?.buildingId || buildingId;
+
+    if (!targetBuildingId) {
+      setError(t('equipment.messages.buildingRequired'));
+      return;
+    }
+
     setSaving(true);
     setMessage('');
     setError('');
 
     try {
-      const equipmentPayload = toEquipmentPayload(payload);
       if (editingEquipment) {
-        await equipmentApi.updateAdminEquipment(building.id, editingEquipment.id, equipmentPayload);
+        await equipmentApi.updateAdminEquipment(targetBuildingId, editingEquipment.id, equipmentPayload);
         setMessage(t('equipment.messages.updated'));
       } else {
-        await equipmentApi.createAdminEquipment(building.id, equipmentPayload);
+        await equipmentApi.createAdminEquipment(targetBuildingId, equipmentPayload);
         setMessage(t('equipment.messages.created'));
       }
 
       setEditingEquipment(null);
-      await loadData();
+      await loadEquipment(filters);
     } catch (apiError) {
       setError(
         apiError.response?.data?.message
@@ -140,13 +146,13 @@ export default function BuildingEquipmentPage({ role }) {
     setError('');
 
     try {
-      const response = await equipmentApi.deleteAdminEquipment(building.id, item.id);
+      const response = await equipmentApi.deleteAdminEquipment(item.buildingId, item.id);
       setMessage(
         response.data.deactivated
           ? t('equipment.messages.deactivatedInstead')
           : t('equipment.messages.deleted')
       );
-      await loadData();
+      await loadEquipment(filters);
     } catch (apiError) {
       setError(apiError.response?.data?.message || t('equipment.messages.deleteError'));
     } finally {
@@ -166,7 +172,7 @@ export default function BuildingEquipmentPage({ role }) {
     setError('');
 
     try {
-      const response = await api.history(item.id);
+      const response = await equipmentApi.getAdminEquipmentHistory(item.id);
       setHistory(response.data);
     } catch (apiError) {
       setError(apiError.response?.data?.message || t('equipment.history.loadError'));
@@ -181,10 +187,10 @@ export default function BuildingEquipmentPage({ role }) {
     setError('');
 
     try {
-      await api.request(panel.equipment.id, payload);
+      await equipmentApi.requestAdminEquipmentMaintenance(panel.equipment.id, payload);
       setMessage(t('equipment.request.created'));
       setPanel({ type: '', equipment: null });
-      await loadData();
+      await loadEquipment(filters);
       return true;
     } catch (apiError) {
       setError(apiError.response?.data?.message || t('equipment.request.createError'));
@@ -196,29 +202,25 @@ export default function BuildingEquipmentPage({ role }) {
 
   const renderActions = (item) => (
     <div className="table-actions">
-      {canManage && (
-        <>
-          <button
-            className="secondary-button compact-button"
-            type="button"
-            disabled={processingId === item.id}
-            onClick={() => {
-              setEditingEquipment(item);
-              setPanel({ type: '', equipment: null });
-            }}
-          >
-            {t('common.edit')}
-          </button>
-          <button
-            className="danger-button compact-button"
-            type="button"
-            disabled={processingId === item.id}
-            onClick={() => handleDelete(item)}
-          >
-            {t('common.delete')}
-          </button>
-        </>
-      )}
+      <button
+        className="secondary-button compact-button"
+        type="button"
+        disabled={processingId === item.id}
+        onClick={() => {
+          setEditingEquipment(item);
+          setPanel({ type: '', equipment: null });
+        }}
+      >
+        {t('common.edit')}
+      </button>
+      <button
+        className="danger-button compact-button"
+        type="button"
+        disabled={processingId === item.id}
+        onClick={() => handleDelete(item)}
+      >
+        {t('common.delete')}
+      </button>
       {item.condition !== 'INACTIVE' && (
         <button
           className="secondary-button compact-button"
@@ -239,38 +241,50 @@ export default function BuildingEquipmentPage({ role }) {
   );
 
   return (
-    <div className="building-workspace equipment-page">
-      <PageHeader eyebrow={t('equipment.eyebrow')} title={t('equipment.title')} />
-      <p className="page-support-text">
-        {canManage ? t('equipment.adminDescription') : t('equipment.staffDescription')}
-      </p>
+    <section className="content-section equipment-page">
+      <PageHeader eyebrow={t('role.admin')} title={t('equipment.globalTitle')} />
+      <p className="page-support-text">{t('equipment.adminGlobalDescription')}</p>
 
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
 
-      {canManage && (
-        <section className="building-section">
-          <PageHeader
-            eyebrow={editingEquipment ? t('equipment.form.editEyebrow') : t('equipment.form.addEyebrow')}
-            title={editingEquipment ? t('equipment.form.editTitle') : t('equipment.form.addTitle')}
-          />
-          <EquipmentForm
-            equipment={editingEquipment}
-            rooms={rooms}
-            fixedBuilding={building}
-            saving={saving}
-            onSubmit={handleSave}
-            onCancel={() => setEditingEquipment(null)}
-          />
-        </section>
-      )}
+      <section className="building-section">
+        <PageHeader
+          eyebrow={editingEquipment ? t('equipment.form.editEyebrow') : t('equipment.form.addEyebrow')}
+          title={editingEquipment ? t('equipment.form.editTitle') : t('equipment.form.addTitle')}
+        />
+        <EquipmentForm
+          equipment={editingEquipment}
+          buildings={buildings}
+          rooms={rooms}
+          saving={saving}
+          onSubmit={handleSave}
+          onCancel={() => setEditingEquipment(null)}
+        />
+      </section>
 
       <section className="building-section">
         <div className="building-section-header">
-          <PageHeader eyebrow={t('equipment.records.eyebrow')} title={t('equipment.records.title')} />
+          <PageHeader eyebrow={t('equipment.records.eyebrow')} title={t('equipment.records.allTitle')} />
         </div>
 
         <form className="equipment-filter-row" onSubmit={handleApplyFilters}>
+          <div>
+            <label htmlFor="equipmentBuildingFilter">{t('equipment.filters.building')}</label>
+            <select
+              id="equipmentBuildingFilter"
+              name="buildingId"
+              value={filters.buildingId}
+              onChange={handleFilterChange}
+            >
+              <option value="">{t('equipment.filters.allBuildings')}</option>
+              {buildings.map((building) => (
+                <option key={building.id} value={building.id}>
+                  {building.buildingCode} - {building.name}
+                </option>
+              ))}
+            </select>
+          </div>
           <div>
             <label htmlFor="equipmentScopeFilter">{t('equipment.filters.scope')}</label>
             <select
@@ -293,11 +307,11 @@ export default function BuildingEquipmentPage({ role }) {
               id="equipmentRoomFilter"
               name="roomId"
               value={filters.roomId}
-              disabled={filters.scope !== 'ROOM'}
+              disabled={!filters.buildingId || filters.scope !== 'ROOM'}
               onChange={handleFilterChange}
             >
               <option value="">{t('equipment.filters.allRooms')}</option>
-              {rooms.map((room) => (
+              {filteredRooms.map((room) => (
                 <option key={room.id} value={room.id}>
                   {formatRoomLabel(room)}
                 </option>
@@ -351,6 +365,6 @@ export default function BuildingEquipmentPage({ role }) {
         onClose={() => setPanel({ type: '', equipment: null })}
         onSubmit={handleMaintenanceRequest}
       />
-    </div>
+    </section>
   );
 }

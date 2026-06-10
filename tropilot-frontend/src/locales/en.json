@@ -85,6 +85,8 @@
     "staff": "Staff navigation",
     "resident": "Resident navigation",
     "buildingWorkspace": "Building workspace navigation",
+    "collapseSidebar": "Collapse sidebar",
+    "expandSidebar": "Expand sidebar",
     "dashboard": "Home",
     "notifications": "Notifications",
     "activityLogs": "Activity logs",
@@ -644,12 +646,20 @@
   },
   "dashboard": {
     "admin": {
-      "title": "Dashboard",
+      "title": "Home",
       "eyebrow": "Admin",
       "loading": "Loading dashboard...",
       "loadError": "Admin dashboard could not be loaded",
-      "heroDescription": "System-wide operating snapshot for buildings, rooms, residents, invoices, maintenance, and cash flow.",
+      "heroDescription": "Hello {{name}}. This is the system-wide operating snapshot for buildings, rooms, residents, invoices, maintenance, and cash flow.",
+      "today": "Today",
+      "trackedItems": "{{count}} items need attention",
       "sections": {
+        "todayLabel": "Overview",
+        "todayTitle": "Today's operations",
+        "trackingCount": "{{count}} items need attention",
+        "roomStatusTitle": "Room status",
+        "roomStatusDescription": "Occupied, empty, and maintenance room distribution.",
+        "summaryTitle": "Operating summary",
         "portfolioTitle": "Portfolio overview",
         "portfolioDescription": "Room supply and occupancy health across all buildings.",
         "residentsTitle": "Residents and vehicles",
@@ -684,6 +694,25 @@
         "rooms": "Rooms",
         "openIssues": "Open issues",
         "cashPosition": "Cash position"
+      },
+      "cards": {
+        "buildingHelper": "Managed buildings",
+        "roomHelper": "{{percent}}% occupied rooms",
+        "occupantHelper": "Head residents and approved members",
+        "unpaidHelper": "Payment follow-up required",
+        "vehicleHelper": "Billable active vehicles",
+        "trackedItems": "Items to track",
+        "trackedHelper": "Invoices, maintenance, feedback, and pending members"
+      },
+      "tables": {
+        "group": "Group",
+        "primary": "Primary metric",
+        "secondary": "Secondary metric",
+        "tertiary": "Follow-up",
+        "portfolio": "Buildings and rooms",
+        "residents": "Residents",
+        "finance": "Finance",
+        "operations": "Operations"
       },
       "notes": {
         "next30Days": "Next 30 days"

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -31,6 +32,19 @@ public class AdminEquipmentController {
 
     private final EquipmentService equipmentService;
     private final MaintenanceRequestService maintenanceRequestService;
+
+    @GetMapping
+    public ApiResponse<List<EquipmentResponse>> getEquipment(
+            @RequestParam(required = false) Long buildingId,
+            @RequestParam(required = false) String scope,
+            @RequestParam(required = false) Long roomId,
+            @RequestParam(required = false) String condition
+    ) {
+        return ApiResponse.success(
+                "Equipment loaded successfully",
+                equipmentService.getAdminEquipment(buildingId, scope, roomId, condition)
+        );
+    }
 
     @GetMapping("/{id}")
     public ApiResponse<EquipmentResponse> getEquipment(@PathVariable Long id) {

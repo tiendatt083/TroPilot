@@ -14,9 +14,9 @@ export default function EquipmentTable({ equipment, renderActions }) {
           <tr>
             <th>{t('equipment.fields.code')}</th>
             <th>{t('equipment.fields.name')}</th>
-            <th>{t('equipment.fields.scope')}</th>
+            <th>{t('equipment.fields.assignedTo')}</th>
             <th>{t('equipment.fields.location')}</th>
-            <th>{t('equipment.fields.quantity')}</th>
+            <th>{t('equipment.fields.installationDate')}</th>
             <th>{t('equipment.fields.condition')}</th>
             <th>{t('equipment.fields.maintenanceSchedule')}</th>
             {hasActions && <th>{t('tables.common.actions')}</th>}
@@ -27,22 +27,22 @@ export default function EquipmentTable({ equipment, renderActions }) {
             <tr key={item.id}>
               <td>
                 <strong>{item.equipmentCode}</strong>
-                <span className="table-subtext">
-                  {[item.brand, item.model].filter(Boolean).join(' - ') || t('common.notProvided')}
-                </span>
+                <span className="table-subtext">{t(`equipment.scopes.${item.scope}`)}</span>
               </td>
               <td>
                 <strong>{item.name}</strong>
-                <span className="table-subtext">{item.note || t('common.notProvided')}</span>
+                <span className="table-subtext">{item.buildingCode} - {item.buildingName}</span>
               </td>
               <td>
-                <strong>{t(`equipment.scopes.${item.scope}`)}</strong>
+                <strong>
+                  {item.scope === 'ROOM' ? formatRoomLabel(item) : t('equipment.scopes.BUILDING')}
+                </strong>
                 <span className="table-subtext">
-                  {item.scope === 'ROOM' ? formatRoomLabel(item) : item.buildingName}
+                  {item.scope === 'ROOM' ? item.buildingName : item.buildingCode}
                 </span>
               </td>
               <td>{item.locationDescription || t('common.notProvided')}</td>
-              <td>{item.quantity}</td>
+              <td>{formatDisplayDate(item.installationDate, t('common.notProvided'))}</td>
               <td>
                 <span className={getEquipmentConditionClass(item.condition)}>
                   {t(`equipment.conditions.${item.condition}`)}
