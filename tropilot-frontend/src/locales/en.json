@@ -138,25 +138,12 @@
       "locked": "Locked"
     },
     "actions": {
-      "create": "Create staff account",
-      "lock": "Lock",
-      "unlock": "Unlock",
-      "regenerate": "Regenerate password"
-    },
-    "confirmations": {
-      "lock": "Are you sure you want to lock {{name}}?",
-      "unlock": "Are you sure you want to unlock {{name}}?",
-      "resetPassword": "Are you sure you want to regenerate a temporary password for {{name}}?"
+      "create": "Create staff account"
     },
     "messages": {
       "loading": "Loading users...",
       "loadError": "Users could not be loaded",
-      "empty": "No users match the current search.",
-      "locked": "{{name}} was locked successfully.",
-      "unlocked": "{{name}} was unlocked successfully.",
-      "statusError": "Account status could not be updated",
-      "passwordReset": "Temporary password for {{name}}: {{password}}",
-      "passwordError": "Password could not be reset"
+      "empty": "No users match the current search."
     },
     "passwordUnavailable": "Temporary password unavailable",
     "passwordChanged": "Password changed by user"
@@ -182,12 +169,50 @@
     "memberCount_one": "{{count}} related member",
     "memberCount_other": "{{count}} related members",
     "headResidentNote": "Head resident of this room",
+    "unassignedNote": "Not assigned to a room",
     "membersLabel": "Household members:",
     "member": "Member",
     "messages": {
       "loading": "Loading residents...",
       "loadError": "Residents could not be loaded",
-      "empty": "No active head residents match the current filters."
+      "empty": "No head resident accounts match the current filters."
+    }
+  },
+  "accountDirectory": {
+    "columns": {
+      "id": "ID",
+      "name": "User name",
+      "email": "Gmail",
+      "apartment": "Apartment",
+      "status": "Status",
+      "temporaryPassword": "Temporary password",
+      "actions": "Actions"
+    },
+    "actions": {
+      "viewDetails": "View details",
+      "close": "Close",
+      "deleting": "Deleting..."
+    },
+    "confirmations": {
+      "delete": "Are you sure you want to delete {{name}}? The account will no longer be able to sign in."
+    },
+    "messages": {
+      "deleted": "{{name}} was deleted successfully.",
+      "deleteError": "Account could not be deleted"
+    },
+    "detail": {
+      "eyebrow": "Account details",
+      "email": "Gmail",
+      "phone": "Phone number",
+      "role": "Role",
+      "apartment": "Apartment",
+      "status": "Status",
+      "createdAt": "Created date",
+      "temporaryPassword": "Temporary password",
+      "members": "Household members",
+      "memberCount_one": "{{count}} member",
+      "memberCount_other": "{{count}} members",
+      "noMembers": "This head resident has no active household members."
     }
   },
   "userCreate": {

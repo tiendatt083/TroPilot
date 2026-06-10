@@ -84,6 +84,7 @@ public class UserServiceImpl implements UserService {
 
         return users
                 .stream()
+                .filter(user -> user.getStatus() != UserStatus.INACTIVE)
                 .map(user -> userMapper.toAdminResponse(user, activeAssignments.get(user.getId())))
                 .toList();
     }
@@ -167,6 +168,27 @@ public class UserServiceImpl implements UserService {
                 .userId(user.getId())
                 .temporaryPassword(temporaryPassword)
                 .build();
+    }
+
+    @Override
+    @Transactional
+    public void deleteUser(Long id) {
+        User user = findUser(id);
+
+        if (user.getRole() == UserRole.ADMIN) {
+            throw new BadRequestException("Admin account cannot be deleted");
+        }
+
+        if (user.getRole() == UserRole.RESIDENT_HEAD
+                && roomAssignmentRepository.existsByResidentHead_IdAndStatus(id, RoomAssignmentStatus.ACTIVE)) {
+            throw new BadRequestException("Head resident must be removed from the active room before deletion");
+        }
+
+        user.setStatus(UserStatus.INACTIVE);
+        user.setTemporaryPasswordEncrypted(null);
+        user.setMustChangePassword(false);
+        userRepository.save(user);
+        activityLogService.recordCurrentUser("USER_DELETED", "Deleted user account for " + user.getEmail());
     }
 
     private User findUser(Long id) {

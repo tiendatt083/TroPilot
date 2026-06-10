@@ -15,17 +15,7 @@ export async function updateUser(id, payload) {
   return response.data;
 }
 
-export async function lockUser(id) {
-  const response = await apiClient.put(`/api/admin/users/${id}/lock`);
-  return response.data;
-}
-
-export async function unlockUser(id) {
-  const response = await apiClient.put(`/api/admin/users/${id}/unlock`);
-  return response.data;
-}
-
-export async function resetPassword(id) {
-  const response = await apiClient.put(`/api/admin/users/${id}/reset-password`);
+export async function deleteUser(id) {
+  const response = await apiClient.delete(`/api/admin/users/${id}`);
   return response.data;
 }

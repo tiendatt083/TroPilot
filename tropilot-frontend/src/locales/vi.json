@@ -138,25 +138,12 @@
       "locked": "Đã khóa"
     },
     "actions": {
-      "create": "Tạo nhân viên",
-      "lock": "Khóa",
-      "unlock": "Mở khóa",
-      "regenerate": "Tạo lại mật khẩu"
-    },
-    "confirmations": {
-      "lock": "Bạn có chắc muốn khóa tài khoản của {{name}}?",
-      "unlock": "Bạn có chắc muốn mở khóa tài khoản của {{name}}?",
-      "resetPassword": "Bạn có chắc muốn tạo lại mật khẩu tạm thời cho {{name}}?"
+      "create": "Tạo nhân viên"
     },
     "messages": {
       "loading": "Đang tải danh sách người dùng...",
       "loadError": "Không thể tải danh sách người dùng",
-      "empty": "Không có người dùng nào phù hợp với tìm kiếm.",
-      "locked": "Đã khóa tài khoản của {{name}}.",
-      "unlocked": "Đã mở khóa tài khoản của {{name}}.",
-      "statusError": "Không thể cập nhật trạng thái tài khoản",
-      "passwordReset": "Mật khẩu tạm thời của {{name}}: {{password}}",
-      "passwordError": "Không thể tạo lại mật khẩu"
+      "empty": "Không có người dùng nào phù hợp với tìm kiếm."
     },
     "passwordUnavailable": "Không có mật khẩu tạm thời",
     "passwordChanged": "Người dùng đã đổi mật khẩu"
@@ -182,12 +169,50 @@
     "memberCount_one": "{{count}} thành viên liên quan",
     "memberCount_other": "{{count}} thành viên liên quan",
     "headResidentNote": "Chủ hộ của phòng này",
+    "unassignedNote": "Chưa được gán phòng",
     "membersLabel": "Thành viên trong hộ:",
     "member": "Thành viên",
     "messages": {
       "loading": "Đang tải danh sách cư dân...",
       "loadError": "Không thể tải danh sách cư dân",
-      "empty": "Không tìm thấy chủ hộ đang thuê phòng phù hợp."
+      "empty": "Không tìm thấy tài khoản chủ hộ phù hợp."
+    }
+  },
+  "accountDirectory": {
+    "columns": {
+      "id": "ID",
+      "name": "Tên người dùng",
+      "email": "Gmail",
+      "apartment": "Căn hộ",
+      "status": "Trạng thái",
+      "temporaryPassword": "Mật khẩu tạm thời",
+      "actions": "Thao tác"
+    },
+    "actions": {
+      "viewDetails": "Xem chi tiết",
+      "close": "Đóng",
+      "deleting": "Đang xóa..."
+    },
+    "confirmations": {
+      "delete": "Bạn có chắc muốn xóa tài khoản của {{name}}? Tài khoản sẽ không thể đăng nhập sau khi xóa."
+    },
+    "messages": {
+      "deleted": "Đã xóa tài khoản của {{name}}.",
+      "deleteError": "Không thể xóa tài khoản"
+    },
+    "detail": {
+      "eyebrow": "Chi tiết tài khoản",
+      "email": "Gmail",
+      "phone": "Số điện thoại",
+      "role": "Vai trò",
+      "apartment": "Căn hộ",
+      "status": "Trạng thái",
+      "createdAt": "Ngày tạo",
+      "temporaryPassword": "Mật khẩu tạm thời",
+      "members": "Thành viên hộ",
+      "memberCount_one": "{{count}} thành viên",
+      "memberCount_other": "{{count}} thành viên",
+      "noMembers": "Chủ hộ chưa có thành viên hộ đang hoạt động."
     }
   },
   "userCreate": {

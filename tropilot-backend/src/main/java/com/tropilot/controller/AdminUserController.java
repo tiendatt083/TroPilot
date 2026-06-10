@@ -9,6 +9,7 @@ import com.tropilot.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -63,6 +64,12 @@ public class AdminUserController {
     @PutMapping("/{id}/reset-password")
     public ApiResponse<PasswordResetResponse> resetPassword(@PathVariable Long id) {
         return ApiResponse.success("Temporary password generated successfully", userService.resetPassword(id));
+    }
+
+    @DeleteMapping("/{id}")
+    public ApiResponse<Void> deleteUser(@PathVariable Long id) {
+        userService.deleteUser(id);
+        return ApiResponse.success("User deleted successfully");
     }
 
 }
