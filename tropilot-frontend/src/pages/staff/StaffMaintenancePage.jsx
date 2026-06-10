@@ -190,18 +190,20 @@ export default function StaffMaintenancePage() {
                   </form>
                 )}
 
-                <Link
-                  className="secondary-link"
-                  to={building ? `/staff/buildings/${building.id}/expenses` : '/staff/expenses/create'}
-                  state={{
-                    roomId: selectedRequest.roomId,
-                    maintenanceRequestId: selectedRequest.id,
-                    expenseType: 'MAINTENANCE',
-                    content: `Maintenance request #${selectedRequest.id}: ${selectedRequest.title}`
-                  }}
-                >
-                  Create linked expense
-                </Link>
+                {selectedRequest.roomId && (
+                  <Link
+                    className="secondary-link"
+                    to={building ? `/staff/buildings/${building.id}/expenses` : '/staff/expenses/create'}
+                    state={{
+                      roomId: selectedRequest.roomId,
+                      maintenanceRequestId: selectedRequest.id,
+                      expenseType: 'MAINTENANCE',
+                      content: `Maintenance request #${selectedRequest.id}: ${selectedRequest.title}`
+                    }}
+                  >
+                    Create linked expense
+                  </Link>
+                )}
 
                 {!canStart && !canComplete && !canReject && (
                   <div className="empty-state">No staff action is available for this maintenance status.</div>

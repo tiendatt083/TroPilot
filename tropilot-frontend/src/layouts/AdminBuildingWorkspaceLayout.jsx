@@ -5,6 +5,7 @@ const ADMIN_BUILDING_TABS = [
   { path: '', labelKey: 'buildingWorkspace.overview', end: true },
   { path: '/rooms', labelKey: 'buildingWorkspace.rooms' },
   { path: '/users', labelKey: 'buildingWorkspace.users' },
+  { path: '/equipment', labelKey: 'buildingWorkspace.equipment' },
   { path: '/contracts', labelKey: 'buildingWorkspace.contracts' },
   { path: '/utility-readings', labelKey: 'buildingWorkspace.utilityReadings' },
   { path: '/invoices', labelKey: 'buildingWorkspace.invoices' },

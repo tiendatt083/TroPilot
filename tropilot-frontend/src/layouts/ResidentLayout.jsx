@@ -12,6 +12,7 @@ const RESIDENT_NAV_ITEMS = [
   { to: '/resident/maintenance', labelKey: 'navigation.maintenance' },
   { to: '/resident/contract', labelKey: 'navigation.contract' },
   { to: '/resident/vehicles', labelKey: 'navigation.vehicles' },
+  { to: '/resident/equipment', labelKey: 'navigation.equipment' },
   { to: '/resident/utility-readings', labelKey: 'navigation.utilityReadings' },
   { to: '/resident/profile', labelKey: 'navigation.profile' },
   { to: '/resident/settings', labelKey: 'settings.title' }

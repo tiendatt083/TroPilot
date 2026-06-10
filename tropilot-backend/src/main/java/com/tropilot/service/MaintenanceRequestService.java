@@ -12,6 +12,12 @@ public interface MaintenanceRequestService {
 
     MaintenanceRequestResponse createResidentRequest(Long residentHeadId, MaintenanceRequestCreateRequest request);
 
+    MaintenanceRequestResponse createEquipmentRequest(
+            Long requestedById,
+            Long equipmentId,
+            MaintenanceRequestCreateRequest request
+    );
+
     List<MaintenanceRequestResponse> getResidentRequests(Long residentHeadId);
 
     MaintenanceRequestResponse getResidentRequest(Long residentHeadId, Long id);

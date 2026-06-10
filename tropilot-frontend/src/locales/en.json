@@ -85,12 +85,14 @@
     "staff": "Staff navigation",
     "resident": "Resident navigation",
     "buildingWorkspace": "Building workspace navigation",
-    "dashboard": "Dashboard",
+    "dashboard": "Home",
     "notifications": "Notifications",
     "activityLogs": "Activity logs",
     "feedbacks": "Feedbacks",
     "invoiceComplaints": "Invoice complaints",
+    "accounts": "Accounts",
     "users": "Users",
+    "residents": "Residents",
     "pendingMembers": "Pending members",
     "contracts": "Contracts",
     "tasks": "Tasks",
@@ -101,11 +103,107 @@
     "pendingPayments": "Pending payments",
     "expenses": "Expenses",
     "vehicles": "Vehicles",
+    "equipment": "Equipment",
     "serviceFees": "Service fees",
     "utilityReadings": "Utility readings",
     "members": "Members",
     "contract": "Contract",
     "profile": "Personal information"
+  },
+  "userManagement": {
+    "eyebrow": "System accounts",
+    "title": "User management",
+    "filters": {
+      "searchAria": "Search users",
+      "searchPlaceholder": "Search by name, email, or phone number"
+    },
+    "columns": {
+      "name": "User name",
+      "email": "Email",
+      "role": "Role",
+      "status": "Account status",
+      "temporaryPassword": "Temporary password",
+      "actions": "Actions"
+    },
+    "status": {
+      "active": "Active",
+      "locked": "Locked"
+    },
+    "actions": {
+      "create": "Create staff account",
+      "lock": "Lock",
+      "unlock": "Unlock",
+      "regenerate": "Regenerate password"
+    },
+    "confirmations": {
+      "lock": "Are you sure you want to lock {{name}}?",
+      "unlock": "Are you sure you want to unlock {{name}}?",
+      "resetPassword": "Are you sure you want to regenerate a temporary password for {{name}}?"
+    },
+    "messages": {
+      "loading": "Loading users...",
+      "loadError": "Users could not be loaded",
+      "empty": "No users match the current search.",
+      "locked": "{{name}} was locked successfully.",
+      "unlocked": "{{name}} was unlocked successfully.",
+      "statusError": "Account status could not be updated",
+      "passwordReset": "Temporary password for {{name}}: {{password}}",
+      "passwordError": "Password could not be reset"
+    },
+    "passwordUnavailable": "Temporary password unavailable",
+    "passwordChanged": "Password changed by user"
+  },
+  "residentDirectory": {
+    "eyebrow": "Resident management",
+    "title": "Resident directory",
+    "filters": {
+      "searchAria": "Search residents",
+      "searchPlaceholder": "Search by head resident, member, email, phone, or room",
+      "buildingAria": "Filter residents by building",
+      "allBuildings": "All buildings"
+    },
+    "columns": {
+      "id": "ID",
+      "login": "Login email",
+      "fullName": "Full name",
+      "household": "Room / Head resident"
+    },
+    "actions": {
+      "create": "Create head resident account"
+    },
+    "memberCount_one": "{{count}} related member",
+    "memberCount_other": "{{count}} related members",
+    "headResidentNote": "Head resident of this room",
+    "membersLabel": "Household members:",
+    "member": "Member",
+    "messages": {
+      "loading": "Loading residents...",
+      "loadError": "Residents could not be loaded",
+      "empty": "No active head residents match the current filters."
+    }
+  },
+  "userCreate": {
+    "eyebrow": "Administrator",
+    "title": "Create account",
+    "backToUsers": "Back to users",
+    "backToResidents": "Back to residents",
+    "fields": {
+      "fullName": "Full name",
+      "email": "Email address",
+      "phone": "Phone number",
+      "role": "Role"
+    },
+    "roles": {
+      "staff": "Staff",
+      "residentHead": "Head resident"
+    },
+    "actions": {
+      "creating": "Creating account...",
+      "create": "Create account"
+    },
+    "messages": {
+      "createError": "Account could not be created"
+    }
   },
   "buildingWorkspace": {
     "eyebrow": "Building workspace",
@@ -119,7 +217,10 @@
     "createRoom": "Create room",
     "overview": "Overview",
     "rooms": "Rooms",
+    "accounts": "Accounts",
     "users": "Users",
+    "residents": "Residents",
+    "equipment": "Equipment",
     "contracts": "Contracts",
     "billing": "Billing",
     "utilityReadings": "Utility readings",
@@ -136,6 +237,108 @@
     "feedbacks": "Feedbacks",
     "invoiceComplaints": "Invoice complaints",
     "notifications": "Notifications"
+  },
+  "equipment": {
+    "eyebrow": "Building equipment",
+    "title": "Equipment in this building",
+    "residentTitle": "Equipment",
+    "adminDescription": "Manage shared building equipment and equipment assigned to individual rooms.",
+    "staffDescription": "View building equipment, review maintenance history, and report equipment issues.",
+    "residentDescription": "View shared equipment in your building and equipment assigned to your room.",
+    "fields": {
+      "code": "Equipment code",
+      "name": "Equipment name",
+      "scope": "Equipment scope",
+      "room": "Assigned room",
+      "quantity": "Quantity",
+      "brand": "Brand",
+      "model": "Model",
+      "location": "Location",
+      "addedDate": "Added date",
+      "installationDate": "Installation date",
+      "lastMaintenanceDate": "Last maintenance date",
+      "nextMaintenanceDate": "Next maintenance date",
+      "condition": "Condition",
+      "maintenanceSchedule": "Maintenance schedule",
+      "note": "Note"
+    },
+    "scopes": {
+      "BUILDING": "Shared building equipment",
+      "ROOM": "Room equipment"
+    },
+    "conditions": {
+      "GOOD": "Good",
+      "NEEDS_MAINTENANCE": "Needs maintenance",
+      "UNDER_MAINTENANCE": "Under maintenance",
+      "BROKEN": "Broken",
+      "INACTIVE": "Inactive"
+    },
+    "form": {
+      "addEyebrow": "New equipment",
+      "addTitle": "Add equipment",
+      "editEyebrow": "Equipment update",
+      "editTitle": "Edit equipment"
+    },
+    "records": {
+      "eyebrow": "Equipment records",
+      "title": "Equipment list"
+    },
+    "filters": {
+      "scope": "Scope",
+      "room": "Room",
+      "condition": "Condition",
+      "allScopes": "All scopes",
+      "allRooms": "All rooms",
+      "allConditions": "All conditions"
+    },
+    "placeholders": {
+      "selectRoom": "Select a room"
+    },
+    "labels": {
+      "lastMaintenance": "Last maintenance"
+    },
+    "actions": {
+      "add": "Add equipment",
+      "saveChanges": "Save changes",
+      "requestMaintenance": "Request maintenance",
+      "viewHistory": "Maintenance history",
+      "closePanel": "Close"
+    },
+    "messages": {
+      "loading": "Loading equipment...",
+      "loadError": "Equipment could not be loaded",
+      "empty": "No equipment found.",
+      "created": "Equipment created successfully.",
+      "createError": "Equipment could not be created",
+      "updated": "Equipment updated successfully.",
+      "updateError": "Equipment could not be updated",
+      "deleted": "Equipment deleted successfully.",
+      "deactivatedInstead": "Equipment has maintenance records and was deactivated instead of deleted.",
+      "deleteError": "Equipment could not be deleted",
+      "deleteConfirm": "Delete equipment {{name}}?",
+      "noScheduledMaintenance": "Not scheduled"
+    },
+    "request": {
+      "eyebrow": "Maintenance request",
+      "title": "Report equipment issue",
+      "fields": {
+        "title": "Issue title",
+        "content": "Issue description",
+        "image": "Evidence image"
+      },
+      "imageHelp": "Optional JPG or PNG image.",
+      "submit": "Send maintenance request",
+      "submitting": "Sending request...",
+      "created": "Equipment maintenance request created successfully.",
+      "createError": "Equipment maintenance request could not be created"
+    },
+    "history": {
+      "eyebrow": "Maintenance history",
+      "title": "Completed maintenance",
+      "loading": "Loading maintenance history...",
+      "loadError": "Maintenance history could not be loaded",
+      "empty": "No completed maintenance record is available."
+    }
   },
   "buildingServiceFees": {
     "eyebrow": "Building service fees",
@@ -730,6 +933,7 @@
       "quantity": "Quantity",
       "readingDate": "Reading date",
       "request": "Request",
+      "requestedBy": "Requested by",
       "resultImage": "Result image",
       "resultNote": "Result note",
       "reply": "Reply",

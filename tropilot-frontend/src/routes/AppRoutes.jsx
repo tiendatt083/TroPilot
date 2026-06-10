@@ -9,6 +9,7 @@ import AdminBuildingCashFlowPage from '../pages/admin/AdminBuildingCashFlowPage.
 import AdminBuildingContractPage from '../pages/admin/AdminBuildingContractPage.jsx';
 import AdminBuildingDetailPage from '../pages/admin/AdminBuildingDetailPage.jsx';
 import AdminBuildingEditPage from '../pages/admin/AdminBuildingEditPage.jsx';
+import AdminBuildingEquipmentPage from '../pages/admin/AdminBuildingEquipmentPage.jsx';
 import AdminBuildingExpensePage from '../pages/admin/AdminBuildingExpensePage.jsx';
 import AdminBuildingFeedbackPage from '../pages/admin/AdminBuildingFeedbackPage.jsx';
 import AdminBuildingInvoiceComplaintPage from '../pages/admin/AdminBuildingInvoiceComplaintPage.jsx';
@@ -40,6 +41,7 @@ import AdminRoomDetailPage from '../pages/admin/AdminRoomDetailPage.jsx';
 import AdminRoomEditPage from '../pages/admin/AdminRoomEditPage.jsx';
 import AdminRoomListPage from '../pages/admin/AdminRoomListPage.jsx';
 import AdminRoomMembersPage from '../pages/admin/AdminRoomMembersPage.jsx';
+import AdminResidentListPage from '../pages/admin/AdminResidentListPage.jsx';
 import AdminTaskCreatePage from '../pages/admin/AdminTaskCreatePage.jsx';
 import AdminTaskDetailPage from '../pages/admin/AdminTaskDetailPage.jsx';
 import AdminTaskListPage from '../pages/admin/AdminTaskListPage.jsx';
@@ -50,6 +52,7 @@ import LoginPage from '../pages/auth/LoginPage.jsx';
 import ProfilePage from '../pages/ProfilePage.jsx';
 import ResidentContractPage from '../pages/resident/ResidentContractPage.jsx';
 import ResidentDashboardPage from '../pages/resident/ResidentDashboardPage.jsx';
+import ResidentEquipmentPage from '../pages/resident/ResidentEquipmentPage.jsx';
 import ResidentFeedbackPage from '../pages/resident/ResidentFeedbackPage.jsx';
 import ResidentInvoiceDetailPage from '../pages/resident/ResidentInvoiceDetailPage.jsx';
 import ResidentInvoiceListPage from '../pages/resident/ResidentInvoiceListPage.jsx';
@@ -61,6 +64,7 @@ import ResidentUtilityReadingPage from '../pages/resident/ResidentUtilityReading
 import ResidentVehiclePage from '../pages/resident/ResidentVehiclePage.jsx';
 import StaffBuildingCashFlowPage from '../pages/staff/StaffBuildingCashFlowPage.jsx';
 import StaffBuildingExpensePage from '../pages/staff/StaffBuildingExpensePage.jsx';
+import StaffBuildingEquipmentPage from '../pages/staff/StaffBuildingEquipmentPage.jsx';
 import StaffBuildingInvoicePage from '../pages/staff/StaffBuildingInvoicePage.jsx';
 import StaffBuildingListPage from '../pages/staff/StaffBuildingListPage.jsx';
 import StaffBuildingOverviewPage from '../pages/staff/StaffBuildingOverviewPage.jsx';
@@ -109,6 +113,7 @@ export default function AppRoutes() {
               <Route path="invoice-complaints" element={<AdminInvoiceComplaintPage />} />
               <Route path="users" element={<AdminUserListPage />} />
               <Route path="users/create" element={<AdminUserCreatePage />} />
+              <Route path="residents" element={<AdminResidentListPage />} />
               <Route path="members/pending" element={<AdminPendingMembersPage />} />
               <Route path="contracts" element={<AdminContractListPage />} />
               <Route path="contracts/:id" element={<AdminContractDetailPage />} />
@@ -132,6 +137,7 @@ export default function AppRoutes() {
                 <Route index element={<AdminBuildingDetailPage />} />
                 <Route path="rooms" element={<AdminBuildingRoomsPage />} />
                 <Route path="users" element={<AdminBuildingUserPage />} />
+                <Route path="equipment" element={<AdminBuildingEquipmentPage />} />
                 <Route path="contracts" element={<AdminBuildingContractPage />} />
                 <Route path="billing" element={<Navigate to="../invoices" replace />} />
                 <Route path="utility-readings" element={<AdminBuildingUtilityReadingPage />} />
@@ -178,6 +184,7 @@ export default function AppRoutes() {
               <Route path="buildings/:id" element={<StaffBuildingWorkspaceLayout />}>
                 <Route index element={<StaffBuildingOverviewPage />} />
                 <Route path="rooms" element={<StaffBuildingRoomsPage />} />
+                <Route path="equipment" element={<StaffBuildingEquipmentPage />} />
                 <Route path="utility-readings" element={<StaffBuildingUtilityReadingPage />} />
                 <Route path="invoices" element={<StaffBuildingInvoicePage />} />
                 <Route path="service-fees" element={<StaffBuildingServiceFeePage />} />
@@ -212,6 +219,7 @@ export default function AppRoutes() {
               <Route path="maintenance/create" element={<ResidentMaintenanceCreatePage />} />
               <Route path="contract" element={<ResidentContractPage />} />
               <Route path="vehicles" element={<ResidentVehiclePage />} />
+              <Route path="equipment" element={<ResidentEquipmentPage />} />
               <Route path="utility-readings" element={<ResidentUtilityReadingPage />} />
             </Route>
           </Route>

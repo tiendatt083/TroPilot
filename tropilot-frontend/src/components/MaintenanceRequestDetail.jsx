@@ -28,7 +28,7 @@ export default function MaintenanceRequestDetail({ request }) {
         </div>
         <div>
           <span>{t('tables.common.room')}</span>
-          <strong>{formatRoomLabel(request)}</strong>
+          <strong>{request.roomId ? formatRoomLabel(request) : t('equipment.scopes.BUILDING')}</strong>
         </div>
         <div>
           <span>{t('tables.common.building')}</span>
@@ -37,9 +37,15 @@ export default function MaintenanceRequestDetail({ request }) {
           </strong>
         </div>
         <div>
-          <span>{t('tables.common.headResident')}</span>
-          <strong>{request.residentHeadName}</strong>
+          <span>{t('tables.common.requestedBy')}</span>
+          <strong>{request.requestedByName || request.residentHeadName || t('common.notProvided')}</strong>
         </div>
+        {request.equipmentId && (
+          <div>
+            <span>{t('navigation.equipment')}</span>
+            <strong>{request.equipmentCode} - {request.equipmentName}</strong>
+          </div>
+        )}
         <div>
           <span>{t('tables.common.assignedStaff')}</span>
           <strong>{request.assignedToName || t('common.notAssigned')}</strong>

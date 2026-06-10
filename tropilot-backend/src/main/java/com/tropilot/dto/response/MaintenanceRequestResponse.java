@@ -20,6 +20,12 @@ public class MaintenanceRequestResponse {
     private Long residentHeadId;
     private String residentHeadName;
     private String residentHeadEmail;
+    private Long requestedById;
+    private String requestedByName;
+    private String requestedByEmail;
+    private Long equipmentId;
+    private String equipmentCode;
+    private String equipmentName;
     private String title;
     private String content;
     private String imageUrl;

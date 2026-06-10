@@ -4,6 +4,7 @@ import BuildingWorkspaceLayout from './BuildingWorkspaceLayout.jsx';
 const STAFF_BUILDING_TABS = [
   { path: '', labelKey: 'buildingWorkspace.overview', end: true },
   { path: '/rooms', labelKey: 'buildingWorkspace.rooms' },
+  { path: '/equipment', labelKey: 'buildingWorkspace.equipment' },
   { path: '/utility-readings', labelKey: 'buildingWorkspace.utilityReadings' },
   { path: '/invoices', labelKey: 'buildingWorkspace.invoices' },
   { path: '/service-fees', labelKey: 'buildingWorkspace.serviceFees' },

@@ -35,13 +35,25 @@ public class MaintenanceRequest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "room_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "room_id")
     private Room room;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "resident_head_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "resident_head_id")
     private User residentHead;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "building_id")
+    private Building building;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "equipment_id")
+    private Equipment equipment;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "requested_by_id")
+    private User requestedBy;
 
     @Column(nullable = false, length = 160)
     private String title;

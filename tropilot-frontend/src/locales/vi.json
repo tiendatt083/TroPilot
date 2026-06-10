@@ -85,12 +85,14 @@
     "staff": "Điều hướng nhân viên",
     "resident": "Điều hướng chủ hộ",
     "buildingWorkspace": "Điều hướng quản lý tòa nhà",
-    "dashboard": "Bảng điều khiển",
+    "dashboard": "Trang chủ",
     "notifications": "Thông báo",
     "activityLogs": "Nhật ký hoạt động",
     "feedbacks": "Phản hồi",
     "invoiceComplaints": "Khiếu nại hóa đơn",
+    "accounts": "Tài khoản",
     "users": "Người dùng",
+    "residents": "Cư dân",
     "pendingMembers": "Thành viên chờ duyệt",
     "contracts": "Hợp đồng",
     "tasks": "Công việc",
@@ -101,11 +103,107 @@
     "pendingPayments": "Thanh toán chờ duyệt",
     "expenses": "Chi phí",
     "vehicles": "Xe",
+    "equipment": "Thiết bị",
     "serviceFees": "Phí dịch vụ",
     "utilityReadings": "Chỉ số tiện ích",
     "members": "Thành viên",
     "contract": "Hợp đồng",
     "profile": "Thông tin cá nhân"
+  },
+  "userManagement": {
+    "eyebrow": "Tài khoản hệ thống",
+    "title": "Quản lý người dùng",
+    "filters": {
+      "searchAria": "Tìm kiếm người dùng",
+      "searchPlaceholder": "Tìm theo tên, email hoặc số điện thoại"
+    },
+    "columns": {
+      "name": "Tên người dùng",
+      "email": "Email",
+      "role": "Vai trò",
+      "status": "Trạng thái tài khoản",
+      "temporaryPassword": "Mật khẩu tạm thời",
+      "actions": "Thao tác"
+    },
+    "status": {
+      "active": "Hoạt động",
+      "locked": "Đã khóa"
+    },
+    "actions": {
+      "create": "Tạo nhân viên",
+      "lock": "Khóa",
+      "unlock": "Mở khóa",
+      "regenerate": "Tạo lại mật khẩu"
+    },
+    "confirmations": {
+      "lock": "Bạn có chắc muốn khóa tài khoản của {{name}}?",
+      "unlock": "Bạn có chắc muốn mở khóa tài khoản của {{name}}?",
+      "resetPassword": "Bạn có chắc muốn tạo lại mật khẩu tạm thời cho {{name}}?"
+    },
+    "messages": {
+      "loading": "Đang tải danh sách người dùng...",
+      "loadError": "Không thể tải danh sách người dùng",
+      "empty": "Không có người dùng nào phù hợp với tìm kiếm.",
+      "locked": "Đã khóa tài khoản của {{name}}.",
+      "unlocked": "Đã mở khóa tài khoản của {{name}}.",
+      "statusError": "Không thể cập nhật trạng thái tài khoản",
+      "passwordReset": "Mật khẩu tạm thời của {{name}}: {{password}}",
+      "passwordError": "Không thể tạo lại mật khẩu"
+    },
+    "passwordUnavailable": "Không có mật khẩu tạm thời",
+    "passwordChanged": "Người dùng đã đổi mật khẩu"
+  },
+  "residentDirectory": {
+    "eyebrow": "Quản lý cư dân",
+    "title": "Danh sách cư dân",
+    "filters": {
+      "searchAria": "Tìm kiếm cư dân",
+      "searchPlaceholder": "Tìm theo chủ hộ, thành viên, email, số điện thoại hoặc phòng",
+      "buildingAria": "Lọc cư dân theo tòa nhà",
+      "allBuildings": "Tất cả tòa nhà"
+    },
+    "columns": {
+      "id": "ID",
+      "login": "Email đăng nhập",
+      "fullName": "Họ và tên",
+      "household": "Căn hộ / Chủ hộ"
+    },
+    "actions": {
+      "create": "Tạo tài khoản chủ hộ"
+    },
+    "memberCount_one": "{{count}} thành viên liên quan",
+    "memberCount_other": "{{count}} thành viên liên quan",
+    "headResidentNote": "Chủ hộ của phòng này",
+    "membersLabel": "Thành viên trong hộ:",
+    "member": "Thành viên",
+    "messages": {
+      "loading": "Đang tải danh sách cư dân...",
+      "loadError": "Không thể tải danh sách cư dân",
+      "empty": "Không tìm thấy chủ hộ đang thuê phòng phù hợp."
+    }
+  },
+  "userCreate": {
+    "eyebrow": "Quản trị viên",
+    "title": "Tạo tài khoản",
+    "backToUsers": "Quay lại người dùng",
+    "backToResidents": "Quay lại cư dân",
+    "fields": {
+      "fullName": "Họ và tên",
+      "email": "Địa chỉ email",
+      "phone": "Số điện thoại",
+      "role": "Vai trò"
+    },
+    "roles": {
+      "staff": "Nhân viên",
+      "residentHead": "Chủ hộ"
+    },
+    "actions": {
+      "creating": "Đang tạo tài khoản...",
+      "create": "Tạo tài khoản"
+    },
+    "messages": {
+      "createError": "Không thể tạo tài khoản"
+    }
   },
   "buildingWorkspace": {
     "eyebrow": "Không gian quản lý tòa nhà",
@@ -119,7 +217,10 @@
     "createRoom": "Tạo phòng",
     "overview": "Tổng quan",
     "rooms": "Phòng",
+    "accounts": "Tài khoản",
     "users": "Người dùng",
+    "residents": "Cư dân",
+    "equipment": "Thiết bị",
     "contracts": "Hợp đồng",
     "billing": "Lập hóa đơn",
     "utilityReadings": "Chỉ số điện nước",
@@ -136,6 +237,108 @@
     "feedbacks": "Phản hồi",
     "invoiceComplaints": "Khiếu nại hóa đơn",
     "notifications": "Thông báo"
+  },
+  "equipment": {
+    "eyebrow": "Thiết bị tòa nhà",
+    "title": "Thiết bị trong tòa nhà này",
+    "residentTitle": "Thiết bị",
+    "adminDescription": "Quản lý thiết bị dùng chung của tòa nhà và thiết bị được gán riêng cho từng phòng.",
+    "staffDescription": "Xem thiết bị, lịch sử bảo trì và gửi yêu cầu xử lý sự cố thiết bị.",
+    "residentDescription": "Xem thiết bị dùng chung trong tòa nhà và thiết bị được gán cho phòng của bạn.",
+    "fields": {
+      "code": "Mã thiết bị",
+      "name": "Tên thiết bị",
+      "scope": "Phạm vi thiết bị",
+      "room": "Phòng được gán",
+      "quantity": "Số lượng",
+      "brand": "Thương hiệu",
+      "model": "Mẫu thiết bị",
+      "location": "Vị trí",
+      "addedDate": "Ngày thêm",
+      "installationDate": "Ngày lắp đặt",
+      "lastMaintenanceDate": "Ngày bảo trì gần nhất",
+      "nextMaintenanceDate": "Ngày bảo trì tiếp theo",
+      "condition": "Tình trạng",
+      "maintenanceSchedule": "Lịch bảo trì",
+      "note": "Ghi chú"
+    },
+    "scopes": {
+      "BUILDING": "Thiết bị dùng chung",
+      "ROOM": "Thiết bị riêng của phòng"
+    },
+    "conditions": {
+      "GOOD": "Hoạt động tốt",
+      "NEEDS_MAINTENANCE": "Cần bảo trì",
+      "UNDER_MAINTENANCE": "Đang bảo trì",
+      "BROKEN": "Hỏng",
+      "INACTIVE": "Ngừng sử dụng"
+    },
+    "form": {
+      "addEyebrow": "Thiết bị mới",
+      "addTitle": "Thêm thiết bị",
+      "editEyebrow": "Cập nhật thiết bị",
+      "editTitle": "Sửa thiết bị"
+    },
+    "records": {
+      "eyebrow": "Hồ sơ thiết bị",
+      "title": "Danh sách thiết bị"
+    },
+    "filters": {
+      "scope": "Phạm vi",
+      "room": "Phòng",
+      "condition": "Tình trạng",
+      "allScopes": "Tất cả phạm vi",
+      "allRooms": "Tất cả phòng",
+      "allConditions": "Tất cả tình trạng"
+    },
+    "placeholders": {
+      "selectRoom": "Chọn phòng"
+    },
+    "labels": {
+      "lastMaintenance": "Bảo trì gần nhất"
+    },
+    "actions": {
+      "add": "Thêm thiết bị",
+      "saveChanges": "Lưu thay đổi",
+      "requestMaintenance": "Yêu cầu bảo trì",
+      "viewHistory": "Lịch sử bảo trì",
+      "closePanel": "Đóng"
+    },
+    "messages": {
+      "loading": "Đang tải thiết bị...",
+      "loadError": "Không thể tải thiết bị",
+      "empty": "Không tìm thấy thiết bị.",
+      "created": "Đã tạo thiết bị thành công.",
+      "createError": "Không thể tạo thiết bị",
+      "updated": "Đã cập nhật thiết bị thành công.",
+      "updateError": "Không thể cập nhật thiết bị",
+      "deleted": "Đã xóa thiết bị thành công.",
+      "deactivatedInstead": "Thiết bị đã có lịch sử bảo trì nên được chuyển sang ngừng sử dụng thay vì xóa.",
+      "deleteError": "Không thể xóa thiết bị",
+      "deleteConfirm": "Xóa thiết bị {{name}}?",
+      "noScheduledMaintenance": "Chưa lên lịch"
+    },
+    "request": {
+      "eyebrow": "Yêu cầu bảo trì",
+      "title": "Báo sự cố thiết bị",
+      "fields": {
+        "title": "Tiêu đề sự cố",
+        "content": "Mô tả sự cố",
+        "image": "Ảnh bằng chứng"
+      },
+      "imageHelp": "Ảnh JPG hoặc PNG, không bắt buộc.",
+      "submit": "Gửi yêu cầu bảo trì",
+      "submitting": "Đang gửi yêu cầu...",
+      "created": "Đã tạo yêu cầu bảo trì thiết bị thành công.",
+      "createError": "Không thể tạo yêu cầu bảo trì thiết bị"
+    },
+    "history": {
+      "eyebrow": "Lịch sử bảo trì",
+      "title": "Các lần bảo trì đã hoàn thành",
+      "loading": "Đang tải lịch sử bảo trì...",
+      "loadError": "Không thể tải lịch sử bảo trì",
+      "empty": "Chưa có lần bảo trì hoàn thành nào."
+    }
   },
   "buildingServiceFees": {
     "eyebrow": "Phí dịch vụ của tòa nhà",
@@ -730,6 +933,7 @@
       "quantity": "Số lượng",
       "readingDate": "Ngày ghi chỉ số",
       "request": "Yêu cầu",
+      "requestedBy": "Người yêu cầu",
       "resultImage": "Ảnh kết quả",
       "resultNote": "Ghi chú kết quả",
       "reply": "Phản hồi",

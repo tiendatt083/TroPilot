@@ -1,20 +1,38 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import * as adminUserApi from '../../api/adminUserApi.js';
 import PageHeader from '../../components/PageHeader.jsx';
 
-const initialForm = {
-  fullName: '',
-  email: '',
-  phone: '',
-  role: 'STAFF'
-};
+const ALLOWED_ROLES = new Set(['STAFF', 'RESIDENT_HEAD']);
+const ALLOWED_RETURN_PATHS = new Set(['/admin/users', '/admin/residents']);
+
+function createInitialForm(role) {
+  return {
+    fullName: '',
+    email: '',
+    phone: '',
+    role: ALLOWED_ROLES.has(role) ? role : 'STAFF'
+  };
+}
 
 export default function AdminUserCreatePage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
-  const [form, setForm] = useState(initialForm);
+  const [searchParams] = useSearchParams();
+  const requestedRole = searchParams.get('role');
+  const requestedReturnPath = searchParams.get('returnTo');
+  const roleLocked = ALLOWED_ROLES.has(requestedRole);
+  const returnPath = ALLOWED_RETURN_PATHS.has(requestedReturnPath)
+    ? requestedReturnPath
+    : '/admin/users';
+  const [form, setForm] = useState(() => createInitialForm(requestedRole));
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setForm(createInitialForm(requestedRole));
+  }, [requestedRole]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -28,9 +46,9 @@ export default function AdminUserCreatePage() {
 
     try {
       await adminUserApi.createUser(form);
-      navigate('/admin/users', { replace: true });
+      navigate(returnPath, { replace: true });
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'User could not be created');
+      setError(apiError.response?.data?.message || t('userCreate.messages.createError'));
     } finally {
       setLoading(false);
     }
@@ -39,16 +57,21 @@ export default function AdminUserCreatePage() {
   return (
     <section className="content-section narrow-section">
       <div className="page-title-row">
-        <PageHeader eyebrow="Administrator" title="Create user" />
-        <Link className="secondary-link" to="/admin/users">
-          Back to users
+        <PageHeader
+          eyebrow={t('userCreate.eyebrow')}
+          title={t('userCreate.title')}
+        />
+        <Link className="secondary-link" to={returnPath}>
+          {returnPath === '/admin/residents'
+            ? t('userCreate.backToResidents')
+            : t('userCreate.backToUsers')}
         </Link>
       </div>
 
       {error && <div className="alert error-alert">{error}</div>}
 
       <form className="panel-form" onSubmit={handleSubmit}>
-        <label htmlFor="fullName">Full name</label>
+        <label htmlFor="fullName">{t('userCreate.fields.fullName')}</label>
         <input
           id="fullName"
           name="fullName"
@@ -58,7 +81,7 @@ export default function AdminUserCreatePage() {
           required
         />
 
-        <label htmlFor="email">Email address</label>
+        <label htmlFor="email">{t('userCreate.fields.email')}</label>
         <input
           id="email"
           name="email"
@@ -69,7 +92,7 @@ export default function AdminUserCreatePage() {
           required
         />
 
-        <label htmlFor="phone">Phone number</label>
+        <label htmlFor="phone">{t('userCreate.fields.phone')}</label>
         <input
           id="phone"
           name="phone"
@@ -78,14 +101,20 @@ export default function AdminUserCreatePage() {
           maxLength={30}
         />
 
-        <label htmlFor="role">Role</label>
-        <select id="role" name="role" value={form.role} onChange={handleChange}>
-          <option value="STAFF">Staff</option>
-          <option value="RESIDENT_HEAD">Head resident</option>
+        <label htmlFor="role">{t('userCreate.fields.role')}</label>
+        <select
+          id="role"
+          name="role"
+          value={form.role}
+          onChange={handleChange}
+          disabled={roleLocked}
+        >
+          <option value="STAFF">{t('userCreate.roles.staff')}</option>
+          <option value="RESIDENT_HEAD">{t('userCreate.roles.residentHead')}</option>
         </select>
 
         <button type="submit" disabled={loading}>
-          {loading ? 'Creating user...' : 'Create user'}
+          {loading ? t('userCreate.actions.creating') : t('userCreate.actions.create')}
         </button>
       </form>
     </section>

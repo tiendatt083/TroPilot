@@ -171,7 +171,9 @@ public class ExpenseServiceImpl implements ExpenseService {
         MaintenanceRequest maintenanceRequest = maintenanceRequestRepository.findById(maintenanceRequestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Maintenance request not found"));
 
-        if (room != null && !maintenanceRequest.getRoom().getId().equals(room.getId())) {
+        if (room != null
+                && (maintenanceRequest.getRoom() == null
+                || !maintenanceRequest.getRoom().getId().equals(room.getId()))) {
             throw new BadRequestException("Expense room must match the linked maintenance request room");
         }
 

@@ -4,8 +4,8 @@ import { resolveFileUrl } from '../utils/fileUrl.js';
 import { formatDateTime, formatEnumLabel } from '../utils/i18nFormat.js';
 import { formatRoomLabel } from '../utils/roomDisplay.js';
 
-function roomText(request) {
-  return formatRoomLabel(request);
+function roomText(request, t) {
+  return request.roomId ? formatRoomLabel(request) : t('equipment.scopes.BUILDING');
 }
 
 export default function MaintenanceRequestTable({ requests, renderActions, onSelect, selectedId }) {
@@ -19,7 +19,7 @@ export default function MaintenanceRequestTable({ requests, renderActions, onSel
           <tr>
             <th>{t('tables.common.request')}</th>
             <th>{t('tables.common.room')}</th>
-            <th>{t('tables.common.headResident')}</th>
+            <th>{t('tables.common.requestedBy')}</th>
             <th>{t('tables.common.assignedStaff')}</th>
             <th>{t('tables.common.status')}</th>
             <th>{t('tables.common.images')}</th>
@@ -37,14 +37,19 @@ export default function MaintenanceRequestTable({ requests, renderActions, onSel
               <td>
                 <strong>{request.title}</strong>
                 <span className="table-subtext">{request.content}</span>
+                {request.equipmentId && (
+                  <span className="table-subtext">
+                    {t('navigation.equipment')}: {request.equipmentCode} - {request.equipmentName}
+                  </span>
+                )}
               </td>
               <td>
-                <strong>{roomText(request)}</strong>
+                <strong>{roomText(request, t)}</strong>
                 <span className="table-subtext">{request.buildingCode}</span>
               </td>
               <td>
-                <strong>{request.residentHeadName}</strong>
-                <span className="table-subtext">{request.residentHeadEmail}</span>
+                <strong>{request.requestedByName || request.residentHeadName || t('common.notProvided')}</strong>
+                <span className="table-subtext">{request.requestedByEmail || request.residentHeadEmail}</span>
               </td>
               <td>
                 {request.assignedToName ? (

@@ -16,6 +16,42 @@ public class SchemaMaintenanceRunner implements CommandLineRunner {
     @Override
     public void run(String... args) {
         normalizeNotificationTargetTypeColumn();
+        allowBuildingEquipmentMaintenanceRequests();
+    }
+
+    private void allowBuildingEquipmentMaintenanceRequests() {
+        if (!tableExists("maintenance_requests")) {
+            return;
+        }
+
+        makeColumnNullable("maintenance_requests", "room_id");
+        makeColumnNullable("maintenance_requests", "resident_head_id");
+    }
+
+    private void makeColumnNullable(String tableName, String columnName) {
+        if (!columnExists(tableName, columnName) || columnIsNullable(tableName, columnName)) {
+            return;
+        }
+
+        String columnType = jdbcTemplate.queryForObject(
+                """
+                        select column_type
+                        from information_schema.columns
+                        where table_schema = database()
+                          and table_name = ?
+                          and column_name = ?
+                        """,
+                String.class,
+                tableName,
+                columnName
+        );
+
+        if (columnType != null && columnType.matches("[A-Za-z0-9(), ]+")) {
+            jdbcTemplate.execute(
+                    "ALTER TABLE " + tableName + " MODIFY " + columnName + " " + columnType + " NULL"
+            );
+            log.info("Column {}.{} now accepts null values.", tableName, columnName);
+        }
     }
 
     private void normalizeNotificationTargetTypeColumn() {
@@ -57,6 +93,22 @@ public class SchemaMaintenanceRunner implements CommandLineRunner {
                 columnName
         );
         return count != null && count > 0;
+    }
+
+    private boolean columnIsNullable(String tableName, String columnName) {
+        String nullable = jdbcTemplate.queryForObject(
+                """
+                        select is_nullable
+                        from information_schema.columns
+                        where table_schema = database()
+                          and table_name = ?
+                          and column_name = ?
+                        """,
+                String.class,
+                tableName,
+                columnName
+        );
+        return "YES".equalsIgnoreCase(nullable);
     }
 
     private boolean notificationTargetTypeColumnNeedsNormalization() {

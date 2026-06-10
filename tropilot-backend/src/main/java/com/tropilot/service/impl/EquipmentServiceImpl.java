@@ -1,0 +1,298 @@
+package com.tropilot.service.impl;
+
+import com.tropilot.dto.request.EquipmentUpsertRequest;
+import com.tropilot.dto.response.EquipmentDeleteResponse;
+import com.tropilot.dto.response.EquipmentMaintenanceHistoryResponse;
+import com.tropilot.dto.response.EquipmentResponse;
+import com.tropilot.entity.Building;
+import com.tropilot.entity.Equipment;
+import com.tropilot.entity.Room;
+import com.tropilot.entity.RoomAssignment;
+import com.tropilot.enums.EquipmentCondition;
+import com.tropilot.enums.EquipmentScope;
+import com.tropilot.enums.RoomAssignmentStatus;
+import com.tropilot.exception.BadRequestException;
+import com.tropilot.exception.ResourceNotFoundException;
+import com.tropilot.mapper.EquipmentMapper;
+import com.tropilot.repository.BuildingRepository;
+import com.tropilot.repository.EquipmentMaintenanceHistoryRepository;
+import com.tropilot.repository.EquipmentRepository;
+import com.tropilot.repository.MaintenanceRequestRepository;
+import com.tropilot.repository.RoomAssignmentRepository;
+import com.tropilot.repository.RoomRepository;
+import com.tropilot.service.EquipmentService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+
+@Service
+@RequiredArgsConstructor
+public class EquipmentServiceImpl implements EquipmentService {
+
+    private final EquipmentRepository equipmentRepository;
+    private final EquipmentMaintenanceHistoryRepository equipmentMaintenanceHistoryRepository;
+    private final MaintenanceRequestRepository maintenanceRequestRepository;
+    private final BuildingRepository buildingRepository;
+    private final RoomRepository roomRepository;
+    private final RoomAssignmentRepository roomAssignmentRepository;
+    private final EquipmentMapper equipmentMapper;
+
+    @Override
+    @Transactional
+    public EquipmentResponse createEquipment(Long buildingId, EquipmentUpsertRequest request) {
+        Building building = findBuilding(buildingId);
+        String equipmentCode = normalizeCode(request.getEquipmentCode());
+
+        if (equipmentRepository.existsByBuilding_IdAndEquipmentCode(buildingId, equipmentCode)) {
+            throw new BadRequestException("Equipment code is already in use in this building");
+        }
+
+        Equipment equipment = Equipment.builder()
+                .building(building)
+                .build();
+        applyValues(equipment, request, equipmentCode);
+
+        return equipmentMapper.toResponse(equipmentRepository.save(equipment));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<EquipmentResponse> getAdminBuildingEquipment(
+            Long buildingId,
+            String scope,
+            Long roomId,
+            String condition
+    ) {
+        findBuilding(buildingId);
+        return filterEquipment(
+                equipmentRepository.findByBuilding_IdOrderByScopeAscNameAsc(buildingId),
+                scope,
+                roomId,
+                condition
+        );
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<EquipmentResponse> getStaffBuildingEquipment(
+            Long buildingId,
+            String scope,
+            Long roomId,
+            String condition
+    ) {
+        findBuilding(buildingId);
+        return filterEquipment(
+                equipmentRepository.findByBuilding_IdAndConditionNotOrderByScopeAscNameAsc(
+                        buildingId,
+                        EquipmentCondition.INACTIVE
+                ),
+                scope,
+                roomId,
+                condition
+        );
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<EquipmentResponse> getResidentEquipment(Long residentHeadId) {
+        RoomAssignment assignment = roomAssignmentRepository
+                .findByResidentHeadIdAndStatus(residentHeadId, RoomAssignmentStatus.ACTIVE)
+                .orElseThrow(() -> new BadRequestException("Head Resident must have an active room"));
+
+        Long buildingId = assignment.getRoom().getBuilding().getId();
+        Long roomId = assignment.getRoom().getId();
+
+        return equipmentRepository
+                .findByBuilding_IdAndConditionNotOrderByScopeAscNameAsc(
+                        buildingId,
+                        EquipmentCondition.INACTIVE
+                )
+                .stream()
+                .filter(equipment -> equipment.getScope() == EquipmentScope.BUILDING
+                        || (equipment.getRoom() != null && Objects.equals(equipment.getRoom().getId(), roomId)))
+                .map(equipmentMapper::toResponse)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public EquipmentResponse getEquipment(Long id) {
+        return equipmentMapper.toResponse(findEquipment(id));
+    }
+
+    @Override
+    @Transactional
+    public EquipmentResponse updateEquipment(Long buildingId, Long id, EquipmentUpsertRequest request) {
+        Equipment equipment = findBuildingEquipment(buildingId, id);
+        String equipmentCode = normalizeCode(request.getEquipmentCode());
+
+        equipmentRepository.findByBuilding_IdAndEquipmentCode(buildingId, equipmentCode)
+                .filter(existing -> !Objects.equals(existing.getId(), id))
+                .ifPresent(existing -> {
+                    throw new BadRequestException("Equipment code is already in use in this building");
+                });
+
+        applyValues(equipment, request, equipmentCode);
+        return equipmentMapper.toResponse(equipmentRepository.save(equipment));
+    }
+
+    @Override
+    @Transactional
+    public EquipmentDeleteResponse deleteEquipment(Long buildingId, Long id) {
+        Equipment equipment = findBuildingEquipment(buildingId, id);
+
+        if (maintenanceRequestRepository.existsByEquipment_Id(id)) {
+            equipment.setCondition(EquipmentCondition.INACTIVE);
+            equipmentRepository.save(equipment);
+
+            return EquipmentDeleteResponse.builder()
+                    .id(id)
+                    .deleted(false)
+                    .deactivated(true)
+                    .build();
+        }
+
+        equipmentRepository.delete(equipment);
+        return EquipmentDeleteResponse.builder()
+                .id(id)
+                .deleted(true)
+                .deactivated(false)
+                .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<EquipmentMaintenanceHistoryResponse> getMaintenanceHistory(Long equipmentId) {
+        findEquipment(equipmentId);
+        return equipmentMaintenanceHistoryRepository
+                .findByEquipment_IdOrderByMaintenanceDateDescCreatedAtDesc(equipmentId)
+                .stream()
+                .map(equipmentMapper::toHistoryResponse)
+                .toList();
+    }
+
+    private List<EquipmentResponse> filterEquipment(
+            List<Equipment> equipmentList,
+            String scopeValue,
+            Long roomId,
+            String conditionValue
+    ) {
+        EquipmentScope scope = parseOptionalScope(scopeValue);
+        EquipmentCondition condition = parseOptionalCondition(conditionValue);
+
+        return equipmentList.stream()
+                .filter(equipment -> scope == null || equipment.getScope() == scope)
+                .filter(equipment -> roomId == null
+                        || (equipment.getRoom() != null && Objects.equals(equipment.getRoom().getId(), roomId)))
+                .filter(equipment -> condition == null || equipment.getCondition() == condition)
+                .map(equipmentMapper::toResponse)
+                .toList();
+    }
+
+    private void applyValues(Equipment equipment, EquipmentUpsertRequest request, String equipmentCode) {
+        EquipmentScope scope = parseScope(request.getScope());
+        EquipmentCondition condition = parseCondition(request.getCondition());
+        Room room = resolveRoom(equipment.getBuilding(), scope, request.getRoomId());
+
+        validateMaintenanceDates(request.getLastMaintenanceDate(), request.getNextMaintenanceDate());
+
+        equipment.setRoom(room);
+        equipment.setEquipmentCode(equipmentCode);
+        equipment.setName(request.getName().trim());
+        equipment.setScope(scope);
+        equipment.setQuantity(request.getQuantity());
+        equipment.setBrand(normalizeOptionalText(request.getBrand()));
+        equipment.setModel(normalizeOptionalText(request.getModel()));
+        equipment.setLocationDescription(normalizeOptionalText(request.getLocationDescription()));
+        equipment.setAddedDate(request.getAddedDate() == null ? LocalDate.now() : request.getAddedDate());
+        equipment.setInstallationDate(request.getInstallationDate());
+        equipment.setLastMaintenanceDate(request.getLastMaintenanceDate());
+        equipment.setNextMaintenanceDate(request.getNextMaintenanceDate());
+        equipment.setCondition(condition);
+        equipment.setNote(normalizeOptionalText(request.getNote()));
+    }
+
+    private Room resolveRoom(Building building, EquipmentScope scope, Long roomId) {
+        if (scope == EquipmentScope.BUILDING) {
+            if (roomId != null) {
+                throw new BadRequestException("Building equipment must not be assigned to a room");
+            }
+            return null;
+        }
+
+        if (roomId == null) {
+            throw new BadRequestException("Room equipment requires a room");
+        }
+
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new ResourceNotFoundException("Room not found"));
+        if (!Objects.equals(room.getBuilding().getId(), building.getId())) {
+            throw new BadRequestException("Equipment room must belong to the selected building");
+        }
+        return room;
+    }
+
+    private void validateMaintenanceDates(LocalDate lastMaintenanceDate, LocalDate nextMaintenanceDate) {
+        if (lastMaintenanceDate != null
+                && nextMaintenanceDate != null
+                && nextMaintenanceDate.isBefore(lastMaintenanceDate)) {
+            throw new BadRequestException("Next maintenance date must not be before the last maintenance date");
+        }
+    }
+
+    private Equipment findBuildingEquipment(Long buildingId, Long id) {
+        findBuilding(buildingId);
+        Equipment equipment = findEquipment(id);
+        if (!Objects.equals(equipment.getBuilding().getId(), buildingId)) {
+            throw new BadRequestException("Equipment does not belong to the selected building");
+        }
+        return equipment;
+    }
+
+    private Equipment findEquipment(Long id) {
+        return equipmentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Equipment not found"));
+    }
+
+    private Building findBuilding(Long buildingId) {
+        return buildingRepository.findById(buildingId)
+                .orElseThrow(() -> new ResourceNotFoundException("Building not found"));
+    }
+
+    private EquipmentScope parseScope(String value) {
+        try {
+            return EquipmentScope.valueOf(value.trim().toUpperCase(Locale.ROOT));
+        } catch (RuntimeException exception) {
+            throw new BadRequestException("Equipment scope is invalid");
+        }
+    }
+
+    private EquipmentScope parseOptionalScope(String value) {
+        return value == null || value.isBlank() ? null : parseScope(value);
+    }
+
+    private EquipmentCondition parseCondition(String value) {
+        try {
+            return EquipmentCondition.valueOf(value.trim().toUpperCase(Locale.ROOT));
+        } catch (RuntimeException exception) {
+            throw new BadRequestException("Equipment condition is invalid");
+        }
+    }
+
+    private EquipmentCondition parseOptionalCondition(String value) {
+        return value == null || value.isBlank() ? null : parseCondition(value);
+    }
+
+    private String normalizeCode(String value) {
+        return value.trim().toUpperCase(Locale.ROOT);
+    }
+
+    private String normalizeOptionalText(String value) {
+        return value == null || value.isBlank() ? null : value.trim();
+    }
+}
