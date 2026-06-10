@@ -156,6 +156,7 @@ export default function EquipmentForm({
               id="equipmentBuilding"
               name="buildingId"
               value={values.buildingId}
+              disabled={Boolean(equipment)}
               onChange={handleChange}
               required
             >

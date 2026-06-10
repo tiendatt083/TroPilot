@@ -243,15 +243,21 @@
   "equipment": {
     "eyebrow": "Building equipment",
     "title": "Equipment in this building",
+    "globalEyebrow": "Equipment management",
+    "globalTitle": "Equipment",
     "residentTitle": "Equipment",
+    "adminGlobalDescription": "Manage shared equipment and room equipment across all buildings.",
     "adminDescription": "Manage shared building equipment and equipment assigned to individual rooms.",
     "staffDescription": "View building equipment, review maintenance history, and report equipment issues.",
     "residentDescription": "View shared equipment in your building and equipment assigned to your room.",
     "fields": {
       "code": "Equipment code",
       "name": "Equipment name",
+      "building": "Building",
+      "ownership": "Ownership setup",
       "scope": "Equipment scope",
       "room": "Assigned room",
+      "assignedTo": "Assigned to",
       "quantity": "Quantity",
       "brand": "Brand",
       "model": "Model",
@@ -260,6 +266,7 @@
       "installationDate": "Installation date",
       "lastMaintenanceDate": "Last maintenance date",
       "nextMaintenanceDate": "Next maintenance date",
+      "maintenanceCycleDays": "Maintenance cycle (days)",
       "condition": "Condition",
       "maintenanceSchedule": "Maintenance schedule",
       "note": "Note"
@@ -269,7 +276,7 @@
       "ROOM": "Room equipment"
     },
     "conditions": {
-      "GOOD": "Good",
+      "GOOD": "Active",
       "NEEDS_MAINTENANCE": "Needs maintenance",
       "UNDER_MAINTENANCE": "Under maintenance",
       "BROKEN": "Broken",
@@ -283,24 +290,38 @@
     },
     "records": {
       "eyebrow": "Equipment records",
-      "title": "Equipment list"
+      "title": "Equipment list",
+      "sharedTitle": "Shared equipment",
+      "roomTitle": "Room equipment"
     },
     "filters": {
+      "building": "Building",
       "scope": "Scope",
       "room": "Room",
       "condition": "Condition",
+      "allBuildings": "All buildings",
       "allScopes": "All scopes",
       "allRooms": "All rooms",
       "allConditions": "All conditions"
     },
     "placeholders": {
-      "selectRoom": "Select a room"
+      "selectBuilding": "Select a building",
+      "selectRoom": "Select a room",
+      "name": "Example: Main lobby camera, elevator A",
+      "location": "Example: Floor 1 - Main lobby, basement B1",
+      "maintenanceCycleDays": "Example: 30, 90, 180"
+    },
+    "help": {
+      "autoCode": "Leave the equipment code empty. The system will generate a code by building or room.",
+      "buildingScope": "This equipment is managed as shared building equipment and is not assigned to a specific room.",
+      "roomScope": "This equipment belongs to or is installed inside a specific room."
     },
     "labels": {
       "lastMaintenance": "Last maintenance"
     },
     "actions": {
       "add": "Add equipment",
+      "create": "Create",
       "saveChanges": "Save changes",
       "requestMaintenance": "Request maintenance",
       "viewHistory": "Maintenance history",
@@ -318,6 +339,7 @@
       "deactivatedInstead": "Equipment has maintenance records and was deactivated instead of deleted.",
       "deleteError": "Equipment could not be deleted",
       "deleteConfirm": "Delete equipment {{name}}?",
+      "buildingRequired": "Please select a building for this equipment.",
       "noScheduledMaintenance": "Not scheduled"
     },
     "request": {

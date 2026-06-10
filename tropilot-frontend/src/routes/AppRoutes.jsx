@@ -31,6 +31,7 @@ import AdminActivityLogPage from '../pages/admin/AdminActivityLogPage.jsx';
 import AdminContractDetailPage from '../pages/admin/AdminContractDetailPage.jsx';
 import AdminContractListPage from '../pages/admin/AdminContractListPage.jsx';
 import AdminDashboardPage from '../pages/admin/AdminDashboardPage.jsx';
+import AdminEquipmentPage from '../pages/admin/AdminEquipmentPage.jsx';
 import AdminFeedbackPage from '../pages/admin/AdminFeedbackPage.jsx';
 import AdminInvoiceComplaintPage from '../pages/admin/AdminInvoiceComplaintPage.jsx';
 import AdminMaintenancePage from '../pages/admin/AdminMaintenancePage.jsx';
@@ -125,6 +126,7 @@ export default function AppRoutes() {
               <Route path="tasks/create" element={<AdminTaskCreatePage />} />
               <Route path="tasks/:id" element={<AdminTaskDetailPage />} />
               <Route path="maintenance" element={<AdminMaintenancePage />} />
+              <Route path="equipment" element={<AdminEquipmentPage />} />
               <Route path="vehicles" element={<Navigate to="/admin/buildings" replace />} />
               <Route path="vehicles/pending" element={<Navigate to="/admin/buildings" replace />} />
               <Route path="service-fees" element={<Navigate to="/admin/buildings" replace />} />

@@ -243,15 +243,21 @@
   "equipment": {
     "eyebrow": "Thiết bị tòa nhà",
     "title": "Thiết bị trong tòa nhà này",
+    "globalEyebrow": "Quản lý thiết bị",
+    "globalTitle": "Thiết bị",
     "residentTitle": "Thiết bị",
+    "adminGlobalDescription": "Quản lý thiết bị dùng chung và thiết bị riêng của từng phòng trong toàn bộ hệ thống.",
     "adminDescription": "Quản lý thiết bị dùng chung của tòa nhà và thiết bị được gán riêng cho từng phòng.",
     "staffDescription": "Xem thiết bị, lịch sử bảo trì và gửi yêu cầu xử lý sự cố thiết bị.",
     "residentDescription": "Xem thiết bị dùng chung trong tòa nhà và thiết bị được gán cho phòng của bạn.",
     "fields": {
       "code": "Mã thiết bị",
       "name": "Tên thiết bị",
+      "building": "Tòa nhà",
+      "ownership": "Cấu hình sở hữu",
       "scope": "Phạm vi thiết bị",
       "room": "Phòng được gán",
+      "assignedTo": "Gán cho",
       "quantity": "Số lượng",
       "brand": "Thương hiệu",
       "model": "Mẫu thiết bị",
@@ -260,6 +266,7 @@
       "installationDate": "Ngày lắp đặt",
       "lastMaintenanceDate": "Ngày bảo trì gần nhất",
       "nextMaintenanceDate": "Ngày bảo trì tiếp theo",
+      "maintenanceCycleDays": "Chu kỳ bảo trì (ngày)",
       "condition": "Tình trạng",
       "maintenanceSchedule": "Lịch bảo trì",
       "note": "Ghi chú"
@@ -269,11 +276,11 @@
       "ROOM": "Thiết bị riêng của phòng"
     },
     "conditions": {
-      "GOOD": "Hoạt động tốt",
+      "GOOD": "Hoạt động",
       "NEEDS_MAINTENANCE": "Cần bảo trì",
       "UNDER_MAINTENANCE": "Đang bảo trì",
       "BROKEN": "Hỏng",
-      "INACTIVE": "Ngừng sử dụng"
+      "INACTIVE": "Không hoạt động"
     },
     "form": {
       "addEyebrow": "Thiết bị mới",
@@ -283,24 +290,38 @@
     },
     "records": {
       "eyebrow": "Hồ sơ thiết bị",
-      "title": "Danh sách thiết bị"
+      "title": "Danh sách thiết bị",
+      "sharedTitle": "Thiết bị dùng chung",
+      "roomTitle": "Thiết bị trong phòng"
     },
     "filters": {
+      "building": "Tòa nhà",
       "scope": "Phạm vi",
       "room": "Phòng",
       "condition": "Tình trạng",
+      "allBuildings": "Tất cả tòa nhà",
       "allScopes": "Tất cả phạm vi",
       "allRooms": "Tất cả phòng",
       "allConditions": "Tất cả tình trạng"
     },
     "placeholders": {
-      "selectRoom": "Chọn phòng"
+      "selectBuilding": "Chọn tòa nhà",
+      "selectRoom": "Chọn phòng",
+      "name": "Ví dụ: Camera sảnh chính, thang máy A",
+      "location": "Ví dụ: Tầng 1 - Sảnh chính, tầng hầm B1",
+      "maintenanceCycleDays": "Ví dụ: 30, 90, 180"
+    },
+    "help": {
+      "autoCode": "Bỏ trống mã thiết bị. Hệ thống sẽ tự tạo mã theo tòa nhà hoặc phòng.",
+      "buildingScope": "Thiết bị thuộc quyền quản lý chung của tòa nhà, không gắn với phòng cụ thể.",
+      "roomScope": "Thiết bị thuộc sở hữu hoặc lắp đặt riêng trong phòng."
     },
     "labels": {
       "lastMaintenance": "Bảo trì gần nhất"
     },
     "actions": {
       "add": "Thêm thiết bị",
+      "create": "Tạo mới",
       "saveChanges": "Lưu thay đổi",
       "requestMaintenance": "Yêu cầu bảo trì",
       "viewHistory": "Lịch sử bảo trì",
@@ -318,6 +339,7 @@
       "deactivatedInstead": "Thiết bị đã có lịch sử bảo trì nên được chuyển sang ngừng sử dụng thay vì xóa.",
       "deleteError": "Không thể xóa thiết bị",
       "deleteConfirm": "Xóa thiết bị {{name}}?",
+      "buildingRequired": "Vui lòng chọn tòa nhà cho thiết bị.",
       "noScheduledMaintenance": "Chưa lên lịch"
     },
     "request": {

@@ -17,12 +17,9 @@ const EMPTY_FILTERS = {
   condition: ''
 };
 
-function toEquipmentPayload(payload) {
+function stripFormOnlyFields(payload) {
   const { buildingId, ...equipmentPayload } = payload;
-  return {
-    buildingId,
-    equipmentPayload
-  };
+  return equipmentPayload;
 }
 
 export default function AdminEquipmentPage() {
@@ -47,39 +44,37 @@ export default function AdminEquipmentPage() {
       return [];
     }
 
-    return rooms.filter((room) => String(room.buildingId) === filters.buildingId);
-  }, [rooms, filters.buildingId]);
+    return rooms.filter((room) => !room.buildingId || String(room.buildingId) === filters.buildingId);
+  }, [filters.buildingId, rooms]);
 
   const sharedEquipment = equipment.filter((item) => item.scope === 'BUILDING');
   const roomEquipment = equipment.filter((item) => item.scope === 'ROOM');
 
-  const loadEquipment = async (activeFilters = filters) => {
+  const loadData = async (activeFilters = filters) => {
     setError('');
 
     try {
-      const response = await equipmentApi.getAdminEquipment(activeFilters);
-      setEquipment(response.data);
+      const [equipmentResponse, buildingResponse, roomResponse] = await Promise.all([
+        equipmentApi.getAdminEquipment(activeFilters),
+        buildingApi.getAdminBuildings(''),
+        roomApi.getAdminRooms({})
+      ]);
+
+      setEquipment(equipmentResponse.data);
+      setBuildings(buildingResponse.data);
+      setRooms(roomResponse.data);
     } catch (apiError) {
       setError(apiError.response?.data?.message || t('equipment.messages.loadError'));
     }
   };
 
-  const loadReferenceData = async () => {
-    const [buildingResponse, roomResponse] = await Promise.all([
-      buildingApi.getAdminBuildings(''),
-      roomApi.getAdminRooms({})
-    ]);
-    setBuildings(buildingResponse.data);
-    setRooms(roomResponse.data);
-  };
-
   useEffect(() => {
-    setLoading(true);
-    Promise.all([loadReferenceData(), loadEquipment(EMPTY_FILTERS)]).finally(() => setLoading(false));
+    loadData(EMPTY_FILTERS).finally(() => setLoading(false));
   }, []);
 
   const handleFilterChange = (event) => {
     const { name, value } = event.target;
+
     setFilters((current) => ({
       ...current,
       [name]: value,
@@ -91,22 +86,21 @@ export default function AdminEquipmentPage() {
   const handleApplyFilters = async (event) => {
     event.preventDefault();
     setLoading(true);
-    await loadEquipment(filters);
+    await loadData(filters);
     setLoading(false);
   };
 
   const handleClearFilters = async () => {
     setFilters(EMPTY_FILTERS);
     setLoading(true);
-    await loadEquipment(EMPTY_FILTERS);
+    await loadData(EMPTY_FILTERS);
     setLoading(false);
   };
 
   const handleSave = async (payload) => {
-    const { buildingId, equipmentPayload } = toEquipmentPayload(payload);
-    const targetBuildingId = editingEquipment?.buildingId || buildingId;
+    const buildingId = editingEquipment?.buildingId || payload.buildingId;
 
-    if (!targetBuildingId) {
+    if (!buildingId) {
       setError(t('equipment.messages.buildingRequired'));
       return;
     }
@@ -116,16 +110,18 @@ export default function AdminEquipmentPage() {
     setError('');
 
     try {
+      const equipmentPayload = stripFormOnlyFields(payload);
+
       if (editingEquipment) {
-        await equipmentApi.updateAdminEquipment(targetBuildingId, editingEquipment.id, equipmentPayload);
+        await equipmentApi.updateAdminEquipment(buildingId, editingEquipment.id, equipmentPayload);
         setMessage(t('equipment.messages.updated'));
       } else {
-        await equipmentApi.createAdminEquipment(targetBuildingId, equipmentPayload);
+        await equipmentApi.createAdminEquipment(buildingId, equipmentPayload);
         setMessage(t('equipment.messages.created'));
       }
 
       setEditingEquipment(null);
-      await loadEquipment(filters);
+      await loadData(filters);
     } catch (apiError) {
       setError(
         apiError.response?.data?.message
@@ -152,7 +148,7 @@ export default function AdminEquipmentPage() {
           ? t('equipment.messages.deactivatedInstead')
           : t('equipment.messages.deleted')
       );
-      await loadEquipment(filters);
+      await loadData(filters);
     } catch (apiError) {
       setError(apiError.response?.data?.message || t('equipment.messages.deleteError'));
     } finally {
@@ -190,7 +186,7 @@ export default function AdminEquipmentPage() {
       await equipmentApi.requestAdminEquipmentMaintenance(panel.equipment.id, payload);
       setMessage(t('equipment.request.created'));
       setPanel({ type: '', equipment: null });
-      await loadEquipment(filters);
+      await loadData(filters);
       return true;
     } catch (apiError) {
       setError(apiError.response?.data?.message || t('equipment.request.createError'));
@@ -241,8 +237,8 @@ export default function AdminEquipmentPage() {
   );
 
   return (
-    <section className="content-section equipment-page">
-      <PageHeader eyebrow={t('role.admin')} title={t('equipment.globalTitle')} />
+    <div className="equipment-page">
+      <PageHeader eyebrow={t('equipment.globalEyebrow')} title={t('equipment.globalTitle')} />
       <p className="page-support-text">{t('equipment.adminGlobalDescription')}</p>
 
       {message && <div className="alert success-alert">{message}</div>}
@@ -264,11 +260,9 @@ export default function AdminEquipmentPage() {
       </section>
 
       <section className="building-section">
-        <div className="building-section-header">
-          <PageHeader eyebrow={t('equipment.records.eyebrow')} title={t('equipment.records.allTitle')} />
-        </div>
+        <PageHeader eyebrow={t('equipment.records.eyebrow')} title={t('equipment.records.title')} />
 
-        <form className="equipment-filter-row" onSubmit={handleApplyFilters}>
+        <form className="equipment-filter-row admin-equipment-filter-row" onSubmit={handleApplyFilters}>
           <div>
             <label htmlFor="equipmentBuildingFilter">{t('equipment.filters.building')}</label>
             <select
@@ -365,6 +359,6 @@ export default function AdminEquipmentPage() {
         onClose={() => setPanel({ type: '', equipment: null })}
         onSubmit={handleMaintenanceRequest}
       />
-    </section>
+    </div>
   );
 }

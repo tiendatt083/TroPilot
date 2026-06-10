@@ -1737,6 +1737,21 @@ a:focus-visible {
   max-width: 980px;
 }
 
+.compact-equipment-form .field-label {
+  display: block;
+  margin-bottom: 0.45rem;
+  color: var(--color-text);
+  font-weight: 800;
+}
+
+.compact-equipment-form small {
+  display: block;
+  margin-top: 0.45rem;
+  color: var(--color-text-muted);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
 .equipment-filter-row {
   display: grid;
   grid-template-columns: minmax(180px, 0.75fr) minmax(220px, 1fr) minmax(190px, 0.8fr) auto auto;
@@ -1757,6 +1772,22 @@ a:focus-visible {
   margin-bottom: 0.4rem;
   color: var(--color-text);
   font-weight: 750;
+}
+
+.admin-equipment-filter-row {
+  grid-template-columns: minmax(200px, 1fr) minmax(170px, 0.75fr) minmax(220px, 1fr) minmax(190px, 0.8fr) auto auto;
+}
+
+.equipment-record-groups {
+  display: grid;
+  gap: 1rem;
+}
+
+.equipment-record-groups h3 {
+  margin: 0 0 0.6rem;
+  color: var(--color-text);
+  font-size: 1rem;
+  font-weight: 850;
 }
 
 .equipment-table {
