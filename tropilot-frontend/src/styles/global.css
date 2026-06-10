@@ -2746,6 +2746,39 @@ a:focus-visible {
   font-weight: 800;
 }
 
+.building-overview-hero {
+  align-items: stretch;
+}
+
+.building-overview-description {
+  margin-top: 0.75rem !important;
+  padding-left: 0.75rem;
+  border-left: 3px solid rgba(14, 145, 170, 0.35);
+  font-size: 0.9rem;
+}
+
+.building-overview-facts {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-content: center;
+  gap: 0.8rem;
+}
+
+.building-overview-fact {
+  display: grid;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.building-overview-fact strong {
+  overflow-wrap: anywhere;
+  font-size: 1rem;
+}
+
+.building-overview-fact-wide,
+.building-overview-facts > small {
+  grid-column: 1 / -1;
+}
+
 .admin-home-workspace {
   display: grid;
   gap: 1rem;
@@ -3413,6 +3446,15 @@ html[data-theme="dark"] input[type="month"]::-webkit-calendar-picker-indicator {
 
   .admin-home-hero {
     padding: 1rem;
+  }
+
+  .building-overview-facts {
+    grid-template-columns: 1fr;
+  }
+
+  .building-overview-fact-wide,
+  .building-overview-facts > small {
+    grid-column: auto;
   }
 
   .home-panel-title {

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Link, useOutletContext, useParams } from 'react-router-dom';
+import { useOutletContext, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import * as contractApi from '../../api/contractApi.js';
 import * as expenseApi from '../../api/expenseApi.js';
 import * as feedbackApi from '../../api/feedbackApi.js';
@@ -11,22 +12,8 @@ import * as paymentApi from '../../api/paymentApi.js';
 import * as roomApi from '../../api/roomApi.js';
 import * as taskApi from '../../api/taskApi.js';
 import * as vehicleApi from '../../api/vehicleApi.js';
-import ExpenseTable from '../../components/ExpenseTable.jsx';
-import FeedbackTable from '../../components/FeedbackTable.jsx';
-import InvoiceTable from '../../components/InvoiceTable.jsx';
-import MaintenanceRequestTable from '../../components/MaintenanceRequestTable.jsx';
-import NotificationTable from '../../components/NotificationTable.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
-import PaymentTable from '../../components/PaymentTable.jsx';
-import ReceiptTable from '../../components/ReceiptTable.jsx';
-import TaskTable from '../../components/TaskTable.jsx';
-import VehicleTable from '../../components/VehicleTable.jsx';
 import { isActiveRentalContract } from '../../utils/contractFilters.js';
-import { getContractStatusClass, getContractStatusLabel } from '../../utils/contractStatusOptions.js';
-import { formatDisplayDate } from '../../utils/dateFormat.js';
-import { getMemberStatusLabel } from '../../utils/memberStatusOptions.js';
-import { formatRoomCode } from '../../utils/roomDisplay.js';
-import { getRoomStatusLabel } from '../../utils/roomStatusOptions.js';
 
 const emptyBuildingOperations = {
   rooms: [],
@@ -44,27 +31,155 @@ const emptyBuildingOperations = {
   notifications: []
 };
 
-function formatNumber(value) {
-  const numberValue = Number(value);
-  return Number.isFinite(numberValue)
-    ? numberValue.toLocaleString('en-US', { maximumFractionDigits: 2 })
-    : value;
+function toNumber(value) {
+  const numberValue = Number(value ?? 0);
+  return Number.isFinite(numberValue) ? numberValue : 0;
+}
+
+function formatNumber(value, locale) {
+  return toNumber(value).toLocaleString(locale, { maximumFractionDigits: 2 });
 }
 
 function sumAmounts(items, amountKey) {
-  return items.reduce((total, item) => total + (Number(item[amountKey]) || 0), 0);
+  return items.reduce((total, item) => total + toNumber(item[amountKey]), 0);
 }
 
-function statusClass(status) {
-  return `status-pill room-status-${status.toLowerCase()}`;
+function getPercent(value, total) {
+  const totalValue = toNumber(total);
+  return totalValue > 0 ? Math.min(100, Math.round((toNumber(value) / totalValue) * 100)) : 0;
+}
+
+function getDonutStyle(segments) {
+  const total = segments.reduce((sum, segment) => sum + toNumber(segment.value), 0);
+  let cursor = 0;
+  const stops = segments.map((segment) => {
+    const start = cursor;
+    cursor += total > 0 ? (toNumber(segment.value) / total) * 360 : 0;
+    return `${segment.color} ${start}deg ${cursor}deg`;
+  });
+
+  return {
+    background: total > 0
+      ? `conic-gradient(${stops.join(', ')})`
+      : 'conic-gradient(#d9e5ee 0deg 360deg)'
+  };
+}
+
+function MetricCard({ label, value, helper, tone = 'primary' }) {
+  return (
+    <article className={`home-metric-card home-metric-${tone}`}>
+      <span>{label}</span>
+      <strong>{value}</strong>
+      <small>{helper}</small>
+    </article>
+  );
+}
+
+function DonutPanel({ title, subtitle, totalLabel, totalValue, segments, locale }) {
+  return (
+    <section className="home-analytics-card">
+      <div className="home-panel-title">
+        <div>
+          <h2>{title}</h2>
+          <p>{subtitle}</p>
+        </div>
+      </div>
+      <div className="home-donut-layout">
+        <div className="home-donut" style={getDonutStyle(segments)}>
+          <div>
+            <strong>{totalValue}</strong>
+            <span>{totalLabel}</span>
+          </div>
+        </div>
+        <div className="home-chart-legend">
+          {segments.map((segment) => (
+            <div key={segment.label}>
+              <i style={{ backgroundColor: segment.color }} aria-hidden="true" />
+              <span>{segment.label}</span>
+              <strong>{formatNumber(segment.value, locale)}</strong>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function BarPanel({ title, subtitle, rows, locale }) {
+  const maxValue = Math.max(...rows.map((row) => toNumber(row.value)), 1);
+
+  return (
+    <section className="home-analytics-card">
+      <div className="home-panel-title">
+        <div>
+          <h2>{title}</h2>
+          <p>{subtitle}</p>
+        </div>
+      </div>
+      <div className="home-bar-list">
+        {rows.map((row) => (
+          <div className="home-bar-row" key={row.label}>
+            <div>
+              <span>{row.label}</span>
+              <strong>{formatNumber(row.value, locale)}</strong>
+            </div>
+            <div className="home-bar-track">
+              <i
+                className={`home-bar-fill home-bar-${row.tone}`}
+                style={{ width: `${Math.max(4, getPercent(row.value, maxValue))}%` }}
+                aria-hidden="true"
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function OperationsTable({ title, rows, t }) {
+  return (
+    <section className="home-table-card">
+      <div className="home-panel-title">
+        <h2>{title}</h2>
+      </div>
+      <div className="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>{t('buildingOverview.table.group')}</th>
+              <th>{t('buildingOverview.table.primary')}</th>
+              <th>{t('buildingOverview.table.secondary')}</th>
+              <th>{t('buildingOverview.table.followUp')}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row) => (
+              <tr key={row.name}>
+                <td><strong>{row.name}</strong></td>
+                {row.metrics.map((metric) => (
+                  <td key={metric.label}>
+                    <span className="home-table-label">{metric.label}</span>
+                    <strong>{metric.value}</strong>
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
 }
 
 export default function AdminBuildingDetailPage() {
   const { id } = useParams();
   const { building } = useOutletContext();
+  const { t, i18n } = useTranslation();
   const [operations, setOperations] = useState(emptyBuildingOperations);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
+  const locale = i18n.language === 'vi' ? 'vi-VN' : 'en-US';
 
   useEffect(() => {
     let active = true;
@@ -126,7 +241,7 @@ export default function AdminBuildingDetailPage() {
         });
       } catch (apiError) {
         if (active) {
-          setError(apiError.response?.data?.message || 'Building workspace could not be loaded');
+          setError(apiError.response?.data?.message || t('buildingOverview.loadError'));
         }
       } finally {
         if (active) {
@@ -140,10 +255,10 @@ export default function AdminBuildingDetailPage() {
     return () => {
       active = false;
     };
-  }, [id]);
+  }, [id, t]);
 
   if (loading) {
-    return <div className="empty-state">Loading building workspace...</div>;
+    return <div className="empty-state">{t('buildingOverview.loading')}</div>;
   }
 
   const occupiedRooms = operations.rooms.filter((room) => room.status === 'OCCUPIED').length;
@@ -152,7 +267,9 @@ export default function AdminBuildingDetailPage() {
   const activeVehicles = operations.vehicles.filter((vehicle) => vehicle.status === 'ACTIVE').length;
   const approvedMembers = operations.members.filter((member) => member.status === 'APPROVED').length;
   const pendingMembers = operations.members.filter((member) => member.status === 'PENDING').length;
-  const unpaidInvoices = operations.invoices.filter((invoice) => invoice.status !== 'PAID').length;
+  const totalOccupants = operations.contracts.length + approvedMembers;
+  const unpaidInvoiceRecords = operations.invoices.filter((invoice) => invoice.status !== 'PAID');
+  const unpaidInvoices = unpaidInvoiceRecords.length;
   const validReceipts = operations.receipts.filter((receipt) => receipt.status === 'VALID');
   const openMaintenanceRequests = operations.maintenanceRequests.filter((request) =>
     ['PENDING', 'ASSIGNED', 'IN_PROGRESS'].includes(request.status)
@@ -165,361 +282,187 @@ export default function AdminBuildingDetailPage() {
   const totalInvoiceAmount = sumAmounts(operations.invoices, 'totalAmount');
   const totalReceiptAmount = sumAmounts(validReceipts, 'amount');
   const totalExpenseAmount = sumAmounts(validExpenses, 'amount');
+  const outstandingAmount = sumAmounts(unpaidInvoiceRecords, 'totalAmount');
+  const occupancyPercent = getPercent(occupiedRooms, operations.rooms.length);
+  const trackedItems = pendingMembers
+    + operations.pendingPayments.length
+    + openMaintenanceRequests
+    + openTasks
+    + unresolvedFeedbacks
+    + operations.invoiceComplaints.length;
+
+  const quickMetrics = [
+    {
+      label: t('buildingOverview.metrics.totalRooms'),
+      value: formatNumber(operations.rooms.length, locale),
+      helper: t('buildingOverview.helpers.roomOccupancy', { percent: occupancyPercent }),
+      tone: 'primary'
+    },
+    {
+      label: t('buildingOverview.metrics.occupiedRooms'),
+      value: formatNumber(occupiedRooms, locale),
+      helper: t('buildingOverview.helpers.activeContracts', { count: operations.contracts.length }),
+      tone: 'info'
+    },
+    {
+      label: t('buildingOverview.metrics.totalOccupants'),
+      value: formatNumber(totalOccupants, locale),
+      helper: t('buildingOverview.helpers.occupants'),
+      tone: 'success'
+    },
+    {
+      label: t('buildingOverview.metrics.unpaidInvoices'),
+      value: formatNumber(unpaidInvoices, locale),
+      helper: t('buildingOverview.helpers.outstandingAmount', { amount: formatNumber(outstandingAmount, locale) }),
+      tone: 'warning'
+    },
+    {
+      label: t('buildingOverview.metrics.activeVehicles'),
+      value: formatNumber(activeVehicles, locale),
+      helper: t('buildingOverview.helpers.activeVehicles'),
+      tone: 'cyan'
+    },
+    {
+      label: t('buildingOverview.metrics.trackedItems'),
+      value: formatNumber(trackedItems, locale),
+      helper: t('buildingOverview.helpers.trackedItems'),
+      tone: trackedItems > 0 ? 'danger' : 'success'
+    }
+  ];
+
+  const roomSegments = [
+    { label: t('buildingOverview.metrics.occupiedRooms'), value: occupiedRooms, color: '#10b981' },
+    { label: t('buildingOverview.metrics.emptyRooms'), value: emptyRooms, color: '#3b82f6' },
+    { label: t('buildingOverview.metrics.maintenanceRooms'), value: maintenanceRooms, color: '#f59e0b' }
+  ];
+
+  const attentionSegments = [
+    { label: t('buildingOverview.metrics.pendingMembers'), value: pendingMembers, color: '#f59e0b' },
+    { label: t('buildingOverview.metrics.pendingPayments'), value: operations.pendingPayments.length, color: '#ef4444' },
+    { label: t('buildingOverview.metrics.openMaintenance'), value: openMaintenanceRequests, color: '#14b8a6' },
+    { label: t('buildingOverview.metrics.openTasks'), value: openTasks, color: '#64748b' }
+  ];
+
+  const financeRows = [
+    { label: t('buildingOverview.metrics.totalInvoiceAmount'), value: totalInvoiceAmount, tone: 'primary' },
+    { label: t('buildingOverview.metrics.totalIncome'), value: totalReceiptAmount, tone: 'success' },
+    { label: t('buildingOverview.metrics.totalExpense'), value: totalExpenseAmount, tone: 'danger' },
+    { label: t('buildingOverview.metrics.outstandingAmount'), value: outstandingAmount, tone: 'warning' }
+  ];
+
+  const summaryRows = [
+    {
+      name: t('buildingOverview.groups.rental'),
+      metrics: [
+        { label: t('buildingOverview.metrics.activeContracts'), value: formatNumber(operations.contracts.length, locale) },
+        { label: t('buildingOverview.metrics.approvedMembers'), value: formatNumber(approvedMembers, locale) },
+        { label: t('buildingOverview.metrics.pendingMembers'), value: formatNumber(pendingMembers, locale) }
+      ]
+    },
+    {
+      name: t('buildingOverview.groups.billing'),
+      metrics: [
+        { label: t('buildingOverview.metrics.invoices'), value: formatNumber(operations.invoices.length, locale) },
+        { label: t('buildingOverview.metrics.pendingPayments'), value: formatNumber(operations.pendingPayments.length, locale) },
+        { label: t('buildingOverview.metrics.receipts'), value: formatNumber(validReceipts.length, locale) }
+      ]
+    },
+    {
+      name: t('buildingOverview.groups.operations'),
+      metrics: [
+        { label: t('buildingOverview.metrics.openMaintenance'), value: formatNumber(openMaintenanceRequests, locale) },
+        { label: t('buildingOverview.metrics.openTasks'), value: formatNumber(openTasks, locale) },
+        { label: t('buildingOverview.metrics.activeVehicles'), value: formatNumber(activeVehicles, locale) }
+      ]
+    },
+    {
+      name: t('buildingOverview.groups.communication'),
+      metrics: [
+        { label: t('buildingOverview.metrics.unresolvedFeedbacks'), value: formatNumber(unresolvedFeedbacks, locale) },
+        { label: t('buildingOverview.metrics.invoiceComplaints'), value: formatNumber(operations.invoiceComplaints.length, locale) },
+        { label: t('buildingOverview.metrics.notifications'), value: formatNumber(operations.notifications.length, locale) }
+      ]
+    }
+  ];
 
   return (
-    <div className="building-workspace">
+    <div className="building-workspace admin-home-page building-overview-page">
       {error && <div className="alert error-alert">{error}</div>}
 
-      <div className="detail-panel">
+      <div className="admin-home-hero building-overview-hero">
         <div>
-          <span>Building code</span>
-          <strong>{building.buildingCode}</strong>
+          <PageHeader eyebrow={t('buildingOverview.eyebrow')} title={t('buildingOverview.title')} />
+          <p>{t('buildingOverview.description', { name: building.name })}</p>
+          <p className="building-overview-description">
+            {building.description || t('buildingOverview.noDescription')}
+          </p>
         </div>
-        <div>
-          <span>Address</span>
-          <strong>{building.address}</strong>
-        </div>
-        <div>
-          <span>Floors</span>
-          <strong>{building.floors}</strong>
-        </div>
-        <div>
-          <span>Management scope</span>
-          <strong>Rooms, members, contracts, utility readings, invoices, payments, receipts, vehicles, maintenance, expenses, and cash flow for this building</strong>
-        </div>
-        <div className="detail-wide">
-          <span>Description</span>
-          <p>{building.description || 'No description provided.'}</p>
+        <div className="admin-home-date-card building-overview-facts">
+          <div className="building-overview-fact">
+            <span>{t('buildingOverview.fields.code')}</span>
+            <strong>{building.buildingCode}</strong>
+          </div>
+          <div className="building-overview-fact">
+            <span>{t('buildingOverview.fields.floors')}</span>
+            <strong>{formatNumber(building.floors, locale)}</strong>
+          </div>
+          <div className="building-overview-fact building-overview-fact-wide">
+            <span>{t('buildingOverview.fields.address')}</span>
+            <strong>{building.address}</strong>
+          </div>
+          <small>{t('buildingOverview.occupancySummary', { percent: occupancyPercent })}</small>
         </div>
       </div>
 
-      <div className="dashboard-grid building-summary-grid">
-        <div className="dashboard-card">
-          <span>Total rooms</span>
-          <strong>{formatNumber(operations.rooms.length)}</strong>
+      <div className="admin-home-workspace">
+        <section className="admin-home-overview-card">
+          <div className="home-panel-title">
+            <div>
+              <span>{t('buildingOverview.sections.snapshotLabel')}</span>
+              <h2>{t('buildingOverview.sections.snapshotTitle')}</h2>
+            </div>
+            <strong>{t('buildingOverview.sections.trackingCount', { count: formatNumber(trackedItems, locale) })}</strong>
+          </div>
+          <div className="admin-home-metrics">
+            {quickMetrics.map((metric) => (
+              <MetricCard key={metric.label} {...metric} />
+            ))}
+          </div>
+        </section>
+
+        <div className="admin-home-chart-grid">
+          <DonutPanel
+            title={t('buildingOverview.sections.roomStatusTitle')}
+            subtitle={t('buildingOverview.sections.roomStatusDescription')}
+            totalLabel={t('buildingOverview.metrics.rooms')}
+            totalValue={formatNumber(operations.rooms.length, locale)}
+            segments={roomSegments}
+            locale={locale}
+          />
+          <DonutPanel
+            title={t('buildingOverview.sections.attentionTitle')}
+            subtitle={t('buildingOverview.sections.attentionDescription')}
+            totalLabel={t('buildingOverview.metrics.trackedItems')}
+            totalValue={formatNumber(trackedItems, locale)}
+            segments={attentionSegments}
+            locale={locale}
+          />
         </div>
-        <div className="dashboard-card">
-          <span>Occupied rooms</span>
-          <strong>{formatNumber(occupiedRooms)}</strong>
-        </div>
-        <div className="dashboard-card">
-          <span>Empty rooms</span>
-          <strong>{formatNumber(emptyRooms)}</strong>
-        </div>
-        <div className="dashboard-card">
-          <span>Maintenance rooms</span>
-          <strong>{formatNumber(maintenanceRooms)}</strong>
-        </div>
-        <div className="dashboard-card">
-          <span>Active vehicles</span>
-          <strong>{formatNumber(activeVehicles)}</strong>
-        </div>
-        <div className="dashboard-card">
-          <span>Approved room members</span>
-          <strong>{formatNumber(approvedMembers)}</strong>
-        </div>
-        <div className="dashboard-card">
-          <span>Pending room members</span>
-          <strong>{formatNumber(pendingMembers)}</strong>
-        </div>
-        <div className="dashboard-card">
-          <span>Unpaid invoices</span>
-          <strong>{formatNumber(unpaidInvoices)}</strong>
-        </div>
-        <div className="dashboard-card">
-          <span>Pending payments</span>
-          <strong>{formatNumber(operations.pendingPayments.length)}</strong>
-        </div>
-        <div className="dashboard-card">
-          <span>Open maintenance requests</span>
-          <strong>{formatNumber(openMaintenanceRequests)}</strong>
-        </div>
-        <div className="dashboard-card">
-          <span>Total invoice amount</span>
-          <strong>{formatNumber(totalInvoiceAmount)}</strong>
-        </div>
-        <div className="dashboard-card">
-          <span>Total income</span>
-          <strong>{formatNumber(totalReceiptAmount)}</strong>
-        </div>
-        <div className="dashboard-card">
-          <span>Total expense</span>
-          <strong>{formatNumber(totalExpenseAmount)}</strong>
-        </div>
-        <div className="dashboard-card">
-          <span>Open tasks</span>
-          <strong>{formatNumber(openTasks)}</strong>
-        </div>
-        <div className="dashboard-card">
-          <span>Unresolved feedbacks</span>
-          <strong>{formatNumber(unresolvedFeedbacks)}</strong>
-        </div>
-        <div className="dashboard-card">
-          <span>Invoice complaints</span>
-          <strong>{formatNumber(operations.invoiceComplaints.length)}</strong>
-        </div>
-        <div className="dashboard-card">
-          <span>Building notifications</span>
-          <strong>{formatNumber(operations.notifications.length)}</strong>
+
+        <div className="admin-home-chart-grid">
+          <BarPanel
+            title={t('buildingOverview.sections.financeTitle')}
+            subtitle={t('buildingOverview.sections.financeDescription')}
+            rows={financeRows}
+            locale={locale}
+          />
+          <OperationsTable
+            title={t('buildingOverview.sections.summaryTitle')}
+            rows={summaryRows}
+            t={t}
+          />
         </div>
       </div>
-
-      <section className="building-section">
-        <div className="building-section-header">
-          <PageHeader eyebrow="Building rooms" title="Rooms in this building" />
-          <Link className="secondary-link" to={`/admin/buildings/${building.id}/rooms`}>
-            Manage rooms
-          </Link>
-        </div>
-
-        <div className="table-wrap">
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Code</th>
-                <th>Name</th>
-                <th>Floor</th>
-                <th>Price</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {operations.rooms.map((room) => (
-                <tr key={room.id}>
-                  <td>{formatRoomCode(room)}</td>
-                  <td>{room.roomName}</td>
-                  <td>{room.floor}</td>
-                  <td>{formatNumber(room.price)}</td>
-                  <td>
-                    <span className={statusClass(room.status)}>{getRoomStatusLabel(room.status)}</span>
-                  </td>
-                  <td>
-                    <div className="table-actions">
-                      <Link className="secondary-link compact-link" to={`/admin/rooms/${room.id}`}>
-                        View
-                      </Link>
-                      <Link className="secondary-link compact-link" to={`/admin/rooms/${room.id}/edit`}>
-                        Edit
-                      </Link>
-                      <Link className="secondary-link compact-link" to={`/admin/rooms/${room.id}/members`}>
-                        Members
-                      </Link>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          {operations.rooms.length === 0 && <div className="empty-state flat-empty-state">No rooms found.</div>}
-        </div>
-      </section>
-
-      <section className="building-section">
-        <div className="building-section-header">
-          <PageHeader eyebrow="Contracts" title="Contracts in this building" />
-          <Link className="secondary-link" to={`/admin/buildings/${building.id}/contracts`}>
-            Manage contracts
-          </Link>
-        </div>
-        <div className="table-wrap">
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Room</th>
-                <th>Head Resident</th>
-                <th>Period</th>
-                <th>Deposit</th>
-                <th>Status</th>
-                <th>Details</th>
-              </tr>
-            </thead>
-            <tbody>
-              {operations.contracts.map((contract) => (
-                <tr key={contract.id}>
-                  <td>{formatRoomCode(contract)}</td>
-                  <td>{contract.residentHeadName}</td>
-                  <td>
-                    {formatDisplayDate(contract.startDate)} to {formatDisplayDate(contract.endDate)}
-                  </td>
-                  <td>{formatNumber(contract.depositAmount)}</td>
-                  <td>
-                    <span className={getContractStatusClass(contract.contractStatus)}>
-                      {getContractStatusLabel(contract.contractStatus)}
-                    </span>
-                  </td>
-                  <td>
-                    <Link className="secondary-link compact-link" to={`/admin/contracts/${contract.id}`}>
-                      View
-                    </Link>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          {operations.contracts.length === 0 && (
-            <div className="empty-state flat-empty-state">No rental contracts found.</div>
-          )}
-        </div>
-      </section>
-
-      <section className="building-section">
-        <div className="building-section-header">
-          <PageHeader eyebrow="Billing" title="Utility readings and invoices" />
-          <div className="button-row">
-            <Link className="secondary-link" to={`/admin/buildings/${building.id}/utility-readings`}>
-              Utility readings
-            </Link>
-            <Link className="secondary-link" to={`/admin/buildings/${building.id}/invoices`}>
-              Invoices
-            </Link>
-          </div>
-        </div>
-        <InvoiceTable invoices={operations.invoices} />
-      </section>
-
-      <section className="building-section">
-        <div className="building-section-header">
-          <PageHeader eyebrow="Vehicles" title="Vehicles in this building" />
-          <Link className="secondary-link" to={`/admin/buildings/${building.id}/vehicles`}>
-            Manage vehicles
-          </Link>
-        </div>
-        <VehicleTable vehicles={operations.vehicles} />
-      </section>
-
-      <section className="building-section">
-        <div className="building-section-header">
-          <PageHeader eyebrow="Payments" title="Pending payments in this building" />
-          <Link className="secondary-link" to={`/admin/buildings/${building.id}/payments`}>
-            Manage payments
-          </Link>
-        </div>
-        <PaymentTable payments={operations.pendingPayments} />
-      </section>
-
-      <section className="building-section">
-        <div className="building-section-header">
-          <PageHeader eyebrow="Receipts" title="Receipts in this building" />
-          <Link className="secondary-link" to={`/admin/buildings/${building.id}/receipts`}>
-            Manage receipts
-          </Link>
-        </div>
-        <ReceiptTable receipts={operations.receipts} />
-      </section>
-
-      <section className="building-section">
-        <div className="building-section-header">
-          <PageHeader eyebrow="Room members" title="Room members in this building" />
-          <Link className="secondary-link" to={`/admin/buildings/${building.id}/members`}>
-            Manage room members
-          </Link>
-        </div>
-
-        <div className="table-wrap">
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Member</th>
-                <th>Phone</th>
-                <th>Room</th>
-                <th>Head Resident</th>
-                <th>Status</th>
-                <th>Occupants</th>
-              </tr>
-            </thead>
-            <tbody>
-              {operations.members.map((member) => (
-                <tr key={member.id}>
-                  <td>
-                    <strong>{member.fullName}</strong>
-                    <span className="table-subtext">{member.email || 'Not provided'}</span>
-                  </td>
-                  <td>{member.phone}</td>
-                  <td>{formatRoomCode(member)}</td>
-                  <td>{member.residentHeadName}</td>
-                  <td>
-                    <span className={`status-pill member-status-${member.status.toLowerCase()}`}>
-                      {getMemberStatusLabel(member.status)}
-                    </span>
-                  </td>
-                  <td>
-                    {member.totalOccupants} of {member.maxOccupants}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          {operations.members.length === 0 && (
-            <div className="empty-state flat-empty-state">No room members found.</div>
-          )}
-        </div>
-      </section>
-
-      <section className="building-section">
-        <div className="building-section-header">
-          <PageHeader eyebrow="Maintenance" title="Maintenance requests in this building" />
-          <Link className="secondary-link" to={`/admin/buildings/${building.id}/maintenance`}>
-            Manage maintenance
-          </Link>
-        </div>
-        <MaintenanceRequestTable requests={operations.maintenanceRequests} />
-      </section>
-
-      <section className="building-section">
-        <div className="building-section-header">
-          <PageHeader eyebrow="Expenses" title="Expenses in this building" />
-          <div className="button-row">
-            <Link className="secondary-link" to={`/admin/buildings/${building.id}/expenses`}>
-              Manage expenses
-            </Link>
-            <Link className="secondary-link" to={`/admin/buildings/${building.id}/cashflow`}>
-              View cash flow
-            </Link>
-          </div>
-        </div>
-        <ExpenseTable expenses={operations.expenses} />
-      </section>
-
-      <section className="building-section">
-        <div className="building-section-header">
-          <PageHeader eyebrow="Tasks" title="Tasks in this building" />
-          <Link className="secondary-link" to={`/admin/buildings/${building.id}/tasks`}>
-            Manage tasks
-          </Link>
-        </div>
-        <TaskTable tasks={operations.tasks} detailBasePath={`/admin/buildings/${building.id}/tasks`} />
-      </section>
-
-      <section className="building-section">
-        <div className="building-section-header">
-          <PageHeader eyebrow="Feedbacks" title="Feedbacks in this building" />
-          <Link className="secondary-link" to={`/admin/buildings/${building.id}/feedbacks`}>
-            Manage feedbacks
-          </Link>
-        </div>
-        <FeedbackTable feedbacks={operations.feedbacks} />
-      </section>
-
-      <section className="building-section">
-        <div className="building-section-header">
-          <PageHeader eyebrow="Invoice complaints" title="Invoice complaints in this building" />
-          <Link className="secondary-link" to={`/admin/buildings/${building.id}/invoice-complaints`}>
-            Manage invoice complaints
-          </Link>
-        </div>
-        <FeedbackTable feedbacks={operations.invoiceComplaints} />
-      </section>
-
-      <section className="building-section">
-        <div className="building-section-header">
-          <PageHeader eyebrow="Notifications" title="Notifications in this building" />
-          <Link className="secondary-link" to={`/admin/buildings/${building.id}/notifications`}>
-            Manage notifications
-          </Link>
-        </div>
-        <NotificationTable notifications={operations.notifications} />
-      </section>
     </div>
   );
 }

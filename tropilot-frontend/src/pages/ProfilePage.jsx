@@ -6,7 +6,6 @@ import { useAuth } from '../context/AuthContext.jsx';
 const initialForm = {
   fullName: '',
   phone: '',
-  identityNumber: '',
   currentPassword: ''
 };
 
@@ -62,8 +61,7 @@ export default function ProfilePage() {
     setForm((current) => ({
       ...current,
       fullName: user?.fullName || '',
-      phone: user?.phone || '',
-      identityNumber: user?.identityNumber || ''
+      phone: user?.phone || ''
     }));
   }, [user]);
 
@@ -82,7 +80,6 @@ export default function ProfilePage() {
       await updateProfile({
         fullName: form.fullName,
         phone: form.phone,
-        identityNumber: form.identityNumber,
         currentPassword: form.currentPassword
       });
       setForm((current) => ({ ...current, currentPassword: '' }));
@@ -124,10 +121,6 @@ export default function ProfilePage() {
             <div>
               <span>{t('profile.fields.phone')}</span>
               <strong>{user?.phone || t('common.notProvided')}</strong>
-            </div>
-            <div>
-              <span>{t('profile.fields.identityNumber')}</span>
-              <strong>{user?.identityNumber || t('common.notProvided')}</strong>
             </div>
             <div>
               <span>{t('profile.fields.role')}</span>
@@ -174,15 +167,6 @@ export default function ProfilePage() {
             value={form.phone}
             onChange={handleChange}
             maxLength={30}
-          />
-
-          <label htmlFor="profileIdentityNumber">{t('profile.fields.identityNumber')}</label>
-          <input
-            id="profileIdentityNumber"
-            name="identityNumber"
-            value={form.identityNumber}
-            onChange={handleChange}
-            maxLength={60}
           />
 
           <label htmlFor="profileCurrentPassword">{t('profile.fields.currentPassword')}</label>

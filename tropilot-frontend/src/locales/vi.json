@@ -58,7 +58,6 @@
       "fullName": "Họ và tên",
       "email": "Email",
       "phone": "Số điện thoại",
-      "identityNumber": "Căn cước công dân (ID)",
       "role": "Vai trò",
       "status": "Trạng thái tài khoản",
       "currentPassword": "Mật khẩu hiện tại"
@@ -246,6 +245,78 @@
     "feedbacks": "Phản hồi",
     "invoiceComplaints": "Khiếu nại hóa đơn",
     "notifications": "Thông báo"
+  },
+  "buildingOverview": {
+    "eyebrow": "Tổng quan tòa nhà",
+    "title": "Tình hình vận hành",
+    "description": "Theo dõi phòng, cư dân, hóa đơn, bảo trì và dòng tiền của {{name}} trên cùng một màn hình.",
+    "loading": "Đang tải tổng quan tòa nhà...",
+    "loadError": "Không thể tải tổng quan tòa nhà",
+    "noDescription": "Tòa nhà chưa có mô tả.",
+    "occupancySummary": "{{percent}}% phòng đang có người thuê",
+    "fields": {
+      "code": "Mã tòa nhà",
+      "address": "Địa chỉ",
+      "floors": "Số tầng"
+    },
+    "sections": {
+      "snapshotLabel": "Tổng quan",
+      "snapshotTitle": "Vận hành tòa nhà",
+      "trackingCount": "{{count}} mục cần theo dõi",
+      "roomStatusTitle": "Tình trạng phòng",
+      "roomStatusDescription": "Cơ cấu phòng đang thuê, phòng trống và phòng bảo trì trong tòa nhà.",
+      "attentionTitle": "Cần xử lý",
+      "attentionDescription": "Các công việc và yêu cầu cần được theo dõi tại tòa nhà.",
+      "financeTitle": "Tình hình tài chính",
+      "financeDescription": "Tổng hóa đơn, khoản đã thu, chi phí và số tiền còn phải thu.",
+      "summaryTitle": "Tổng hợp vận hành"
+    },
+    "metrics": {
+      "rooms": "Phòng",
+      "totalRooms": "Tổng số phòng",
+      "occupiedRooms": "Phòng đã thuê",
+      "emptyRooms": "Phòng trống",
+      "maintenanceRooms": "Phòng bảo trì",
+      "totalOccupants": "Tổng người ở",
+      "activeContracts": "Hợp đồng đang thuê",
+      "approvedMembers": "Thành viên đã duyệt",
+      "pendingMembers": "Thành viên chờ duyệt",
+      "invoices": "Hóa đơn",
+      "unpaidInvoices": "Hóa đơn chưa thanh toán",
+      "pendingPayments": "Thanh toán chờ xác nhận",
+      "receipts": "Biên lai hợp lệ",
+      "activeVehicles": "Xe đang hoạt động",
+      "openMaintenance": "Bảo trì đang mở",
+      "openTasks": "Công việc đang mở",
+      "trackedItems": "Mục cần theo dõi",
+      "totalInvoiceAmount": "Tổng tiền hóa đơn",
+      "totalIncome": "Tổng thu",
+      "totalExpense": "Tổng chi",
+      "outstandingAmount": "Số tiền còn phải thu",
+      "unresolvedFeedbacks": "Phản hồi chưa xử lý",
+      "invoiceComplaints": "Khiếu nại hóa đơn",
+      "notifications": "Thông báo"
+    },
+    "helpers": {
+      "roomOccupancy": "{{percent}}% phòng đang được thuê",
+      "activeContracts": "{{count}} hợp đồng đang hoạt động",
+      "occupants": "Chủ hộ và thành viên đã duyệt",
+      "outstandingAmount": "Còn phải thu {{amount}}",
+      "activeVehicles": "Xe đang được quản lý tại tòa nhà",
+      "trackedItems": "Thành viên, thanh toán, bảo trì và công việc"
+    },
+    "groups": {
+      "rental": "Thuê phòng và cư dân",
+      "billing": "Hóa đơn và thanh toán",
+      "operations": "Vận hành",
+      "communication": "Trao đổi"
+    },
+    "table": {
+      "group": "Nhóm",
+      "primary": "Chỉ số chính",
+      "secondary": "Chỉ số phụ",
+      "followUp": "Theo dõi"
+    }
   },
   "equipment": {
     "eyebrow": "Thiết bị tòa nhà",

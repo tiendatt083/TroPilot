@@ -58,7 +58,6 @@
       "fullName": "Full name",
       "email": "Email",
       "phone": "Phone",
-      "identityNumber": "Citizen ID",
       "role": "Role",
       "status": "Account status",
       "currentPassword": "Current password"
@@ -246,6 +245,78 @@
     "feedbacks": "Feedbacks",
     "invoiceComplaints": "Invoice complaints",
     "notifications": "Notifications"
+  },
+  "buildingOverview": {
+    "eyebrow": "Building overview",
+    "title": "Operating position",
+    "description": "Monitor rooms, residents, invoices, maintenance, and cash flow for {{name}} from one screen.",
+    "loading": "Loading building overview...",
+    "loadError": "Building overview could not be loaded",
+    "noDescription": "No building description has been provided.",
+    "occupancySummary": "{{percent}}% of rooms are occupied",
+    "fields": {
+      "code": "Building code",
+      "address": "Address",
+      "floors": "Floors"
+    },
+    "sections": {
+      "snapshotLabel": "Overview",
+      "snapshotTitle": "Building operations",
+      "trackingCount": "{{count}} items need attention",
+      "roomStatusTitle": "Room status",
+      "roomStatusDescription": "Occupied, empty, and maintenance room distribution in this building.",
+      "attentionTitle": "Attention required",
+      "attentionDescription": "Work and requests that need follow-up in this building.",
+      "financeTitle": "Financial position",
+      "financeDescription": "Invoice total, collected income, expenses, and outstanding amount.",
+      "summaryTitle": "Operating summary"
+    },
+    "metrics": {
+      "rooms": "Rooms",
+      "totalRooms": "Total rooms",
+      "occupiedRooms": "Occupied rooms",
+      "emptyRooms": "Empty rooms",
+      "maintenanceRooms": "Maintenance rooms",
+      "totalOccupants": "Total occupants",
+      "activeContracts": "Active contracts",
+      "approvedMembers": "Approved members",
+      "pendingMembers": "Pending members",
+      "invoices": "Invoices",
+      "unpaidInvoices": "Unpaid invoices",
+      "pendingPayments": "Pending payments",
+      "receipts": "Valid receipts",
+      "activeVehicles": "Active vehicles",
+      "openMaintenance": "Open maintenance",
+      "openTasks": "Open tasks",
+      "trackedItems": "Items to track",
+      "totalInvoiceAmount": "Total invoice amount",
+      "totalIncome": "Total income",
+      "totalExpense": "Total expense",
+      "outstandingAmount": "Outstanding amount",
+      "unresolvedFeedbacks": "Unresolved feedbacks",
+      "invoiceComplaints": "Invoice complaints",
+      "notifications": "Notifications"
+    },
+    "helpers": {
+      "roomOccupancy": "{{percent}}% of rooms are occupied",
+      "activeContracts": "{{count}} active rental contracts",
+      "occupants": "Head residents and approved members",
+      "outstandingAmount": "{{amount}} remains outstanding",
+      "activeVehicles": "Vehicles currently managed in this building",
+      "trackedItems": "Members, payments, maintenance, and tasks"
+    },
+    "groups": {
+      "rental": "Rental and residents",
+      "billing": "Billing and payments",
+      "operations": "Operations",
+      "communication": "Communication"
+    },
+    "table": {
+      "group": "Group",
+      "primary": "Primary metric",
+      "secondary": "Secondary metric",
+      "followUp": "Follow-up"
+    }
   },
   "equipment": {
     "eyebrow": "Building equipment",
