@@ -17,6 +17,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -26,6 +29,9 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class SystemContactServiceImpl implements SystemContactService {
+
+    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
+    private static final String WORKING_HOURS_SEPARATOR = " - ";
 
     private final SystemContactRepository systemContactRepository;
     private final CurrentUserProvider currentUserProvider;
@@ -49,13 +55,18 @@ public class SystemContactServiceImpl implements SystemContactService {
             throw new BadRequestException("Current password is incorrect");
         }
 
+        validateWorkingHours(request.getWorkingStartTime(), request.getWorkingEndTime());
+
         List<ContactPhone> phones = normalizePhones(request.getPhones());
         SystemContact contact = systemContactRepository.findFirstByOrderByIdAsc()
                 .orElseGet(SystemContact::new);
 
         contact.setEmail(request.getEmail().trim().toLowerCase(Locale.ROOT));
         contact.setOfficeAddress(request.getOfficeAddress().trim());
-        contact.setWorkingHours(request.getWorkingHours().trim());
+        contact.setWorkingHours(formatWorkingHours(
+                request.getWorkingStartTime(),
+                request.getWorkingEndTime()
+        ));
         contact.setPhones(phones);
 
         SystemContact savedContact = systemContactRepository.save(contact);
@@ -87,6 +98,7 @@ public class SystemContactServiceImpl implements SystemContactService {
     }
 
     private SystemContactResponse toResponse(SystemContact contact) {
+        WorkingHours workingHours = parseWorkingHours(contact.getWorkingHours());
         List<ContactPhoneResponse> phones = contact.getPhones().stream()
                 .map(phone -> ContactPhoneResponse.builder()
                         .displayName(phone.getDisplayName())
@@ -99,6 +111,8 @@ public class SystemContactServiceImpl implements SystemContactService {
                 .email(contact.getEmail())
                 .officeAddress(contact.getOfficeAddress())
                 .workingHours(contact.getWorkingHours())
+                .workingStartTime(workingHours.startTime())
+                .workingEndTime(workingHours.endTime())
                 .phones(phones)
                 .updatedAt(contact.getUpdatedAt())
                 .build();
@@ -113,5 +127,40 @@ public class SystemContactServiceImpl implements SystemContactService {
 
     private String normalizePhoneNumber(String phoneNumber) {
         return phoneNumber.replaceAll("[^0-9+]", "");
+    }
+
+    private void validateWorkingHours(LocalTime startTime, LocalTime endTime) {
+        if (!endTime.isAfter(startTime)) {
+            throw new BadRequestException("Working end time must be after working start time");
+        }
+    }
+
+    private String formatWorkingHours(LocalTime startTime, LocalTime endTime) {
+        return startTime.format(TIME_FORMATTER)
+                + WORKING_HOURS_SEPARATOR
+                + endTime.format(TIME_FORMATTER);
+    }
+
+    private WorkingHours parseWorkingHours(String value) {
+        if (value == null || value.isBlank()) {
+            return new WorkingHours(null, null);
+        }
+
+        String[] parts = value.split("\\s*-\\s*", 2);
+        if (parts.length != 2) {
+            return new WorkingHours(null, null);
+        }
+
+        try {
+            return new WorkingHours(
+                    LocalTime.parse(parts[0], TIME_FORMATTER),
+                    LocalTime.parse(parts[1], TIME_FORMATTER)
+            );
+        } catch (DateTimeParseException exception) {
+            return new WorkingHours(null, null);
+        }
+    }
+
+    private record WorkingHours(LocalTime startTime, LocalTime endTime) {
     }
 }

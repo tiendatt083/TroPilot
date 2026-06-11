@@ -12,7 +12,8 @@ const createEmptyPhone = () => ({
 const createEmptyForm = () => ({
   email: '',
   officeAddress: '',
-  workingHours: '',
+  workingStartTime: '',
+  workingEndTime: '',
   phones: [createEmptyPhone()],
   currentPassword: ''
 });
@@ -21,7 +22,8 @@ function contactToForm(contact) {
   return {
     email: contact?.email || '',
     officeAddress: contact?.officeAddress || '',
-    workingHours: contact?.workingHours || '',
+    workingStartTime: contact?.workingStartTime?.slice(0, 5) || '',
+    workingEndTime: contact?.workingEndTime?.slice(0, 5) || '',
     phones: contact?.phones?.length
       ? contact.phones.map((phone) => ({
           displayName: phone.displayName || '',
@@ -110,13 +112,20 @@ export default function ContactPage() {
     event.preventDefault();
     setMessage('');
     setError('');
+
+    if (form.workingEndTime <= form.workingStartTime) {
+      setError(t('contact.messages.invalidWorkingHours'));
+      return;
+    }
+
     setSaving(true);
 
     try {
       const response = await contactApi.updateSystemContact({
         email: form.email.trim(),
         officeAddress: form.officeAddress.trim(),
-        workingHours: form.workingHours.trim(),
+        workingStartTime: form.workingStartTime,
+        workingEndTime: form.workingEndTime,
         phones: form.phones.map((phone) => ({
           displayName: phone.displayName.trim(),
           phoneNumber: phone.phoneNumber.trim()
@@ -194,7 +203,14 @@ function ContactSummary({ contact, t }) {
         />
         <ContactDetail
           label={t('contact.fields.workingHours')}
-          value={contact.workingHours}
+          value={
+            contact.workingStartTime && contact.workingEndTime
+              ? t('contact.workingHoursRange', {
+                  start: contact.workingStartTime.slice(0, 5),
+                  end: contact.workingEndTime.slice(0, 5)
+                })
+              : contact.workingHours
+          }
         />
       </dl>
 
@@ -261,13 +277,30 @@ function ContactEditor({
         </div>
 
         <div>
-          <label htmlFor="contactWorkingHours">{t('contact.fields.workingHours')}</label>
+          <label htmlFor="contactWorkingStartTime">
+            {t('contact.fields.workingStartTime')}
+          </label>
           <input
-            id="contactWorkingHours"
-            maxLength={160}
-            name="workingHours"
+            id="contactWorkingStartTime"
+            name="workingStartTime"
             required
-            value={form.workingHours}
+            type="time"
+            value={form.workingStartTime}
+            onChange={onFieldChange}
+          />
+        </div>
+
+        <div>
+          <label htmlFor="contactWorkingEndTime">
+            {t('contact.fields.workingEndTime')}
+          </label>
+          <input
+            id="contactWorkingEndTime"
+            name="workingEndTime"
+            min={form.workingStartTime}
+            required
+            type="time"
+            value={form.workingEndTime}
             onChange={onFieldChange}
           />
         </div>

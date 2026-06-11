@@ -103,8 +103,9 @@
     "description": "Sử dụng các thông tin dưới đây để liên hệ với đơn vị quản lý. Thông tin liên hệ này áp dụng chung cho tất cả tòa nhà.",
     "summaryTitle": "Thông tin đơn vị quản lý",
     "editTitle": "Chỉnh sửa thông tin liên hệ",
-    "phoneListTitle": "Số điện thoại",
-    "phoneEditorTitle": "Danh sách số liên hệ",
+      "phoneListTitle": "Số điện thoại",
+      "phoneEditorTitle": "Danh sách số liên hệ",
+      "workingHoursRange": "{{start}} đến {{end}}",
     "passwordHelp": "Nhập mật khẩu hiện tại để xác nhận thay đổi thông tin liên hệ của hệ thống.",
     "sections": {
       "details": "Thông tin liên hệ",
@@ -113,8 +114,10 @@
     },
     "fields": {
       "email": "Email liên hệ",
-      "officeAddress": "Địa chỉ văn phòng",
-      "workingHours": "Thời gian làm việc",
+        "officeAddress": "Địa chỉ văn phòng",
+        "workingHours": "Thời gian làm việc",
+        "workingStartTime": "Giờ bắt đầu làm việc",
+        "workingEndTime": "Giờ kết thúc làm việc",
       "phoneName": "Tên hiển thị",
       "phoneNumber": "Số điện thoại",
       "currentPassword": "Mật khẩu hiện tại"
@@ -129,8 +132,9 @@
     "messages": {
       "loading": "Đang tải thông tin liên hệ...",
       "loadError": "Không thể tải thông tin liên hệ",
-      "notConfigured": "Đơn vị quản lý chưa cập nhật thông tin liên hệ.",
-      "updated": "Đã cập nhật thông tin liên hệ của hệ thống.",
+        "notConfigured": "Đơn vị quản lý chưa cập nhật thông tin liên hệ.",
+        "invalidWorkingHours": "Giờ kết thúc phải sau giờ bắt đầu làm việc.",
+        "updated": "Đã cập nhật thông tin liên hệ của hệ thống.",
       "updateError": "Không thể cập nhật thông tin liên hệ của hệ thống"
     }
   },

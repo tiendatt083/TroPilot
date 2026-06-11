@@ -4,10 +4,12 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalTime;
 import java.util.List;
 
 @Getter
@@ -23,9 +25,11 @@ public class SystemContactUpdateRequest {
     @Size(max = 255, message = "Office address must not exceed 255 characters")
     private String officeAddress;
 
-    @NotBlank(message = "Working hours are required")
-    @Size(max = 160, message = "Working hours must not exceed 160 characters")
-    private String workingHours;
+    @NotNull(message = "Working start time is required")
+    private LocalTime workingStartTime;
+
+    @NotNull(message = "Working end time is required")
+    private LocalTime workingEndTime;
 
     @Valid
     @NotEmpty(message = "At least one phone number is required")
