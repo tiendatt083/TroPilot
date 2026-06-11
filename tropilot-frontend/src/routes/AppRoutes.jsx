@@ -50,6 +50,7 @@ import AdminUserCreatePage from '../pages/admin/AdminUserCreatePage.jsx';
 import AdminUserListPage from '../pages/admin/AdminUserListPage.jsx';
 import ChangePasswordPage from '../pages/auth/ChangePasswordPage.jsx';
 import LoginPage from '../pages/auth/LoginPage.jsx';
+import ContactPage from '../pages/ContactPage.jsx';
 import ProfilePage from '../pages/ProfilePage.jsx';
 import ResidentContractPage from '../pages/resident/ResidentContractPage.jsx';
 import ResidentDashboardPage from '../pages/resident/ResidentDashboardPage.jsx';
@@ -106,7 +107,8 @@ export default function AppRoutes() {
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<Navigate to="/admin/dashboard" replace />} />
               <Route path="dashboard" element={<AdminDashboardPage />} />
-              <Route path="profile" element={<ProfilePage />} />
+              <Route path="profile" element={<Navigate to="/admin/contact" replace />} />
+              <Route path="contact" element={<ContactPage />} />
               <Route path="settings" element={<Settings />} />
               <Route path="notifications" element={<AdminNotificationPage />} />
               <Route path="activity-logs" element={<AdminActivityLogPage />} />
@@ -172,6 +174,7 @@ export default function AppRoutes() {
               <Route index element={<Navigate to="/staff/dashboard" replace />} />
               <Route path="dashboard" element={<StaffDashboardPage />} />
               <Route path="profile" element={<ProfilePage />} />
+              <Route path="contact" element={<ContactPage />} />
               <Route path="settings" element={<Settings />} />
               <Route path="notifications" element={<StaffNotificationPage />} />
               <Route path="invoices" element={<Navigate to="/staff/buildings" replace />} />
@@ -211,6 +214,7 @@ export default function AppRoutes() {
               <Route index element={<Navigate to="/resident/dashboard" replace />} />
               <Route path="dashboard" element={<ResidentDashboardPage />} />
               <Route path="profile" element={<ProfilePage />} />
+              <Route path="contact" element={<ContactPage />} />
               <Route path="settings" element={<Settings />} />
               <Route path="notifications" element={<ResidentNotificationPage />} />
               <Route path="feedbacks" element={<ResidentFeedbackPage />} />

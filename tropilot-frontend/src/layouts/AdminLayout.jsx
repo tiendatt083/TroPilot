@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import AdminProfileDialog from '../components/AdminProfileDialog.jsx';
 import ChatWidget from '../components/ChatWidget.jsx';
 import SidebarBrand from '../components/SidebarBrand.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
@@ -21,7 +22,7 @@ const ADMIN_NAV_ITEMS = [
   { to: '/admin/maintenance', labelKey: 'navigation.maintenance' },
   { to: '/admin/equipment', labelKey: 'navigation.equipment' },
   { to: '/admin/buildings', labelKey: 'navigation.buildings' },
-  { to: '/admin/profile', labelKey: 'navigation.profile' },
+  { to: '/admin/contact', labelKey: 'navigation.contact' },
   { to: '/admin/settings', labelKey: 'settings.title' }
 ];
 
@@ -31,6 +32,7 @@ export default function AdminLayout() {
   const location = useLocation();
   const accountSectionActive = ADMIN_ACCOUNT_ITEMS.some((item) => location.pathname.startsWith(item.to));
   const [accountSectionOpen, setAccountSectionOpen] = useState(accountSectionActive);
+  const [profileDialogOpen, setProfileDialogOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(
     () => localStorage.getItem('adminSidebarCollapsed') === 'true'
   );
@@ -59,10 +61,16 @@ export default function AdminLayout() {
         >
           <span aria-hidden="true">{sidebarCollapsed ? '›' : '‹'}</span>
         </button>
-        <div className="sidebar-user">
+        <button
+          aria-haspopup="dialog"
+          className="sidebar-user sidebar-user-button"
+          title={t('profile.actions.open')}
+          type="button"
+          onClick={() => setProfileDialogOpen(true)}
+        >
           <span>TroPilot</span>
           <small>{t('sidebar.access.admin')}</small>
-        </div>
+        </button>
         <nav aria-label={t('navigation.admin')}>
           <NavLink to="/admin/dashboard">
             {t('navigation.dashboard')}
@@ -103,6 +111,10 @@ export default function AdminLayout() {
         <Outlet />
       </main>
       <ChatWidget />
+      <AdminProfileDialog
+        open={profileDialogOpen}
+        onClose={() => setProfileDialogOpen(false)}
+      />
     </div>
   );
 }

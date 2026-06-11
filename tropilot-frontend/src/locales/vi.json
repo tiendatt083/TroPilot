@@ -1,6 +1,7 @@
 {
   "common": {
     "cancel": "Hủy",
+    "close": "Đóng",
     "clear": "Xóa lọc",
     "delete": "Xóa",
     "edit": "Sửa",
@@ -87,12 +88,50 @@
       "locked": "Đã khóa"
     },
     "actions": {
+      "open": "Xem thông tin cá nhân",
       "save": "Lưu hồ sơ",
       "saving": "Đang lưu hồ sơ..."
     },
     "messages": {
       "updated": "Đã cập nhật hồ sơ thành công.",
       "updateError": "Không thể cập nhật hồ sơ"
+    }
+  },
+  "contact": {
+    "title": "Liên hệ",
+    "eyebrow": "Hỗ trợ hệ thống",
+    "description": "Sử dụng các thông tin dưới đây để liên hệ với đơn vị quản lý. Thông tin liên hệ này áp dụng chung cho tất cả tòa nhà.",
+    "summaryTitle": "Thông tin đơn vị quản lý",
+    "editTitle": "Chỉnh sửa thông tin liên hệ",
+    "phoneListTitle": "Số điện thoại",
+    "phoneEditorTitle": "Danh sách số liên hệ",
+    "passwordHelp": "Nhập mật khẩu hiện tại để xác nhận thay đổi thông tin liên hệ của hệ thống.",
+    "sections": {
+      "details": "Thông tin liên hệ",
+      "phones": "Liên hệ qua điện thoại",
+      "edit": "Quản trị"
+    },
+    "fields": {
+      "email": "Email liên hệ",
+      "officeAddress": "Địa chỉ văn phòng",
+      "workingHours": "Thời gian làm việc",
+      "phoneName": "Tên hiển thị",
+      "phoneNumber": "Số điện thoại",
+      "currentPassword": "Mật khẩu hiện tại"
+    },
+    "actions": {
+      "addPhone": "Thêm số điện thoại",
+      "removePhone": "Xóa",
+      "removePhoneNamed": "Xóa số điện thoại {{name}}",
+      "save": "Lưu thông tin liên hệ",
+      "saving": "Đang lưu thông tin liên hệ..."
+    },
+    "messages": {
+      "loading": "Đang tải thông tin liên hệ...",
+      "loadError": "Không thể tải thông tin liên hệ",
+      "notConfigured": "Đơn vị quản lý chưa cập nhật thông tin liên hệ.",
+      "updated": "Đã cập nhật thông tin liên hệ của hệ thống.",
+      "updateError": "Không thể cập nhật thông tin liên hệ của hệ thống"
     }
   },
   "role": {
@@ -137,7 +176,8 @@
     "utilityReadings": "Chỉ số tiện ích",
     "members": "Thành viên",
     "contract": "Hợp đồng",
-    "profile": "Thông tin cá nhân"
+    "profile": "Thông tin cá nhân",
+    "contact": "Liên hệ"
   },
   "userManagement": {
     "eyebrow": "Tài khoản hệ thống",

@@ -16,6 +16,7 @@ const RESIDENT_NAV_ITEMS = [
   { to: '/resident/equipment', labelKey: 'navigation.equipment' },
   { to: '/resident/utility-readings', labelKey: 'navigation.utilityReadings' },
   { to: '/resident/profile', labelKey: 'navigation.profile' },
+  { to: '/resident/contact', labelKey: 'navigation.contact' },
   { to: '/resident/settings', labelKey: 'settings.title' }
 ];
 

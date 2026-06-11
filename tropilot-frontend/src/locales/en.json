@@ -1,6 +1,7 @@
 {
   "common": {
     "cancel": "Cancel",
+    "close": "Close",
     "clear": "Clear",
     "delete": "Delete",
     "edit": "Edit",
@@ -87,12 +88,50 @@
       "locked": "Locked"
     },
     "actions": {
+      "open": "View personal information",
       "save": "Save profile",
       "saving": "Saving profile..."
     },
     "messages": {
       "updated": "Profile updated successfully.",
       "updateError": "Profile could not be updated"
+    }
+  },
+  "contact": {
+    "title": "Contact",
+    "eyebrow": "System support",
+    "description": "Use these details to contact the property management team. The same contact information applies to every building.",
+    "summaryTitle": "Management contact",
+    "editTitle": "Edit contact information",
+    "phoneListTitle": "Phone numbers",
+    "phoneEditorTitle": "Contact phone numbers",
+    "passwordHelp": "Enter your current password to confirm changes to system contact information.",
+    "sections": {
+      "details": "Contact details",
+      "phones": "Phone contacts",
+      "edit": "Administration"
+    },
+    "fields": {
+      "email": "Contact email",
+      "officeAddress": "Office address",
+      "workingHours": "Working hours",
+      "phoneName": "Display name",
+      "phoneNumber": "Phone number",
+      "currentPassword": "Current password"
+    },
+    "actions": {
+      "addPhone": "Add phone number",
+      "removePhone": "Remove",
+      "removePhoneNamed": "Remove phone number {{name}}",
+      "save": "Save contact information",
+      "saving": "Saving contact information..."
+    },
+    "messages": {
+      "loading": "Loading contact information...",
+      "loadError": "Contact information could not be loaded",
+      "notConfigured": "The property management team has not published contact information yet.",
+      "updated": "System contact information updated successfully.",
+      "updateError": "System contact information could not be updated"
     }
   },
   "role": {
@@ -137,7 +176,8 @@
     "utilityReadings": "Utility readings",
     "members": "Members",
     "contract": "Contract",
-    "profile": "Personal information"
+    "profile": "Personal information",
+    "contact": "Contact"
   },
   "userManagement": {
     "eyebrow": "System accounts",

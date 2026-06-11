@@ -12,6 +12,7 @@ const STAFF_NAV_ITEMS = [
   { to: '/staff/tasks', labelKey: 'navigation.tasks' },
   { to: '/staff/maintenance', labelKey: 'navigation.maintenance' },
   { to: '/staff/profile', labelKey: 'navigation.profile' },
+  { to: '/staff/contact', labelKey: 'navigation.contact' },
   { to: '/staff/settings', labelKey: 'settings.title' }
 ];
 
