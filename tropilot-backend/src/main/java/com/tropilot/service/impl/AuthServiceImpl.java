@@ -6,11 +6,14 @@ import com.tropilot.dto.request.LoginRequest;
 import com.tropilot.dto.request.ProfileUpdateRequest;
 import com.tropilot.dto.response.LoginResponse;
 import com.tropilot.dto.response.UserResponse;
+import com.tropilot.entity.RoomAssignment;
 import com.tropilot.entity.User;
+import com.tropilot.enums.RoomAssignmentStatus;
 import com.tropilot.enums.UserStatus;
 import com.tropilot.exception.BadRequestException;
 import com.tropilot.exception.ResourceNotFoundException;
 import com.tropilot.exception.UnauthorizedException;
+import com.tropilot.repository.RoomAssignmentRepository;
 import com.tropilot.repository.UserRepository;
 import com.tropilot.security.JwtService;
 import com.tropilot.service.ActivityLogService;
@@ -25,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
+    private final RoomAssignmentRepository roomAssignmentRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final UserMapper userMapper;
@@ -57,7 +61,12 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional(readOnly = true)
     public UserResponse getCurrentUser(Long userId) {
-        return userMapper.toResponse(findUser(userId));
+        User user = findUser(userId);
+        RoomAssignment activeAssignment = roomAssignmentRepository
+                .findByResidentHeadIdAndStatus(userId, RoomAssignmentStatus.ACTIVE)
+                .orElse(null);
+
+        return userMapper.toResponse(user, activeAssignment);
     }
 
     @Override

@@ -6,12 +6,17 @@ import { formatEnumLabel } from '../utils/i18nFormat.js';
 import { formatInvoiceAmount, formatInvoiceText } from '../utils/invoiceDisplay.js';
 import { formatRoomLabel } from '../utils/roomDisplay.js';
 
-export default function InvoiceDetail({ invoice }) {
+export default function InvoiceDetail({ invoice, showPaymentInstructions = false }) {
   const { t } = useTranslation();
 
   if (!invoice) {
     return <div className="empty-state">{t('tables.invoiceItems.selectInvoice')}</div>;
   }
+
+  const paymentCompleted =
+    invoice.status === 'PAID' || invoice.sepayPayment?.status === 'PAID';
+  const shouldShowPaymentInstructions =
+    showPaymentInstructions && invoice.sepayPayment && !paymentCompleted;
 
   return (
     <section className="invoice-detail-panel">
@@ -73,7 +78,7 @@ export default function InvoiceDetail({ invoice }) {
         )}
       </div>
 
-      {invoice.sepayPayment && (
+      {shouldShowPaymentInstructions && (
         <section className="sepay-payment-panel">
           <div className="sepay-payment-copy">
             <span className="section-eyebrow">{t('sepayPayment.eyebrow')}</span>

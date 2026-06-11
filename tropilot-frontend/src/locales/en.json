@@ -28,6 +28,27 @@
     "yes": "Yes",
     "no": "No"
   },
+  "chat": {
+    "title": "Tropilot Assistant",
+    "eyebrow": "AI support",
+    "open": "Open AI assistant",
+    "close": "Close AI assistant",
+    "clear": "Clear conversation",
+    "welcomeTitle": "How can I help?",
+    "welcomeMessage": "Ask about using Tropilot, rental operations, invoices, utilities, contracts, maintenance, or other supported workflows.",
+    "assistant": "Tropilot AI",
+    "you": "You",
+    "thinking": "Thinking...",
+    "inputLabel": "Message",
+    "placeholder": "Ask a question about Tropilot...",
+    "send": "Send",
+    "sending": "Sending...",
+    "errors": {
+      "assignmentRequired": "The AI assistant is available after your account is assigned to an active room.",
+      "unavailable": "The AI assistant is temporarily unavailable. Please try again later.",
+      "sendFailed": "Your message could not be sent. Please try again."
+    }
+  },
   "settings": {
     "title": "Settings",
     "language": "Language",
@@ -146,7 +167,7 @@
       "empty": "No users match the current search."
     },
     "passwordUnavailable": "Temporary password unavailable",
-    "passwordChanged": "Password changed by user"
+    "passwordChanged": "Password changed"
   },
   "residentDirectory": {
     "eyebrow": "Resident management",
@@ -183,7 +204,7 @@
       "id": "ID",
       "name": "User name",
       "email": "Gmail",
-      "apartment": "Apartment",
+      "room": "Room",
       "status": "Status",
       "temporaryPassword": "Temporary password",
       "actions": "Actions"
@@ -205,7 +226,7 @@
       "email": "Gmail",
       "phone": "Phone number",
       "role": "Role",
-      "apartment": "Apartment",
+      "room": "Room",
       "status": "Status",
       "createdAt": "Created date",
       "temporaryPassword": "Temporary password",
@@ -213,6 +234,30 @@
       "memberCount_one": "{{count}} member",
       "memberCount_other": "{{count}} members",
       "noMembers": "This head resident has no active household members."
+    }
+  },
+  "pendingMemberReview": {
+    "eyebrow": "Resident management",
+    "title": "Pending room members",
+    "columns": {
+      "id": "ID",
+      "name": "Member name",
+      "headResident": "Head resident",
+      "room": "Room",
+      "actions": "Actions"
+    },
+    "actions": {
+      "approve": "Approve",
+      "reject": "Reject"
+    },
+    "messages": {
+      "loading": "Loading pending members...",
+      "loadError": "Pending members could not be loaded",
+      "approved": "{{name}} was approved successfully.",
+      "approveError": "Room member could not be approved",
+      "rejected": "{{name}} was rejected successfully.",
+      "rejectError": "Room member could not be rejected",
+      "empty": "No pending members found."
     }
   },
   "userCreate": {
@@ -410,6 +455,7 @@
     "placeholders": {
       "selectBuilding": "Select a building",
       "selectRoom": "Select a room",
+      "code": "Leave blank to generate a code automatically",
       "name": "Example: Main lobby camera, elevator A",
       "location": "Example: Floor 1 - Main lobby, basement B1",
       "maintenanceCycleDays": "Example: 30, 90, 180"

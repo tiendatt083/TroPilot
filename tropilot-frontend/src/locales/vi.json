@@ -28,6 +28,27 @@
     "yes": "Có",
     "no": "Không"
   },
+  "chat": {
+    "title": "Trợ lý Tropilot",
+    "eyebrow": "Hỗ trợ AI",
+    "open": "Mở trợ lý AI",
+    "close": "Đóng trợ lý AI",
+    "clear": "Xóa cuộc trò chuyện",
+    "welcomeTitle": "Tôi có thể hỗ trợ gì?",
+    "welcomeMessage": "Hãy hỏi về cách sử dụng Tropilot, vận hành nhà trọ, hóa đơn, điện nước, hợp đồng, bảo trì hoặc các quy trình được hỗ trợ.",
+    "assistant": "Tropilot AI",
+    "you": "Bạn",
+    "thinking": "Đang trả lời...",
+    "inputLabel": "Tin nhắn",
+    "placeholder": "Nhập câu hỏi về Tropilot...",
+    "send": "Gửi",
+    "sending": "Đang gửi...",
+    "errors": {
+      "assignmentRequired": "Trợ lý AI chỉ khả dụng sau khi tài khoản được gán vào một phòng đang hoạt động.",
+      "unavailable": "Trợ lý AI đang tạm thời gián đoạn. Vui lòng thử lại sau.",
+      "sendFailed": "Không thể gửi câu hỏi. Vui lòng thử lại."
+    }
+  },
   "settings": {
     "title": "Cài đặt",
     "language": "Ngôn ngữ",
@@ -146,7 +167,7 @@
       "empty": "Không có người dùng nào phù hợp với tìm kiếm."
     },
     "passwordUnavailable": "Không có mật khẩu tạm thời",
-    "passwordChanged": "Người dùng đã đổi mật khẩu"
+    "passwordChanged": "Đã đổi mật khẩu"
   },
   "residentDirectory": {
     "eyebrow": "Quản lý cư dân",
@@ -183,7 +204,7 @@
       "id": "ID",
       "name": "Tên người dùng",
       "email": "Gmail",
-      "apartment": "Căn hộ",
+      "room": "Phòng",
       "status": "Trạng thái",
       "temporaryPassword": "Mật khẩu tạm thời",
       "actions": "Thao tác"
@@ -205,7 +226,7 @@
       "email": "Gmail",
       "phone": "Số điện thoại",
       "role": "Vai trò",
-      "apartment": "Căn hộ",
+      "room": "Phòng",
       "status": "Trạng thái",
       "createdAt": "Ngày tạo",
       "temporaryPassword": "Mật khẩu tạm thời",
@@ -213,6 +234,30 @@
       "memberCount_one": "{{count}} thành viên",
       "memberCount_other": "{{count}} thành viên",
       "noMembers": "Chủ hộ chưa có thành viên hộ đang hoạt động."
+    }
+  },
+  "pendingMemberReview": {
+    "eyebrow": "Quản lý cư dân",
+    "title": "Thành viên chờ duyệt",
+    "columns": {
+      "id": "ID",
+      "name": "Tên thành viên",
+      "headResident": "Thành viên của chủ hộ",
+      "room": "Phòng",
+      "actions": "Thao tác"
+    },
+    "actions": {
+      "approve": "Duyệt",
+      "reject": "Từ chối"
+    },
+    "messages": {
+      "loading": "Đang tải thành viên chờ duyệt...",
+      "loadError": "Không thể tải thành viên chờ duyệt",
+      "approved": "Đã duyệt thành viên {{name}}.",
+      "approveError": "Không thể duyệt thành viên",
+      "rejected": "Đã từ chối thành viên {{name}}.",
+      "rejectError": "Không thể từ chối thành viên",
+      "empty": "Không có thành viên nào đang chờ duyệt."
     }
   },
   "userCreate": {
@@ -410,6 +455,7 @@
     "placeholders": {
       "selectBuilding": "Chọn tòa nhà",
       "selectRoom": "Chọn phòng",
+      "code": "Để trống để hệ thống tự tạo mã",
       "name": "Ví dụ: Camera sảnh chính, thang máy A",
       "location": "Ví dụ: Tầng 1 - Sảnh chính, tầng hầm B1",
       "maintenanceCycleDays": "Ví dụ: 30, 90, 180"

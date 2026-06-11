@@ -13,8 +13,10 @@ export default function useInvoicePaymentPolling({
   onPaymentConfirmed,
   enabled = true
 }) {
+  const pollingActive = enabled && isWaitingForSepayPayment(invoice);
+
   useEffect(() => {
-    if (!enabled || !isWaitingForSepayPayment(invoice)) {
+    if (!pollingActive) {
       return undefined;
     }
 
@@ -47,5 +49,5 @@ export default function useInvoicePaymentPolling({
       window.clearTimeout(firstCheck);
       window.clearInterval(intervalId);
     };
-  }, [enabled, fetchInvoice, invoice, onInvoiceUpdate, onPaymentConfirmed]);
+  }, [fetchInvoice, onInvoiceUpdate, onPaymentConfirmed, pollingActive]);
 }

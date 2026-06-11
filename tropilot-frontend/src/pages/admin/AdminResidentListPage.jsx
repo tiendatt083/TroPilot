@@ -192,6 +192,7 @@ export default function AdminResidentListPage() {
           deletingId={deletingId}
           emptyMessage={t('residentDirectory.messages.empty')}
           onDelete={handleDelete}
+          showRoom
         />
       )}
     </section>

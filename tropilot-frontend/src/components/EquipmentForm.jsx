@@ -171,6 +171,19 @@ export default function EquipmentForm({
         )}
 
         <div className="form-grid-wide">
+          <label htmlFor="equipmentCode">{t('equipment.fields.code')}</label>
+          <input
+            id="equipmentCode"
+            name="equipmentCode"
+            value={values.equipmentCode}
+            maxLength="60"
+            placeholder={t('equipment.placeholders.code')}
+            onChange={handleChange}
+          />
+          {!equipment && <small>{t('equipment.help.autoCode')}</small>}
+        </div>
+
+        <div className="form-grid-wide">
           <label htmlFor="equipmentName">
             {t('equipment.fields.name')} <span aria-hidden="true">*</span>
           </label>
@@ -183,7 +196,6 @@ export default function EquipmentForm({
             onChange={handleChange}
             required
           />
-          {!equipment && <small>{t('equipment.help.autoCode')}</small>}
         </div>
 
         <div className="form-grid-wide">

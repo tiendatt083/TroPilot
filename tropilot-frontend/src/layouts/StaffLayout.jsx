@@ -1,5 +1,6 @@
 import { NavLink, Outlet } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import ChatWidget from '../components/ChatWidget.jsx';
 import SidebarBrand from '../components/SidebarBrand.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 
@@ -40,6 +41,7 @@ export default function StaffLayout() {
       <main className="main-panel">
         <Outlet />
       </main>
+      <ChatWidget />
     </div>
   );
 }

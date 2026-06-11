@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import ChatWidget from '../components/ChatWidget.jsx';
 import SidebarBrand from '../components/SidebarBrand.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 
@@ -101,6 +102,7 @@ export default function AdminLayout() {
       <main className="main-panel">
         <Outlet />
       </main>
+      <ChatWidget />
     </div>
   );
 }

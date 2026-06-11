@@ -6,7 +6,8 @@ export default function AdminAccountDirectoryTable({
   accounts,
   emptyMessage,
   deletingId = null,
-  onDelete
+  onDelete,
+  showRoom = false
 }) {
   const { t } = useTranslation();
   const [selectedAccount, setSelectedAccount] = useState(null);
@@ -29,16 +30,18 @@ export default function AdminAccountDirectoryTable({
   return (
     <>
       <div className="table-wrap account-directory-table-wrap">
-        <table className="data-table account-directory-table">
+        <table className={`data-table account-directory-table ${showRoom ? 'has-room-column' : 'without-room-column'}`}>
           <thead>
             <tr>
-              <th>{t('accountDirectory.columns.id')}</th>
-              <th>{t('accountDirectory.columns.name')}</th>
-              <th>{t('accountDirectory.columns.email')}</th>
-              <th>{t('accountDirectory.columns.apartment')}</th>
-              <th>{t('accountDirectory.columns.status')}</th>
-              <th>{t('accountDirectory.columns.temporaryPassword')}</th>
-              <th>{t('accountDirectory.columns.actions')}</th>
+              <th className="account-id-column">{t('accountDirectory.columns.id')}</th>
+              <th className="account-name-column">{t('accountDirectory.columns.name')}</th>
+              <th className="account-email-column">{t('accountDirectory.columns.email')}</th>
+              {showRoom && (
+                <th className="account-room-column">{t('accountDirectory.columns.room')}</th>
+              )}
+              <th className="account-status-column">{t('accountDirectory.columns.status')}</th>
+              <th className="account-password-column">{t('accountDirectory.columns.temporaryPassword')}</th>
+              <th className="account-actions-column">{t('accountDirectory.columns.actions')}</th>
             </tr>
           </thead>
           <tbody>
@@ -52,7 +55,7 @@ export default function AdminAccountDirectoryTable({
                   </span>
                 </td>
                 <td>{account.email}</td>
-                <td>{formatApartment(account, t)}</td>
+                {showRoom && <td>{formatRoom(account, t)}</td>}
                 <td>
                   <span className={`status-pill status-${account.status.toLowerCase()}`}>
                     {formatStatus(account.status, t)}
@@ -103,6 +106,7 @@ export default function AdminAccountDirectoryTable({
         <AccountDetailModal
           account={selectedAccount}
           onClose={() => setSelectedAccount(null)}
+          showRoom={showRoom}
           t={t}
         />
       )}
@@ -110,7 +114,7 @@ export default function AdminAccountDirectoryTable({
   );
 }
 
-function AccountDetailModal({ account, onClose, t }) {
+function AccountDetailModal({ account, onClose, showRoom, t }) {
   const members = account.members || [];
 
   return (
@@ -141,7 +145,9 @@ function AccountDetailModal({ account, onClose, t }) {
           <DetailItem label={t('accountDirectory.detail.email')} value={account.email} />
           <DetailItem label={t('accountDirectory.detail.phone')} value={account.phone || t('common.notProvided')} />
           <DetailItem label={t('accountDirectory.detail.role')} value={formatRole(account.role, t)} />
-          <DetailItem label={t('accountDirectory.detail.apartment')} value={formatApartment(account, t)} />
+          {showRoom && (
+            <DetailItem label={t('accountDirectory.detail.room')} value={formatRoom(account, t)} />
+          )}
           <DetailItem label={t('accountDirectory.detail.status')} value={formatStatus(account.status, t)} />
           <DetailItem
             label={t('accountDirectory.detail.createdAt')}
@@ -197,17 +203,14 @@ function DetailItem({ label, value }) {
   );
 }
 
-function formatApartment(account, t) {
+function formatRoom(account, t) {
   const room = account.assignedRoomCode || account.assignedRoomName;
-  const building = account.assignedBuildingCode || account.assignedBuildingName;
 
   if (!room) {
-    return account.role === 'RESIDENT_HEAD'
-      ? t('common.notAssigned')
-      : t('common.notApplicable');
+    return t('common.notAssigned');
   }
 
-  return building ? `${room} · ${building}` : room;
+  return room;
 }
 
 function formatRole(role, t) {

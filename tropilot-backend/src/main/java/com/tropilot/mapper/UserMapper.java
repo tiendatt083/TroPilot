@@ -18,6 +18,10 @@ public class UserMapper {
         return toResponse(user, false);
     }
 
+    public UserResponse toResponse(User user, RoomAssignment activeAssignment) {
+        return toResponse(user, false, activeAssignment);
+    }
+
     public UserResponse toAdminResponse(User user) {
         return toResponse(user, true, null);
     }

@@ -135,7 +135,7 @@ export default function ResidentInvoiceDetailPage() {
       {error && <div className="alert error-alert">{error}</div>}
 
       <section className="resident-invoice-workspace">
-        <InvoiceDetail invoice={invoice} />
+        <InvoiceDetail invoice={invoice} showPaymentInstructions />
 
         {invoice && (
           <div className="payment-panel">
