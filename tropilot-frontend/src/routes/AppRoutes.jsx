@@ -90,6 +90,8 @@ import StaffVehicleListPage from '../pages/staff/StaffVehicleListPage.jsx';
 import Settings from '../pages/Settings.jsx';
 import HomeRedirect from './HomeRedirect.jsx';
 import ProtectedRoute from './ProtectedRoute.jsx';
+import ResidentIndexRoute from './ResidentIndexRoute.jsx';
+import ResidentRoomRoute from './ResidentRoomRoute.jsx';
 import RoleBasedRoute from './RoleBasedRoute.jsx';
 
 export default function AppRoutes() {
@@ -211,22 +213,24 @@ export default function AppRoutes() {
 
           <Route element={<RoleBasedRoute allowedRoles={['RESIDENT_HEAD']} />}>
             <Route path="/resident" element={<ResidentLayout />}>
-              <Route index element={<Navigate to="/resident/dashboard" replace />} />
-              <Route path="dashboard" element={<ResidentDashboardPage />} />
+              <Route index element={<ResidentIndexRoute />} />
               <Route path="profile" element={<ProfilePage />} />
               <Route path="contact" element={<ContactPage />} />
               <Route path="settings" element={<Settings />} />
-              <Route path="notifications" element={<ResidentNotificationPage />} />
-              <Route path="feedbacks" element={<ResidentFeedbackPage />} />
-              <Route path="invoices" element={<ResidentInvoiceListPage />} />
-              <Route path="invoices/:id" element={<ResidentInvoiceDetailPage />} />
-              <Route path="members" element={<ResidentMemberPage />} />
-              <Route path="maintenance" element={<ResidentMaintenanceListPage />} />
-              <Route path="maintenance/create" element={<ResidentMaintenanceCreatePage />} />
-              <Route path="contract" element={<ResidentContractPage />} />
-              <Route path="vehicles" element={<ResidentVehiclePage />} />
-              <Route path="equipment" element={<ResidentEquipmentPage />} />
-              <Route path="utility-readings" element={<ResidentUtilityReadingPage />} />
+              <Route element={<ResidentRoomRoute />}>
+                <Route path="dashboard" element={<ResidentDashboardPage />} />
+                <Route path="notifications" element={<ResidentNotificationPage />} />
+                <Route path="feedbacks" element={<ResidentFeedbackPage />} />
+                <Route path="invoices" element={<ResidentInvoiceListPage />} />
+                <Route path="invoices/:id" element={<ResidentInvoiceDetailPage />} />
+                <Route path="members" element={<ResidentMemberPage />} />
+                <Route path="maintenance" element={<ResidentMaintenanceListPage />} />
+                <Route path="maintenance/create" element={<ResidentMaintenanceCreatePage />} />
+                <Route path="contract" element={<ResidentContractPage />} />
+                <Route path="vehicles" element={<ResidentVehiclePage />} />
+                <Route path="equipment" element={<ResidentEquipmentPage />} />
+                <Route path="utility-readings" element={<ResidentUtilityReadingPage />} />
+              </Route>
             </Route>
           </Route>
         </Route>

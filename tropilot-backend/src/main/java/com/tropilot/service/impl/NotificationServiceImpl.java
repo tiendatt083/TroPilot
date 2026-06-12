@@ -26,6 +26,7 @@ import com.tropilot.repository.RoomAssignmentRepository;
 import com.tropilot.repository.RoomRepository;
 import com.tropilot.repository.UserRepository;
 import com.tropilot.service.NotificationService;
+import com.tropilot.service.ResidentRoomAccessService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,6 +52,7 @@ public class NotificationServiceImpl implements NotificationService {
     private final RoomRepository roomRepository;
     private final RoomAssignmentRepository roomAssignmentRepository;
     private final NotificationMapper notificationMapper;
+    private final ResidentRoomAccessService residentRoomAccessService;
 
     @Override
     @Transactional
@@ -105,9 +107,9 @@ public class NotificationServiceImpl implements NotificationService {
     @Transactional(readOnly = true)
     public List<NotificationResponse> getResidentNotifications(Long userId) {
         User user = findUser(userId);
-        RoomAssignment activeAssignment = findActiveAssignment(user.getId()).orElse(null);
-        Long roomId = activeAssignment == null ? null : activeAssignment.getRoom().getId();
-        Long buildingId = activeAssignment == null ? null : activeAssignment.getRoom().getBuilding().getId();
+        RoomAssignment activeAssignment = residentRoomAccessService.requireActiveAssignment(user.getId());
+        Long roomId = activeAssignment.getRoom().getId();
+        Long buildingId = activeAssignment.getRoom().getBuilding().getId();
 
         return getVisibleNotifications(
                 user.getId(),
@@ -132,6 +134,9 @@ public class NotificationServiceImpl implements NotificationService {
     @Transactional
     public NotificationResponse markRead(Long userId, Long notificationId) {
         User user = findUser(userId);
+        if (user.getRole() == UserRole.RESIDENT_HEAD) {
+            residentRoomAccessService.requireActiveAssignment(user.getId());
+        }
         Notification notification = findNotification(notificationId);
 
         if (!isVisibleToUser(notification, user)) {

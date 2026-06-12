@@ -1,5 +1,6 @@
 package com.tropilot.config;
 
+import com.tropilot.security.ResidentRoomAccessInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -8,6 +9,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.nio.file.Path;
@@ -19,6 +21,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     private final CorsProperties corsProperties;
     private final UploadProperties uploadProperties;
+    private final ResidentRoomAccessInterceptor residentRoomAccessInterceptor;
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
@@ -55,5 +58,12 @@ public class WebConfig implements WebMvcConfigurer {
 
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations(uploadLocation);
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(residentRoomAccessInterceptor)
+                .addPathPatterns("/api/resident/**")
+                .excludePathPatterns("/api/resident/room", "/api/resident/room/");
     }
 }

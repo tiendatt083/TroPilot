@@ -5,9 +5,9 @@ import com.tropilot.dto.response.ChatMessageResponse;
 import com.tropilot.entity.User;
 import com.tropilot.enums.UserRole;
 import com.tropilot.integration.gemini.GeminiChatClient;
-import com.tropilot.repository.RoomAssignmentRepository;
 import com.tropilot.security.CurrentUserProvider;
 import com.tropilot.service.ChatContextService;
+import com.tropilot.service.ResidentRoomAccessService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -24,7 +24,7 @@ class ChatServiceImplTest {
     private CurrentUserProvider currentUserProvider;
 
     @Mock
-    private RoomAssignmentRepository roomAssignmentRepository;
+    private ResidentRoomAccessService residentRoomAccessService;
 
     @Mock
     private ChatContextService chatContextService;
@@ -36,7 +36,7 @@ class ChatServiceImplTest {
     void replyPassesAuthorizedLiveContextToGemini() {
         ChatServiceImpl service = new ChatServiceImpl(
                 currentUserProvider,
-                roomAssignmentRepository,
+                residentRoomAccessService,
                 chatContextService,
                 geminiChatClient
         );
@@ -58,5 +58,30 @@ class ChatServiceImplTest {
         assertThat(response.getReply()).isEqualTo("There are 4 buildings.");
         verify(chatContextService).buildContext(admin);
         verify(geminiChatClient).generateReply(request.getHistory(), request.getMessage(), context);
+    }
+
+    @Test
+    void replyRequiresActiveRoomForResidentHead() {
+        ChatServiceImpl service = new ChatServiceImpl(
+                currentUserProvider,
+                residentRoomAccessService,
+                chatContextService,
+                geminiChatClient
+        );
+        User resident = User.builder()
+                .id(7L)
+                .role(UserRole.RESIDENT_HEAD)
+                .build();
+        ChatMessageRequest request = new ChatMessageRequest();
+        request.setMessage("Show my room details");
+
+        when(currentUserProvider.getCurrentUser()).thenReturn(resident);
+        when(chatContextService.buildContext(resident)).thenReturn("{}");
+        when(geminiChatClient.generateReply(request.getHistory(), request.getMessage(), "{}"))
+                .thenReturn("Room details");
+
+        service.reply(request);
+
+        verify(residentRoomAccessService).requireActiveAssignment(resident.getId());
     }
 }

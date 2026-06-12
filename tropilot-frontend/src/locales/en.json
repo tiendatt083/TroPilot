@@ -201,6 +201,10 @@
     "profile": "Personal information",
     "contact": "Contact"
   },
+  "residentAccess": {
+    "loading": "Checking resident access...",
+    "loadError": "Resident access could not be verified. Only profile, contact, and settings are available."
+  },
   "userManagement": {
     "eyebrow": "System accounts",
     "title": "User management",

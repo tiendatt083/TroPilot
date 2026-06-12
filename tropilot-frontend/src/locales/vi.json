@@ -201,6 +201,10 @@
     "profile": "Thông tin cá nhân",
     "contact": "Liên hệ"
   },
+  "residentAccess": {
+    "loading": "Đang kiểm tra quyền cư trú...",
+    "loadError": "Không thể xác minh quyền cư trú. Bạn chỉ có thể dùng thông tin cá nhân, liên hệ và cài đặt."
+  },
   "userManagement": {
     "eyebrow": "Tài khoản hệ thống",
     "title": "Quản lý người dùng",
