@@ -18,7 +18,6 @@ public class ServiceFeeResponse {
     private String buildingCode;
     private String buildingName;
     private String name;
-    private String feeCode;
     private FeeType feeType;
     private BigDecimal unitPrice;
     private CalculationType calculationType;

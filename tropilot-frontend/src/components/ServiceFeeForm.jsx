@@ -9,24 +9,10 @@ import {
 
 const emptyForm = {
   name: '',
-  feeCode: '',
   feeType: 'ELECTRICITY',
   unitPrice: 0,
   calculationType: 'BY_USAGE'
 };
-
-function buildInternalFeeCode(name, feeType) {
-  const normalizedName = String(name || '')
-    .trim()
-    .toUpperCase()
-    .replace(/[^A-Z0-9]+/g, '_')
-    .replace(/^_+|_+$/g, '')
-    .slice(0, 24);
-  const normalizedType = String(feeType || 'OTHER').toUpperCase().slice(0, 12);
-  const uniqueSuffix = Date.now().toString().slice(-10);
-
-  return `${normalizedType}_${normalizedName || 'SERVICE'}_${uniqueSuffix}`.slice(0, 50);
-}
 
 export default function ServiceFeeForm({ initialValues, loading, submitLabel, onSubmit }) {
   const { t } = useTranslation();
@@ -68,7 +54,6 @@ export default function ServiceFeeForm({ initialValues, loading, submitLabel, on
     event.preventDefault();
     onSubmit({
       name: form.name,
-      feeCode: form.feeCode || buildInternalFeeCode(form.name, form.feeType),
       feeType: form.feeType,
       unitPrice: form.unitPrice === '' ? null : Number(form.unitPrice),
       calculationType: form.calculationType,

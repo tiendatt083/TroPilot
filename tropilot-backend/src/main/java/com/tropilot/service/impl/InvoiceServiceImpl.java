@@ -594,12 +594,24 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     private ServiceFee findRequiredFee(List<ServiceFee> activeFees, FeeType feeType) {
-        return activeFees.stream()
+        List<ServiceFee> matchingFees = activeFees.stream()
                 .filter(fee -> fee.getFeeType() == feeType)
-                .findFirst()
-                .orElseThrow(() -> new BadRequestException(
-                        "Active " + feeType.name().toLowerCase() + " fee is required in this building for invoice generation"
-                ));
+                .toList();
+
+        if (matchingFees.isEmpty()) {
+            throw new BadRequestException(
+                    "Active " + feeType.name().toLowerCase() + " fee is required in this building for invoice generation"
+            );
+        }
+
+        if (matchingFees.size() > 1) {
+            throw new BadRequestException(
+                    "Multiple active " + feeType.name().toLowerCase()
+                            + " fees were found in this building. Deactivate duplicates before generating invoices"
+            );
+        }
+
+        return matchingFees.get(0);
     }
 
     private boolean hasUsageBasedUtilityFee(List<ServiceFee> activeFees) {

@@ -10,13 +10,11 @@ const utilityFeeConfigs = [
   {
     key: 'electricity',
     feeType: 'ELECTRICITY',
-    codeSuffix: 'ELECTRICITY',
     name: 'Electricity'
   },
   {
     key: 'water',
     feeType: 'WATER',
-    codeSuffix: 'WATER',
     name: 'Water'
   }
 ];
@@ -41,27 +39,6 @@ const emptyAdditionalForm = {
   calculationType: 'FIXED'
 };
 
-function normalizeCodePart(value) {
-  return String(value || '')
-    .trim()
-    .toUpperCase()
-    .replace(/[^A-Z0-9]+/g, '_')
-    .replace(/^_+|_+$/g, '');
-}
-
-function buildFeeCode(buildingCode, suffix) {
-  const baseCode = (normalizeCodePart(buildingCode) || 'BUILDING').slice(0, 28);
-  const normalizedSuffix = normalizeCodePart(suffix) || 'SERVICE';
-  return `${baseCode}_${normalizedSuffix}`.slice(0, 50);
-}
-
-function buildAdditionalFeeCode(buildingCode, serviceName) {
-  const baseCode = (normalizeCodePart(buildingCode) || 'BUILDING').slice(0, 16);
-  const serviceCode = normalizeCodePart(serviceName).slice(0, 18) || 'SERVICE';
-  const uniqueSuffix = Date.now().toString().slice(-8);
-  return `${baseCode}_SERVICE_${serviceCode}_${uniqueSuffix}`.slice(0, 50);
-}
-
 function formatMoney(value) {
   const numberValue = Number(value);
   return Number.isFinite(numberValue)
@@ -69,8 +46,9 @@ function formatMoney(value) {
     : value;
 }
 
-function findFirstFeeByType(serviceFees, feeType) {
-  return serviceFees.find((serviceFee) => serviceFee.feeType === feeType) || null;
+function findPreferredFeeByType(serviceFees, feeType) {
+  const matchingFees = serviceFees.filter((serviceFee) => serviceFee.feeType === feeType);
+  return matchingFees.find(isServiceFeeActive) || matchingFees[0] || null;
 }
 
 export default function AdminBuildingServiceFeePage() {
@@ -89,8 +67,8 @@ export default function AdminBuildingServiceFeePage() {
 
   const utilityFees = useMemo(
     () => ({
-      electricity: findFirstFeeByType(serviceFees, 'ELECTRICITY'),
-      water: findFirstFeeByType(serviceFees, 'WATER')
+      electricity: findPreferredFeeByType(serviceFees, 'ELECTRICITY'),
+      water: findPreferredFeeByType(serviceFees, 'WATER')
     }),
     [serviceFees]
   );
@@ -149,7 +127,6 @@ export default function AdminBuildingServiceFeePage() {
     const existingFee = utilityFees[config.key];
     const payload = {
       name: config.name,
-      feeCode: existingFee?.feeCode || buildFeeCode(building.buildingCode, config.codeSuffix),
       feeType: config.feeType,
       unitPrice: Number(utilityForm[config.key].unitPrice),
       calculationType: utilityForm[config.key].calculationType,
@@ -204,7 +181,6 @@ export default function AdminBuildingServiceFeePage() {
     const trimmedName = additionalForm.name.trim();
     const payload = {
       name: trimmedName,
-      feeCode: editingAdditionalFee?.feeCode || buildAdditionalFeeCode(building.buildingCode, trimmedName),
       feeType: 'OTHER',
       unitPrice: Number(additionalForm.unitPrice),
       calculationType: additionalForm.calculationType,

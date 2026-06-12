@@ -1323,7 +1323,6 @@
         "moveInDate": "Ngày chuyển vào"
       },
       "serviceFee": {
-        "serviceFeeCode": "Mã phí dịch vụ",
         "serviceFeeName": "Tên phí dịch vụ",
         "calculationType": "Cách tính phí",
         "selectVehicleType": "Chọn loại xe",

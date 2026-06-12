@@ -17,7 +17,6 @@ public class ServiceFeeMapper {
                 .buildingCode(building == null ? null : building.getBuildingCode())
                 .buildingName(building == null ? null : building.getName())
                 .name(serviceFee.getName())
-                .feeCode(serviceFee.getFeeCode())
                 .feeType(serviceFee.getFeeType())
                 .unitPrice(serviceFee.getUnitPrice())
                 .calculationType(serviceFee.getCalculationType())

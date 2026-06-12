@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -34,17 +35,17 @@ public class ServiceFeeServiceImpl implements ServiceFeeService {
     @Transactional
     public ServiceFeeResponse createBuildingServiceFee(Long buildingId, ServiceFeeUpsertRequest request) {
         Building building = findBuilding(buildingId);
-        String feeCode = normalizeCode(request.getFeeCode());
-
-        if (serviceFeeRepository.existsByBuilding_IdAndFeeCode(building.getId(), feeCode)) {
-            throw new BadRequestException("Service fee code is already in use in this building");
-        }
+        FeeType feeType = parseFeeType(request.getFeeType());
+        CalculationType calculationType = parseCalculationType(request.getCalculationType());
+        validateServiceFeeRule(feeType, calculationType, request.getVehicleType());
+        validateSingleActiveUtilityFee(building.getId(), feeType, null);
 
         ServiceFee serviceFee = ServiceFee.builder()
                 .building(building)
+                .feeCode(generateFeeCode(building, feeType, request.getName()))
                 .isActive(true)
                 .build();
-        applyValues(serviceFee, request, feeCode);
+        applyValues(serviceFee, request, feeType, calculationType);
 
         return serviceFeeMapper.toResponse(serviceFeeRepository.save(serviceFee));
     }
@@ -71,15 +72,15 @@ public class ServiceFeeServiceImpl implements ServiceFeeService {
     @Transactional
     public ServiceFeeResponse updateBuildingServiceFee(Long buildingId, Long id, ServiceFeeUpsertRequest request) {
         ServiceFee serviceFee = findBuildingServiceFee(buildingId, id);
-        String feeCode = normalizeCode(request.getFeeCode());
+        FeeType feeType = parseFeeType(request.getFeeType());
+        CalculationType calculationType = parseCalculationType(request.getCalculationType());
+        validateServiceFeeRule(feeType, calculationType, request.getVehicleType());
 
-        serviceFeeRepository.findByBuilding_IdAndFeeCode(buildingId, feeCode)
-                .filter(existing -> !existing.getId().equals(id))
-                .ifPresent(existing -> {
-                    throw new BadRequestException("Service fee code is already in use in this building");
-                });
+        if (Boolean.TRUE.equals(serviceFee.getIsActive())) {
+            validateSingleActiveUtilityFee(buildingId, feeType, id);
+        }
 
-        applyValues(serviceFee, request, feeCode);
+        applyValues(serviceFee, request, feeType, calculationType);
 
         return serviceFeeMapper.toResponse(serviceFeeRepository.save(serviceFee));
     }
@@ -95,19 +96,24 @@ public class ServiceFeeServiceImpl implements ServiceFeeService {
     @Transactional
     public ServiceFeeResponse toggleBuildingServiceFee(Long buildingId, Long id) {
         ServiceFee serviceFee = findBuildingServiceFee(buildingId, id);
-        serviceFee.setIsActive(!Boolean.TRUE.equals(serviceFee.getIsActive()));
+        boolean activating = !Boolean.TRUE.equals(serviceFee.getIsActive());
+
+        if (activating) {
+            validateSingleActiveUtilityFee(buildingId, serviceFee.getFeeType(), id);
+        }
+
+        serviceFee.setIsActive(activating);
 
         return serviceFeeMapper.toResponse(serviceFeeRepository.save(serviceFee));
     }
 
-    private void applyValues(ServiceFee serviceFee, ServiceFeeUpsertRequest request, String feeCode) {
-        FeeType feeType = parseFeeType(request.getFeeType());
-        CalculationType calculationType = parseCalculationType(request.getCalculationType());
-
-        validateServiceFeeRule(feeType, calculationType, request.getVehicleType());
-
+    private void applyValues(
+            ServiceFee serviceFee,
+            ServiceFeeUpsertRequest request,
+            FeeType feeType,
+            CalculationType calculationType
+    ) {
         serviceFee.setName(request.getName().trim());
-        serviceFee.setFeeCode(feeCode);
         serviceFee.setFeeType(feeType);
         serviceFee.setUnitPrice(request.getUnitPrice());
         serviceFee.setCalculationType(calculationType);
@@ -197,8 +203,66 @@ public class ServiceFeeServiceImpl implements ServiceFeeService {
         }
     }
 
-    private String normalizeCode(String feeCode) {
-        return feeCode.trim().toUpperCase();
+    private void validateSingleActiveUtilityFee(Long buildingId, FeeType feeType, Long excludedId) {
+        if (!isUtilityFee(feeType)) {
+            return;
+        }
+
+        boolean duplicateExists = excludedId == null
+                ? serviceFeeRepository.existsByBuilding_IdAndFeeTypeAndIsActiveTrue(buildingId, feeType)
+                : serviceFeeRepository.existsByBuilding_IdAndFeeTypeAndIsActiveTrueAndIdNot(
+                        buildingId,
+                        feeType,
+                        excludedId
+                );
+
+        if (duplicateExists) {
+            throw new BadRequestException(
+                    "Only one active " + feeType.name().toLowerCase() + " fee is allowed in each building"
+            );
+        }
+    }
+
+    private String generateFeeCode(Building building, FeeType feeType, String feeName) {
+        String buildingCode = normalizeCodePart(building.getBuildingCode(), "BUILDING");
+        String feeNameCode = feeType == FeeType.OTHER
+                ? "_" + normalizeCodePart(feeName, "SERVICE")
+                : "";
+        String baseCode = buildingCode + "_" + feeType.name() + feeNameCode;
+
+        for (int attempt = 0; attempt < 10; attempt++) {
+            String uniqueSuffix = UUID.randomUUID()
+                    .toString()
+                    .replace("-", "")
+                    .substring(0, 8)
+                    .toUpperCase();
+            String candidate = truncate(baseCode, 41) + "_" + uniqueSuffix;
+
+            if (!serviceFeeRepository.existsByBuilding_IdAndFeeCode(building.getId(), candidate)) {
+                return candidate;
+            }
+        }
+
+        throw new BadRequestException("Could not generate a unique internal service fee code");
+    }
+
+    private String normalizeCodePart(String value, String fallback) {
+        String normalized = value == null
+                ? ""
+                : value.trim()
+                        .toUpperCase()
+                        .replaceAll("[^A-Z0-9]+", "_")
+                        .replaceAll("^_+|_+$", "");
+
+        return normalized.isBlank() ? fallback : normalized;
+    }
+
+    private String truncate(String value, int maxLength) {
+        return value.length() <= maxLength ? value : value.substring(0, maxLength);
+    }
+
+    private boolean isUtilityFee(FeeType feeType) {
+        return feeType == FeeType.ELECTRICITY || feeType == FeeType.WATER;
     }
 
     private String normalizeOptionalText(String value) {

@@ -1323,7 +1323,6 @@
         "moveInDate": "Move-in date"
       },
       "serviceFee": {
-        "serviceFeeCode": "Service fee code",
         "serviceFeeName": "Service fee name",
         "calculationType": "Calculation type",
         "selectVehicleType": "Select vehicle type",

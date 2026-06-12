@@ -811,7 +811,6 @@ export const EN_TO_VI_TRANSLATIONS = {
   'Select approved member': 'Chọn thành viên đã duyệt',
   'Select Head Resident': 'Chọn chủ hộ',
   'Select vehicle type': 'Chọn loại xe',
-  'Service fee code': 'Mã phí dịch vụ',
   'Service fee could not be created': 'Không thể tạo phí dịch vụ',
   'Service fee could not be deleted': 'Không thể xóa phí dịch vụ',
   'Service fee could not be loaded': 'Không thể tải phí dịch vụ',
