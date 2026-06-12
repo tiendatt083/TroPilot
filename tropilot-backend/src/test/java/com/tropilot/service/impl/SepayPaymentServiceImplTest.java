@@ -135,6 +135,26 @@ class SepayPaymentServiceImplTest {
         verify(receiptRepository, never()).save(any());
     }
 
+    @Test
+    void handleWebhookIsIdempotentAfterPaymentWasCompleted() {
+        User admin = BusinessRuleTestFixtures.admin();
+        User residentHead = BusinessRuleTestFixtures.residentHead();
+        Room room = BusinessRuleTestFixtures.room(RoomStatus.OCCUPIED);
+        Invoice invoice = BusinessRuleTestFixtures.invoice(room, residentHead, admin, InvoiceStatus.PAID);
+        SepayPayment payment = payment(invoice);
+        payment.setStatus(SepayPaymentStatus.PAID);
+        SepayWebhookRequest request = webhookRequest(payment.getPaymentCode(), payment.getAmount());
+
+        when(sepayPaymentRepository.findByPaymentCode(payment.getPaymentCode())).thenReturn(Optional.of(payment));
+
+        service.handleWebhook(request, "Apikey test-secret");
+
+        verify(invoiceRepository, never()).save(any());
+        verify(receiptRepository, never()).save(any());
+        verify(sepayPaymentRepository, never()).save(any());
+        verify(notificationService, never()).createInvoicePaidNotification(any(), any(), any());
+    }
+
     private SepayPayment payment(Invoice invoice) {
         return SepayPayment.builder()
                 .id(400L)

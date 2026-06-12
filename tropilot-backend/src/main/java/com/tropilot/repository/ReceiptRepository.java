@@ -16,8 +16,6 @@ public interface ReceiptRepository extends JpaRepository<Receipt, Long> {
 
     boolean existsByInvoice_IdAndStatus(Long invoiceId, ReceiptStatus status);
 
-    boolean existsByInvoice_Id(Long invoiceId);
-
     @Query("""
             select coalesce(sum(receipt.amount), 0)
             from Receipt receipt

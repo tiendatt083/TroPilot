@@ -24,6 +24,7 @@ import com.tropilot.enums.FeedbackType;
 import com.tropilot.enums.FeeType;
 import com.tropilot.enums.InvoiceStatus;
 import com.tropilot.enums.PaymentStatus;
+import com.tropilot.enums.ReceiptStatus;
 import com.tropilot.enums.RentalStatus;
 import com.tropilot.enums.RoomAssignmentStatus;
 import com.tropilot.enums.RoomMemberStatus;
@@ -98,12 +99,12 @@ public class InvoiceServiceImpl implements InvoiceService {
         InvoiceCalculation calculation = calculateInvoice(
                 findRoom(request.getRoomId()),
                 buildingId,
-                getInvoiceMonth(request.getInvoiceDate()),
+                request.getInvoiceDate(),
                 request.getDueDate(),
                 true
         );
 
-        return toPreviewResponse(calculation, request.getInvoiceDate());
+        return toPreviewResponse(calculation);
     }
 
     @Override
@@ -113,7 +114,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         InvoiceCalculation calculation = calculateInvoice(
                 findRoom(request.getRoomId()),
                 buildingId,
-                getInvoiceMonth(request.getInvoiceDate()),
+                request.getInvoiceDate(),
                 request.getDueDate(),
                 true
         );
@@ -160,8 +161,14 @@ public class InvoiceServiceImpl implements InvoiceService {
             }
 
             try {
-                InvoiceCalculation calculation = calculateInvoice(room, buildingId, invoiceMonth, request.getDueDate(), false);
-                eligibleInvoices.add(toPreviewResponse(calculation, request.getInvoiceDate()));
+                InvoiceCalculation calculation = calculateInvoice(
+                        room,
+                        buildingId,
+                        request.getInvoiceDate(),
+                        request.getDueDate(),
+                        false
+                );
+                eligibleInvoices.add(toPreviewResponse(calculation));
             } catch (BadRequestException exception) {
                 String reasonCode = exception.getMessage().toLowerCase().contains("utility reading")
                         ? BLOCKED_MISSING_UTILITY_READING
@@ -215,7 +222,7 @@ public class InvoiceServiceImpl implements InvoiceService {
                     InvoiceCalculation calculation = calculateInvoice(
                             findRoom(previewInvoice.getRoomId()),
                             buildingId,
-                            parseMonth(previewInvoice.getInvoiceMonth()),
+                            request.getInvoiceDate(),
                             request.getDueDate(),
                             true
                     );
@@ -235,9 +242,9 @@ public class InvoiceServiceImpl implements InvoiceService {
             throw new BadRequestException("Only unpaid, pending confirmation, overdue, or rejected invoices can be deleted");
         }
 
-        if (receiptRepository.existsByInvoice_Id(invoiceId)
+        if (receiptRepository.existsByInvoice_IdAndStatus(invoiceId, ReceiptStatus.VALID)
                 || paymentRepository.existsByInvoice_IdAndStatus(invoiceId, PaymentStatus.APPROVED)) {
-            throw new BadRequestException("Invoice cannot be deleted because it has an approved payment or receipt");
+            throw new BadRequestException("Invoice cannot be deleted because it has an approved payment or valid receipt");
         }
 
         List<Feedback> invoiceFeedbacks = feedbackRepository.findByInvoice_Id(invoiceId);
@@ -327,10 +334,11 @@ public class InvoiceServiceImpl implements InvoiceService {
     private InvoiceCalculation calculateInvoice(
             Room room,
             Long buildingId,
-            LocalDate invoiceMonth,
+            LocalDate invoiceDate,
             LocalDate dueDate,
             boolean validateDuplicate
     ) {
+        LocalDate invoiceMonth = getInvoiceMonth(invoiceDate);
         validateRoomBelongsToBuilding(room, buildingId);
         validateRoomCanReceiveInvoice(room);
 
@@ -362,6 +370,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         Invoice draftInvoice = Invoice.builder()
                 .room(room)
                 .residentHead(assignment.getResidentHead())
+                .invoiceDate(invoiceDate)
                 .month(invoiceMonth)
                 .dueDate(dueDate)
                 .status(InvoiceStatus.UNPAID)
@@ -393,6 +402,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         return new InvoiceCalculation(
                 room,
                 assignment,
+                invoiceDate,
                 invoiceMonth,
                 utilityMonth,
                 dueDate,
@@ -408,6 +418,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         Invoice invoice = Invoice.builder()
                 .room(calculation.room())
                 .residentHead(calculation.assignment().getResidentHead())
+                .invoiceDate(calculation.invoiceDate())
                 .month(calculation.invoiceMonth())
                 .dueDate(calculation.dueDate())
                 .status(InvoiceStatus.UNPAID)
@@ -429,7 +440,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         return invoiceMapper.toResponse(savedInvoice, calculation.utilityReading(), findInvoiceComplaint(savedInvoice), sepayPayment);
     }
 
-    private InvoicePreviewResponse toPreviewResponse(InvoiceCalculation calculation, LocalDate invoiceDate) {
+    private InvoicePreviewResponse toPreviewResponse(InvoiceCalculation calculation) {
         Room room = calculation.room();
         Building building = room.getBuilding();
         User residentHead = calculation.assignment().getResidentHead();
@@ -453,7 +464,7 @@ public class InvoiceServiceImpl implements InvoiceService {
                 .residentHeadId(residentHead.getId())
                 .residentHeadName(residentHead.getFullName())
                 .residentHeadEmail(residentHead.getEmail())
-                .invoiceDate(invoiceDate)
+                .invoiceDate(calculation.invoiceDate())
                 .invoiceMonth(calculation.invoiceMonth().format(MONTH_FORMATTER))
                 .utilityMonth(calculation.utilityMonth().format(MONTH_FORMATTER))
                 .dueDate(calculation.dueDate())
@@ -732,14 +743,6 @@ public class InvoiceServiceImpl implements InvoiceService {
                 .orElseThrow(() -> new BadRequestException("Active rental contract is required for the first invoice"));
     }
 
-    private LocalDate parseMonth(String month) {
-        try {
-            return YearMonth.parse(month.trim()).atDay(1);
-        } catch (RuntimeException exception) {
-            throw new BadRequestException("Invoice month must use YYYY-MM format");
-        }
-    }
-
     private LocalDate getInvoiceMonth(LocalDate invoiceDate) {
         if (invoiceDate == null) {
             throw new BadRequestException("Invoice date is required");
@@ -769,6 +772,7 @@ public class InvoiceServiceImpl implements InvoiceService {
     private record InvoiceCalculation(
             Room room,
             RoomAssignment assignment,
+            LocalDate invoiceDate,
             LocalDate invoiceMonth,
             LocalDate utilityMonth,
             LocalDate dueDate,

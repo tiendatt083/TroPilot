@@ -262,6 +262,18 @@ export default function BuildingInvoiceWorkspace({ role = 'admin' }) {
     });
   }, [rooms, invoicedRoomIdsForMonth]);
 
+  useEffect(() => {
+    if (!form.roomId) {
+      return;
+    }
+
+    const selectedRoomStillAvailable = availableRooms.some((room) => String(room.id) === String(form.roomId));
+    if (!selectedRoomStillAvailable) {
+      setForm((current) => ({ ...current, roomId: '' }));
+      setSinglePreview(null);
+    }
+  }, [availableRooms, form.roomId]);
+
   const loadData = async () => {
     setError('');
 

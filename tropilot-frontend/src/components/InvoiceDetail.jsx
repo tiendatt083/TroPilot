@@ -40,8 +40,18 @@ export default function InvoiceDetail({ invoice, showPaymentInstructions = false
           <strong>{invoice.residentHeadName}</strong>
         </div>
         <div>
+          <span>{t('buildingInvoices.invoiceDate')}</span>
+          <strong>{formatDisplayDate(invoice.invoiceDate)}</strong>
+        </div>
+        <div>
           <span>{t('tables.common.month')}</span>
           <strong>{formatDisplayMonth(invoice.month)}</strong>
+        </div>
+        <div>
+          <span>{t('buildingInvoices.utilityMonth')}</span>
+          <strong>
+            {invoice.utilityMonth ? formatDisplayMonth(invoice.utilityMonth) : t('common.notApplicable')}
+          </strong>
         </div>
         <div>
           <span>{t('tables.common.dueDate')}</span>

@@ -16,6 +16,7 @@ import com.tropilot.entity.UtilityReading;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
@@ -58,7 +59,9 @@ public class InvoiceMapper {
                 .residentHeadId(residentHead.getId())
                 .residentHeadName(residentHead.getFullName())
                 .residentHeadEmail(residentHead.getEmail())
+                .invoiceDate(resolveInvoiceDate(invoice))
                 .month(invoice.getMonth().format(MONTH_FORMATTER))
+                .utilityMonth(utilityReading == null ? null : utilityReading.getMonth().format(MONTH_FORMATTER))
                 .totalAmount(invoice.getTotalAmount())
                 .dueDate(invoice.getDueDate())
                 .status(invoice.getStatus())
@@ -74,6 +77,14 @@ public class InvoiceMapper {
                 .createdAt(invoice.getCreatedAt())
                 .updatedAt(invoice.getUpdatedAt())
                 .build();
+    }
+
+    private LocalDate resolveInvoiceDate(Invoice invoice) {
+        if (invoice.getInvoiceDate() != null) {
+            return invoice.getInvoiceDate();
+        }
+
+        return invoice.getCreatedAt() == null ? invoice.getMonth() : invoice.getCreatedAt().toLocalDate();
     }
 
     private List<InvoiceItemResponse> toItemResponses(List<InvoiceItem> items) {

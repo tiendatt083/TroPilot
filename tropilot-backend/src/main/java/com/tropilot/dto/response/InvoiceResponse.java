@@ -23,7 +23,9 @@ public class InvoiceResponse {
     private Long residentHeadId;
     private String residentHeadName;
     private String residentHeadEmail;
+    private LocalDate invoiceDate;
     private String month;
+    private String utilityMonth;
     private BigDecimal totalAmount;
     private LocalDate dueDate;
     private InvoiceStatus status;
