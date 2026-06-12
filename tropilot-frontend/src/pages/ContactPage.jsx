@@ -276,33 +276,35 @@ function ContactEditor({
           />
         </div>
 
-        <div>
-          <label htmlFor="contactWorkingStartTime">
-            {t('contact.fields.workingStartTime')}
-          </label>
-          <input
-            id="contactWorkingStartTime"
-            name="workingStartTime"
-            required
-            type="time"
-            value={form.workingStartTime}
-            onChange={onFieldChange}
-          />
-        </div>
+        <div className="form-grid-wide contact-working-hours">
+          <div>
+            <label htmlFor="contactWorkingStartTime">
+              {t('contact.fields.workingStartTime')}
+            </label>
+            <input
+              id="contactWorkingStartTime"
+              name="workingStartTime"
+              required
+              type="time"
+              value={form.workingStartTime}
+              onChange={onFieldChange}
+            />
+          </div>
 
-        <div>
-          <label htmlFor="contactWorkingEndTime">
-            {t('contact.fields.workingEndTime')}
-          </label>
-          <input
-            id="contactWorkingEndTime"
-            name="workingEndTime"
-            min={form.workingStartTime}
-            required
-            type="time"
-            value={form.workingEndTime}
-            onChange={onFieldChange}
-          />
+          <div>
+            <label htmlFor="contactWorkingEndTime">
+              {t('contact.fields.workingEndTime')}
+            </label>
+            <input
+              id="contactWorkingEndTime"
+              name="workingEndTime"
+              min={form.workingStartTime}
+              required
+              type="time"
+              value={form.workingEndTime}
+              onChange={onFieldChange}
+            />
+          </div>
         </div>
 
         <div className="form-grid-wide">

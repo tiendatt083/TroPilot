@@ -31,22 +31,40 @@
   },
   "chat": {
     "title": "Tropilot Assistant",
-    "eyebrow": "AI support",
-    "open": "Open AI assistant",
-    "close": "Close AI assistant",
+    "subtitle": "Ready to help with the system",
+    "open": "Open Tropilot assistant",
+    "close": "Close Tropilot assistant",
     "clear": "Clear conversation",
     "welcomeTitle": "How can I help?",
     "welcomeMessage": "Ask about using Tropilot, rental operations, invoices, utilities, contracts, maintenance, or other supported workflows.",
-    "assistant": "Tropilot AI",
+    "assistant": "Tropilot",
     "you": "You",
     "thinking": "Thinking...",
     "inputLabel": "Message",
     "placeholder": "Ask a question about Tropilot...",
     "send": "Send",
     "sending": "Sending...",
+    "suggestions": {
+      "label": "Suggested questions",
+      "admin": {
+        "buildings": "How many buildings are in the system?",
+        "unpaidInvoices": "How many invoices are unpaid?",
+        "attention": "What needs attention?"
+      },
+      "staff": {
+        "tasks": "How many tasks are assigned to me?",
+        "utilityReadings": "Which rooms need utility readings?",
+        "maintenance": "Which maintenance requests are in progress?"
+      },
+      "resident": {
+        "latestInvoice": "How much is my latest invoice?",
+        "contract": "Is my current contract still active?",
+        "members": "How many approved members do I have?"
+      }
+    },
     "errors": {
-      "assignmentRequired": "The AI assistant is available after your account is assigned to an active room.",
-      "unavailable": "The AI assistant is temporarily unavailable. Please try again later.",
+      "assignmentRequired": "The Tropilot assistant is available after your account is assigned to an active room.",
+      "unavailable": "The Tropilot assistant is temporarily unavailable. Please try again later.",
       "sendFailed": "Your message could not be sent. Please try again."
     }
   },

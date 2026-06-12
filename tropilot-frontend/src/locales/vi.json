@@ -31,22 +31,40 @@
   },
   "chat": {
     "title": "Trợ lý Tropilot",
-    "eyebrow": "Hỗ trợ AI",
-    "open": "Mở trợ lý AI",
-    "close": "Đóng trợ lý AI",
+    "subtitle": "Sẵn sàng giải đáp về hệ thống",
+    "open": "Mở trợ lý Tropilot",
+    "close": "Đóng trợ lý Tropilot",
     "clear": "Xóa cuộc trò chuyện",
     "welcomeTitle": "Tôi có thể hỗ trợ gì?",
     "welcomeMessage": "Hãy hỏi về cách sử dụng Tropilot, vận hành nhà trọ, hóa đơn, điện nước, hợp đồng, bảo trì hoặc các quy trình được hỗ trợ.",
-    "assistant": "Tropilot AI",
+    "assistant": "Tropilot",
     "you": "Bạn",
     "thinking": "Đang trả lời...",
     "inputLabel": "Tin nhắn",
     "placeholder": "Nhập câu hỏi về Tropilot...",
     "send": "Gửi",
     "sending": "Đang gửi...",
+    "suggestions": {
+      "label": "Câu hỏi gợi ý",
+      "admin": {
+        "buildings": "Hệ thống có bao nhiêu tòa nhà?",
+        "unpaidInvoices": "Có bao nhiêu hóa đơn chưa thanh toán?",
+        "attention": "Có việc gì cần xử lý?"
+      },
+      "staff": {
+        "tasks": "Tôi có bao nhiêu công việc được giao?",
+        "utilityReadings": "Có phòng nào chưa ghi điện nước?",
+        "maintenance": "Có yêu cầu bảo trì nào đang xử lý?"
+      },
+      "resident": {
+        "latestInvoice": "Hóa đơn gần nhất của tôi là bao nhiêu?",
+        "contract": "Hợp đồng hiện tại còn hiệu lực không?",
+        "members": "Tôi có bao nhiêu thành viên đã duyệt?"
+      }
+    },
     "errors": {
-      "assignmentRequired": "Trợ lý AI chỉ khả dụng sau khi tài khoản được gán vào một phòng đang hoạt động.",
-      "unavailable": "Trợ lý AI đang tạm thời gián đoạn. Vui lòng thử lại sau.",
+      "assignmentRequired": "Trợ lý Tropilot chỉ khả dụng sau khi tài khoản được gán vào một phòng đang hoạt động.",
+      "unavailable": "Trợ lý Tropilot đang tạm thời gián đoạn. Vui lòng thử lại sau.",
       "sendFailed": "Không thể gửi câu hỏi. Vui lòng thử lại."
     }
   },

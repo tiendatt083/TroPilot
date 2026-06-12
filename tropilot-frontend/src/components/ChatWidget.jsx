@@ -5,6 +5,23 @@ import { useAuth } from '../context/AuthContext.jsx';
 
 const MAX_MESSAGE_LENGTH = 2000;
 const MAX_HISTORY_MESSAGES = 8;
+const SUGGESTION_KEYS_BY_ROLE = {
+  ADMIN: [
+    'chat.suggestions.admin.buildings',
+    'chat.suggestions.admin.unpaidInvoices',
+    'chat.suggestions.admin.attention'
+  ],
+  STAFF: [
+    'chat.suggestions.staff.tasks',
+    'chat.suggestions.staff.utilityReadings',
+    'chat.suggestions.staff.maintenance'
+  ],
+  RESIDENT_HEAD: [
+    'chat.suggestions.resident.latestInvoice',
+    'chat.suggestions.resident.contract',
+    'chat.suggestions.resident.members'
+  ]
+};
 
 function createMessage(id, role, content) {
   return { id, role, content };
@@ -36,6 +53,7 @@ export default function ChatWidget() {
 
   const residentHasRoom = user?.role !== 'RESIDENT_HEAD' || Boolean(user?.assignedRoomId);
   const available = Boolean(user && !user.mustChangePassword && residentHasRoom);
+  const suggestionKeys = SUGGESTION_KEYS_BY_ROLE[user?.role] ?? [];
 
   useEffect(() => {
     if (open) {
@@ -100,6 +118,12 @@ export default function ChatWidget() {
     textareaRef.current?.focus();
   };
 
+  const selectSuggestion = (suggestion) => {
+    setDraft(suggestion);
+    setError('');
+    textareaRef.current?.focus();
+  };
+
   return (
     <div className={`chat-widget${open ? ' is-open' : ''}`}>
       {open && (
@@ -110,9 +134,12 @@ export default function ChatWidget() {
           aria-labelledby="chat-widget-title"
         >
           <header className="chat-panel-header">
-            <div>
-              <span className="chat-panel-eyebrow">{t('chat.eyebrow')}</span>
-              <h2 id="chat-widget-title">{t('chat.title')}</h2>
+            <div className="chat-panel-heading">
+              <span className="chat-presence-dot" aria-hidden="true" />
+              <div>
+                <h2 id="chat-widget-title">{t('chat.title')}</h2>
+                <p>{t('chat.subtitle')}</p>
+              </div>
             </div>
             <div className="chat-panel-actions">
               <button
@@ -167,6 +194,22 @@ export default function ChatWidget() {
           </div>
 
           <form className="chat-composer" onSubmit={handleSubmit}>
+            <div className="chat-suggestions" aria-label={t('chat.suggestions.label')}>
+              {suggestionKeys.map((key) => {
+                const suggestion = t(key);
+
+                return (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => selectSuggestion(suggestion)}
+                    disabled={sending}
+                  >
+                    {suggestion}
+                  </button>
+                );
+              })}
+            </div>
             <label className="visually-hidden" htmlFor="chat-message">
               {t('chat.inputLabel')}
             </label>
@@ -200,7 +243,11 @@ export default function ChatWidget() {
         title={open ? t('chat.close') : t('chat.open')}
         onClick={() => setOpen((current) => !current)}
       >
-        AI
+        <span className="chat-launcher-icon" aria-hidden="true">
+          <span />
+          <span />
+          <span />
+        </span>
       </button>
     </div>
   );

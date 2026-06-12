@@ -8,8 +8,7 @@ The system is designed for an academic demonstration while still following produ
 
 ### Frontend
 
-- ReactJS 18.2.0 
-edddd
+- ReactJS 18.2.0
 - Vite 5.2.0
 - JavaScript
 - React Router DOM
@@ -57,6 +56,9 @@ edddd
 - Maintenance request management
 - Notification management
 - Feedback management
+- Contact information management
+- Equipment management
+- AI assistant
 - Role-based dashboards
 - Activity logs
 
@@ -146,6 +148,19 @@ cd tropilot-backend
 ```
 
 Use `tropilot-backend/.env.example` as the safe template for local setup.
+
+### Credential Rotation Checklist
+
+If any local secret is exposed in screenshots, chat messages, commits, logs, or shared demo materials, rotate it in the original provider before continuing the demo:
+
+- Regenerate the Gemini API key.
+- Regenerate the SePay webhook API key.
+- Update the SePay webhook authorization value.
+- Regenerate `APP_JWT_SECRET`.
+- Regenerate `APP_TEMPORARY_PASSWORD_ENCRYPTION_SECRET`.
+- Replace the values only in `tropilot-backend/.env`.
+
+Do not commit `tropilot-backend/.env`. Commit only `.env.example` with placeholder values.
 
 ### SePay Local Payment Test
 
@@ -273,6 +288,19 @@ Authorization: Bearer <token>
 
 Protected frontend routes and backend role permissions are both enforced.
 
+## Management Workflow
+
+Tropilot uses a two-level management workflow:
+
+1. Global role workspaces show cross-building information for Admin, Staff, and Head Resident users.
+2. Building workspaces are used for detailed building-level operations.
+
+Admin can review global system information from the Admin workspace, then open a specific building to manage rooms, room users, contracts, utility readings, invoices, service fees, vehicles, payments, receipts, room members, maintenance requests, expenses, cash flow, tasks, feedback, invoice complaints, notifications, and equipment for that building.
+
+Staff uses the same building-focused workflow for permitted operational tasks, but Staff cannot create users, assign Head Residents, change restricted system settings, delete paid financial records, or perform Admin-only actions.
+
+Head Residents can only access information and actions for their currently assigned room.
+
 ## Demo Flow
 
 Use clean demo data only. Do not use real personal information in names, phone numbers, identity numbers, contract files, proof images, or notes.
@@ -283,27 +311,28 @@ Use clean demo data only. Do not use real personal information in names, phone n
 4. Log in with each temporary account and complete the first-login password change.
 5. Create a building.
 6. Create a room under that building.
-7. Assign the Head Resident to the room.
-8. Add room members from the Head Resident account.
-9. Approve room members from the Admin account.
-10. Upload the signed rental contract from the Admin account.
-11. Confirm or report the contract from the Head Resident account.
-12. Request a vehicle registration from the Head Resident account.
-13. Approve the vehicle from the Admin account.
-14. Configure service fees for electricity, water, cleaning, parking, and other charges.
-15. Record monthly utility readings with evidence images from the Staff or Admin account.
-16. Generate an invoice for the room and month.
-17. View the invoice from the Head Resident account.
-18. Upload payment proof from the Head Resident account.
-19. Confirm the payment from the Staff or Admin account.
-20. Verify that a receipt is generated automatically.
-21. Create a maintenance request from the Head Resident account.
-22. Assign the maintenance request to Staff from the Admin account.
-23. Start and complete the maintenance request from the Staff account.
-24. Create an expense, optionally linked to the maintenance request.
-25. View cash flow from the Admin account.
-26. View role-based dashboards for Admin, Staff, and Head Resident.
-27. Review activity logs from the Admin account.
+7. Open the building workspace for the selected building.
+8. Assign the Head Resident to the room.
+9. Add room members from the Head Resident account.
+10. Approve room members from the Admin account.
+11. Upload the signed rental contract from the Admin account.
+12. Confirm or report the contract from the Head Resident account.
+13. Request a vehicle registration from the Head Resident account.
+14. Approve the vehicle from the Admin account.
+15. Configure building service fees for electricity, water, and other recurring services.
+16. Record monthly utility readings with evidence images from the Staff or Admin account.
+17. Generate an invoice for one room or all eligible rooms in the building.
+18. View the invoice from the Head Resident account.
+19. Pay the invoice by SePay QR transfer or upload payment proof if using manual confirmation.
+20. Verify that the invoice status changes to paid after successful payment confirmation.
+21. Verify that a receipt is generated automatically.
+22. Create a maintenance request from the Head Resident account.
+23. Assign the maintenance request to Staff from the Admin account.
+24. Start and complete the maintenance request from the Staff account.
+25. Create an expense, optionally linked to the maintenance request.
+26. View building cash flow from the building workspace.
+27. View global role-based dashboards for Admin, Staff, and Head Resident.
+28. Review activity logs from the Admin account.
 
 ## Security Notes
 
