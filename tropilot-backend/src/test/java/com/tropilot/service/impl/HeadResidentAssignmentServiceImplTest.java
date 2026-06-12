@@ -129,8 +129,10 @@ class HeadResidentAssignmentServiceImplTest {
         User residentHead = BusinessRuleTestFixtures.residentHead();
         RoomAssignment assignment = BusinessRuleTestFixtures.activeAssignment(room, residentHead);
         RentalContract contract = BusinessRuleTestFixtures.activeContract(room, residentHead);
-        RoomMember member = roomMember(room, residentHead, RoomMemberStatus.APPROVED);
-        Vehicle vehicle = vehicle(room, VehicleStatus.ACTIVE);
+        RoomMember approvedMember = roomMember(500L, room, residentHead, RoomMemberStatus.APPROVED);
+        RoomMember pendingMember = roomMember(501L, room, residentHead, RoomMemberStatus.PENDING);
+        Vehicle activeVehicle = vehicle(600L, room, VehicleStatus.ACTIVE);
+        Vehicle pendingVehicle = vehicle(601L, room, VehicleStatus.PENDING);
 
         when(roomRepository.findById(room.getId())).thenReturn(Optional.of(room));
         when(roomAssignmentRepository.findByRoomIdAndStatus(room.getId(), RoomAssignmentStatus.ACTIVE))
@@ -140,8 +142,10 @@ class HeadResidentAssignmentServiceImplTest {
                 residentHead.getId(),
                 RentalStatus.ACTIVE
         )).thenReturn(Optional.of(contract));
-        when(roomMemberRepository.findByRoom_IdAndStatusIn(any(), anyList())).thenReturn(List.of(member));
-        when(vehicleRepository.findByRoom_IdAndStatusIn(any(), anyList())).thenReturn(List.of(vehicle));
+        when(roomMemberRepository.findByRoom_IdAndStatusIn(any(), anyList()))
+                .thenReturn(List.of(approvedMember, pendingMember));
+        when(vehicleRepository.findByRoom_IdAndStatusIn(any(), anyList()))
+                .thenReturn(List.of(activeVehicle, pendingVehicle));
 
         HeadResidentAssignmentResponse response = service.removeHeadResident(room.getId());
 
@@ -149,13 +153,21 @@ class HeadResidentAssignmentServiceImplTest {
         assertThat(room.getStatus()).isEqualTo(RoomStatus.EMPTY);
         assertThat(assignment.getStatus()).isEqualTo(RoomAssignmentStatus.ENDED);
         assertThat(contract.getRentalStatus()).isEqualTo(RentalStatus.ENDED);
-        assertThat(member.getStatus()).isEqualTo(RoomMemberStatus.LEFT);
-        assertThat(member.getMoveOutDate()).isEqualTo(LocalDate.now());
-        assertThat(vehicle.getStatus()).isEqualTo(VehicleStatus.INACTIVE);
-        assertThat(vehicle.getEndDate()).isEqualTo(LocalDate.now());
+        assertThat(List.of(approvedMember, pendingMember))
+                .allSatisfy(member -> {
+                    assertThat(member.getStatus()).isEqualTo(RoomMemberStatus.LEFT);
+                    assertThat(member.getMoveOutDate()).isEqualTo(LocalDate.now());
+                });
+        assertThat(List.of(activeVehicle, pendingVehicle))
+                .allSatisfy(vehicle -> {
+                    assertThat(vehicle.getStatus()).isEqualTo(VehicleStatus.INACTIVE);
+                    assertThat(vehicle.getEndDate()).isEqualTo(LocalDate.now());
+                });
         verify(roomRepository).save(room);
         verify(roomAssignmentRepository).save(assignment);
         verify(rentalContractRepository).save(contract);
+        verify(roomMemberRepository).saveAll(List.of(approvedMember, pendingMember));
+        verify(vehicleRepository).saveAll(List.of(activeVehicle, pendingVehicle));
     }
 
     private AssignHeadResidentRequest assignmentRequest(Long residentHeadId, LocalDate startDate, LocalDate endDate) {
@@ -167,8 +179,12 @@ class HeadResidentAssignmentServiceImplTest {
     }
 
     private RoomMember roomMember(Room room, User residentHead, RoomMemberStatus status) {
+        return roomMember(500L, room, residentHead, status);
+    }
+
+    private RoomMember roomMember(Long id, Room room, User residentHead, RoomMemberStatus status) {
         return RoomMember.builder()
-                .id(500L)
+                .id(id)
                 .room(room)
                 .residentHead(residentHead)
                 .fullName("Room Member")
@@ -182,8 +198,12 @@ class HeadResidentAssignmentServiceImplTest {
     }
 
     private Vehicle vehicle(Room room, VehicleStatus status) {
+        return vehicle(600L, room, status);
+    }
+
+    private Vehicle vehicle(Long id, Room room, VehicleStatus status) {
         return Vehicle.builder()
-                .id(600L)
+                .id(id)
                 .room(room)
                 .ownerName("Resident Head")
                 .ownerType(VehicleOwnerType.RESIDENT_HEAD)

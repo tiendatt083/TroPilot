@@ -181,7 +181,13 @@ public class DashboardServiceImpl implements DashboardService {
 
         Long roomId = currentRoom.getRoomId();
         RentalContractResponse currentContract = rentalContractRepository
-                .findFirstByResidentHead_IdAndRentalStatusOrderByCreatedAtDesc(residentHeadId, RentalStatus.ACTIVE)
+                .findCurrentByResidentHeadIdWithDetails(
+                        residentHeadId,
+                        RentalStatus.ACTIVE,
+                        RoomAssignmentStatus.ACTIVE
+                )
+                .stream()
+                .findFirst()
                 .map(rentalContractMapper::toResponse)
                 .orElse(null);
         InvoiceResponse latestInvoice = findLatestInvoice(roomId);

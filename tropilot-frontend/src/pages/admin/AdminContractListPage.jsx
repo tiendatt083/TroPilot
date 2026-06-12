@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import * as contractApi from '../../api/contractApi.js';
 import PageHeader from '../../components/PageHeader.jsx';
-import { isActiveRentalContract } from '../../utils/contractFilters.js';
 import { getContractStatusClass, getContractStatusLabel } from '../../utils/contractStatusOptions.js';
 import { formatDisplayDate } from '../../utils/dateFormat.js';
 import { formatRoomCode } from '../../utils/roomDisplay.js';
@@ -26,7 +25,7 @@ export default function AdminContractListPage() {
       .getAdminContracts()
       .then((response) => {
         if (active) {
-          setContracts((response.data || []).filter(isActiveRentalContract));
+          setContracts(response.data || []);
         }
       })
       .catch((apiError) => {

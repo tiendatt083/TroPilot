@@ -8,6 +8,7 @@ import com.tropilot.entity.RentalContractFileHistory;
 import com.tropilot.entity.User;
 import com.tropilot.enums.ContractStatus;
 import com.tropilot.enums.RentalStatus;
+import com.tropilot.enums.RoomAssignmentStatus;
 import com.tropilot.exception.BadRequestException;
 import com.tropilot.exception.ForbiddenException;
 import com.tropilot.exception.ResourceNotFoundException;
@@ -43,8 +44,11 @@ public class RentalContractServiceImpl implements RentalContractService {
     @Transactional(readOnly = true)
     public List<RentalContractResponse> getContracts(Long buildingId) {
         List<RentalContract> contracts = buildingId == null
-                ? rentalContractRepository.findAllWithDetails()
-                : getBuildingContracts(buildingId);
+                ? rentalContractRepository.findByRentalStatusAndAssignmentStatusWithDetails(
+                        RentalStatus.ACTIVE,
+                        RoomAssignmentStatus.ACTIVE
+                )
+                : getActiveBuildingContracts(buildingId);
 
         return contracts
                 .stream()
@@ -55,7 +59,7 @@ public class RentalContractServiceImpl implements RentalContractService {
     @Override
     @Transactional(readOnly = true)
     public RentalContractResponse getContract(Long id, Long buildingId) {
-        RentalContract contract = findContract(id);
+        RentalContract contract = findActiveContract(id);
         validateContractBelongsToBuilding(contract, buildingId);
         return toResponseWithHistory(contract);
     }
@@ -63,7 +67,7 @@ public class RentalContractServiceImpl implements RentalContractService {
     @Override
     @Transactional
     public RentalContractResponse uploadContract(Long id, Long buildingId, MultipartFile file) {
-        RentalContract contract = findContract(id);
+        RentalContract contract = findActiveContract(id);
         validateContractBelongsToBuilding(contract, buildingId);
         User currentUser = currentUserProvider.getCurrentUser();
         String previousFileUrl = contract.getContractFileUrl();
@@ -101,7 +105,7 @@ public class RentalContractServiceImpl implements RentalContractService {
     @Override
     @Transactional
     public RentalContractResponse markNeedUpdate(Long id, Long buildingId) {
-        RentalContract contract = findContract(id);
+        RentalContract contract = findActiveContract(id);
         validateContractBelongsToBuilding(contract, buildingId);
         contract.setContractStatus(ContractStatus.NEED_UPDATE);
         return rentalContractMapper.toResponse(rentalContractRepository.save(contract));
@@ -153,9 +157,22 @@ public class RentalContractServiceImpl implements RentalContractService {
                 .orElseThrow(() -> new ResourceNotFoundException("Rental contract not found"));
     }
 
-    private List<RentalContract> getBuildingContracts(Long buildingId) {
+    private RentalContract findActiveContract(Long id) {
+        return rentalContractRepository.findByIdAndRentalStatusAndAssignmentStatusWithDetails(
+                        id,
+                        RentalStatus.ACTIVE,
+                        RoomAssignmentStatus.ACTIVE
+                )
+                .orElseThrow(() -> new ResourceNotFoundException("Active rental contract not found"));
+    }
+
+    private List<RentalContract> getActiveBuildingContracts(Long buildingId) {
         validateBuildingExists(buildingId);
-        return rentalContractRepository.findByBuildingIdWithDetails(buildingId);
+        return rentalContractRepository.findByBuildingIdAndRentalStatusAndAssignmentStatusWithDetails(
+                buildingId,
+                RentalStatus.ACTIVE,
+                RoomAssignmentStatus.ACTIVE
+        );
     }
 
     private void validateBuildingExists(Long buildingId) {
@@ -182,7 +199,13 @@ public class RentalContractServiceImpl implements RentalContractService {
 
     private RentalContract findCurrentResidentContract(Long residentHeadId) {
         return rentalContractRepository
-                .findFirstByResidentHead_IdAndRentalStatusOrderByCreatedAtDesc(residentHeadId, RentalStatus.ACTIVE)
+                .findCurrentByResidentHeadIdWithDetails(
+                        residentHeadId,
+                        RentalStatus.ACTIVE,
+                        RoomAssignmentStatus.ACTIVE
+                )
+                .stream()
+                .findFirst()
                 .orElseThrow(() -> new ResourceNotFoundException("Current rental contract not found"));
     }
 

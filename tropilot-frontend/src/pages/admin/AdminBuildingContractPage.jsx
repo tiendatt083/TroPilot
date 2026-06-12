@@ -4,7 +4,6 @@ import * as contractApi from '../../api/contractApi.js';
 import ContractFileHistoryList from '../../components/ContractFileHistoryList.jsx';
 import ContractUploadForm from '../../components/ContractUploadForm.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
-import { isActiveRentalContract } from '../../utils/contractFilters.js';
 import { getContractStatusClass, getContractStatusLabel } from '../../utils/contractStatusOptions.js';
 import { formatDisplayDate } from '../../utils/dateFormat.js';
 import { resolveFileUrl } from '../../utils/fileUrl.js';
@@ -35,7 +34,17 @@ export default function AdminBuildingContractPage() {
 
     try {
       const response = await contractApi.getAdminContracts(buildingFilter);
-      setContracts((response.data || []).filter(isActiveRentalContract));
+      const activeContracts = response.data || [];
+      setContracts(activeContracts);
+      setSelectedContract((currentContract) => {
+        if (!currentContract) {
+          return null;
+        }
+
+        return activeContracts.some((contract) => contract.id === currentContract.id)
+          ? currentContract
+          : null;
+      });
     } catch (apiError) {
       setError(apiError.response?.data?.message || 'Building contracts could not be loaded');
     }

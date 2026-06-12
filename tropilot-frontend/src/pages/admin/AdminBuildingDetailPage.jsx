@@ -13,7 +13,6 @@ import * as roomApi from '../../api/roomApi.js';
 import * as taskApi from '../../api/taskApi.js';
 import * as vehicleApi from '../../api/vehicleApi.js';
 import PageHeader from '../../components/PageHeader.jsx';
-import { isActiveRentalContract } from '../../utils/contractFilters.js';
 
 const emptyBuildingOperations = {
   rooms: [],
@@ -226,7 +225,7 @@ export default function AdminBuildingDetailPage() {
 
         setOperations({
           rooms: roomsResponse.data || [],
-          contracts: (contractsResponse.data || []).filter(isActiveRentalContract),
+          contracts: contractsResponse.data || [],
           invoices: invoicesResponse.data || [],
           vehicles: vehiclesResponse.data || [],
           pendingPayments: paymentsResponse.data || [],

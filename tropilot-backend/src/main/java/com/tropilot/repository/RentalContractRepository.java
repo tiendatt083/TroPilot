@@ -2,7 +2,7 @@ package com.tropilot.repository;
 
 import com.tropilot.entity.RentalContract;
 import com.tropilot.enums.RentalStatus;
-import org.springframework.data.jpa.repository.EntityGraph;
+import com.tropilot.enums.RoomAssignmentStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -20,9 +20,19 @@ public interface RentalContractRepository extends JpaRepository<RentalContract, 
             join fetch contract.room room
             join fetch room.building building
             join fetch contract.residentHead residentHead
+            where contract.rentalStatus = :rentalStatus
+              and exists (
+                  select assignment.id from RoomAssignment assignment
+                  where assignment.room = contract.room
+                    and assignment.residentHead = contract.residentHead
+                    and assignment.status = :assignmentStatus
+              )
             order by contract.createdAt desc
             """)
-    List<RentalContract> findAllWithDetails();
+    List<RentalContract> findByRentalStatusAndAssignmentStatusWithDetails(
+            @Param("rentalStatus") RentalStatus rentalStatus,
+            @Param("assignmentStatus") RoomAssignmentStatus assignmentStatus
+    );
 
     @Query("""
             select contract from RentalContract contract
@@ -30,9 +40,40 @@ public interface RentalContractRepository extends JpaRepository<RentalContract, 
             join fetch room.building building
             join fetch contract.residentHead residentHead
             where building.id = :buildingId
+              and contract.rentalStatus = :rentalStatus
+              and exists (
+                  select assignment.id from RoomAssignment assignment
+                  where assignment.room = contract.room
+                    and assignment.residentHead = contract.residentHead
+                    and assignment.status = :assignmentStatus
+              )
             order by contract.createdAt desc
             """)
-    List<RentalContract> findByBuildingIdWithDetails(@Param("buildingId") Long buildingId);
+    List<RentalContract> findByBuildingIdAndRentalStatusAndAssignmentStatusWithDetails(
+            @Param("buildingId") Long buildingId,
+            @Param("rentalStatus") RentalStatus rentalStatus,
+            @Param("assignmentStatus") RoomAssignmentStatus assignmentStatus
+    );
+
+    @Query("""
+            select contract from RentalContract contract
+            join fetch contract.room room
+            join fetch room.building building
+            join fetch contract.residentHead residentHead
+            where contract.id = :id
+              and contract.rentalStatus = :rentalStatus
+              and exists (
+                  select assignment.id from RoomAssignment assignment
+                  where assignment.room = contract.room
+                    and assignment.residentHead = contract.residentHead
+                    and assignment.status = :assignmentStatus
+              )
+            """)
+    Optional<RentalContract> findByIdAndRentalStatusAndAssignmentStatusWithDetails(
+            @Param("id") Long id,
+            @Param("rentalStatus") RentalStatus rentalStatus,
+            @Param("assignmentStatus") RoomAssignmentStatus assignmentStatus
+    );
 
     @Query("""
             select contract from RentalContract contract
@@ -54,9 +95,24 @@ public interface RentalContractRepository extends JpaRepository<RentalContract, 
             Long residentHeadId
     );
 
-    @EntityGraph(attributePaths = {"room", "room.building", "residentHead"})
-    Optional<RentalContract> findFirstByResidentHead_IdAndRentalStatusOrderByCreatedAtDesc(
-            Long residentHeadId,
-            RentalStatus rentalStatus
+    @Query("""
+            select contract from RentalContract contract
+            join fetch contract.room room
+            join fetch room.building building
+            join fetch contract.residentHead residentHead
+            where residentHead.id = :residentHeadId
+              and contract.rentalStatus = :rentalStatus
+              and exists (
+                  select assignment.id from RoomAssignment assignment
+                  where assignment.room = contract.room
+                    and assignment.residentHead = contract.residentHead
+                    and assignment.status = :assignmentStatus
+            )
+            order by contract.createdAt desc
+            """)
+    List<RentalContract> findCurrentByResidentHeadIdWithDetails(
+            @Param("residentHeadId") Long residentHeadId,
+            @Param("rentalStatus") RentalStatus rentalStatus,
+            @Param("assignmentStatus") RoomAssignmentStatus assignmentStatus
     );
 }
