@@ -41,6 +41,8 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class SepayPaymentServiceImplTest {
 
+    private static final String DEMO_ACCOUNT_NUMBER = "1234567890";
+
     @Spy
     private SepayProperties sepayProperties = new SepayProperties();
 
@@ -69,7 +71,7 @@ class SepayPaymentServiceImplTest {
     void configureSepay() {
         sepayProperties.setEnabled(true);
         sepayProperties.setBankCode("TPB");
-        sepayProperties.setAccountNumber("07480066036");
+        sepayProperties.setAccountNumber(DEMO_ACCOUNT_NUMBER);
         sepayProperties.setAccountName("Tropilot Demo");
         sepayProperties.setPaymentCodePrefix("TPINV");
         sepayProperties.setWebhookSecret("test-secret");
@@ -162,7 +164,7 @@ class SepayPaymentServiceImplTest {
                 .paymentCode("TPINV" + invoice.getId())
                 .amount(invoice.getTotalAmount())
                 .bankCode("TPB")
-                .accountNumber("07480066036")
+                .accountNumber(DEMO_ACCOUNT_NUMBER)
                 .accountName("Tropilot Demo")
                 .qrImageUrl("https://example.test/qr")
                 .status(SepayPaymentStatus.PENDING)
@@ -172,7 +174,7 @@ class SepayPaymentServiceImplTest {
     private SepayWebhookRequest webhookRequest(String paymentCode, BigDecimal amount) {
         SepayWebhookRequest request = new SepayWebhookRequest();
         request.setTransactionId("TX-001");
-        request.setAccountNumber("07480066036");
+        request.setAccountNumber(DEMO_ACCOUNT_NUMBER);
         request.setCode(paymentCode);
         request.setContent(paymentCode);
         request.setTransferType("in");

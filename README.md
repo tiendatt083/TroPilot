@@ -84,7 +84,9 @@ tropilot-frontend/
     assets/
     components/
     contexts/
+    features/
     layouts/
+    locales/
     pages/
     routes/
     styles/
