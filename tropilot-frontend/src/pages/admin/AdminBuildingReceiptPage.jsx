@@ -1,69 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import * as paymentApi from '../../api/paymentApi.js';
-import PageHeader from '../../components/PageHeader.jsx';
+import EmptyState from '../../components/common/EmptyState.jsx';
+import PageHeader from '../../components/common/PageHeader.jsx';
+import ReceiptDetail from '../../components/ReceiptDetail.jsx';
 import ReceiptTable from '../../components/ReceiptTable.jsx';
-import { formatDisplayMonth } from '../../utils/dateFormat.js';
-import { getReceiptStatusClass, getReceiptStatusLabel } from '../../utils/paymentStatusOptions.js';
-import { formatRoomLabel } from '../../utils/roomDisplay.js';
-
-function formatNumber(value) {
-  const numberValue = Number(value);
-  return Number.isFinite(numberValue)
-    ? numberValue.toLocaleString('en-US', { maximumFractionDigits: 2 })
-    : value;
-}
-
-function ReceiptDetail({ receipt }) {
-  if (!receipt) {
-    return <div className="empty-state">Select a receipt to view details.</div>;
-  }
-
-  return (
-    <section className="receipt-detail-panel">
-      <div className="detail-panel">
-        <div>
-          <span>Receipt code</span>
-          <strong>{receipt.receiptCode}</strong>
-        </div>
-        <div>
-          <span>Status</span>
-          <strong>
-            <span className={getReceiptStatusClass(receipt.status)}>
-              {getReceiptStatusLabel(receipt.status)}
-            </span>
-          </strong>
-        </div>
-        <div>
-          <span>Invoice</span>
-          <strong>
-            #{receipt.invoiceId} - {formatDisplayMonth(receipt.invoiceMonth)}
-          </strong>
-        </div>
-        <div>
-          <span>Amount</span>
-          <strong>{formatNumber(receipt.amount)}</strong>
-        </div>
-        <div>
-          <span>Room</span>
-          <strong>{formatRoomLabel(receipt)}</strong>
-        </div>
-        <div>
-          <span>Head Resident</span>
-          <strong>{receipt.residentHeadName}</strong>
-        </div>
-        <div>
-          <span>Created by</span>
-          <strong>{receipt.createdByName}</strong>
-        </div>
-        <div className="detail-wide">
-          <span>Content</span>
-          <p>{receipt.content}</p>
-        </div>
-      </div>
-    </section>
-  );
-}
 
 export default function AdminBuildingReceiptPage() {
   const { building } = useOutletContext();
@@ -119,7 +60,7 @@ export default function AdminBuildingReceiptPage() {
       {error && <div className="alert error-alert">{error}</div>}
 
       {loading ? (
-        <div className="empty-state">Loading receipts...</div>
+        <EmptyState message="Loading receipts..." />
       ) : (
         <section className="receipt-workspace">
           <ReceiptTable receipts={receipts} renderActions={renderActions} />

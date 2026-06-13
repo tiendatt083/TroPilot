@@ -1,0 +1,58 @@
+/* Design tokens and shared CSS variables. */
+
+:root {
+  --color-bg: #f3f7fa;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f7fbfd;
+  --color-sidebar: #0c1830;
+  --color-sidebar-soft: #13233f;
+  --color-sidebar-muted: #a8b8cb;
+  --color-sidebar-active: #0e91aa;
+  --color-text: #102033;
+  --color-text-muted: #65778c;
+  --color-border: #d5e0ea;
+  --color-border-soft: #e6eef5;
+  --color-primary: #0e91aa;
+  --color-primary-hover: #087b94;
+  --color-primary-soft: #e8f7fa;
+  --color-primary-ring: rgba(14, 145, 170, 0.2);
+  --color-accent: #244ea0;
+  --color-accent-soft: #eef4ff;
+  --color-danger: #b42318;
+  --color-danger-bg: #fff1f0;
+  --color-success: #0f766e;
+  --color-success-bg: #e7f7f3;
+  --color-warning: #a15c07;
+  --color-warning-bg: #fff7e8;
+  --color-info: #244ea0;
+  --color-info-bg: #eef4ff;
+  --color-input: #fbfdff;
+  --color-input-disabled: #eef2f6;
+  --color-placeholder: #8a98aa;
+  --color-table-header: #f4f8fb;
+  --color-row-hover: #f1fbfd;
+  --shadow-sm: 0 8px 24px rgba(16, 32, 51, 0.06);
+  --shadow-md: 0 20px 52px rgba(16, 32, 51, 0.1);
+  --shadow-focus: 0 14px 34px rgba(14, 145, 170, 0.14);
+  --shadow-soft: var(--shadow-sm);
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: var(--radius-md);
+  --muted-text: var(--color-text-muted);
+  --content-max-width: 1360px;
+  --sidebar-width: 248px;
+  color: var(--color-text);
+  background: var(--color-bg);
+  font-family:
+    Satoshi,
+    Geist,
+    "Segoe UI",
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
+  font-synthesis: none;
+  line-height: 1.5;
+  text-rendering: optimizeLegibility;
+}

@@ -1,0 +1,464 @@
+/* Tables, statuses, table actions, and account detail dialog. */
+
+.table-wrap {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow:
+    0 12px 28px rgba(16, 32, 51, 0.055),
+    inset 0 1px 0 rgba(255, 255, 255, 0.82);
+  scrollbar-color: #9aa6b2 transparent;
+  scrollbar-width: thin;
+}
+
+.data-table {
+  width: 100%;
+  min-width: 820px;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: var(--color-surface);
+}
+
+.data-table th,
+.data-table td {
+  border-bottom: 1px solid var(--color-border-soft);
+  padding: 0.72rem 0.82rem;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.data-table th:first-child,
+.data-table td:first-child {
+  padding-left: 0.9rem;
+}
+
+.data-table th:last-child,
+.data-table td:last-child {
+  padding-right: 0.9rem;
+}
+
+.data-table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  color: var(--color-text-muted);
+  background: var(--color-table-header);
+  font-size: 0.74rem;
+  font-weight: 850;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.data-table tbody tr {
+  transition: background-color 120ms ease;
+}
+
+.data-table tbody tr:hover {
+  background: var(--color-row-hover);
+}
+
+.data-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.data-table td strong {
+  color: var(--color-text);
+}
+
+.account-directory-table {
+  min-width: 960px;
+}
+
+.account-directory-table.has-room-column {
+  min-width: 1080px;
+}
+
+.account-directory-table .account-id-column,
+.account-directory-table td:first-child {
+  width: 64px;
+  text-align: center;
+}
+
+.account-directory-table .account-name-column {
+  width: 20%;
+}
+
+.account-directory-table .account-email-column {
+  width: 20%;
+}
+
+.account-directory-table .account-room-column {
+  width: 15%;
+}
+
+.account-directory-table .account-password-column {
+  width: 16%;
+}
+
+.account-directory-table .account-actions-column {
+  width: 190px;
+}
+
+.pending-member-review-table {
+  min-width: 860px;
+}
+
+.pending-member-review-table th:first-child,
+.pending-member-review-table td:first-child {
+  width: 64px;
+  text-align: center;
+}
+
+.pending-member-review-table th:nth-child(2) {
+  width: 28%;
+}
+
+.pending-member-review-table th:nth-child(3) {
+  width: 25%;
+}
+
+.pending-member-review-table th:nth-child(4) {
+  width: 18%;
+}
+
+.pending-member-review-table th:last-child {
+  width: 190px;
+}
+
+.account-sequence-cell {
+  color: var(--color-primary);
+  font-weight: 850;
+}
+
+.account-modal-overlay {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+  background: rgba(12, 25, 42, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+.account-detail-modal {
+  width: min(760px, 100%);
+  max-height: min(84vh, 780px);
+  overflow-y: auto;
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  color: var(--color-text);
+  background: var(--color-surface);
+  box-shadow: 0 24px 70px rgba(12, 25, 42, 0.24);
+}
+
+.account-modal-header,
+.account-member-section-header,
+.account-member-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.account-modal-header {
+  border-bottom: 1px solid var(--color-border-soft);
+  padding-bottom: 1rem;
+}
+
+.account-modal-header h2,
+.account-member-section h3 {
+  margin: 0.2rem 0 0;
+}
+
+.account-modal-close {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  place-items: center;
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  color: var(--color-text);
+  background: var(--color-surface-muted);
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.account-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0;
+  margin: 1rem 0 0;
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.account-detail-grid > div {
+  min-width: 0;
+  border-bottom: 1px solid var(--color-border-soft);
+  padding: 0.85rem 1rem;
+}
+
+.account-detail-grid > div:nth-child(odd) {
+  border-right: 1px solid var(--color-border-soft);
+}
+
+.account-detail-grid dt {
+  margin-bottom: 0.25rem;
+  color: var(--color-text-muted);
+  font-size: 0.72rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.account-detail-grid dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+  color: var(--color-text);
+  font-weight: 750;
+}
+
+.account-detail-grid > div:last-child {
+  grid-column: 1 / -1;
+  border-right: 0;
+  border-bottom: 0;
+}
+
+.account-member-section {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1.1rem;
+}
+
+.account-member-section-header span {
+  color: var(--color-text-muted);
+  font-size: 0.84rem;
+  font-weight: 750;
+}
+
+.account-member-list {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.account-member-item {
+  align-items: flex-start;
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-md);
+  padding: 0.78rem 0.9rem;
+  background: var(--color-surface-muted);
+}
+
+.account-member-item > div {
+  display: grid;
+  gap: 0.18rem;
+}
+
+.account-member-item > div:last-child {
+  text-align: right;
+}
+
+.account-member-item span {
+  color: var(--color-text-muted);
+  font-size: 0.82rem;
+}
+
+.compact-empty-state {
+  min-height: auto;
+  padding: 1rem;
+}
+
+@media (max-width: 720px) {
+  .account-modal-overlay {
+    align-items: end;
+    padding: 0;
+  }
+
+  .account-detail-modal {
+    width: 100%;
+    max-height: 92vh;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  }
+
+  .account-detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .account-detail-grid > div:nth-child(odd) {
+    border-right: 0;
+  }
+
+  .account-member-item {
+    display: grid;
+  }
+
+  .account-member-item > div:last-child {
+    text-align: left;
+  }
+}
+
+.status-pill,
+.priority-pill,
+.billable-pill,
+.password-state {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 26px;
+  border-radius: 999px;
+  padding: 0.24rem 0.62rem;
+  font-size: 0.78rem;
+  font-weight: 850;
+  white-space: nowrap;
+  box-shadow: inset 0 0 0 1px rgba(16, 32, 51, 0.04);
+}
+
+.status-pill {
+  min-width: 74px;
+}
+
+.warning-status-pill {
+  min-width: auto;
+  margin-left: 0.45rem;
+  color: var(--color-warning);
+  background: var(--color-warning-bg);
+}
+
+.priority-pill {
+  min-width: 72px;
+}
+
+.billable-pill {
+  min-width: 86px;
+}
+
+.status-active,
+.room-status-empty,
+.member-status-approved,
+.contract-status-confirmed,
+.invoice-status-paid,
+.payment-status-approved,
+.receipt-status-valid,
+.expense-status-valid,
+.task-status-completed,
+.maintenance-status-completed,
+.feedback-status-resolved,
+.read-status-read,
+.task-priority-low,
+.vehicle-status-active,
+.billable-active,
+.changed-password {
+  color: var(--color-success);
+  background: var(--color-success-bg);
+}
+
+.status-locked,
+.room-status-maintenance,
+.member-status-rejected,
+.contract-status-need-update,
+.invoice-status-overdue,
+.invoice-status-rejected,
+.payment-status-rejected,
+.receipt-status-cancelled,
+.expense-status-cancelled,
+.task-status-rejected,
+.task-status-overdue,
+.maintenance-status-rejected,
+.feedback-status-rejected,
+.task-priority-urgent,
+.vehicle-status-rejected {
+  color: var(--color-danger);
+  background: var(--color-danger-bg);
+}
+
+.status-inactive,
+.member-status-left,
+.contract-status-not-uploaded,
+.vehicle-status-inactive,
+.billable-inactive {
+  color: #53677d;
+  background: #eef4f8;
+}
+
+.room-status-occupied,
+.contract-status-uploaded,
+.invoice-status-pending-confirmation,
+.feedback-status-in-progress,
+.task-status-new,
+.task-priority-medium,
+.maintenance-status-assigned {
+  color: var(--color-info);
+  background: var(--color-info-bg);
+}
+
+.room-status-reserved,
+.member-status-pending,
+.invoice-status-unpaid,
+.payment-status-pending,
+.expense-status-pending,
+.task-status-in-progress,
+.maintenance-status-pending,
+.maintenance-status-in-progress,
+.feedback-status-pending,
+.read-status-unread,
+.task-priority-high,
+.vehicle-status-pending,
+.pending-password {
+  color: var(--color-warning);
+  background: var(--color-warning-bg);
+}
+
+.temporary-password-value {
+  display: inline-flex;
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-sm);
+  padding: 0.3rem 0.5rem;
+  color: var(--color-text);
+  background: var(--color-accent-soft);
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.muted-text {
+  color: var(--color-text-muted);
+}
+
+.table-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.table-action-group {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.table-actions .secondary-button,
+.table-actions .secondary-link {
+  width: auto;
+}
+
+.compact-button,
+.compact-link {
+  width: auto;
+  min-width: 68px;
+  min-height: 34px;
+  padding: 0.42rem 0.62rem;
+}
+
+.compact-button:hover,
+.compact-link:hover {
+  transform: translateY(-1px);
+}

@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import * as buildingApi from '../../api/buildingApi.js';
-import PageHeader from '../../components/PageHeader.jsx';
+import ConfirmDialog from '../../components/common/ConfirmDialog.jsx';
+import DataTable from '../../components/common/DataTable.jsx';
+import EmptyState from '../../components/common/EmptyState.jsx';
+import FilterBar from '../../components/common/FilterBar.jsx';
+import PageHeader from '../../components/common/PageHeader.jsx';
 
 export default function AdminBuildingListPage() {
   const [buildings, setBuildings] = useState([]);
@@ -11,6 +15,7 @@ export default function AdminBuildingListPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
+  const [pendingDelete, setPendingDelete] = useState(null);
 
   const loadBuildings = async (searchValue = appliedSearch) => {
     setLoading(true);
@@ -42,19 +47,19 @@ export default function AdminBuildingListPage() {
     loadBuildings('');
   };
 
-  const handleDelete = async (building) => {
-    const confirmed = window.confirm(`Delete building ${building.buildingCode}?`);
-    if (!confirmed) {
+  const handleDelete = async () => {
+    if (!pendingDelete) {
       return;
     }
 
-    setDeletingId(building.id);
+    setDeletingId(pendingDelete.id);
     setMessage('');
     setError('');
 
     try {
-      await buildingApi.deleteAdminBuilding(building.id);
+      await buildingApi.deleteAdminBuilding(pendingDelete.id);
       setMessage('Building deleted successfully.');
+      setPendingDelete(null);
       await loadBuildings(appliedSearch);
     } catch (apiError) {
       setError(apiError.response?.data?.message || 'Building could not be deleted');
@@ -62,6 +67,35 @@ export default function AdminBuildingListPage() {
       setDeletingId(null);
     }
   };
+
+  const columns = [
+    { key: 'buildingCode', header: 'Code' },
+    { key: 'name', header: 'Name' },
+    { key: 'address', header: 'Address' },
+    { key: 'floors', header: 'Floors' },
+    {
+      key: 'actions',
+      header: 'Actions',
+      render: (building) => (
+        <div className="table-actions">
+          <Link className="secondary-link compact-link" to={`/admin/buildings/${building.id}`}>
+            Manage
+          </Link>
+          <Link className="secondary-link compact-link" to={`/admin/buildings/${building.id}/edit`}>
+            Edit
+          </Link>
+          <button
+            className="secondary-button compact-button"
+            type="button"
+            disabled={deletingId === building.id}
+            onClick={() => setPendingDelete(building)}
+          >
+            Delete
+          </button>
+        </div>
+      ),
+    },
+  ];
 
   return (
     <section className="content-section">
@@ -72,7 +106,7 @@ export default function AdminBuildingListPage() {
         </Link>
       </div>
 
-      <form className="search-row" onSubmit={handleSearch}>
+      <FilterBar onSubmit={handleSearch}>
         <input
           aria-label="Search buildings"
           value={search}
@@ -83,57 +117,31 @@ export default function AdminBuildingListPage() {
         <button className="secondary-button inline-button" type="button" onClick={handleClearSearch}>
           Clear
         </button>
-      </form>
+      </FilterBar>
 
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
 
       {loading ? (
-        <div className="empty-state">Loading buildings...</div>
+        <EmptyState message="Loading buildings..." />
       ) : (
-        <div className="table-wrap">
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Code</th>
-                <th>Name</th>
-                <th>Address</th>
-                <th>Floors</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {buildings.map((building) => (
-                <tr key={building.id}>
-                  <td>{building.buildingCode}</td>
-                  <td>{building.name}</td>
-                  <td>{building.address}</td>
-                  <td>{building.floors}</td>
-                  <td>
-                    <div className="table-actions">
-                      <Link className="secondary-link compact-link" to={`/admin/buildings/${building.id}`}>
-                        Manage
-                      </Link>
-                      <Link className="secondary-link compact-link" to={`/admin/buildings/${building.id}/edit`}>
-                        Edit
-                      </Link>
-                      <button
-                        className="secondary-button compact-button"
-                        type="button"
-                        disabled={deletingId === building.id}
-                        onClick={() => handleDelete(building)}
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          {buildings.length === 0 && <div className="empty-state flat-empty-state">No buildings found.</div>}
-        </div>
+        <DataTable
+          caption="Buildings"
+          columns={columns}
+          emptyMessage="No buildings found."
+          rows={buildings}
+        />
       )}
+
+      <ConfirmDialog
+        confirmLabel="Delete"
+        loading={Boolean(deletingId)}
+        message={pendingDelete ? `Delete building ${pendingDelete.buildingCode}?` : ''}
+        open={Boolean(pendingDelete)}
+        title="Delete building"
+        onCancel={() => setPendingDelete(null)}
+        onConfirm={handleDelete}
+      />
     </section>
   );
 }

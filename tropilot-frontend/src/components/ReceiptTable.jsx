@@ -1,4 +1,6 @@
 import { useTranslation } from 'react-i18next';
+import EmptyState from './common/EmptyState.jsx';
+import StatusBadge from './common/StatusBadge.jsx';
 import { getReceiptStatusClass } from '../utils/paymentStatusOptions.js';
 import { formatDisplayDateTime, formatDisplayMonth } from '../utils/dateFormat.js';
 import { formatEnumLabel } from '../utils/i18nFormat.js';
@@ -51,9 +53,9 @@ export default function ReceiptTable({ receipts, renderActions }) {
               </td>
               <td>{formatNumber(receipt.amount)}</td>
               <td>
-                <span className={getReceiptStatusClass(receipt.status)}>
+                <StatusBadge className={getReceiptStatusClass(receipt.status)}>
                   {formatEnumLabel(t, 'receiptStatus', receipt.status)}
-                </span>
+                </StatusBadge>
               </td>
               <td>
                 <strong>{receipt.createdByName}</strong>
@@ -64,7 +66,7 @@ export default function ReceiptTable({ receipts, renderActions }) {
           ))}
         </tbody>
       </table>
-      {receipts.length === 0 && <div className="empty-state flat-empty-state">{t('tables.receipts.empty')}</div>}
+      {receipts.length === 0 && <EmptyState flat message={t('tables.receipts.empty')} />}
     </div>
   );
 }
