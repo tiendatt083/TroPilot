@@ -274,6 +274,24 @@ cd tropilot-frontend
 npm run build
 ```
 
+### Run Frontend Smoke Tests
+
+Install the Playwright browser once after installing frontend dependencies:
+
+```bash
+cd tropilot-frontend
+npx playwright install chromium
+```
+
+Run the browser smoke tests:
+
+```bash
+cd tropilot-frontend
+npm run test:e2e
+```
+
+The smoke suite uses mocked API responses and verifies the main role routes and critical UI flows without modifying the local database.
+
 ## Default Admin Account
 
 The backend creates this account only if no `ADMIN` account exists:
@@ -320,6 +338,18 @@ Head Residents can only access information and actions for their currently assig
 ## Demo Flow
 
 Use clean demo data only. Do not use real personal information in names, phone numbers, identity numbers, contract files, proof images, or notes.
+
+The official fixed demo checklist is maintained in:
+
+```text
+docs/demo-flow.md
+```
+
+Issues found during the demo should be recorded in:
+
+```text
+docs/demo-bug-log.md
+```
 
 1. Log in as Admin using the default Admin account.
 2. Create a Staff account.
@@ -423,9 +453,10 @@ mvn clean package
 ```bash
 cd tropilot-frontend
 npm run build
+npm run test:e2e
 ```
 
-Both commands must finish successfully before the final demo.
+All commands must finish successfully before the final demo.
 
 ## Demo Preparation Checklist
 

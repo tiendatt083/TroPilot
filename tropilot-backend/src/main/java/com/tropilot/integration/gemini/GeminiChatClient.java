@@ -39,7 +39,7 @@ public class GeminiChatClient {
     private final RestClient geminiRestClient;
 
     public String generateReply(
-            List<ChatHistoryMessageRequest> history,
+            List<ChatHistoryMessageRequest> history,  
             String message,
             String liveSystemContext
     ) {
