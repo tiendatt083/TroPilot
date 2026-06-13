@@ -1,7 +1,9 @@
+import { useTranslation } from 'react-i18next';
 import EmptyState from './common/EmptyState.jsx';
 import StatusBadge from './common/StatusBadge.jsx';
 import { formatDisplayMonth } from '../utils/dateFormat.js';
-import { getReceiptStatusClass, getReceiptStatusLabel } from '../utils/paymentStatusOptions.js';
+import { formatEnumLabel } from '../utils/i18nFormat.js';
+import { getReceiptStatusClass } from '../utils/paymentStatusOptions.js';
 import { formatRoomLabel } from '../utils/roomDisplay.js';
 
 function formatNumber(value) {
@@ -12,57 +14,59 @@ function formatNumber(value) {
 }
 
 export default function ReceiptDetail({ receipt, showBuilding = false }) {
+  const { t } = useTranslation();
+
   if (!receipt) {
-    return <EmptyState message="Select a receipt to view details." />;
+    return <EmptyState message={t('tables.receipts.selectReceipt')} />;
   }
 
   return (
     <section className="receipt-detail-panel">
       <div className="detail-panel">
         <div>
-          <span>Receipt code</span>
+          <span>{t('tables.receipts.receiptCode')}</span>
           <strong>{receipt.receiptCode}</strong>
         </div>
         <div>
-          <span>Status</span>
+          <span>{t('tables.common.status')}</span>
           <strong>
             <StatusBadge className={getReceiptStatusClass(receipt.status)}>
-              {getReceiptStatusLabel(receipt.status)}
+              {formatEnumLabel(t, 'receiptStatus', receipt.status)}
             </StatusBadge>
           </strong>
         </div>
         <div>
-          <span>Invoice</span>
+          <span>{t('tables.common.invoice')}</span>
           <strong>
             #{receipt.invoiceId} - {formatDisplayMonth(receipt.invoiceMonth)}
           </strong>
         </div>
         <div>
-          <span>Amount</span>
+          <span>{t('tables.common.amount')}</span>
           <strong>{formatNumber(receipt.amount)}</strong>
         </div>
         <div>
-          <span>Room</span>
+          <span>{t('tables.common.room')}</span>
           <strong>{formatRoomLabel(receipt)}</strong>
         </div>
         {showBuilding && (
           <div>
-            <span>Building</span>
+            <span>{t('tables.common.building')}</span>
             <strong>
               {receipt.buildingCode} - {receipt.buildingName}
             </strong>
           </div>
         )}
         <div>
-          <span>Head Resident</span>
+          <span>{t('tables.common.headResident')}</span>
           <strong>{receipt.residentHeadName}</strong>
         </div>
         <div>
-          <span>Created by</span>
+          <span>{t('tables.common.createdBy')}</span>
           <strong>{receipt.createdByName}</strong>
         </div>
         <div className="detail-wide">
-          <span>Content</span>
+          <span>{t('tables.common.content')}</span>
           <p>{receipt.content}</p>
         </div>
       </div>

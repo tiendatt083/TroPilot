@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import * as adminUserApi from '../../api/adminUserApi.js';
-import * as notificationApi from '../../api/notificationApi.js';
+import * as notificationApi from '../../features/notifications/api.js';
+import * as adminUserApi from '../../features/users/api.js';
 import CheckboxList from '../../components/CheckboxList.jsx';
 import NotificationTable from '../../components/NotificationTable.jsx';
 import PageHeader from '../../components/PageHeader.jsx';

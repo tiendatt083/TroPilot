@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import * as memberApi from '../../api/memberApi.js';
+import * as memberApi from '../../features/residents/api.js';
 import PageHeader from '../../components/PageHeader.jsx';
 import { formatRoomCode } from '../../utils/roomDisplay.js';
 

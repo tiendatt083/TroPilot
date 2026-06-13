@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useOutletContext } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import * as buildingApi from '../../api/buildingApi.js';
+import * as buildingApi from '../../features/buildings/api.js';
 import PageHeader from '../../components/PageHeader.jsx';
 import { formatDisplayDate } from '../../utils/dateFormat.js';
 import { formatRoomCode } from '../../utils/roomDisplay.js';

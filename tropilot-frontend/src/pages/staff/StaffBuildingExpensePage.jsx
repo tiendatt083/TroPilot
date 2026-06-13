@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import * as expenseApi from '../../api/expenseApi.js';
-import * as roomApi from '../../api/roomApi.js';
+import * as expenseApi from '../../features/payments/expenseApi.js';
+import * as roomApi from '../../features/rooms/api.js';
 import ExpenseForm from '../../components/ExpenseForm.jsx';
 import ExpenseTable from '../../components/ExpenseTable.jsx';
 import PageHeader from '../../components/PageHeader.jsx';

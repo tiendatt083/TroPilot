@@ -1,4 +1,4 @@
-import * as buildingApi from '../api/buildingApi.js';
+import * as buildingApi from '../features/buildings/api.js';
 import { STAFF_BUILDING_ACTIONS, STAFF_BUILDING_TABS } from '../config/buildingWorkspaceConfig.js';
 import BuildingWorkspaceLayout from './BuildingWorkspaceLayout.jsx';
 

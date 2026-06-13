@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import * as roomApi from '../../api/roomApi.js';
-import * as utilityReadingApi from '../../api/utilityReadingApi.js';
+import * as utilityReadingApi from '../../features/invoices/utilityReadingApi.js';
+import * as roomApi from '../../features/rooms/api.js';
 import PageHeader from '../../components/PageHeader.jsx';
 import UtilityReadingForm from '../../components/UtilityReadingForm.jsx';
 import UtilityReadingTable from '../../components/UtilityReadingTable.jsx';

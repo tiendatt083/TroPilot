@@ -1,11 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { formatDateInputValue } from '../utils/dateFormat.js';
 import { formatRoomLabel } from '../utils/roomDisplay.js';
-
-function getLocalDateInputValue(date = new Date()) {
-  const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
-  return localDate.toISOString().slice(0, 10);
-}
 
 function getDefaultDueDate(month) {
   if (!month) {
@@ -14,11 +10,11 @@ function getDefaultDueDate(month) {
 
   const [year, monthNumber] = month.split('-').map(Number);
   const dueDate = new Date(year, monthNumber, 5);
-  return getLocalDateInputValue(dueDate);
+  return formatDateInputValue(dueDate);
 }
 
 function createInitialForm() {
-  const creationDate = getLocalDateInputValue();
+  const creationDate = formatDateInputValue();
 
   return {
     roomId: '',

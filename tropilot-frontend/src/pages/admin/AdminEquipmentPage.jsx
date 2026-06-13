@@ -1,11 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import * as buildingApi from '../../api/buildingApi.js';
-import * as equipmentApi from '../../api/equipmentApi.js';
-import * as roomApi from '../../api/roomApi.js';
-import EquipmentForm from '../../components/EquipmentForm.jsx';
-import EquipmentMaintenancePanel from '../../components/EquipmentMaintenancePanel.jsx';
-import EquipmentTable from '../../components/EquipmentTable.jsx';
+import * as buildingApi from '../../features/buildings/api.js';
+import * as equipmentApi from '../../features/equipment/api.js';
+import { EquipmentForm, EquipmentMaintenancePanel, EquipmentTable } from '../../features/equipment/components/index.js';
+import * as roomApi from '../../features/rooms/api.js';
 import PageHeader from '../../components/PageHeader.jsx';
 import { EQUIPMENT_CONDITIONS, EQUIPMENT_SCOPES } from '../../utils/equipmentOptions.js';
 import { formatRoomLabel } from '../../utils/roomDisplay.js';

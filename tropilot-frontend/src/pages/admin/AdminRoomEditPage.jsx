@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import * as buildingApi from '../../api/buildingApi.js';
-import * as roomApi from '../../api/roomApi.js';
+import * as buildingApi from '../../features/buildings/api.js';
+import * as roomApi from '../../features/rooms/api.js';
 import PageHeader from '../../components/PageHeader.jsx';
 import RoomForm from '../../components/RoomForm.jsx';
 

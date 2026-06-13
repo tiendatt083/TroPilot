@@ -1,21 +1,16 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
-import * as invoiceApi from '../api/invoiceApi.js';
-import * as roomApi from '../api/roomApi.js';
+import * as invoiceApi from '../features/invoices/api.js';
+import * as roomApi from '../features/rooms/api.js';
 import useInvoicePaymentPolling from '../hooks/useInvoicePaymentPolling.js';
-import { formatDisplayDate, formatDisplayMonth } from '../utils/dateFormat.js';
+import { formatDateInputValue, formatDisplayDate, formatDisplayMonth } from '../utils/dateFormat.js';
 import { formatInvoiceAmount, formatInvoiceText } from '../utils/invoiceDisplay.js';
 import { isOccupiedRoom } from '../utils/roomEligibility.js';
 import { formatRoomCode, formatRoomLabel } from '../utils/roomDisplay.js';
 import InvoiceDetail from './InvoiceDetail.jsx';
 import InvoiceTable from './InvoiceTable.jsx';
 import PageHeader from './PageHeader.jsx';
-
-function getLocalDateInputValue(date = new Date()) {
-  const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
-  return localDate.toISOString().slice(0, 10);
-}
 
 function getDefaultDueDate(invoiceDateValue) {
   if (!invoiceDateValue) {
@@ -25,7 +20,7 @@ function getDefaultDueDate(invoiceDateValue) {
   const [year, month, day] = invoiceDateValue.split('-').map(Number);
   const dueDateMonth = day > 5 ? month : month - 1;
   const dueDate = new Date(year, dueDateMonth, 5);
-  return getLocalDateInputValue(dueDate);
+  return formatDateInputValue(dueDate);
 }
 
 function canDeleteInvoice(invoice) {
@@ -33,7 +28,7 @@ function canDeleteInvoice(invoice) {
 }
 
 function createInitialForm() {
-  const invoiceDate = getLocalDateInputValue();
+  const invoiceDate = formatDateInputValue();
 
   return {
     roomId: '',

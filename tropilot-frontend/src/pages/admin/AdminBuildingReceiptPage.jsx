@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import * as paymentApi from '../../api/paymentApi.js';
+import * as paymentApi from '../../features/payments/api.js';
 import EmptyState from '../../components/common/EmptyState.jsx';
 import PageHeader from '../../components/common/PageHeader.jsx';
-import ReceiptDetail from '../../components/ReceiptDetail.jsx';
-import ReceiptTable from '../../components/ReceiptTable.jsx';
+import { ReceiptDetail, ReceiptTable } from '../../features/payments/components/index.js';
 
 export default function AdminBuildingReceiptPage() {
   const { building } = useOutletContext();

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import * as adminUserApi from '../../api/adminUserApi.js';
-import * as maintenanceApi from '../../api/maintenanceApi.js';
+import * as maintenanceApi from '../../features/maintenance/api.js';
+import * as adminUserApi from '../../features/users/api.js';
 import MaintenanceRequestTable from '../../components/MaintenanceRequestTable.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
 

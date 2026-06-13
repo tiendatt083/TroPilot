@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import * as contractApi from '../../api/contractApi.js';
+import * as contractApi from '../../features/contracts/api.js';
 import ContractFileHistoryList from '../../components/ContractFileHistoryList.jsx';
 import ContractUploadForm from '../../components/ContractUploadForm.jsx';
 import PageHeader from '../../components/PageHeader.jsx';

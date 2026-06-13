@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import * as memberApi from '../../api/memberApi.js';
+import * as memberApi from '../../features/residents/api.js';
 import MemberForm from '../../components/MemberForm.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
-import { formatDisplayDate } from '../../utils/dateFormat.js';
+import { formatDateInputValue, formatDisplayDate } from '../../utils/dateFormat.js';
 import { getMemberStatusLabel } from '../../utils/memberStatusOptions.js';
 
 function statusClass(status) {
@@ -17,12 +17,6 @@ function countText(member) {
   return `${member.totalOccupants} of ${member.maxOccupants} active occupants`;
 }
 
-function getTodayIsoDate() {
-  const now = new Date();
-  const localDate = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
-  return localDate.toISOString().slice(0, 10);
-}
-
 function createReturnRequestDraft(member) {
   return {
     fullName: member.fullName || '',
@@ -30,7 +24,7 @@ function createReturnRequestDraft(member) {
     email: member.email || '',
     identityNumber: member.identityNumber || '',
     relationship: member.relationship || '',
-    moveInDate: getTodayIsoDate(),
+    moveInDate: formatDateInputValue(),
     sourceMemberId: member.id
   };
 }

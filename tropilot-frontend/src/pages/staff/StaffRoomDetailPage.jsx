@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import * as roomApi from '../../api/roomApi.js';
+import * as roomApi from '../../features/rooms/api.js';
 import PageHeader from '../../components/PageHeader.jsx';
 import { formatRoomCode } from '../../utils/roomDisplay.js';
 import { getRoomStatusLabel } from '../../utils/roomStatusOptions.js';

@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
-import * as utilityReadingApi from '../../api/utilityReadingApi.js';
+import * as utilityReadingApi from '../../features/invoices/utilityReadingApi.js';
 import PageHeader from '../PageHeader.jsx';
 import UtilityReadingForm from '../UtilityReadingForm.jsx';
 import UtilityReadingOverview from '../UtilityReadingOverview.jsx';
 import UtilityReadingTable from '../UtilityReadingTable.jsx';
-import { formatDisplayMonth } from '../../utils/dateFormat.js';
+import { formatDisplayMonth, formatMonthInputValue } from '../../utils/dateFormat.js';
 import { formatRoomCode } from '../../utils/roomDisplay.js';
 
 export default function BuildingUtilityReadingWorkspace({
@@ -17,7 +17,7 @@ export default function BuildingUtilityReadingWorkspace({
 }) {
   const { t } = useTranslation();
   const { building } = useOutletContext();
-  const [selectedMonth, setSelectedMonth] = useState(getCurrentMonth());
+  const [selectedMonth, setSelectedMonth] = useState(formatMonthInputValue());
   const [overview, setOverview] = useState(null);
   const [readings, setReadings] = useState([]);
   const [editingReading, setEditingReading] = useState(null);
@@ -144,12 +144,6 @@ export default function BuildingUtilityReadingWorkspace({
       )}
     </div>
   );
-}
-
-function getCurrentMonth() {
-  const now = new Date();
-  const localDate = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
-  return localDate.toISOString().slice(0, 7);
 }
 
 function toRoomOption(reading) {

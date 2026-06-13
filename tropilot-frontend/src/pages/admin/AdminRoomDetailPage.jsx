@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
-import * as adminUserApi from '../../api/adminUserApi.js';
-import * as roomApi from '../../api/roomApi.js';
+import * as roomApi from '../../features/rooms/api.js';
+import * as adminUserApi from '../../features/users/api.js';
 import HeadResidentAssignmentForm from '../../components/HeadResidentAssignmentForm.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
-import { formatDisplayDate } from '../../utils/dateFormat.js';
+import { formatDateInputValue, formatDisplayDate } from '../../utils/dateFormat.js';
 import { formatRoomCode } from '../../utils/roomDisplay.js';
 import { getRoomStatusLabel } from '../../utils/roomStatusOptions.js';
 
@@ -35,14 +35,8 @@ function getActiveResidentHeads(users) {
   return users.filter((user) => user.role === 'RESIDENT_HEAD' && user.status === 'ACTIVE');
 }
 
-function getTodayIsoDate() {
-  const now = new Date();
-  const localDate = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
-  return localDate.toISOString().slice(0, 10);
-}
-
 function isFutureDate(dateValue) {
-  return Boolean(dateValue) && String(dateValue).slice(0, 10) > getTodayIsoDate();
+  return Boolean(dateValue) && String(dateValue).slice(0, 10) > formatDateInputValue();
 }
 
 function getEndContractConfirmationMessage(room, headInfo) {
@@ -268,7 +262,7 @@ export default function AdminRoomDetailPage() {
             <div>
               <span>Assignment period</span>
               <strong>
-                {headInfo.assignmentStartDate} to {headInfo.assignmentEndDate}
+                {formatDisplayDate(headInfo.assignmentStartDate)} to {formatDisplayDate(headInfo.assignmentEndDate)}
               </strong>
             </div>
             <div>
@@ -290,7 +284,7 @@ export default function AdminRoomDetailPage() {
             <div>
               <span>Contract period</span>
               <strong>
-                {headInfo.contractStartDate} to {headInfo.contractEndDate}
+                {formatDisplayDate(headInfo.contractStartDate)} to {formatDisplayDate(headInfo.contractEndDate)}
               </strong>
             </div>
             <div className="detail-wide">

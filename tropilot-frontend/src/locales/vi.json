@@ -1237,7 +1237,9 @@
     },
     "receipts": {
       "title": "Biên lai",
-      "empty": "Không tìm thấy biên lai."
+      "empty": "Không tìm thấy biên lai.",
+      "selectReceipt": "Chọn một biên lai để xem chi tiết.",
+      "receiptCode": "Mã biên lai"
     },
     "expenses": {
       "empty": "Không tìm thấy chi phí."

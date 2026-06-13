@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import * as vehicleApi from '../../api/vehicleApi.js';
+import * as vehicleApi from '../../features/residents/vehicleApi.js';
 import PageHeader from '../../components/PageHeader.jsx';
 import VehicleTable from '../../components/VehicleTable.jsx';
 

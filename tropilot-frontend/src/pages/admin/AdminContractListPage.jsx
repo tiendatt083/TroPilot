@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import * as contractApi from '../../api/contractApi.js';
+import * as contractApi from '../../features/contracts/api.js';
 import PageHeader from '../../components/PageHeader.jsx';
 import { getContractStatusClass, getContractStatusLabel } from '../../utils/contractStatusOptions.js';
 import { formatDisplayDate } from '../../utils/dateFormat.js';

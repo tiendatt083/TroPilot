@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import * as paymentApi from '../../api/paymentApi.js';
+import * as paymentApi from '../../features/payments/api.js';
 import EmptyState from '../../components/common/EmptyState.jsx';
 import PageHeader from '../../components/common/PageHeader.jsx';
 import ReceiptDetail from '../../components/ReceiptDetail.jsx';

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import * as memberApi from '../../api/memberApi.js';
-import * as vehicleApi from '../../api/vehicleApi.js';
+import * as memberApi from '../../features/residents/api.js';
+import * as vehicleApi from '../../features/residents/vehicleApi.js';
 import PageHeader from '../../components/PageHeader.jsx';
 import VehicleForm from '../../components/VehicleForm.jsx';
 import VehicleTable from '../../components/VehicleTable.jsx';

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import * as utilityReadingApi from '../../api/utilityReadingApi.js';
+import * as utilityReadingApi from '../../features/invoices/utilityReadingApi.js';
 import PageHeader from '../../components/PageHeader.jsx';
-import UtilityReadingTable from '../../components/UtilityReadingTable.jsx';
+import { UtilityReadingTable } from '../../features/invoices/components/index.js';
 
 export default function ResidentUtilityReadingPage() {
   const [readings, setReadings] = useState([]);

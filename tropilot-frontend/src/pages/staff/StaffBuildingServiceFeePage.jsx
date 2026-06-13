@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
-import * as serviceFeeApi from '../../api/serviceFeeApi.js';
+import * as serviceFeeApi from '../../features/invoices/serviceFeeApi.js';
 import PageHeader from '../../components/PageHeader.jsx';
-import ServiceFeeTable from '../../components/ServiceFeeTable.jsx';
+import { ServiceFeeTable } from '../../features/invoices/components/index.js';
 
 export default function StaffBuildingServiceFeePage() {
   const { t } = useTranslation();

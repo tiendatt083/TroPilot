@@ -4,15 +4,12 @@ import CashFlowSummary from '../CashFlowSummary.jsx';
 import ExpenseTable from '../ExpenseTable.jsx';
 import PageHeader from '../PageHeader.jsx';
 import ReceiptTable from '../ReceiptTable.jsx';
-
-function currentMonth() {
-  return new Date().toISOString().slice(0, 7);
-}
+import { formatMonthInputValue } from '../../utils/dateFormat.js';
 
 export default function BuildingCashFlowWorkspace({ getCashFlow, showReceipts = false }) {
   const { building } = useOutletContext();
   const [cashFlow, setCashFlow] = useState(null);
-  const [month, setMonth] = useState(currentMonth());
+  const [month, setMonth] = useState(formatMonthInputValue());
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
 

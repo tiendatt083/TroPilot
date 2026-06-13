@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import * as feedbackApi from '../../api/feedbackApi.js';
+import * as feedbackApi from '../../features/notifications/feedbackApi.js';
 import PageHeader from '../../components/PageHeader.jsx';
 import { FEEDBACK_TYPE_OPTIONS } from '../../utils/feedbackOptions.js';
 

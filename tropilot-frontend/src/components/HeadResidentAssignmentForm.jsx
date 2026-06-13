@@ -1,34 +1,13 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { addMonthsToDateInput, formatDateInputValue } from '../utils/dateFormat.js';
 
-function getTodayInputValue() {
-  const now = new Date();
-  const localDate = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
-  return localDate.toISOString().slice(0, 10);
-}
-
-function addMonthsToDate(dateValue, monthCount) {
-  if (!dateValue) {
-    return '';
-  }
-
-  const [year, month, day] = dateValue.split('-').map(Number);
-  const targetMonthIndex = month - 1 + monthCount;
-  const lastTargetDay = new Date(year, targetMonthIndex + 1, 0).getDate();
-  const targetDate = new Date(year, targetMonthIndex, Math.min(day, lastTargetDay));
-  const targetYear = targetDate.getFullYear();
-  const targetMonth = String(targetDate.getMonth() + 1).padStart(2, '0');
-  const targetDay = String(targetDate.getDate()).padStart(2, '0');
-
-  return `${targetYear}-${targetMonth}-${targetDay}`;
-}
-
-const today = getTodayInputValue();
+const today = formatDateInputValue();
 
 const emptyForm = {
   residentHeadId: '',
   startDate: today,
-  endDate: addMonthsToDate(today, 6)
+  endDate: addMonthsToDateInput(today, 6)
 };
 
 export default function HeadResidentAssignmentForm({ residentHeads, loading, onSubmit }) {
@@ -40,7 +19,7 @@ export default function HeadResidentAssignmentForm({ residentHeads, loading, onS
     setForm((current) => ({
       ...current,
       [name]: value,
-      ...(name === 'startDate' ? { endDate: addMonthsToDate(value, 6) } : {})
+      ...(name === 'startDate' ? { endDate: addMonthsToDateInput(value, 6) } : {})
     }));
   };
 

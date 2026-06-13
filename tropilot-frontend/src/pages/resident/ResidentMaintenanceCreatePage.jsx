@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import * as maintenanceApi from '../../api/maintenanceApi.js';
+import * as maintenanceApi from '../../features/maintenance/api.js';
 import MaintenanceRequestForm from '../../components/MaintenanceRequestForm.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
 

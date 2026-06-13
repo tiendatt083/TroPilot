@@ -1237,7 +1237,9 @@
     },
     "receipts": {
       "title": "Receipt",
-      "empty": "No receipts found."
+      "empty": "No receipts found.",
+      "selectReceipt": "Select a receipt to view details.",
+      "receiptCode": "Receipt code"
     },
     "expenses": {
       "empty": "No expenses found."

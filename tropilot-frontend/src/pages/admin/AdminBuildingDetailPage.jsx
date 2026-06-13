@@ -1,17 +1,17 @@
 import { useEffect, useState } from 'react';
 import { useOutletContext, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import * as contractApi from '../../api/contractApi.js';
-import * as expenseApi from '../../api/expenseApi.js';
-import * as feedbackApi from '../../api/feedbackApi.js';
-import * as invoiceApi from '../../api/invoiceApi.js';
-import * as maintenanceApi from '../../api/maintenanceApi.js';
-import * as memberApi from '../../api/memberApi.js';
-import * as notificationApi from '../../api/notificationApi.js';
-import * as paymentApi from '../../api/paymentApi.js';
-import * as roomApi from '../../api/roomApi.js';
-import * as taskApi from '../../api/taskApi.js';
-import * as vehicleApi from '../../api/vehicleApi.js';
+import * as contractApi from '../../features/contracts/api.js';
+import * as invoiceApi from '../../features/invoices/api.js';
+import * as maintenanceApi from '../../features/maintenance/api.js';
+import * as taskApi from '../../features/maintenance/taskApi.js';
+import * as feedbackApi from '../../features/notifications/feedbackApi.js';
+import * as notificationApi from '../../features/notifications/api.js';
+import * as paymentApi from '../../features/payments/api.js';
+import * as memberApi from '../../features/residents/api.js';
+import * as vehicleApi from '../../features/residents/vehicleApi.js';
+import * as roomApi from '../../features/rooms/api.js';
+import * as expenseApi from '../../features/payments/expenseApi.js';
 import PageHeader from '../../components/PageHeader.jsx';
 
 const emptyBuildingOperations = {

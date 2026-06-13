@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import * as roomApi from '../../api/roomApi.js';
-import * as utilityReadingApi from '../../api/utilityReadingApi.js';
+import * as utilityReadingApi from '../../features/invoices/utilityReadingApi.js';
+import * as roomApi from '../../features/rooms/api.js';
 import PageHeader from '../../components/PageHeader.jsx';
 import UtilityReadingForm from '../../components/UtilityReadingForm.jsx';
 import { isOccupiedRoom } from '../../utils/roomEligibility.js';

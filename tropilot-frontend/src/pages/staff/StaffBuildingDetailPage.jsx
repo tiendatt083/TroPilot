@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import * as buildingApi from '../../api/buildingApi.js';
+import * as buildingApi from '../../features/buildings/api.js';
 import PageHeader from '../../components/PageHeader.jsx';
 
 export default function StaffBuildingDetailPage() {

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import * as notificationApi from '../api/notificationApi.js';
+import * as notificationApi from '../features/notifications/api.js';
 import NotificationTable from './NotificationTable.jsx';
 import PageHeader from './PageHeader.jsx';
 

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import * as vehicleApi from '../../api/vehicleApi.js';
+import * as vehicleApi from '../../features/residents/vehicleApi.js';
 import PageHeader from '../PageHeader.jsx';
 import VehicleTable from '../VehicleTable.jsx';
 

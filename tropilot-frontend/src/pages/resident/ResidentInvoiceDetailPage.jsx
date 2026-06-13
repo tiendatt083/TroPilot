@@ -1,12 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
-import * as feedbackApi from '../../api/feedbackApi.js';
+import * as feedbackApi from '../../features/notifications/feedbackApi.js';
 import { Link, useParams } from 'react-router-dom';
-import * as invoiceApi from '../../api/invoiceApi.js';
-import * as paymentApi from '../../api/paymentApi.js';
-import InvoiceDetail from '../../components/InvoiceDetail.jsx';
+import * as invoiceApi from '../../features/invoices/api.js';
+import * as paymentApi from '../../features/payments/api.js';
+import { InvoiceDetail } from '../../features/invoices/components/index.js';
 import PageHeader from '../../components/PageHeader.jsx';
-import PaymentProofUploadForm from '../../components/PaymentProofUploadForm.jsx';
-import PaymentTable from '../../components/PaymentTable.jsx';
+import { PaymentProofUploadForm, PaymentTable } from '../../features/payments/components/index.js';
 import useInvoicePaymentPolling from '../../hooks/useInvoicePaymentPolling.js';
 
 export default function ResidentInvoiceDetailPage() {

@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import * as adminUserApi from '../../api/adminUserApi.js';
-import * as roomApi from '../../api/roomApi.js';
-import * as taskApi from '../../api/taskApi.js';
+import * as taskApi from '../../features/maintenance/taskApi.js';
+import * as roomApi from '../../features/rooms/api.js';
+import * as adminUserApi from '../../features/users/api.js';
 import PageHeader from '../../components/PageHeader.jsx';
 import TaskForm from '../../components/TaskForm.jsx';
 import TaskTable from '../../components/TaskTable.jsx';

@@ -1,13 +1,19 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { formatDisplayDate, formatDisplayMonth } from '../utils/dateFormat.js';
+import {
+  formatDateInputValue,
+  formatDisplayDate,
+  formatDisplayMonth,
+  getMonthDateRange,
+  getMonthFromDateInput
+} from '../utils/dateFormat.js';
 import { resolveFileUrl } from '../utils/fileUrl.js';
 import { formatRoomLabel } from '../utils/roomDisplay.js';
 
 const emptyForm = {
   roomId: '',
   month: '',
-  readingDate: getTodayInputValue(),
+  readingDate: formatDateInputValue(),
   oldElectricity: 0,
   newElectricity: 0,
   oldWater: 0,
@@ -38,7 +44,7 @@ export default function UtilityReadingForm({
       ...emptyForm,
       ...initialValues,
       roomId: initialValues?.roomId || '',
-      month: initialValues?.month || getMonthFromReadingDate(readingDate),
+      month: initialValues?.month || getMonthFromDateInput(readingDate),
       readingDate,
       oldElectricity: initialValues?.oldElectricity ?? 0,
       newElectricity: initialValues?.newElectricity ?? 0,
@@ -55,7 +61,7 @@ export default function UtilityReadingForm({
     setForm((current) => ({
       ...current,
       [name]: value,
-      ...(name === 'readingDate' ? { month: getMonthFromReadingDate(value) } : {})
+      ...(name === 'readingDate' ? { month: getMonthFromDateInput(value) } : {})
     }));
   };
 
@@ -69,7 +75,7 @@ export default function UtilityReadingForm({
 
     onSubmit({
       roomId: form.roomId,
-      month: getMonthFromReadingDate(form.readingDate),
+      month: getMonthFromDateInput(form.readingDate),
       readingDate: form.readingDate,
       oldElectricity: form.oldElectricity,
       newElectricity: form.newElectricity,
@@ -280,7 +286,7 @@ function PreviousReadingEvidence({ previousReading, t }) {
 }
 
 function findPreviousReading(readings, roomId, readingDate, currentReadingId) {
-  const selectedMonth = getMonthFromReadingDate(readingDate);
+  const selectedMonth = getMonthFromDateInput(readingDate);
 
   if (!roomId || !selectedMonth) {
     return null;
@@ -309,33 +315,9 @@ function normalizeReadingDate(values, selectedMonth) {
   }
 
   if (selectedMonth) {
-    const today = getTodayInputValue();
+    const today = formatDateInputValue();
     return today.startsWith(selectedMonth) ? today : `${selectedMonth}-01`;
   }
 
-  return getTodayInputValue();
-}
-
-function getMonthFromReadingDate(readingDate) {
-  return readingDate ? readingDate.slice(0, 7) : '';
-}
-
-function getTodayInputValue() {
-  const now = new Date();
-  const localDate = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
-  return localDate.toISOString().slice(0, 10);
-}
-
-function getMonthDateRange(month) {
-  if (!month) {
-    return { min: undefined, max: undefined };
-  }
-
-  const [year, monthNumber] = month.split('-').map(Number);
-  const lastDay = new Date(year, monthNumber, 0).getDate();
-
-  return {
-    min: `${month}-01`,
-    max: `${month}-${String(lastDay).padStart(2, '0')}`
-  };
+  return formatDateInputValue();
 }

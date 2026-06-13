@@ -1,5 +1,5 @@
-import * as roomApi from '../../api/roomApi.js';
-import BuildingRoomsWorkspace from '../../components/building/BuildingRoomsWorkspace.jsx';
+import { BuildingRoomsWorkspace } from '../../features/rooms/components/index.js';
+import * as roomApi from '../../features/rooms/api.js';
 
 export default function StaffBuildingRoomsPage() {
   return <BuildingRoomsWorkspace getRooms={roomApi.getStaffRooms} roomBasePath="/staff/rooms" />;

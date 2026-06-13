@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import * as roomApi from '../../api/roomApi.js';
-import * as memberApi from '../../api/memberApi.js';
+import * as memberApi from '../../features/residents/api.js';
+import * as roomApi from '../../features/rooms/api.js';
 import PageHeader from '../../components/PageHeader.jsx';
 import { formatDisplayDate } from '../../utils/dateFormat.js';
 import { getMemberStatusLabel } from '../../utils/memberStatusOptions.js';

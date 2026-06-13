@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import * as maintenanceApi from '../../api/maintenanceApi.js';
+import * as maintenanceApi from '../../features/maintenance/api.js';
 import MaintenanceRequestTable from '../../components/MaintenanceRequestTable.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
 

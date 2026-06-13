@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import * as dashboardApi from '../../api/dashboardApi.js';
+import * as dashboardApi from '../../features/buildings/dashboardApi.js';
 import PageHeader from '../../components/PageHeader.jsx';
 import { useAuth } from '../../context/AuthContext.jsx';
+import { formatDisplayDate } from '../../utils/dateFormat.js';
 
 function toNumber(value) {
   const numberValue = Number(value ?? 0);
@@ -181,12 +182,7 @@ export default function AdminDashboardPage() {
     };
   }, [t]);
 
-  const todayText = new Intl.DateTimeFormat(locale, {
-    weekday: 'long',
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric'
-  }).format(new Date());
+  const todayText = formatDisplayDate(new Date());
   const trackedItems = dashboard
     ? toNumber(dashboard.unpaidInvoices)
       + toNumber(dashboard.overdueInvoices)

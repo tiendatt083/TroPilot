@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import * as expenseApi from '../../api/expenseApi.js';
-import * as invoiceApi from '../../api/invoiceApi.js';
-import * as maintenanceApi from '../../api/maintenanceApi.js';
-import * as roomApi from '../../api/roomApi.js';
-import * as taskApi from '../../api/taskApi.js';
-import * as vehicleApi from '../../api/vehicleApi.js';
+import * as invoiceApi from '../../features/invoices/api.js';
+import * as maintenanceApi from '../../features/maintenance/api.js';
+import * as taskApi from '../../features/maintenance/taskApi.js';
+import * as vehicleApi from '../../features/residents/vehicleApi.js';
+import * as roomApi from '../../features/rooms/api.js';
+import * as expenseApi from '../../features/payments/expenseApi.js';
 import PageHeader from '../../components/PageHeader.jsx';
 import { formatNumber } from '../../utils/numberFormat.js';
 

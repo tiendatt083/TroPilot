@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import * as adminUserApi from '../../api/adminUserApi.js';
+import * as adminUserApi from '../../features/users/api.js';
 import AdminAccountDirectoryTable from '../../components/AdminAccountDirectoryTable.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
 

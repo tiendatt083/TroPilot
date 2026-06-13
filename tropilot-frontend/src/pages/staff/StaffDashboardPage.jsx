@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import * as dashboardApi from '../../api/dashboardApi.js';
+import * as dashboardApi from '../../features/buildings/dashboardApi.js';
 import DashboardMetricGrid from '../../components/DashboardMetricGrid.jsx';
 import DashboardSection from '../../components/DashboardSection.jsx';
 import PageHeader from '../../components/PageHeader.jsx';

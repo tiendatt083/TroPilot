@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import * as feedbackApi from '../../api/feedbackApi.js';
+import * as feedbackApi from '../../features/notifications/feedbackApi.js';
 import FeedbackTable from '../../components/FeedbackTable.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
 import { FEEDBACK_STATUS_OPTIONS } from '../../utils/feedbackOptions.js';

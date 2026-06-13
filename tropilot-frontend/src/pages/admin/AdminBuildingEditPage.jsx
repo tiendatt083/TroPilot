@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import * as buildingApi from '../../api/buildingApi.js';
-import BuildingForm from '../../components/BuildingForm.jsx';
+import * as buildingApi from '../../features/buildings/api.js';
+import { BuildingForm } from '../../features/buildings/components/index.js';
 import PageHeader from '../../components/PageHeader.jsx';
 
 export default function AdminBuildingEditPage() {

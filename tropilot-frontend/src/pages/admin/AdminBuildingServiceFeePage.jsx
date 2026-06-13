@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
-import * as serviceFeeApi from '../../api/serviceFeeApi.js';
+import * as serviceFeeApi from '../../features/invoices/serviceFeeApi.js';
 import PageHeader from '../../components/PageHeader.jsx';
 import { formatEnumLabel } from '../../utils/i18nFormat.js';
 import { isServiceFeeActive } from '../../utils/serviceFeeOptions.js';

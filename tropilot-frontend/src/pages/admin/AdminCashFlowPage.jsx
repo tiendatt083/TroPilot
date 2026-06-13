@@ -1,17 +1,14 @@
 import { useEffect, useState } from 'react';
-import * as expenseApi from '../../api/expenseApi.js';
+import * as expenseApi from '../../features/payments/expenseApi.js';
 import CashFlowSummary from '../../components/CashFlowSummary.jsx';
 import ExpenseTable from '../../components/ExpenseTable.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
 import ReceiptTable from '../../components/ReceiptTable.jsx';
-
-function currentMonth() {
-  return new Date().toISOString().slice(0, 7);
-}
+import { formatMonthInputValue } from '../../utils/dateFormat.js';
 
 export default function AdminCashFlowPage() {
   const [cashFlow, setCashFlow] = useState(null);
-  const [month, setMonth] = useState(currentMonth());
+  const [month, setMonth] = useState(formatMonthInputValue());
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
 

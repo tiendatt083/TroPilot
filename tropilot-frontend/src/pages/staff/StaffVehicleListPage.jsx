@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import * as vehicleApi from '../../api/vehicleApi.js';
+import * as vehicleApi from '../../features/residents/vehicleApi.js';
 import PageHeader from '../../components/PageHeader.jsx';
 import VehicleTable from '../../components/VehicleTable.jsx';
 

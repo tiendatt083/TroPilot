@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import * as equipmentApi from '../api/equipmentApi.js';
-import * as roomApi from '../api/roomApi.js';
+import * as equipmentApi from '../features/equipment/api.js';
+import * as roomApi from '../features/rooms/api.js';
 import EquipmentForm from './EquipmentForm.jsx';
 import EquipmentMaintenancePanel from './EquipmentMaintenancePanel.jsx';
 import EquipmentTable from './EquipmentTable.jsx';

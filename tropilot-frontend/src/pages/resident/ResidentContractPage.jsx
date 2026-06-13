@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import * as contractApi from '../../api/contractApi.js';
+import * as contractApi from '../../features/contracts/api.js';
 import ContractFileHistoryList from '../../components/ContractFileHistoryList.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
 import { getContractStatusClass, getContractStatusLabel } from '../../utils/contractStatusOptions.js';

@@ -1,4 +1,4 @@
-import BuildingPaymentWorkspace from '../../components/building/BuildingPaymentWorkspace.jsx';
+import { BuildingPaymentWorkspace } from '../../features/payments/components/index.js';
 
 export default function AdminBuildingPaymentPage() {
   return <BuildingPaymentWorkspace />;

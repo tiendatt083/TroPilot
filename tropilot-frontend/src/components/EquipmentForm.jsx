@@ -1,26 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { EQUIPMENT_CONDITIONS, EQUIPMENT_SCOPES } from '../utils/equipmentOptions.js';
+import { addDaysToDateInput, formatDateInputValue } from '../utils/dateFormat.js';
 import { formatRoomLabel } from '../utils/roomDisplay.js';
-
-function todayValue() {
-  return new Date().toISOString().slice(0, 10);
-}
-
-function addDays(dateValue, days) {
-  if (!dateValue || !days) {
-    return null;
-  }
-
-  const [year, month, day] = dateValue.split('-').map(Number);
-  const date = new Date(year, month - 1, day);
-  date.setDate(date.getDate() + Number(days));
-
-  const nextYear = date.getFullYear();
-  const nextMonth = String(date.getMonth() + 1).padStart(2, '0');
-  const nextDay = String(date.getDate()).padStart(2, '0');
-  return `${nextYear}-${nextMonth}-${nextDay}`;
-}
 
 function daysBetween(startDate, endDate) {
   if (!startDate || !endDate) {
@@ -44,7 +26,7 @@ function emptyValues(fixedBuilding) {
     scope: 'BUILDING',
     roomId: '',
     locationDescription: '',
-    addedDate: todayValue(),
+    addedDate: formatDateInputValue(),
     installationDate: '',
     maintenanceCycleDays: '',
     lastMaintenanceDate: '',
@@ -57,7 +39,7 @@ function valuesFromEquipment(equipment, fixedBuilding) {
     return emptyValues(fixedBuilding);
   }
 
-  const baseDate = equipment.installationDate || equipment.addedDate || todayValue();
+  const baseDate = equipment.installationDate || equipment.addedDate || formatDateInputValue();
 
   return {
     buildingId: String(fixedBuilding?.id || equipment.buildingId || ''),
@@ -66,7 +48,7 @@ function valuesFromEquipment(equipment, fixedBuilding) {
     scope: equipment.scope || 'BUILDING',
     roomId: equipment.roomId ? String(equipment.roomId) : '',
     locationDescription: equipment.locationDescription || '',
-    addedDate: equipment.addedDate || todayValue(),
+    addedDate: equipment.addedDate || formatDateInputValue(),
     installationDate: equipment.installationDate || '',
     maintenanceCycleDays: daysBetween(baseDate, equipment.nextMaintenanceDate),
     lastMaintenanceDate: equipment.lastMaintenanceDate || '',
@@ -124,8 +106,8 @@ export default function EquipmentForm({
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    const baseMaintenanceDate = values.installationDate || values.addedDate || todayValue();
-    const nextMaintenanceDate = addDays(baseMaintenanceDate, values.maintenanceCycleDays);
+    const baseMaintenanceDate = values.installationDate || values.addedDate || formatDateInputValue();
+    const nextMaintenanceDate = addDaysToDateInput(baseMaintenanceDate, values.maintenanceCycleDays);
 
     onSubmit({
       buildingId: values.buildingId ? Number(values.buildingId) : null,
