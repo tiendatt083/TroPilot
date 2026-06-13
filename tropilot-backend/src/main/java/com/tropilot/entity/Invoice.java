@@ -59,7 +59,7 @@ public class Invoice {
     @Column(name = "invoice_month", nullable = false)
     private LocalDate month;
 
-    @Column(name = "invoice_date")
+    @Column(name = "invoice_date", nullable = false)
     private LocalDate invoiceDate;
 
     @Column(nullable = false, precision = 14, scale = 2)

@@ -124,6 +124,10 @@ For a local demo, configure the database connection using environment variables 
 SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/tropilot?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
 SPRING_DATASOURCE_USERNAME=your_mysql_username
 SPRING_DATASOURCE_PASSWORD=your_mysql_password
+SPRING_JPA_HIBERNATE_DDL_AUTO=validate
+SPRING_FLYWAY_ENABLED=true
+SPRING_FLYWAY_BASELINE_ON_MIGRATE=true
+SPRING_FLYWAY_BASELINE_VERSION=1
 APP_CORS_ALLOWED_ORIGINS=http://localhost:5173
 APP_UPLOAD_BASE_PATH=uploads
 APP_JWT_SECRET=change_this_demo_secret
@@ -148,6 +152,16 @@ cd tropilot-backend
 ```
 
 Use `tropilot-backend/.env.example` as the safe template for local setup.
+
+### Database Migrations
+
+Tropilot uses Flyway migrations from:
+
+```text
+tropilot-backend/src/main/resources/db/migration
+```
+
+Hibernate validates the migrated schema and does not update it automatically. Existing Tropilot databases are baselined at version `1`; new databases run the complete baseline migration before later migrations. Never edit an applied migration. Add a new versioned migration for every schema change.
 
 ### Credential Rotation Checklist
 
