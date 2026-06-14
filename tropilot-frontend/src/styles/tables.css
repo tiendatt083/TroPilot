@@ -102,6 +102,70 @@
   width: 190px;
 }
 
+.account-row-with-members td {
+  border-bottom: 0;
+}
+
+.account-inline-members-row td {
+  padding-top: 0;
+  background: var(--color-surface-muted);
+}
+
+.account-inline-members-row:hover {
+  background: var(--color-surface-muted) !important;
+}
+
+.account-inline-members {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  border-top: 1px solid var(--color-border-soft);
+  padding: 0.65rem 0;
+}
+
+.account-inline-members-label {
+  flex: 0 0 auto;
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.account-inline-member-list {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.account-inline-member {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.38rem;
+  border: 1px solid var(--color-border-soft);
+  border-radius: 999px;
+  padding: 0.3rem 0.58rem 0.3rem 0.32rem;
+  color: var(--color-text);
+  background: var(--color-surface);
+  font-size: 0.78rem;
+}
+
+.account-inline-member-avatar {
+  display: inline-grid;
+  width: 24px;
+  height: 24px;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--color-primary);
+  background: var(--color-primary-soft);
+  font-size: 0.72rem;
+  font-weight: 850;
+}
+
+.account-inline-member > span:last-child {
+  color: var(--color-text-muted);
+  font-size: 0.72rem;
+}
+
 .pending-member-review-table {
   min-width: 860px;
 }
@@ -301,6 +365,11 @@
 
   .account-member-item > div:last-child {
     text-align: left;
+  }
+
+  .account-inline-members {
+    align-items: flex-start;
+    flex-direction: column;
   }
 }
 

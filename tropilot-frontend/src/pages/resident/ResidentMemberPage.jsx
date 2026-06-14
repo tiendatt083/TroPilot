@@ -1,20 +1,21 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import * as memberApi from '../../features/residents/api.js';
 import MemberForm from '../../components/MemberForm.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
 import { formatDateInputValue, formatDisplayDate } from '../../utils/dateFormat.js';
-import { getMemberStatusLabel } from '../../utils/memberStatusOptions.js';
+import { formatEnumLabel } from '../../utils/i18nFormat.js';
 
 function statusClass(status) {
   return `status-pill member-status-${status.toLowerCase()}`;
 }
 
-function countText(member) {
+function countText(member, t) {
   if (!member) {
-    return 'Occupants are not available.';
+    return t('resident.members.unavailableCount');
   }
 
-  return `${member.totalOccupants} of ${member.maxOccupants} active occupants`;
+  return t('resident.members.activeCount', { total: member.totalOccupants, max: member.maxOccupants });
 }
 
 function createReturnRequestDraft(member) {
@@ -30,6 +31,7 @@ function createReturnRequestDraft(member) {
 }
 
 export default function ResidentMemberPage() {
+  const { t } = useTranslation();
   const [members, setMembers] = useState([]);
   const [editingMember, setEditingMember] = useState(null);
   const [returnRequestDraft, setReturnRequestDraft] = useState(null);
@@ -46,7 +48,7 @@ export default function ResidentMemberPage() {
       const response = await memberApi.getResidentMembers();
       setMembers(response.data);
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Room members could not be loaded');
+      setError(apiError.response?.data?.message || t('resident.members.loadError'));
     }
   };
 
@@ -61,11 +63,11 @@ export default function ResidentMemberPage() {
 
     try {
       await memberApi.createResidentMember(payload);
-      setMessage('Room member submitted for approval successfully.');
+      setMessage(t('resident.members.submitted'));
       setReturnRequestDraft(null);
       await loadMembers();
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Room member could not be submitted');
+      setError(apiError.response?.data?.message || t('resident.members.submitError'));
     } finally {
       setSaving(false);
     }
@@ -78,11 +80,11 @@ export default function ResidentMemberPage() {
 
     try {
       await memberApi.updateResidentMember(editingMember.id, payload);
-      setMessage('Room member updated successfully.');
+      setMessage(t('resident.members.updated'));
       setEditingMember(null);
       await loadMembers();
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Room member could not be updated');
+      setError(apiError.response?.data?.message || t('resident.members.updateError'));
     } finally {
       setSaving(false);
     }
@@ -104,7 +106,7 @@ export default function ResidentMemberPage() {
   };
 
   const handleLeave = async (member) => {
-    const confirmed = window.confirm(`Mark ${member.fullName} as left?`);
+    const confirmed = window.confirm(t('resident.members.leaveConfirm', { name: member.fullName }));
     if (!confirmed) {
       return;
     }
@@ -115,10 +117,10 @@ export default function ResidentMemberPage() {
 
     try {
       await memberApi.markResidentMemberLeft(member.id);
-      setMessage('Room member marked as left successfully.');
+      setMessage(t('resident.members.left'));
       await loadMembers();
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Room member could not be marked as left');
+      setError(apiError.response?.data?.message || t('resident.members.leaveError'));
     } finally {
       setLeavingId(null);
     }
@@ -136,8 +138,8 @@ export default function ResidentMemberPage() {
   return (
     <section className="content-section">
       <div className="page-title-row">
-        <PageHeader eyebrow="Head resident" title="Room members" />
-        <div className="count-summary">{countText(firstMember)}</div>
+        <PageHeader eyebrow={t('resident.eyebrow')} title={t('resident.members.title')} />
+        <div className="count-summary">{countText(firstMember, t)}</div>
       </div>
 
       {message && <div className="alert success-alert">{message}</div>}
@@ -146,14 +148,20 @@ export default function ResidentMemberPage() {
       <section className="member-workspace">
         <div>
           <PageHeader
-            eyebrow={isEditing ? 'Edit member' : 'New member'}
-            title={isEditing ? editingMember.fullName : 'Add room member'}
+            eyebrow={isEditing ? t('resident.members.editEyebrow') : t('resident.members.newEyebrow')}
+            title={isEditing ? editingMember.fullName : t('resident.members.addTitle')}
           />
           <MemberForm
             key={formKey}
             initialValues={activeFormMember}
             loading={saving}
-            submitLabel={isEditing ? 'Save changes' : returnRequestDraft ? 'Submit again for approval' : 'Submit for approval'}
+            submitLabel={
+              isEditing
+                ? t('resident.members.saveChanges')
+                : returnRequestDraft
+                  ? t('resident.members.submitAgain')
+                  : t('resident.members.submitApproval')
+            }
             onSubmit={isEditing ? handleUpdate : handleCreate}
             onCancel={activeFormMember ? handleCancelFormAction : undefined}
           />
@@ -161,18 +169,18 @@ export default function ResidentMemberPage() {
 
         <div>
           {loading ? (
-            <div className="empty-state">Loading room members...</div>
+            <div className="empty-state">{t('resident.members.loading')}</div>
           ) : (
             <div className="table-wrap">
               <table className="data-table">
                 <thead>
                   <tr>
-                    <th>Name</th>
-                    <th>Phone</th>
-                    <th>Relationship</th>
-                    <th>Move-in</th>
-                    <th>Status</th>
-                    <th>Actions</th>
+                    <th>{t('tables.common.name')}</th>
+                    <th>{t('profile.fields.phone')}</th>
+                    <th>{t('forms.member.relationship')}</th>
+                    <th>{t('forms.member.moveInDate')}</th>
+                    <th>{t('tables.common.status')}</th>
+                    <th>{t('tables.common.actions')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -180,13 +188,15 @@ export default function ResidentMemberPage() {
                     <tr key={member.id}>
                       <td>
                         <strong>{member.fullName}</strong>
-                        <span className="table-subtext">{member.email || 'Not provided'}</span>
+                        <span className="table-subtext">{member.email || t('common.notProvided')}</span>
                       </td>
                       <td>{member.phone}</td>
-                      <td>{member.relationship || 'Not provided'}</td>
+                      <td>{member.relationship || t('common.notProvided')}</td>
                       <td>{formatDisplayDate(member.moveInDate)}</td>
                       <td>
-                        <span className={statusClass(member.status)}>{getMemberStatusLabel(member.status)}</span>
+                        <span className={statusClass(member.status)}>
+                          {formatEnumLabel(t, 'memberStatus', member.status)}
+                        </span>
                       </td>
                       <td>
                         <div className="table-actions">
@@ -196,7 +206,7 @@ export default function ResidentMemberPage() {
                               type="button"
                               onClick={() => handleRequestAgain(member)}
                             >
-                              Add again
+                              {t('resident.members.addAgain')}
                             </button>
                           ) : (
                             <>
@@ -205,7 +215,7 @@ export default function ResidentMemberPage() {
                                 type="button"
                                 onClick={() => handleEdit(member)}
                               >
-                                Edit
+                                {t('common.edit')}
                               </button>
                               <button
                                 className="secondary-button compact-button"
@@ -213,7 +223,7 @@ export default function ResidentMemberPage() {
                                 disabled={leavingId === member.id}
                                 onClick={() => handleLeave(member)}
                               >
-                                Leave
+                                {t('resident.members.leave')}
                               </button>
                             </>
                           )}
@@ -223,7 +233,9 @@ export default function ResidentMemberPage() {
                   ))}
                 </tbody>
               </table>
-              {members.length === 0 && <div className="empty-state flat-empty-state">No room members found.</div>}
+              {members.length === 0 && (
+                <div className="empty-state flat-empty-state">{t('resident.members.empty')}</div>
+              )}
             </div>
           )}
         </div>

@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import * as invoiceApi from '../../features/invoices/api.js';
 import { InvoiceTable } from '../../features/invoices/components/index.js';
 import PageHeader from '../../components/PageHeader.jsx';
 
 export default function ResidentInvoiceListPage() {
+  const { t } = useTranslation();
   const [invoices, setInvoices] = useState([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
@@ -20,7 +22,7 @@ export default function ResidentInvoiceListPage() {
       })
       .catch((apiError) => {
         if (active) {
-          setError(apiError.response?.data?.message || 'Invoices could not be loaded');
+          setError(apiError.response?.data?.message || t('resident.invoices.loadError'));
         }
       })
       .finally(() => {
@@ -36,12 +38,12 @@ export default function ResidentInvoiceListPage() {
 
   return (
     <section className="content-section">
-      <PageHeader eyebrow="Head resident" title="Invoices" />
+      <PageHeader eyebrow={t('resident.eyebrow')} title={t('resident.invoices.title')} />
 
       {error && <div className="alert error-alert">{error}</div>}
 
       {loading ? (
-        <div className="empty-state">Loading invoices...</div>
+        <div className="empty-state">{t('resident.invoices.loading')}</div>
       ) : (
         <InvoiceTable invoices={invoices} detailPathBase="/resident/invoices" />
       )}

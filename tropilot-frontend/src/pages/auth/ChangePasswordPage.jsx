@@ -1,9 +1,11 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { getDashboardPath } from '../../utils/roleRoutes.js';
 
 export default function ChangePasswordPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { changeFirstPassword, user } = useAuth();
   const [form, setForm] = useState({
@@ -28,7 +30,7 @@ export default function ChangePasswordPage() {
       const updatedUser = await changeFirstPassword(form);
       navigate(getDashboardPath(updatedUser.role), { replace: true });
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Password change failed');
+      setError(apiError.response?.data?.message || t('auth.changePassword.error'));
     } finally {
       setLoading(false);
     }
@@ -39,14 +41,14 @@ export default function ChangePasswordPage() {
       <section className="auth-panel" aria-labelledby="change-password-title">
         <div>
           <p className="eyebrow">Tropilot</p>
-          <h1 id="change-password-title">Change temporary password</h1>
+          <h1 id="change-password-title">{t('auth.changePassword.title')}</h1>
         </div>
 
         <p className="helper-text">{user?.email}</p>
         {error && <div className="alert error-alert">{error}</div>}
 
         <form className="auth-form" onSubmit={handleSubmit}>
-          <label htmlFor="currentPassword">Current password</label>
+          <label htmlFor="currentPassword">{t('auth.changePassword.currentPassword')}</label>
           <input
             id="currentPassword"
             name="currentPassword"
@@ -57,7 +59,7 @@ export default function ChangePasswordPage() {
             required
           />
 
-          <label htmlFor="newPassword">New password</label>
+          <label htmlFor="newPassword">{t('auth.changePassword.newPassword')}</label>
           <input
             id="newPassword"
             name="newPassword"
@@ -69,7 +71,7 @@ export default function ChangePasswordPage() {
             required
           />
 
-          <label htmlFor="confirmPassword">Confirm password</label>
+          <label htmlFor="confirmPassword">{t('auth.changePassword.confirmPassword')}</label>
           <input
             id="confirmPassword"
             name="confirmPassword"
@@ -82,7 +84,7 @@ export default function ChangePasswordPage() {
           />
 
           <button type="submit" disabled={loading}>
-            {loading ? 'Changing password...' : 'Change password'}
+            {loading ? t('auth.changePassword.submitting') : t('auth.changePassword.submit')}
           </button>
         </form>
       </section>

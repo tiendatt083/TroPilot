@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import * as paymentApi from '../../features/payments/api.js';
 import PageHeader from '../../components/PageHeader.jsx';
 import PaymentTable from '../../components/PaymentTable.jsx';
 
 export default function StaffPendingPaymentsPage() {
+  const { t } = useTranslation();
   const [payments, setPayments] = useState([]);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
@@ -17,7 +19,7 @@ export default function StaffPendingPaymentsPage() {
       const response = await paymentApi.getPendingPayments();
       setPayments(response.data);
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Pending payments could not be loaded');
+      setError(apiError.response?.data?.message || t('pendingPaymentManagement.loadError'));
     }
   };
 
@@ -31,18 +33,18 @@ export default function StaffPendingPaymentsPage() {
     setError('');
 
     try {
-      await paymentApi.approvePayment(payment.id, { note: 'Payment proof approved' });
-      setMessage('Payment approved successfully.');
+      await paymentApi.approvePayment(payment.id, { note: t('pendingPaymentManagement.approvedNote') });
+      setMessage(t('pendingPaymentManagement.approved'));
       await loadPayments();
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Payment could not be approved');
+      setError(apiError.response?.data?.message || t('pendingPaymentManagement.approveError'));
     } finally {
       setProcessingId(null);
     }
   };
 
   const handleReject = async (payment) => {
-    const note = window.prompt('Enter rejection note');
+    const note = window.prompt(t('pendingPaymentManagement.rejectionPrompt'));
 
     if (note === null) {
       return;
@@ -53,11 +55,11 @@ export default function StaffPendingPaymentsPage() {
     setError('');
 
     try {
-      await paymentApi.rejectPayment(payment.id, { note: note || 'Payment proof rejected' });
-      setMessage('Payment rejected successfully.');
+      await paymentApi.rejectPayment(payment.id, { note: note || t('pendingPaymentManagement.rejectedNote') });
+      setMessage(t('pendingPaymentManagement.rejected'));
       await loadPayments();
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Payment could not be rejected');
+      setError(apiError.response?.data?.message || t('pendingPaymentManagement.rejectError'));
     } finally {
       setProcessingId(null);
     }
@@ -71,7 +73,7 @@ export default function StaffPendingPaymentsPage() {
         disabled={processingId === payment.id}
         onClick={() => handleApprove(payment)}
       >
-        Approve
+        {t('pendingPaymentManagement.approve')}
       </button>
       <button
         className="secondary-button compact-button"
@@ -79,20 +81,20 @@ export default function StaffPendingPaymentsPage() {
         disabled={processingId === payment.id}
         onClick={() => handleReject(payment)}
       >
-        Reject
+        {t('pendingPaymentManagement.reject')}
       </button>
     </div>
   );
 
   return (
     <section className="content-section">
-      <PageHeader eyebrow="Operations staff" title="Pending payments" />
+      <PageHeader eyebrow={t('role.staff')} title={t('pendingPaymentManagement.title')} />
 
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
 
       {loading ? (
-        <div className="empty-state">Loading pending payments...</div>
+        <div className="empty-state">{t('pendingPaymentManagement.loading')}</div>
       ) : (
         <PaymentTable payments={payments} renderActions={renderActions} />
       )}

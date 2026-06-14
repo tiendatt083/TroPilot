@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
 import * as notificationApi from '../../features/notifications/api.js';
 import * as adminUserApi from '../../features/users/api.js';
 import CheckboxList from '../../components/CheckboxList.jsx';
 import NotificationTable from '../../components/NotificationTable.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
+import { formatEnumLabel } from '../../utils/i18nFormat.js';
 import { NOTIFICATION_TARGET_OPTIONS } from '../../utils/notificationOptions.js';
 
 const emptyForm = {
@@ -14,12 +16,13 @@ const emptyForm = {
   targetUserIds: []
 };
 
-function getResidentHeadDescription(user) {
-  const roomLabel = user.assignedRoomCode ? `Room ${user.assignedRoomCode}` : null;
+function getResidentHeadDescription(user, t) {
+  const roomLabel = user.assignedRoomCode ? `${t('tables.common.room')} ${user.assignedRoomCode}` : null;
   return [roomLabel, user.email].filter(Boolean).join(' - ');
 }
 
 export default function AdminBuildingNotificationPage() {
+  const { t } = useTranslation();
   const { building } = useOutletContext();
   const [form, setForm] = useState(emptyForm);
   const [users, setUsers] = useState([]);
@@ -46,7 +49,7 @@ export default function AdminBuildingNotificationPage() {
       setUsers(usersResponse.data);
       setNotifications(notificationsResponse.data);
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Building notifications could not be loaded');
+      setError(apiError.response?.data?.message || t('workspace.notifications.loadError'));
     }
   };
 
@@ -80,7 +83,7 @@ export default function AdminBuildingNotificationPage() {
     const usesBuildingTarget = form.targetType !== 'STAFF';
 
     if (form.targetType === 'SELECTED_USERS' && form.targetUserIds.length === 0) {
-      setError('At least one Head Resident is required');
+      setError(t('notifications.atLeastOneHeadResident'));
       return;
     }
 
@@ -99,17 +102,17 @@ export default function AdminBuildingNotificationPage() {
         buildingFilter
       );
       setForm(emptyForm);
-      setMessage('Notification created successfully.');
+      setMessage(t('notifications.created'));
       await loadData();
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Notification could not be created');
+      setError(apiError.response?.data?.message || t('notifications.createError'));
     } finally {
       setSaving(false);
     }
   };
 
   if (loading) {
-    return <div className="empty-state">Loading notifications...</div>;
+    return <div className="empty-state">{t('notifications.loading')}</div>;
   }
 
   const needsSelectedUsers = form.targetType === 'SELECTED_USERS';
@@ -117,53 +120,53 @@ export default function AdminBuildingNotificationPage() {
 
   return (
     <div className="building-workspace">
-      <PageHeader eyebrow="Building notifications" title="Notifications in this building" />
+      <PageHeader eyebrow={t('workspace.notifications.eyebrow')} title={t('workspace.notifications.title')} />
 
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
 
       <section className="task-workspace">
         <form className="panel-form" onSubmit={handleSubmit}>
-          <label htmlFor="title">Title</label>
+          <label htmlFor="title">{t('notifications.fields.title')}</label>
           <input id="title" name="title" value={form.title} onChange={handleChange} maxLength={160} required />
 
-          <label htmlFor="content">Content</label>
+          <label htmlFor="content">{t('notifications.fields.content')}</label>
           <textarea id="content" name="content" rows="6" value={form.content} onChange={handleChange} required />
 
-          <label htmlFor="targetType">Target</label>
+          <label htmlFor="targetType">{t('notifications.fields.target')}</label>
           <select id="targetType" name="targetType" value={form.targetType} onChange={handleChange} required>
             {NOTIFICATION_TARGET_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
-                {option.label}
+                {formatEnumLabel(t, 'notificationTarget', option.value)}
               </option>
             ))}
           </select>
 
           {needsSelectedUsers && (
             <>
-              <label>Target Head Residents</label>
+              <label>{t('notifications.fields.targetHeadResidents')}</label>
               <CheckboxList
-                ariaLabel="Target Head Residents"
+                ariaLabel={t('notifications.fields.targetHeadResidents')}
                 items={residentHeads}
                 selectedValues={form.targetUserIds}
                 onChange={handleTargetUsersChange}
                 getValue={(user) => user.id}
                 getLabel={(user) => user.fullName}
-                getDescription={getResidentHeadDescription}
-                emptyMessage="No assigned Head Residents found in this building."
+                getDescription={(user) => getResidentHeadDescription(user, t)}
+                emptyMessage={t('notifications.empty.buildingHeadResidents')}
               />
             </>
           )}
 
           {usesBuildingTarget && (
             <>
-              <label htmlFor="targetBuilding">Building receiving notification</label>
+              <label htmlFor="targetBuilding">{t('notifications.fields.buildingReceiving')}</label>
               <input id="targetBuilding" value={`${building.buildingCode} - ${building.name}`} disabled readOnly />
             </>
           )}
 
           <button type="submit" disabled={saving}>
-            {saving ? 'Creating...' : 'Create notification'}
+            {saving ? t('notifications.actions.creating') : t('notifications.actions.create')}
           </button>
         </form>
 

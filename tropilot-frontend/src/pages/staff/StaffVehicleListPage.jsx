@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import * as vehicleApi from '../../features/residents/vehicleApi.js';
 import PageHeader from '../../components/PageHeader.jsx';
 import VehicleTable from '../../components/VehicleTable.jsx';
 
 export default function StaffVehicleListPage() {
+  const { t } = useTranslation();
   const [vehicles, setVehicles] = useState([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
@@ -20,7 +22,7 @@ export default function StaffVehicleListPage() {
       })
       .catch((apiError) => {
         if (active) {
-          setError(apiError.response?.data?.message || 'Vehicles could not be loaded');
+          setError(apiError.response?.data?.message || t('vehicleManagement.loadError'));
         }
       })
       .finally(() => {
@@ -36,12 +38,12 @@ export default function StaffVehicleListPage() {
 
   return (
     <section className="content-section">
-      <PageHeader eyebrow="Operations staff" title="Vehicles" />
+      <PageHeader eyebrow={t('role.staff')} title={t('vehicleManagement.title')} />
 
       {error && <div className="alert error-alert">{error}</div>}
 
       {loading ? (
-        <div className="empty-state">Loading vehicles...</div>
+        <div className="empty-state">{t('vehicleManagement.loading')}</div>
       ) : (
         <VehicleTable vehicles={vehicles} />
       )}

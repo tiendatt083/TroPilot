@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
 import * as maintenanceApi from '../../features/maintenance/api.js';
 import MaintenanceRequestTable from '../../components/MaintenanceRequestTable.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
 
 export default function ResidentMaintenanceListPage() {
+  const { t } = useTranslation();
   const location = useLocation();
   const [requests, setRequests] = useState([]);
   const [message, setMessage] = useState(location.state?.message || '');
@@ -23,7 +25,7 @@ export default function ResidentMaintenanceListPage() {
       })
       .catch((apiError) => {
         if (active) {
-          setError(apiError.response?.data?.message || 'Maintenance requests could not be loaded');
+          setError(apiError.response?.data?.message || t('maintenance.loadError'));
         }
       })
       .finally(() => {
@@ -40,9 +42,9 @@ export default function ResidentMaintenanceListPage() {
   return (
     <section className="content-section">
       <div className="page-title-row">
-        <PageHeader eyebrow="Head resident" title="Maintenance requests" />
+        <PageHeader eyebrow={t('resident.eyebrow')} title={t('maintenance.title')} />
         <Link className="button-link" to="/resident/maintenance/create">
-          Create request
+          {t('maintenance.create')}
         </Link>
       </div>
 
@@ -50,7 +52,7 @@ export default function ResidentMaintenanceListPage() {
       {error && <div className="alert error-alert">{error}</div>}
 
       {loading ? (
-        <div className="empty-state">Loading maintenance requests...</div>
+        <div className="empty-state">{t('maintenance.loading')}</div>
       ) : (
         <MaintenanceRequestTable requests={requests} />
       )}

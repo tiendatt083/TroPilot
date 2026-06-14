@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
 import * as feedbackApi from '../../features/notifications/feedbackApi.js';
 import FeedbackTable from '../../components/FeedbackTable.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
 import { FEEDBACK_STATUS_OPTIONS } from '../../utils/feedbackOptions.js';
+import { formatEnumLabel } from '../../utils/i18nFormat.js';
 
 export default function AdminBuildingInvoiceComplaintPage() {
+  const { t } = useTranslation();
   const { building } = useOutletContext();
   const [complaints, setComplaints] = useState([]);
   const [replyMap, setReplyMap] = useState({});
@@ -25,7 +28,7 @@ export default function AdminBuildingInvoiceComplaintPage() {
       setComplaints(response.data);
       setStatusMap(Object.fromEntries(response.data.map((complaint) => [complaint.id, complaint.status])));
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Building invoice complaints could not be loaded');
+      setError(apiError.response?.data?.message || t('workspace.invoiceComplaints.loadError'));
     }
   };
 
@@ -52,9 +55,9 @@ export default function AdminBuildingInvoiceComplaintPage() {
       );
       updateComplaintInList(response.data);
       setReplyMap((current) => ({ ...current, [complaint.id]: '' }));
-      setMessage('Invoice complaint replied successfully.');
+      setMessage(t('feedbackManagement.complaintReplied'));
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Invoice complaint could not be replied');
+      setError(apiError.response?.data?.message || t('feedbackManagement.complaintReplyError'));
     } finally {
       setProcessingId(null);
     }
@@ -72,9 +75,9 @@ export default function AdminBuildingInvoiceComplaintPage() {
         buildingFilter
       );
       updateComplaintInList(response.data);
-      setMessage('Invoice complaint status updated successfully.');
+      setMessage(t('feedbackManagement.complaintStatusUpdated'));
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Invoice complaint status could not be updated');
+      setError(apiError.response?.data?.message || t('feedbackManagement.complaintStatusError'));
     } finally {
       setProcessingId(null);
     }
@@ -88,7 +91,7 @@ export default function AdminBuildingInvoiceComplaintPage() {
       >
         {FEEDBACK_STATUS_OPTIONS.map((option) => (
           <option key={option.value} value={option.value}>
-            {option.label}
+            {formatEnumLabel(t, 'feedbackStatus', option.value)}
           </option>
         ))}
       </select>
@@ -98,13 +101,13 @@ export default function AdminBuildingInvoiceComplaintPage() {
         disabled={processingId === complaint.id}
         onClick={() => handleStatus(complaint)}
       >
-        Save status
+        {t('feedbackManagement.saveStatus')}
       </button>
       <textarea
         rows="3"
         value={replyMap[complaint.id] || ''}
         onChange={(event) => setReplyMap((current) => ({ ...current, [complaint.id]: event.target.value }))}
-        placeholder="Reply content"
+        placeholder={t('feedbackManagement.replyContent')}
       />
       <button
         className="secondary-button compact-button"
@@ -112,20 +115,20 @@ export default function AdminBuildingInvoiceComplaintPage() {
         disabled={processingId === complaint.id}
         onClick={() => handleReply(complaint)}
       >
-        Reply
+        {t('feedbackManagement.reply')}
       </button>
     </div>
   );
 
   return (
     <div className="building-workspace">
-      <PageHeader eyebrow="Building invoice complaints" title="Invoice complaints in this building" />
+      <PageHeader eyebrow={t('workspace.invoiceComplaints.eyebrow')} title={t('workspace.invoiceComplaints.title')} />
 
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
 
       {loading ? (
-        <div className="empty-state">Loading invoice complaints...</div>
+        <div className="empty-state">{t('feedbackManagement.complaintsLoading')}</div>
       ) : (
         <FeedbackTable feedbacks={complaints} renderActions={renderActions} />
       )}

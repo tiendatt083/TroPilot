@@ -1,20 +1,18 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useOutletContext } from 'react-router-dom';
 import * as memberApi from '../../features/residents/api.js';
 import PageHeader from '../../components/PageHeader.jsx';
 import { formatDisplayDate } from '../../utils/dateFormat.js';
-import { getMemberStatusLabel } from '../../utils/memberStatusOptions.js';
+import { formatEnumLabel } from '../../utils/i18nFormat.js';
 import { formatRoomCode } from '../../utils/roomDisplay.js';
 
 function statusClass(status) {
   return `status-pill member-status-${status.toLowerCase()}`;
 }
 
-function countText(member) {
-  return `${member.totalOccupants} of ${member.maxOccupants}`;
-}
-
 export default function AdminBuildingMemberPage() {
+  const { t } = useTranslation();
   const { building } = useOutletContext();
   const [members, setMembers] = useState([]);
   const [message, setMessage] = useState('');
@@ -31,7 +29,7 @@ export default function AdminBuildingMemberPage() {
       const response = await memberApi.getAdminBuildingMembers(buildingFilter);
       setMembers(response.data);
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Building room members could not be loaded');
+      setError(apiError.response?.data?.message || t('workspace.members.loadError'));
     }
   };
 
@@ -47,10 +45,10 @@ export default function AdminBuildingMemberPage() {
 
     try {
       await memberApi.approveMember(member.id, buildingFilter);
-      setMessage('Room member approved successfully.');
+      setMessage(t('workspace.members.approved'));
       await loadMembers();
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Room member could not be approved');
+      setError(apiError.response?.data?.message || t('workspace.members.approveError'));
     } finally {
       setProcessingId(null);
     }
@@ -63,10 +61,10 @@ export default function AdminBuildingMemberPage() {
 
     try {
       await memberApi.rejectMember(member.id, buildingFilter);
-      setMessage('Room member rejected successfully.');
+      setMessage(t('workspace.members.rejected'));
       await loadMembers();
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Room member could not be rejected');
+      setError(apiError.response?.data?.message || t('workspace.members.rejectError'));
     } finally {
       setProcessingId(null);
     }
@@ -74,7 +72,7 @@ export default function AdminBuildingMemberPage() {
 
   const renderActions = (member) => {
     if (member.status !== 'PENDING') {
-      return <span className="muted-text">No action</span>;
+      return <span className="muted-text">{t('workspace.vehicles.noAction')}</span>;
     }
 
     return (
@@ -85,7 +83,7 @@ export default function AdminBuildingMemberPage() {
           disabled={processingId === member.id}
           onClick={() => handleApprove(member)}
         >
-          Approve
+          {t('pendingMemberReview.actions.approve')}
         </button>
         <button
           className="secondary-button compact-button"
@@ -93,7 +91,7 @@ export default function AdminBuildingMemberPage() {
           disabled={processingId === member.id}
           onClick={() => handleReject(member)}
         >
-          Reject
+          {t('pendingMemberReview.actions.reject')}
         </button>
       </div>
     );
@@ -101,26 +99,26 @@ export default function AdminBuildingMemberPage() {
 
   return (
     <div className="building-workspace">
-      <PageHeader eyebrow="Building room members" title="Room members in this building" />
+      <PageHeader eyebrow={t('workspace.members.eyebrow')} title={t('workspace.members.title')} />
 
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
 
       {loading ? (
-        <div className="empty-state">Loading room members...</div>
+        <div className="empty-state">{t('workspace.members.loading')}</div>
       ) : (
         <div className="table-wrap">
           <table className="data-table">
             <thead>
               <tr>
-                <th>Member</th>
-                <th>Phone</th>
-                <th>Room</th>
-                <th>Head Resident</th>
-                <th>Status</th>
-                <th>Occupants</th>
-                <th>Move-in</th>
-                <th>Actions</th>
+                <th>{t('pendingMemberReview.columns.name')}</th>
+                <th>{t('profile.fields.phone')}</th>
+                <th>{t('tables.common.room')}</th>
+                <th>{t('tables.common.headResident')}</th>
+                <th>{t('tables.common.status')}</th>
+                <th>{t('workspace.members.occupants')}</th>
+                <th>{t('forms.member.moveInDate')}</th>
+                <th>{t('tables.common.actions')}</th>
               </tr>
             </thead>
             <tbody>
@@ -128,7 +126,7 @@ export default function AdminBuildingMemberPage() {
                 <tr key={member.id}>
                   <td>
                     <strong>{member.fullName}</strong>
-                    <span className="table-subtext">{member.email || 'Not provided'}</span>
+                    <span className="table-subtext">{member.email || t('common.notProvided')}</span>
                   </td>
                   <td>{member.phone}</td>
                   <td>
@@ -141,16 +139,23 @@ export default function AdminBuildingMemberPage() {
                     <span className="table-subtext">{member.residentHeadEmail}</span>
                   </td>
                   <td>
-                    <span className={statusClass(member.status)}>{getMemberStatusLabel(member.status)}</span>
+                    <span className={statusClass(member.status)}>
+                      {formatEnumLabel(t, 'memberStatus', member.status)}
+                    </span>
                   </td>
-                  <td>{countText(member)}</td>
+                  <td>
+                    {t('workspace.members.occupantCount', {
+                      total: member.totalOccupants,
+                      max: member.maxOccupants
+                    })}
+                  </td>
                   <td>{formatDisplayDate(member.moveInDate)}</td>
                   <td>{renderActions(member)}</td>
                 </tr>
               ))}
             </tbody>
           </table>
-          {members.length === 0 && <div className="empty-state flat-empty-state">No room members found.</div>}
+          {members.length === 0 && <div className="empty-state flat-empty-state">{t('workspace.members.empty')}</div>}
         </div>
       )}
     </div>

@@ -24,8 +24,8 @@ function createResidentRecords(users, members) {
     .map((resident) => ({
       ...resident,
       members: approvedMembers.filter((member) => (
-        member.residentHeadId === resident.id
-        && member.roomId === resident.assignedRoomId
+        String(member.residentHeadId) === String(resident.id)
+        && String(member.roomId) === String(resident.assignedRoomId)
       ))
     }))
     .sort(compareResidents);
@@ -192,6 +192,7 @@ export default function AdminResidentListPage() {
           deletingId={deletingId}
           emptyMessage={t('residentDirectory.messages.empty')}
           onDelete={handleDelete}
+          showMembersInline
           showRoom
         />
       )}

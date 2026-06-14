@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import ConfirmDialog from '../common/ConfirmDialog.jsx';
 import DataTable from '../common/DataTable.jsx';
@@ -15,6 +16,7 @@ export default function BuildingListWorkspace({
   createPath,
   deleteBuilding
 }) {
+  const { t } = useTranslation();
   const [buildings, setBuildings] = useState([]);
   const [search, setSearch] = useState('');
   const [appliedSearch, setAppliedSearch] = useState('');
@@ -32,7 +34,7 @@ export default function BuildingListWorkspace({
       const response = await getBuildings(searchValue);
       setBuildings(response.data);
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Buildings could not be loaded');
+      setError(apiError.response?.data?.message || t('workspace.buildings.loadError'));
     } finally {
       setLoading(false);
     }
@@ -66,33 +68,33 @@ export default function BuildingListWorkspace({
 
     try {
       await deleteBuilding(pendingDelete.id);
-      setMessage('Building deleted successfully.');
+      setMessage(t('workspace.buildings.deleted'));
       setPendingDelete(null);
       await loadBuildings(appliedSearch);
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Building could not be deleted');
+      setError(apiError.response?.data?.message || t('workspace.buildings.deleteError'));
     } finally {
       setDeletingId(null);
     }
   };
 
   const columns = [
-    { key: 'buildingCode', header: 'Code' },
-    { key: 'name', header: 'Name' },
-    { key: 'address', header: 'Address' },
-    { key: 'floors', header: 'Floors' },
+    { key: 'buildingCode', header: t('tables.common.code') },
+    { key: 'name', header: t('tables.common.name') },
+    { key: 'address', header: t('buildingOverview.fields.address') },
+    { key: 'floors', header: t('buildingOverview.fields.floors') },
     {
       key: 'actions',
-      header: canManage ? 'Actions' : 'Details',
+      header: canManage ? t('tables.common.actions') : t('workspace.buildings.details'),
       render: (building) => (
         <div className="table-actions">
           <Link className="secondary-link compact-link" to={`${basePath}/${building.id}`}>
-            {canManage ? 'Manage' : 'View'}
+            {canManage ? t('workspace.buildings.manage') : t('common.view')}
           </Link>
           {canManage && (
             <>
               <Link className="secondary-link compact-link" to={`${basePath}/${building.id}/edit`}>
-                Edit
+                {t('common.edit')}
               </Link>
               <button
                 className="secondary-button compact-button"
@@ -100,7 +102,7 @@ export default function BuildingListWorkspace({
                 disabled={deletingId === building.id}
                 onClick={() => setPendingDelete(building)}
               >
-                Delete
+                {t('common.delete')}
               </button>
             </>
           )}
@@ -115,21 +117,21 @@ export default function BuildingListWorkspace({
         <PageHeader eyebrow={eyebrow} title={title} />
         {canManage && createPath && (
           <Link className="button-link" to={createPath}>
-            Create building
+            {t('workspace.buildings.create')}
           </Link>
         )}
       </div>
 
       <FilterBar onSubmit={handleSearch}>
         <input
-          aria-label="Search buildings"
+          aria-label={t('workspace.buildings.searchAria')}
           value={search}
           onChange={(event) => setSearch(event.target.value)}
-          placeholder="Search by code or name"
+          placeholder={t('workspace.buildings.searchPlaceholder')}
         />
-        <button type="submit">Search</button>
+        <button type="submit">{t('common.filter')}</button>
         <button className="secondary-button inline-button" type="button" onClick={handleClearSearch}>
-          Clear
+          {t('common.clear')}
         </button>
       </FilterBar>
 
@@ -137,17 +139,22 @@ export default function BuildingListWorkspace({
       {error && <div className="alert error-alert">{error}</div>}
 
       {loading ? (
-        <EmptyState message="Loading buildings..." />
+        <EmptyState message={t('workspace.buildings.loading')} />
       ) : (
-        <DataTable caption="Buildings" columns={columns} emptyMessage="No buildings found." rows={buildings} />
+        <DataTable
+          caption={t('workspace.buildings.caption')}
+          columns={columns}
+          emptyMessage={t('workspace.buildings.empty')}
+          rows={buildings}
+        />
       )}
 
       <ConfirmDialog
-        confirmLabel="Delete"
+        confirmLabel={t('common.delete')}
         loading={Boolean(deletingId)}
-        message={pendingDelete ? `Delete building ${pendingDelete.buildingCode}?` : ''}
+        message={pendingDelete ? t('workspace.buildings.deleteConfirm', { code: pendingDelete.buildingCode }) : ''}
         open={Boolean(pendingDelete)}
-        title="Delete building"
+        title={t('workspace.buildings.deleteTitle')}
         onCancel={() => setPendingDelete(null)}
         onConfirm={handleDelete}
       />

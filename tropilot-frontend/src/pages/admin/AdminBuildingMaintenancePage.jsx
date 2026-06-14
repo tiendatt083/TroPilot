@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
 import * as maintenanceApi from '../../features/maintenance/api.js';
 import * as adminUserApi from '../../features/users/api.js';
@@ -10,6 +11,7 @@ function activeStaff(users) {
 }
 
 export default function AdminBuildingMaintenancePage() {
+  const { t } = useTranslation();
   const { building } = useOutletContext();
   const [requests, setRequests] = useState([]);
   const [staffUsers, setStaffUsers] = useState([]);
@@ -35,7 +37,7 @@ export default function AdminBuildingMaintenancePage() {
         requestsResponse.data.map((request) => [request.id, request.assignedToId || ''])
       ));
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Building maintenance requests could not be loaded');
+      setError(apiError.response?.data?.message || t('workspace.maintenance.loadError'));
     }
   };
 
@@ -54,7 +56,7 @@ export default function AdminBuildingMaintenancePage() {
   const handleAssign = async (request) => {
     const assignedToId = assignmentMap[request.id];
     if (!assignedToId) {
-      setError('Assigned staff is required');
+      setError(t('maintenance.admin.assignedStaffRequired'));
       return;
     }
 
@@ -68,10 +70,10 @@ export default function AdminBuildingMaintenancePage() {
         { assignedToId: Number(assignedToId) },
         buildingFilter
       );
-      setMessage('Maintenance request assigned successfully.');
+      setMessage(t('maintenance.admin.assigned'));
       await loadData();
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Maintenance request could not be assigned');
+      setError(apiError.response?.data?.message || t('maintenance.admin.assignError'));
     } finally {
       setProcessingId(null);
     }
@@ -84,7 +86,7 @@ export default function AdminBuildingMaintenancePage() {
         disabled={request.status === 'COMPLETED' || processingId === request.id}
         onChange={(event) => handleAssignmentChange(request.id, event.target.value)}
       >
-        <option value="">Select staff</option>
+        <option value="">{t('maintenance.admin.selectStaff')}</option>
         {staffUsers.map((staff) => (
           <option key={staff.id} value={staff.id}>
             {staff.fullName}
@@ -97,20 +99,20 @@ export default function AdminBuildingMaintenancePage() {
         disabled={request.status === 'COMPLETED' || processingId === request.id}
         onClick={() => handleAssign(request)}
       >
-        Assign
+        {t('maintenance.admin.assign')}
       </button>
     </div>
   );
 
   return (
     <div className="building-workspace">
-      <PageHeader eyebrow="Building maintenance" title="Maintenance requests in this building" />
+      <PageHeader eyebrow={t('workspace.maintenance.eyebrow')} title={t('workspace.maintenance.title')} />
 
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
 
       {loading ? (
-        <div className="empty-state">Loading maintenance requests...</div>
+        <div className="empty-state">{t('maintenance.loading')}</div>
       ) : (
         <MaintenanceRequestTable requests={requests} renderActions={renderActions} />
       )}

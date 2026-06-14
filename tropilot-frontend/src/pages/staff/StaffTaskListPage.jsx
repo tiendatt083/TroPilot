@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import * as taskApi from '../../features/maintenance/taskApi.js';
 import PageHeader from '../../components/PageHeader.jsx';
 import TaskTable from '../../components/TaskTable.jsx';
 
 export default function StaffTaskListPage() {
+  const { t } = useTranslation();
   const [tasks, setTasks] = useState([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
@@ -20,7 +22,7 @@ export default function StaffTaskListPage() {
       })
       .catch((apiError) => {
         if (active) {
-          setError(apiError.response?.data?.message || 'Tasks could not be loaded');
+          setError(apiError.response?.data?.message || t('taskManagement.loadError'));
         }
       })
       .finally(() => {
@@ -36,12 +38,12 @@ export default function StaffTaskListPage() {
 
   return (
     <section className="content-section">
-      <PageHeader eyebrow="Operations staff" title="My tasks" />
+      <PageHeader eyebrow={t('role.staff')} title={t('taskManagement.staffTitle')} />
 
       {error && <div className="alert error-alert">{error}</div>}
 
       {loading ? (
-        <div className="empty-state">Loading tasks...</div>
+        <div className="empty-state">{t('taskManagement.loading')}</div>
       ) : (
         <TaskTable tasks={tasks} detailBasePath="/staff/tasks" />
       )}

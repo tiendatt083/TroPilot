@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
 import * as paymentApi from '../../features/payments/api.js';
 import EmptyState from '../../components/common/EmptyState.jsx';
@@ -6,6 +7,7 @@ import PageHeader from '../../components/common/PageHeader.jsx';
 import { ReceiptDetail, ReceiptTable } from '../../features/payments/components/index.js';
 
 export default function AdminBuildingReceiptPage() {
+  const { t } = useTranslation();
   const { building } = useOutletContext();
   const [receipts, setReceipts] = useState([]);
   const [selectedReceipt, setSelectedReceipt] = useState(null);
@@ -23,7 +25,7 @@ export default function AdminBuildingReceiptPage() {
     paymentApi
       .getAdminReceipts(buildingFilter)
       .then((response) => setReceipts(response.data))
-      .catch((apiError) => setError(apiError.response?.data?.message || 'Building receipts could not be loaded'))
+      .catch((apiError) => setError(apiError.response?.data?.message || t('workspace.receipts.loadError')))
       .finally(() => setLoading(false));
   }, [building.id]);
 
@@ -35,7 +37,7 @@ export default function AdminBuildingReceiptPage() {
       const response = await paymentApi.getAdminReceipt(receipt.id, buildingFilter);
       setSelectedReceipt(response.data);
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Receipt could not be loaded');
+      setError(apiError.response?.data?.message || t('tables.receipts.detailLoadError'));
     } finally {
       setLoadingDetailId(null);
     }
@@ -48,18 +50,18 @@ export default function AdminBuildingReceiptPage() {
       disabled={loadingDetailId === receipt.id}
       onClick={() => handleView(receipt)}
     >
-      View
+      {t('common.view')}
     </button>
   );
 
   return (
     <div className="building-workspace">
-      <PageHeader eyebrow="Building receipts" title="Receipts in this building" />
+      <PageHeader eyebrow={t('workspace.receipts.eyebrow')} title={t('workspace.receipts.title')} />
 
       {error && <div className="alert error-alert">{error}</div>}
 
       {loading ? (
-        <EmptyState message="Loading receipts..." />
+        <EmptyState message={t('tables.receipts.loading')} />
       ) : (
         <section className="receipt-workspace">
           <ReceiptTable receipts={receipts} renderActions={renderActions} />

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import * as vehicleApi from '../../features/residents/vehicleApi.js';
 import PageHeader from '../../components/PageHeader.jsx';
@@ -9,6 +10,7 @@ function hasVehicleActions(vehicle) {
 }
 
 export default function AdminVehicleListPage() {
+  const { t } = useTranslation();
   const [vehicles, setVehicles] = useState([]);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
@@ -22,7 +24,7 @@ export default function AdminVehicleListPage() {
       const response = await vehicleApi.getAdminVehicles();
       setVehicles(response.data);
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Vehicles could not be loaded');
+      setError(apiError.response?.data?.message || t('vehicleManagement.loadError'));
     }
   };
 
@@ -38,22 +40,22 @@ export default function AdminVehicleListPage() {
     try {
       if (action === 'approve') {
         await vehicleApi.approveVehicle(vehicle.id);
-        setMessage('Vehicle approved successfully.');
+        setMessage(t('vehicleManagement.approved'));
       }
 
       if (action === 'reject') {
         await vehicleApi.rejectVehicle(vehicle.id);
-        setMessage('Vehicle rejected successfully.');
+        setMessage(t('vehicleManagement.rejected'));
       }
 
       if (action === 'deactivate') {
         await vehicleApi.deactivateVehicle(vehicle.id);
-        setMessage('Vehicle deactivated successfully.');
+        setMessage(t('vehicleManagement.deactivated'));
       }
 
       await loadVehicles();
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Vehicle action could not be completed');
+      setError(apiError.response?.data?.message || t('vehicleManagement.actionError'));
     } finally {
       setProcessingId(null);
     }
@@ -69,7 +71,7 @@ export default function AdminVehicleListPage() {
             disabled={processingId === vehicle.id}
             onClick={() => handleAction(vehicle, 'approve')}
           >
-            Approve
+            {t('vehicleManagement.approve')}
           </button>
           <button
             className="secondary-button compact-button"
@@ -77,7 +79,7 @@ export default function AdminVehicleListPage() {
             disabled={processingId === vehicle.id}
             onClick={() => handleAction(vehicle, 'reject')}
           >
-            Reject
+            {t('vehicleManagement.reject')}
           </button>
         </>
       )}
@@ -88,19 +90,19 @@ export default function AdminVehicleListPage() {
           disabled={processingId === vehicle.id}
           onClick={() => handleAction(vehicle, 'deactivate')}
         >
-          Deactivate
+          {t('vehicleManagement.deactivate')}
         </button>
       )}
-      {!hasVehicleActions(vehicle) && <span className="muted-text">No action</span>}
+      {!hasVehicleActions(vehicle) && <span className="muted-text">{t('vehicleManagement.noAction')}</span>}
     </div>
   );
 
   return (
     <section className="content-section">
       <div className="page-title-row">
-        <PageHeader eyebrow="Administrator" title="Vehicles" />
+        <PageHeader eyebrow={t('role.admin')} title={t('vehicleManagement.title')} />
         <Link className="button-link" to="/admin/vehicles/pending">
-          Pending vehicles
+          {t('vehicleManagement.pendingTitle')}
         </Link>
       </div>
 
@@ -108,7 +110,7 @@ export default function AdminVehicleListPage() {
       {error && <div className="alert error-alert">{error}</div>}
 
       {loading ? (
-        <div className="empty-state">Loading vehicles...</div>
+        <div className="empty-state">{t('vehicleManagement.loading')}</div>
       ) : (
         <VehicleTable vehicles={vehicles} renderActions={renderActions} />
       )}

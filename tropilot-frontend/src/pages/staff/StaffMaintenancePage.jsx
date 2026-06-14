@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useOutletContext } from 'react-router-dom';
 import * as maintenanceApi from '../../features/maintenance/api.js';
 import MaintenanceRequestDetail from '../../components/MaintenanceRequestDetail.jsx';
@@ -6,6 +7,7 @@ import MaintenanceRequestTable from '../../components/MaintenanceRequestTable.js
 import PageHeader from '../../components/PageHeader.jsx';
 
 export default function StaffMaintenancePage() {
+  const { t } = useTranslation();
   const outletContext = useOutletContext();
   const building = outletContext?.building;
   const [requests, setRequests] = useState([]);
@@ -34,7 +36,7 @@ export default function StaffMaintenancePage() {
         return response.data.find((request) => request.id === current.id) || response.data[0] || null;
       });
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Maintenance requests could not be loaded');
+      setError(apiError.response?.data?.message || t('maintenance.loadError'));
     }
   };
 
@@ -55,9 +57,9 @@ export default function StaffMaintenancePage() {
     try {
       const response = await maintenanceApi.startStaffMaintenanceRequest(selectedRequest.id);
       refreshSelectedRequest(response.data);
-      setMessage('Maintenance request started successfully.');
+      setMessage(t('maintenance.staff.started'));
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Maintenance request could not be started');
+      setError(apiError.response?.data?.message || t('maintenance.staff.startError'));
     } finally {
       setProcessing(false);
     }
@@ -82,9 +84,9 @@ export default function StaffMaintenancePage() {
       refreshSelectedRequest(response.data);
       setCompletionForm({ resultNote: '', resultImage: null });
       event.target.reset();
-      setMessage('Maintenance request completed successfully.');
+      setMessage(t('maintenance.staff.completed'));
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Maintenance request could not be completed');
+      setError(apiError.response?.data?.message || t('maintenance.staff.completeError'));
     } finally {
       setProcessing(false);
     }
@@ -102,9 +104,9 @@ export default function StaffMaintenancePage() {
       });
       refreshSelectedRequest(response.data);
       setRejectNote('');
-      setMessage('Maintenance request rejected successfully.');
+      setMessage(t('maintenance.staff.rejected'));
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Maintenance request could not be rejected');
+      setError(apiError.response?.data?.message || t('maintenance.staff.rejectError'));
     } finally {
       setProcessing(false);
     }
@@ -117,15 +119,15 @@ export default function StaffMaintenancePage() {
   return (
     <section className={building ? 'building-workspace' : 'content-section'}>
       <PageHeader
-        eyebrow={building ? 'Building maintenance' : 'Operations staff'}
-        title={building ? 'Maintenance requests in this building' : 'Maintenance requests'}
+        eyebrow={building ? t('maintenance.staff.buildingEyebrow') : t('maintenance.staff.eyebrow')}
+        title={building ? t('maintenance.staff.buildingTitle') : t('maintenance.title')}
       />
 
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
 
       {loading ? (
-        <div className="empty-state">Loading maintenance requests...</div>
+        <div className="empty-state">{t('maintenance.loading')}</div>
       ) : (
         <section className="maintenance-workspace">
           <MaintenanceRequestTable
@@ -139,17 +141,17 @@ export default function StaffMaintenancePage() {
 
             {selectedRequest && (
               <div className="task-actions-panel">
-                <PageHeader eyebrow="Actions" title="Request progress" />
+                <PageHeader eyebrow={t('maintenance.staff.actions')} title={t('maintenance.staff.progress')} />
 
                 {canStart && (
                   <button className="inline-button" type="button" disabled={processing} onClick={handleStart}>
-                    {processing ? 'Starting...' : 'Start request'}
+                    {processing ? t('maintenance.staff.starting') : t('maintenance.staff.start')}
                   </button>
                 )}
 
                 {canComplete && (
                   <form className="panel-form" onSubmit={handleComplete}>
-                    <label htmlFor="maintenanceResultNote">Result note</label>
+                    <label htmlFor="maintenanceResultNote">{t('maintenance.staff.resultNote')}</label>
                     <textarea
                       id="maintenanceResultNote"
                       name="resultNote"
@@ -159,7 +161,7 @@ export default function StaffMaintenancePage() {
                       required
                     />
 
-                    <label htmlFor="maintenanceResultImage">Result image</label>
+                    <label htmlFor="maintenanceResultImage">{t('maintenance.staff.resultImage')}</label>
                     <input
                       id="maintenanceResultImage"
                       name="resultImage"
@@ -169,14 +171,14 @@ export default function StaffMaintenancePage() {
                     />
 
                     <button type="submit" disabled={processing}>
-                      {processing ? 'Completing...' : 'Complete request'}
+                      {processing ? t('maintenance.staff.completing') : t('maintenance.staff.complete')}
                     </button>
                   </form>
                 )}
 
                 {canReject && (
                   <form className="panel-form" onSubmit={handleReject}>
-                    <label htmlFor="maintenanceRejectNote">Rejection note</label>
+                    <label htmlFor="maintenanceRejectNote">{t('maintenance.staff.rejectionNote')}</label>
                     <textarea
                       id="maintenanceRejectNote"
                       name="rejectNote"
@@ -185,7 +187,7 @@ export default function StaffMaintenancePage() {
                       onChange={(event) => setRejectNote(event.target.value)}
                     />
                     <button className="secondary-button" type="submit" disabled={processing}>
-                      {processing ? 'Rejecting...' : 'Reject request'}
+                      {processing ? t('maintenance.staff.rejecting') : t('maintenance.staff.reject')}
                     </button>
                   </form>
                 )}
@@ -201,12 +203,12 @@ export default function StaffMaintenancePage() {
                       content: `Maintenance request #${selectedRequest.id}: ${selectedRequest.title}`
                     }}
                   >
-                    Create linked expense
+                    {t('maintenance.staff.linkedExpense')}
                   </Link>
                 )}
 
                 {!canStart && !canComplete && !canReject && (
-                  <div className="empty-state">No staff action is available for this maintenance status.</div>
+                  <div className="empty-state">{t('maintenance.staff.noAction')}</div>
                 )}
               </div>
             )}

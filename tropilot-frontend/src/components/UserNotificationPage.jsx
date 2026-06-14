@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import * as notificationApi from '../features/notifications/api.js';
 import NotificationTable from './NotificationTable.jsx';
 import PageHeader from './PageHeader.jsx';
 
-export default function UserNotificationPage({ getNotifications, eyebrow }) {
+export default function UserNotificationPage({ getNotifications, eyebrow, eyebrowKey }) {
+  const { t } = useTranslation();
   const [notifications, setNotifications] = useState([]);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
@@ -13,7 +15,7 @@ export default function UserNotificationPage({ getNotifications, eyebrow }) {
   useEffect(() => {
     getNotifications()
       .then((response) => setNotifications(response.data))
-      .catch((apiError) => setError(apiError.response?.data?.message || 'Notifications could not be loaded'))
+      .catch((apiError) => setError(apiError.response?.data?.message || t('resident.notifications.loadError')))
       .finally(() => setLoading(false));
   }, [getNotifications]);
 
@@ -25,9 +27,9 @@ export default function UserNotificationPage({ getNotifications, eyebrow }) {
     try {
       const response = await notificationApi.markNotificationRead(notification.id);
       setNotifications((current) => current.map((item) => (item.id === notification.id ? response.data : item)));
-      setMessage('Notification marked as read.');
+      setMessage(t('resident.notifications.markedRead'));
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Notification could not be marked as read');
+      setError(apiError.response?.data?.message || t('resident.notifications.markReadError'));
     } finally {
       setProcessingId(null);
     }
@@ -35,13 +37,13 @@ export default function UserNotificationPage({ getNotifications, eyebrow }) {
 
   return (
     <section className="content-section">
-      <PageHeader eyebrow={eyebrow} title="Notifications" />
+      <PageHeader eyebrow={eyebrowKey ? t(eyebrowKey) : eyebrow} title={t('navigation.notifications')} />
 
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
 
       {loading ? (
-        <div className="empty-state">Loading notifications...</div>
+        <div className="empty-state">{t('resident.notifications.loading')}</div>
       ) : (
         <NotificationTable notifications={notifications} processingId={processingId} onMarkRead={handleMarkRead} />
       )}

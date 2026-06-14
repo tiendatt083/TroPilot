@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
 import CashFlowSummary from '../CashFlowSummary.jsx';
 import ExpenseTable from '../ExpenseTable.jsx';
@@ -7,6 +8,7 @@ import ReceiptTable from '../ReceiptTable.jsx';
 import { formatMonthInputValue } from '../../utils/dateFormat.js';
 
 export default function BuildingCashFlowWorkspace({ getCashFlow, showReceipts = false }) {
+  const { t } = useTranslation();
   const { building } = useOutletContext();
   const [cashFlow, setCashFlow] = useState(null);
   const [month, setMonth] = useState(formatMonthInputValue());
@@ -20,7 +22,7 @@ export default function BuildingCashFlowWorkspace({ getCashFlow, showReceipts = 
       const response = await getCashFlow(targetMonth, { buildingId: building.id });
       setCashFlow(response.data);
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Building cash flow could not be loaded');
+      setError(apiError.response?.data?.message || t('workspace.cashFlow.loadError'));
     }
   };
 
@@ -36,32 +38,32 @@ export default function BuildingCashFlowWorkspace({ getCashFlow, showReceipts = 
 
   return (
     <div className="building-workspace">
-      <PageHeader eyebrow="Building cash flow" title="Cash flow in this building" />
+      <PageHeader eyebrow={t('workspace.cashFlow.eyebrow')} title={t('workspace.cashFlow.title')} />
 
       {error && <div className="alert error-alert">{error}</div>}
 
       <form className="month-filter-row" onSubmit={handleSubmit}>
         <input type="month" lang="en-GB" value={month} onChange={(event) => setMonth(event.target.value)} required />
         <button className="inline-button" type="submit">
-          View cash flow
+          {t('workspace.cashFlow.view')}
         </button>
       </form>
 
       {loading ? (
-        <div className="empty-state">Loading cash flow...</div>
+        <div className="empty-state">{t('workspace.cashFlow.loading')}</div>
       ) : (
         <section className="cashflow-workspace">
           <CashFlowSummary cashFlow={cashFlow} />
 
           {showReceipts && (
             <div>
-              <PageHeader eyebrow="Income" title="Valid receipts" />
+              <PageHeader eyebrow={t('workspace.cashFlow.income')} title={t('workspace.cashFlow.receipts')} />
               <ReceiptTable receipts={cashFlow?.receipts || []} />
             </div>
           )}
 
           <div>
-            <PageHeader eyebrow="Outgoing money" title="Valid expenses" />
+            <PageHeader eyebrow={t('workspace.cashFlow.outgoing')} title={t('workspace.cashFlow.expenses')} />
             <ExpenseTable expenses={cashFlow?.expenses || []} />
           </div>
         </section>

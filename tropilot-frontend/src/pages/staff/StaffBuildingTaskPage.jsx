@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
 import * as taskApi from '../../features/maintenance/taskApi.js';
 import PageHeader from '../../components/PageHeader.jsx';
@@ -12,6 +13,7 @@ function matchesBuilding(task, building) {
 }
 
 export default function StaffBuildingTaskPage() {
+  const { t } = useTranslation();
   const { building } = useOutletContext();
   const [tasks, setTasks] = useState([]);
   const [error, setError] = useState('');
@@ -32,7 +34,7 @@ export default function StaffBuildingTaskPage() {
       })
       .catch((apiError) => {
         if (active) {
-          setError(apiError.response?.data?.message || 'Tasks could not be loaded');
+          setError(apiError.response?.data?.message || t('taskManagement.loadError'));
         }
       })
       .finally(() => {
@@ -48,9 +50,9 @@ export default function StaffBuildingTaskPage() {
 
   return (
     <div className="building-workspace">
-      <PageHeader eyebrow="Building tasks" title="My tasks in this building" />
+      <PageHeader eyebrow={t('taskManagement.buildingEyebrow')} title={t('taskManagement.staffBuildingTitle')} />
       {error && <div className="alert error-alert">{error}</div>}
-      {loading ? <div className="empty-state">Loading tasks...</div> : <TaskTable tasks={tasks} detailBasePath="/staff/tasks" />}
+      {loading ? <div className="empty-state">{t('taskManagement.loading')}</div> : <TaskTable tasks={tasks} detailBasePath="/staff/tasks" />}
     </div>
   );
 }

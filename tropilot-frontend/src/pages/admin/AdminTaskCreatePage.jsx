@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import * as taskApi from '../../features/maintenance/taskApi.js';
 import * as roomApi from '../../features/rooms/api.js';
@@ -11,6 +12,7 @@ function activeStaff(users) {
 }
 
 export default function AdminTaskCreatePage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [rooms, setRooms] = useState([]);
   const [staffUsers, setStaffUsers] = useState([]);
@@ -30,7 +32,7 @@ export default function AdminTaskCreatePage() {
       })
       .catch((apiError) => {
         if (active) {
-          setError(apiError.response?.data?.message || 'Task form data could not be loaded');
+          setError(apiError.response?.data?.message || t('taskManagement.formLoadError'));
         }
       })
       .finally(() => {
@@ -52,25 +54,25 @@ export default function AdminTaskCreatePage() {
       await taskApi.createAdminTask(payload);
       navigate('/admin/tasks', {
         replace: true,
-        state: { message: 'Task created successfully.' }
+        state: { message: t('taskManagement.created') }
       });
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Task could not be created');
+      setError(apiError.response?.data?.message || t('taskManagement.createError'));
     } finally {
       setSaving(false);
     }
   };
 
   if (loading) {
-    return <div className="empty-state">Loading task form...</div>;
+    return <div className="empty-state">{t('taskManagement.loadingForm')}</div>;
   }
 
   return (
     <section className="content-section narrow-section">
       <div className="page-title-row">
-        <PageHeader eyebrow="Administrator" title="Create task" />
+        <PageHeader eyebrow={t('role.admin')} title={t('taskManagement.createTitle')} />
         <Link className="secondary-link" to="/admin/tasks">
-          Back to tasks
+          {t('taskManagement.back')}
         </Link>
       </div>
 
@@ -80,7 +82,7 @@ export default function AdminTaskCreatePage() {
         rooms={rooms}
         staffUsers={staffUsers}
         loading={saving}
-        submitLabel="Create task"
+        submitLabel={t('taskManagement.create')}
         onSubmit={handleSubmit}
       />
     </section>

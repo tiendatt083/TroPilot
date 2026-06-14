@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
 import * as vehicleApi from '../../features/residents/vehicleApi.js';
 import PageHeader from '../PageHeader.jsx';
@@ -9,6 +10,7 @@ function hasVehicleActions(vehicle) {
 }
 
 export default function BuildingVehicleWorkspace({ getVehicles, canManage = false }) {
+  const { t } = useTranslation();
   const { building } = useOutletContext();
   const [vehicles, setVehicles] = useState([]);
   const [message, setMessage] = useState('');
@@ -25,7 +27,7 @@ export default function BuildingVehicleWorkspace({ getVehicles, canManage = fals
       const response = await getVehicles(buildingFilter);
       setVehicles(response.data);
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Building vehicles could not be loaded');
+      setError(apiError.response?.data?.message || t('workspace.vehicles.loadError'));
     }
   };
 
@@ -42,18 +44,18 @@ export default function BuildingVehicleWorkspace({ getVehicles, canManage = fals
     try {
       if (action === 'approve') {
         await vehicleApi.approveVehicle(vehicle.id, buildingFilter);
-        setMessage('Vehicle approved successfully.');
+        setMessage(t('workspace.vehicles.approved'));
       } else if (action === 'reject') {
         await vehicleApi.rejectVehicle(vehicle.id, buildingFilter);
-        setMessage('Vehicle rejected successfully.');
+        setMessage(t('workspace.vehicles.rejected'));
       } else {
         await vehicleApi.deactivateVehicle(vehicle.id, buildingFilter);
-        setMessage('Vehicle deactivated successfully.');
+        setMessage(t('workspace.vehicles.deactivated'));
       }
 
       await loadVehicles();
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Vehicle action could not be completed');
+      setError(apiError.response?.data?.message || t('workspace.vehicles.actionError'));
     } finally {
       setProcessingId(null);
     }
@@ -70,7 +72,7 @@ export default function BuildingVehicleWorkspace({ getVehicles, canManage = fals
                 disabled={processingId === vehicle.id}
                 onClick={() => handleAction(vehicle, 'approve')}
               >
-                Approve
+                {t('workspace.vehicles.approve')}
               </button>
               <button
                 className="secondary-button compact-button"
@@ -78,7 +80,7 @@ export default function BuildingVehicleWorkspace({ getVehicles, canManage = fals
                 disabled={processingId === vehicle.id}
                 onClick={() => handleAction(vehicle, 'reject')}
               >
-                Reject
+                {t('workspace.vehicles.reject')}
               </button>
             </>
           )}
@@ -89,10 +91,10 @@ export default function BuildingVehicleWorkspace({ getVehicles, canManage = fals
               disabled={processingId === vehicle.id}
               onClick={() => handleAction(vehicle, 'deactivate')}
             >
-              Deactivate
+              {t('workspace.vehicles.deactivate')}
             </button>
           ) : (
-            <span className="muted-text">No action</span>
+            <span className="muted-text">{t('workspace.vehicles.noAction')}</span>
           )}
         </div>
       )
@@ -100,11 +102,11 @@ export default function BuildingVehicleWorkspace({ getVehicles, canManage = fals
 
   return (
     <div className="building-workspace">
-      <PageHeader eyebrow="Building vehicles" title="Vehicles in this building" />
+      <PageHeader eyebrow={t('workspace.vehicles.eyebrow')} title={t('workspace.vehicles.title')} />
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
       {loading ? (
-        <div className="empty-state">Loading vehicles...</div>
+        <div className="empty-state">{t('workspace.vehicles.loading')}</div>
       ) : (
         <VehicleTable vehicles={vehicles} renderActions={renderActions} />
       )}

@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import * as vehicleApi from '../../features/residents/vehicleApi.js';
 import PageHeader from '../../components/PageHeader.jsx';
 import VehicleTable from '../../components/VehicleTable.jsx';
 
 export default function AdminPendingVehiclesPage() {
+  const { t } = useTranslation();
   const [vehicles, setVehicles] = useState([]);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
@@ -18,7 +20,7 @@ export default function AdminPendingVehiclesPage() {
       const response = await vehicleApi.getPendingVehicles();
       setVehicles(response.data);
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Pending vehicles could not be loaded');
+      setError(apiError.response?.data?.message || t('vehicleManagement.pendingLoadError'));
     }
   };
 
@@ -34,15 +36,15 @@ export default function AdminPendingVehiclesPage() {
     try {
       if (action === 'approve') {
         await vehicleApi.approveVehicle(vehicle.id);
-        setMessage('Vehicle approved successfully.');
+        setMessage(t('vehicleManagement.approved'));
       } else {
         await vehicleApi.rejectVehicle(vehicle.id);
-        setMessage('Vehicle rejected successfully.');
+        setMessage(t('vehicleManagement.rejected'));
       }
 
       await loadVehicles();
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Vehicle action could not be completed');
+      setError(apiError.response?.data?.message || t('vehicleManagement.actionError'));
     } finally {
       setProcessingId(null);
     }
@@ -56,7 +58,7 @@ export default function AdminPendingVehiclesPage() {
         disabled={processingId === vehicle.id}
         onClick={() => handleAction(vehicle, 'approve')}
       >
-        Approve
+        {t('vehicleManagement.approve')}
       </button>
       <button
         className="secondary-button compact-button"
@@ -64,7 +66,7 @@ export default function AdminPendingVehiclesPage() {
         disabled={processingId === vehicle.id}
         onClick={() => handleAction(vehicle, 'reject')}
       >
-        Reject
+        {t('vehicleManagement.reject')}
       </button>
     </div>
   );
@@ -72,9 +74,9 @@ export default function AdminPendingVehiclesPage() {
   return (
     <section className="content-section">
       <div className="page-title-row">
-        <PageHeader eyebrow="Administrator" title="Pending vehicles" />
+        <PageHeader eyebrow={t('role.admin')} title={t('vehicleManagement.pendingTitle')} />
         <Link className="secondary-link" to="/admin/vehicles">
-          All vehicles
+          {t('vehicleManagement.allVehicles')}
         </Link>
       </div>
 
@@ -82,7 +84,7 @@ export default function AdminPendingVehiclesPage() {
       {error && <div className="alert error-alert">{error}</div>}
 
       {loading ? (
-        <div className="empty-state">Loading pending vehicles...</div>
+        <div className="empty-state">{t('vehicleManagement.loadingPending')}</div>
       ) : (
         <VehicleTable vehicles={vehicles} renderActions={renderActions} />
       )}

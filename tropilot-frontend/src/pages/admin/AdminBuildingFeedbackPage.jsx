@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
 import * as feedbackApi from '../../features/notifications/feedbackApi.js';
 import FeedbackTable from '../../components/FeedbackTable.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
 import { FEEDBACK_STATUS_OPTIONS } from '../../utils/feedbackOptions.js';
+import { formatEnumLabel } from '../../utils/i18nFormat.js';
 
 export default function AdminBuildingFeedbackPage() {
+  const { t } = useTranslation();
   const { building } = useOutletContext();
   const [feedbacks, setFeedbacks] = useState([]);
   const [replyMap, setReplyMap] = useState({});
@@ -25,7 +28,7 @@ export default function AdminBuildingFeedbackPage() {
       setFeedbacks(response.data);
       setStatusMap(Object.fromEntries(response.data.map((feedback) => [feedback.id, feedback.status])));
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Building feedbacks could not be loaded');
+      setError(apiError.response?.data?.message || t('workspace.feedbacks.loadError'));
     }
   };
 
@@ -52,9 +55,9 @@ export default function AdminBuildingFeedbackPage() {
       );
       updateFeedbackInList(response.data);
       setReplyMap((current) => ({ ...current, [feedback.id]: '' }));
-      setMessage('Feedback replied successfully.');
+      setMessage(t('feedbackManagement.feedbackReplied'));
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Feedback could not be replied');
+      setError(apiError.response?.data?.message || t('feedbackManagement.feedbackReplyError'));
     } finally {
       setProcessingId(null);
     }
@@ -72,9 +75,9 @@ export default function AdminBuildingFeedbackPage() {
         buildingFilter
       );
       updateFeedbackInList(response.data);
-      setMessage('Feedback status updated successfully.');
+      setMessage(t('feedbackManagement.feedbackStatusUpdated'));
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Feedback status could not be updated');
+      setError(apiError.response?.data?.message || t('feedbackManagement.feedbackStatusError'));
     } finally {
       setProcessingId(null);
     }
@@ -88,7 +91,7 @@ export default function AdminBuildingFeedbackPage() {
       >
         {FEEDBACK_STATUS_OPTIONS.map((option) => (
           <option key={option.value} value={option.value}>
-            {option.label}
+            {formatEnumLabel(t, 'feedbackStatus', option.value)}
           </option>
         ))}
       </select>
@@ -98,13 +101,13 @@ export default function AdminBuildingFeedbackPage() {
         disabled={processingId === feedback.id}
         onClick={() => handleStatus(feedback)}
       >
-        Save status
+        {t('feedbackManagement.saveStatus')}
       </button>
       <textarea
         rows="3"
         value={replyMap[feedback.id] || ''}
         onChange={(event) => setReplyMap((current) => ({ ...current, [feedback.id]: event.target.value }))}
-        placeholder="Reply content"
+        placeholder={t('feedbackManagement.replyContent')}
       />
       <button
         className="secondary-button compact-button"
@@ -112,20 +115,20 @@ export default function AdminBuildingFeedbackPage() {
         disabled={processingId === feedback.id}
         onClick={() => handleReply(feedback)}
       >
-        Reply
+        {t('feedbackManagement.reply')}
       </button>
     </div>
   );
 
   return (
     <div className="building-workspace">
-      <PageHeader eyebrow="Building feedbacks" title="Feedbacks in this building" />
+      <PageHeader eyebrow={t('workspace.feedbacks.eyebrow')} title={t('workspace.feedbacks.title')} />
 
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
 
       {loading ? (
-        <div className="empty-state">Loading feedbacks...</div>
+        <div className="empty-state">{t('feedbackManagement.feedbacksLoading')}</div>
       ) : (
         <FeedbackTable feedbacks={feedbacks} renderActions={renderActions} />
       )}

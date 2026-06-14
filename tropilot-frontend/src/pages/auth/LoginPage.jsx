@@ -1,9 +1,11 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { getDashboardPath } from '../../utils/roleRoutes.js';
 
 export default function LoginPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const { isAuthenticated, signIn, user } = useAuth();
@@ -37,7 +39,7 @@ export default function LoginPage() {
 
       navigate(redirectPath, { replace: true });
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Login failed');
+      setError(apiError.response?.data?.message || t('auth.signIn.error'));
     } finally {
       setLoading(false);
     }
@@ -48,13 +50,13 @@ export default function LoginPage() {
       <section className="auth-panel" aria-labelledby="login-title">
         <div>
           <p className="eyebrow">Tropilot</p>
-          <h1 id="login-title">Sign in</h1>
+          <h1 id="login-title">{t('auth.signIn.title')}</h1>
         </div>
 
         {error && <div className="alert error-alert">{error}</div>}
 
         <form className="auth-form" onSubmit={handleSubmit}>
-          <label htmlFor="email">Email address</label>
+          <label htmlFor="email">{t('auth.signIn.email')}</label>
           <input
             id="email"
             name="email"
@@ -65,7 +67,7 @@ export default function LoginPage() {
             required
           />
 
-          <label htmlFor="password">Password</label>
+          <label htmlFor="password">{t('auth.signIn.password')}</label>
           <input
             id="password"
             name="password"
@@ -77,7 +79,7 @@ export default function LoginPage() {
           />
 
           <button type="submit" disabled={loading}>
-            {loading ? 'Signing in...' : 'Sign in'}
+            {loading ? t('auth.signIn.submitting') : t('auth.signIn.submit')}
           </button>
         </form>
       </section>

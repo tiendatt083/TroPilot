@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import * as buildingApi from '../../features/buildings/api.js';
 import * as notificationApi from '../../features/notifications/api.js';
 import * as adminUserApi from '../../features/users/api.js';
 import CheckboxList from '../../components/CheckboxList.jsx';
 import NotificationTable from '../../components/NotificationTable.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
+import { formatEnumLabel } from '../../utils/i18nFormat.js';
 import { NOTIFICATION_TARGET_OPTIONS } from '../../utils/notificationOptions.js';
 
 const emptyForm = {
@@ -20,14 +22,15 @@ function isAssignedResidentHead(user) {
   return user.role === 'RESIDENT_HEAD' && user.assignedBuildingId;
 }
 
-function getResidentHeadDescription(user) {
-  const roomLabel = user.assignedRoomCode ? `Room ${user.assignedRoomCode}` : null;
-  const buildingLabel = user.assignedBuildingCode ? `Building ${user.assignedBuildingCode}` : null;
+function getResidentHeadDescription(user, t) {
+  const roomLabel = user.assignedRoomCode ? `${t('tables.common.room')} ${user.assignedRoomCode}` : null;
+  const buildingLabel = user.assignedBuildingCode ? `${t('tables.common.building')} ${user.assignedBuildingCode}` : null;
 
   return [roomLabel, buildingLabel, user.email].filter(Boolean).join(' - ');
 }
 
 export default function AdminNotificationPage() {
+  const { t } = useTranslation();
   const [form, setForm] = useState(emptyForm);
   const [notifications, setNotifications] = useState([]);
   const [buildings, setBuildings] = useState([]);
@@ -71,7 +74,7 @@ export default function AdminNotificationPage() {
         setBuildings(buildingsResponse.data);
         setNotifications(notificationsResponse.data);
       })
-      .catch((apiError) => setError(apiError.response?.data?.message || 'Notification form data could not be loaded'))
+      .catch((apiError) => setError(apiError.response?.data?.message || t('notifications.formLoadError')))
       .finally(() => setLoading(false));
   }, []);
 
@@ -152,12 +155,12 @@ export default function AdminNotificationPage() {
     const usesBuildingTarget = form.targetType !== 'STAFF';
 
     if (usesBuildingTarget && form.buildingTargetType === 'SELECTED' && form.buildingIds.length === 0) {
-      setError('At least one target building is required');
+      setError(t('notifications.atLeastOneBuilding'));
       return;
     }
 
     if (form.targetType === 'SELECTED_USERS' && form.targetUserIds.length === 0) {
-      setError('At least one Head Resident is required');
+      setError(t('notifications.atLeastOneHeadResident'));
       return;
     }
 
@@ -173,10 +176,10 @@ export default function AdminNotificationPage() {
         buildingIds: usesBuildingTarget && form.buildingTargetType === 'SELECTED' ? form.buildingIds.map(Number) : []
       });
       setForm(emptyForm);
-      setMessage('Notification created successfully.');
+      setMessage(t('notifications.created'));
       await loadNotifications();
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Notification could not be created');
+      setError(apiError.response?.data?.message || t('notifications.createError'));
     } finally {
       setSaving(false);
     }
@@ -187,12 +190,12 @@ export default function AdminNotificationPage() {
   const needsSelectedBuildings = usesBuildingTarget && form.buildingTargetType === 'SELECTED';
 
   if (loading) {
-    return <div className="empty-state">Loading notification form...</div>;
+    return <div className="empty-state">{t('notifications.formLoading')}</div>;
   }
 
   return (
     <section className="content-section building-workspace">
-      <PageHeader eyebrow="Administrator" title="Notifications" />
+      <PageHeader eyebrow={t('notifications.adminEyebrow')} title={t('notifications.title')} />
 
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
@@ -200,22 +203,22 @@ export default function AdminNotificationPage() {
       <div className="notification-composer-shell">
         <form className="panel-form notification-composer-form" onSubmit={handleSubmit}>
           <div className="notification-field notification-field-full">
-            <label htmlFor="title">Title</label>
+            <label htmlFor="title">{t('notifications.fields.title')}</label>
             <input id="title" name="title" value={form.title} onChange={handleChange} maxLength={160} required />
           </div>
 
           <div className="notification-field notification-field-full">
-            <label htmlFor="content">Content</label>
+            <label htmlFor="content">{t('notifications.fields.content')}</label>
             <textarea id="content" name="content" rows="6" value={form.content} onChange={handleChange} required />
           </div>
 
           <div className="notification-form-grid">
             <div className="notification-field">
-              <label htmlFor="targetType">Target</label>
+              <label htmlFor="targetType">{t('notifications.fields.target')}</label>
               <select id="targetType" name="targetType" value={form.targetType} onChange={handleChange} required>
                 {NOTIFICATION_TARGET_OPTIONS.map((option) => (
                   <option key={option.value} value={option.value}>
-                    {option.label}
+                    {formatEnumLabel(t, 'notificationTarget', option.value)}
                   </option>
                 ))}
               </select>
@@ -223,7 +226,7 @@ export default function AdminNotificationPage() {
 
             {usesBuildingTarget && (
               <div className="notification-field">
-                <label htmlFor="buildingTargetType">Target buildings</label>
+                <label htmlFor="buildingTargetType">{t('notifications.fields.targetBuildings')}</label>
                 <select
                   id="buildingTargetType"
                   name="buildingTargetType"
@@ -231,8 +234,8 @@ export default function AdminNotificationPage() {
                   onChange={handleChange}
                   required
                 >
-                  <option value="ALL">All buildings</option>
-                  <option value="SELECTED">Selected buildings</option>
+                  <option value="ALL">{t('notifications.buildingTarget.all')}</option>
+                  <option value="SELECTED">{t('notifications.buildingTarget.selected')}</option>
                 </select>
               </div>
             )}
@@ -240,34 +243,34 @@ export default function AdminNotificationPage() {
 
           {needsSelectedBuildings && (
             <div className="notification-field notification-selection-panel">
-              <label>Building receiving notification</label>
+              <label>{t('notifications.fields.buildingReceiving')}</label>
               <CheckboxList
-                ariaLabel="Building receiving notification"
+                ariaLabel={t('notifications.fields.buildingReceiving')}
                 items={buildings}
                 selectedValues={form.buildingIds}
                 onChange={handleBuildingsChange}
                 getValue={(building) => building.id}
                 getLabel={(building) => `${building.buildingCode} - ${building.name}`}
-                emptyMessage="No buildings found."
+                emptyMessage={t('notifications.empty.buildings')}
               />
             </div>
           )}
 
           {needsSelectedUsers && (
             <div className="notification-field notification-selection-panel">
-              <label>Target Head Residents</label>
+              <label>{t('notifications.fields.targetHeadResidents')}</label>
               <CheckboxList
-                ariaLabel="Target Head Residents"
+                ariaLabel={t('notifications.fields.targetHeadResidents')}
                 items={availableResidentHeads}
                 selectedValues={form.targetUserIds}
                 onChange={handleTargetUsersChange}
                 getValue={(user) => user.id}
                 getLabel={(user) => user.fullName}
-                getDescription={getResidentHeadDescription}
+                getDescription={(user) => getResidentHeadDescription(user, t)}
                 emptyMessage={
                   needsSelectedBuildings && form.buildingIds.length === 0
-                    ? 'Select at least one building to load Head Residents.'
-                    : 'No assigned Head Residents found for selected buildings.'
+                    ? t('notifications.empty.selectBuildingFirst')
+                    : t('notifications.empty.headResidents')
                 }
               />
             </div>
@@ -275,14 +278,14 @@ export default function AdminNotificationPage() {
 
           <div className="notification-submit-row">
             <button type="submit" disabled={saving}>
-              {saving ? 'Creating...' : 'Create notification'}
+              {saving ? t('notifications.actions.creating') : t('notifications.actions.create')}
             </button>
           </div>
         </form>
       </div>
 
       <section className="building-section">
-        <PageHeader eyebrow="Notifications" title="All notifications" />
+        <PageHeader eyebrow={t('notifications.title')} title={t('notifications.allTitle')} />
         <NotificationTable notifications={notifications} showReadStatus={false} />
       </section>
     </section>

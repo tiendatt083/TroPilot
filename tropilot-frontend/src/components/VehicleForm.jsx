@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { VEHICLE_OWNER_TYPE_OPTIONS, VEHICLE_TYPE_OPTIONS } from '../utils/vehicleOptions.js';
 
 const emptyForm = {
@@ -13,6 +14,7 @@ const emptyForm = {
 };
 
 export default function VehicleForm({ approvedMembers, loading, onSubmit }) {
+  const { t } = useTranslation();
   const [form, setForm] = useState(emptyForm);
 
   const handleChange = (event) => {
@@ -50,18 +52,18 @@ export default function VehicleForm({ approvedMembers, loading, onSubmit }) {
 
   return (
     <form className="panel-form" onSubmit={handleSubmit}>
-      <label htmlFor="ownerType">Owner type</label>
+      <label htmlFor="ownerType">{t('vehicles.form.ownerType')}</label>
       <select id="ownerType" name="ownerType" value={form.ownerType} onChange={handleChange} required>
         {VEHICLE_OWNER_TYPE_OPTIONS.map((option) => (
           <option key={option.value} value={option.value}>
-            {option.label}
+            {t(`enum.vehicleOwnerType.${option.value}`)}
           </option>
         ))}
       </select>
 
       {requiresMemberOwner && (
         <>
-          <label htmlFor="ownerName">Owner name</label>
+          <label htmlFor="ownerName">{t('vehicles.form.ownerName')}</label>
           <select
             id="ownerName"
             name="ownerName"
@@ -70,7 +72,9 @@ export default function VehicleForm({ approvedMembers, loading, onSubmit }) {
             required
             disabled={!hasApprovedMembers}
           >
-            <option value="">{hasApprovedMembers ? 'Select approved member' : 'No approved members available'}</option>
+            <option value="">
+              {hasApprovedMembers ? t('vehicles.form.selectMember') : t('vehicles.form.noMembers')}
+            </option>
             {approvedMembers.map((member) => (
               <option key={member.id} value={member.fullName}>
                 {member.fullName}
@@ -80,16 +84,16 @@ export default function VehicleForm({ approvedMembers, loading, onSubmit }) {
         </>
       )}
 
-      <label htmlFor="vehicleType">Vehicle type</label>
+      <label htmlFor="vehicleType">{t('vehicles.form.vehicleType')}</label>
       <select id="vehicleType" name="vehicleType" value={form.vehicleType} onChange={handleChange} required>
         {VEHICLE_TYPE_OPTIONS.map((option) => (
           <option key={option.value} value={option.value}>
-            {option.label}
+            {t(`enum.vehicleType.${option.value}`)}
           </option>
         ))}
       </select>
 
-      <label htmlFor="licensePlate">License plate</label>
+      <label htmlFor="licensePlate">{t('vehicles.form.licensePlate')}</label>
       <input
         id="licensePlate"
         name="licensePlate"
@@ -101,28 +105,28 @@ export default function VehicleForm({ approvedMembers, loading, onSubmit }) {
 
       <div className="form-grid">
         <div>
-          <label htmlFor="brand">Brand</label>
+          <label htmlFor="brand">{t('vehicles.form.brand')}</label>
           <input id="brand" name="brand" value={form.brand} onChange={handleChange} maxLength={80} />
         </div>
         <div>
-          <label htmlFor="color">Color</label>
+          <label htmlFor="color">{t('vehicles.form.color')}</label>
           <input id="color" name="color" value={form.color} onChange={handleChange} maxLength={40} />
         </div>
       </div>
 
       <div className="form-grid">
         <div>
-          <label htmlFor="startDate">Start date</label>
+          <label htmlFor="startDate">{t('vehicles.form.startDate')}</label>
           <input id="startDate" name="startDate" type="date" lang="en-GB" value={form.startDate} onChange={handleChange} />
         </div>
         <div>
-          <label htmlFor="endDate">End date</label>
+          <label htmlFor="endDate">{t('vehicles.form.endDate')}</label>
           <input id="endDate" name="endDate" type="date" lang="en-GB" value={form.endDate} onChange={handleChange} />
         </div>
       </div>
 
       <button type="submit" disabled={loading || (requiresMemberOwner && !hasApprovedMembers)}>
-        {loading ? 'Submitting...' : 'Request registration'}
+        {loading ? t('vehicles.form.submitting') : t('vehicles.form.submit')}
       </button>
     </form>
   );

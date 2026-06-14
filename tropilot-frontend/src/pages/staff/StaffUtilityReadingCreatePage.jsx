@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import * as utilityReadingApi from '../../features/invoices/utilityReadingApi.js';
 import * as roomApi from '../../features/rooms/api.js';
@@ -7,6 +8,7 @@ import UtilityReadingForm from '../../components/UtilityReadingForm.jsx';
 import { isOccupiedRoom } from '../../utils/roomEligibility.js';
 
 export default function StaffUtilityReadingCreatePage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [rooms, setRooms] = useState([]);
   const [readings, setReadings] = useState([]);
@@ -24,7 +26,7 @@ export default function StaffUtilityReadingCreatePage() {
         setRooms(roomsResponse.data);
         setReadings(readingsResponse.data);
       })
-      .catch((apiError) => setError(apiError.response?.data?.message || 'Rooms could not be loaded'))
+      .catch((apiError) => setError(apiError.response?.data?.message || t('utilityReadingManagement.roomsLoadError')))
       .finally(() => setLoadingData(false));
   }, []);
 
@@ -36,22 +38,22 @@ export default function StaffUtilityReadingCreatePage() {
       await utilityReadingApi.createUtilityReading(payload);
       navigate('/staff/utility-readings', { replace: true });
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Utility reading could not be created');
+      setError(apiError.response?.data?.message || t('utilityReadingManagement.createError'));
     } finally {
       setSaving(false);
     }
   };
 
   if (loadingData) {
-    return <div className="empty-state">Loading rooms...</div>;
+    return <div className="empty-state">{t('utilityReadingManagement.loadingRooms')}</div>;
   }
 
   return (
     <section className="content-section narrow-section">
       <div className="page-title-row">
-        <PageHeader eyebrow="Operations staff" title="Record utility reading" />
+        <PageHeader eyebrow={t('role.staff')} title={t('utilityReadingManagement.recordTitle')} />
         <Link className="secondary-link" to="/staff/utility-readings">
-          Back to readings
+          {t('utilityReadingManagement.back')}
         </Link>
       </div>
 
@@ -61,7 +63,7 @@ export default function StaffUtilityReadingCreatePage() {
         rooms={occupiedRooms}
         readings={readings}
         loading={saving}
-        submitLabel="Record reading"
+        submitLabel={t('utilityReadingManagement.record')}
         onSubmit={handleSubmit}
       />
     </section>

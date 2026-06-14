@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
 import * as expenseApi from '../../features/payments/expenseApi.js';
 import ExpenseTable from '../../components/ExpenseTable.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
 
 export default function AdminBuildingExpensePage() {
+  const { t } = useTranslation();
   const { building } = useOutletContext();
   const [expenses, setExpenses] = useState([]);
   const [message, setMessage] = useState('');
@@ -21,7 +23,7 @@ export default function AdminBuildingExpensePage() {
       const response = await expenseApi.getAdminExpenses(buildingFilter);
       setExpenses(response.data);
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Building expenses could not be loaded');
+      setError(apiError.response?.data?.message || t('workspace.expenses.loadError'));
     }
   };
 
@@ -31,7 +33,7 @@ export default function AdminBuildingExpensePage() {
   }, [building.id]);
 
   const handleCancel = async (expense) => {
-    if (!window.confirm('Cancel this expense?')) {
+    if (!window.confirm(t('workspace.expenses.cancelConfirm'))) {
       return;
     }
 
@@ -41,10 +43,10 @@ export default function AdminBuildingExpensePage() {
 
     try {
       await expenseApi.cancelAdminExpense(expense.id, buildingFilter);
-      setMessage('Expense cancelled successfully.');
+      setMessage(t('workspace.expenses.cancelled'));
       await loadExpenses();
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Expense could not be cancelled');
+      setError(apiError.response?.data?.message || t('workspace.expenses.cancelError'));
     } finally {
       setCancellingId(null);
     }
@@ -57,19 +59,19 @@ export default function AdminBuildingExpensePage() {
       disabled={expense.status === 'CANCELLED' || cancellingId === expense.id}
       onClick={() => handleCancel(expense)}
     >
-      Cancel
+      {t('common.cancel')}
     </button>
   );
 
   return (
     <div className="building-workspace">
-      <PageHeader eyebrow="Building expenses" title="Expenses in this building" />
+      <PageHeader eyebrow={t('workspace.expenses.eyebrow')} title={t('workspace.expenses.title')} />
 
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
 
       {loading ? (
-        <div className="empty-state">Loading expenses...</div>
+        <div className="empty-state">{t('workspace.expenses.loading')}</div>
       ) : (
         <ExpenseTable expenses={expenses} renderActions={renderActions} />
       )}

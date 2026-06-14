@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import * as feedbackApi from '../../features/notifications/feedbackApi.js';
 import { Link, useParams } from 'react-router-dom';
 import * as invoiceApi from '../../features/invoices/api.js';
@@ -9,6 +10,7 @@ import { PaymentProofUploadForm, PaymentTable } from '../../features/payments/co
 import useInvoicePaymentPolling from '../../hooks/useInvoicePaymentPolling.js';
 
 export default function ResidentInvoiceDetailPage() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const [invoice, setInvoice] = useState(null);
   const [payments, setPayments] = useState([]);
@@ -58,7 +60,7 @@ export default function ResidentInvoiceDetailPage() {
       })
       .catch((apiError) => {
         if (active) {
-          setError(apiError.response?.data?.message || 'Invoice could not be loaded');
+          setError(apiError.response?.data?.message || t('resident.invoices.detailLoadError'));
         }
       })
       .finally(() => {
@@ -80,9 +82,9 @@ export default function ResidentInvoiceDetailPage() {
     try {
       await paymentApi.uploadPaymentProof(payload);
       await loadData();
-      setMessage('Payment proof uploaded successfully.');
+      setMessage(t('resident.invoices.proofUploaded'));
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Payment proof could not be uploaded');
+      setError(apiError.response?.data?.message || t('resident.invoices.proofUploadError'));
       throw apiError;
     } finally {
       setUploading(false);
@@ -107,16 +109,16 @@ export default function ResidentInvoiceDetailPage() {
       await feedbackApi.createInvoiceComplaint(invoice.id, complaintForm);
       setComplaintForm({ title: '', content: '' });
       setComplaintOpen(false);
-      setMessage('Invoice complaint submitted successfully.');
+      setMessage(t('resident.invoices.complaintSubmitted'));
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Invoice complaint could not be submitted');
+      setError(apiError.response?.data?.message || t('resident.invoices.complaintError'));
     } finally {
       setComplaining(false);
     }
   };
 
   if (loading) {
-    return <div className="empty-state">Loading invoice...</div>;
+    return <div className="empty-state">{t('resident.invoices.loadingDetail')}</div>;
   }
 
   const canUploadPayment = invoice && ['UNPAID', 'REJECTED'].includes(invoice.status);
@@ -124,9 +126,9 @@ export default function ResidentInvoiceDetailPage() {
   return (
     <section className="content-section">
       <div className="page-title-row">
-        <PageHeader eyebrow="Head resident" title="Invoice details" />
+        <PageHeader eyebrow={t('resident.eyebrow')} title={t('resident.invoices.details')} />
         <Link className="secondary-link" to="/resident/invoices">
-          Back to invoices
+          {t('resident.invoices.back')}
         </Link>
       </div>
 
@@ -139,19 +141,22 @@ export default function ResidentInvoiceDetailPage() {
         {invoice && (
           <div className="payment-panel">
             <div className="page-title-row compact-title-row">
-              <PageHeader eyebrow="Complaint" title="Invoice complaint" />
+              <PageHeader
+                eyebrow={t('resident.invoices.complaintEyebrow')}
+                title={t('resident.invoices.complaintTitle')}
+              />
               <button
                 className="secondary-button inline-button"
                 type="button"
                 onClick={() => setComplaintOpen((current) => !current)}
               >
-                {complaintOpen ? 'Close complaint form' : 'Complain about invoice'}
+                {complaintOpen ? t('resident.invoices.closeComplaint') : t('resident.invoices.openComplaint')}
               </button>
             </div>
 
             {complaintOpen && (
               <form className="panel-form" onSubmit={handleComplaintSubmit}>
-                <label htmlFor="complaintTitle">Complaint title</label>
+                <label htmlFor="complaintTitle">{t('resident.invoices.complaintSubject')}</label>
                 <input
                   id="complaintTitle"
                   name="title"
@@ -161,7 +166,7 @@ export default function ResidentInvoiceDetailPage() {
                   required
                 />
 
-                <label htmlFor="complaintContent">Complaint content</label>
+                <label htmlFor="complaintContent">{t('resident.invoices.complaintContent')}</label>
                 <textarea
                   id="complaintContent"
                   name="content"
@@ -172,7 +177,7 @@ export default function ResidentInvoiceDetailPage() {
                 />
 
                 <button type="submit" disabled={complaining}>
-                  {complaining ? 'Submitting...' : 'Submit complaint'}
+                  {complaining ? t('resident.invoices.complaintSubmitting') : t('resident.invoices.complaintSubmit')}
                 </button>
               </form>
             )}
@@ -181,19 +186,19 @@ export default function ResidentInvoiceDetailPage() {
 
         {invoice && (
           <div className="payment-panel">
-            <PageHeader eyebrow="Payment" title="Payment proof" />
+            <PageHeader eyebrow={t('resident.invoices.paymentEyebrow')} title={t('resident.invoices.paymentProof')} />
             {canUploadPayment ? (
               <PaymentProofUploadForm invoiceId={invoice.id} loading={uploading} onSubmit={handlePaymentUpload} />
             ) : (
               <div className="empty-state">
-                Payment proof can only be uploaded when the invoice is unpaid or rejected.
+                {t('resident.invoices.proofUnavailable')}
               </div>
             )}
           </div>
         )}
 
         <div className="payment-panel">
-          <PageHeader eyebrow="Payment" title="Payment status" />
+          <PageHeader eyebrow={t('resident.invoices.paymentEyebrow')} title={t('resident.invoices.paymentStatus')} />
           <PaymentTable payments={payments} />
         </div>
       </section>

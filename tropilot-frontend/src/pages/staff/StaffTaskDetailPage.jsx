@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
 import * as taskApi from '../../features/maintenance/taskApi.js';
 import PageHeader from '../../components/PageHeader.jsx';
 import TaskDetail from '../../components/TaskDetail.jsx';
 
 export default function StaffTaskDetailPage() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const [task, setTask] = useState(null);
   const [message, setMessage] = useState('');
@@ -29,7 +31,7 @@ export default function StaffTaskDetailPage() {
       })
       .catch((apiError) => {
         if (active) {
-          setError(apiError.response?.data?.message || 'Task could not be loaded');
+          setError(apiError.response?.data?.message || t('taskManagement.loadOneError'));
         }
       })
       .finally(() => {
@@ -51,9 +53,9 @@ export default function StaffTaskDetailPage() {
     try {
       const response = await taskApi.startStaffTask(id);
       setTask(response.data);
-      setMessage('Task started successfully.');
+      setMessage(t('taskManagement.started'));
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Task could not be started');
+      setError(apiError.response?.data?.message || t('taskManagement.startError'));
     } finally {
       setProcessing(false);
     }
@@ -78,9 +80,9 @@ export default function StaffTaskDetailPage() {
       setTask(response.data);
       setCompletionForm({ resultNote: '', resultImage: null });
       event.target.reset();
-      setMessage('Task completed successfully.');
+      setMessage(t('taskManagement.completed'));
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Task could not be completed');
+      setError(apiError.response?.data?.message || t('taskManagement.completeError'));
     } finally {
       setProcessing(false);
     }
@@ -96,20 +98,20 @@ export default function StaffTaskDetailPage() {
       const response = await taskApi.rejectStaffTask(id, { resultNote: rejectNote });
       setTask(response.data);
       setRejectNote('');
-      setMessage('Task rejected successfully.');
+      setMessage(t('taskManagement.rejected'));
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Task could not be rejected');
+      setError(apiError.response?.data?.message || t('taskManagement.rejectError'));
     } finally {
       setProcessing(false);
     }
   };
 
   if (loading) {
-    return <div className="empty-state">Loading task...</div>;
+    return <div className="empty-state">{t('taskManagement.loadingOne')}</div>;
   }
 
   if (!task) {
-    return <div className="empty-state">{error || 'Task not found.'}</div>;
+    return <div className="empty-state">{error || t('taskManagement.notFound')}</div>;
   }
 
   const canStart = task.status === 'NEW';
@@ -119,9 +121,9 @@ export default function StaffTaskDetailPage() {
   return (
     <section className="content-section">
       <div className="page-title-row">
-        <PageHeader eyebrow="Operations staff" title={task.title} />
+        <PageHeader eyebrow={t('role.staff')} title={task.title} />
         <Link className="secondary-link" to="/staff/tasks">
-          Back to tasks
+          {t('taskManagement.back')}
         </Link>
       </div>
 
@@ -132,17 +134,17 @@ export default function StaffTaskDetailPage() {
         <TaskDetail task={task} />
 
         <aside className="task-actions-panel">
-          <PageHeader eyebrow="Actions" title="Task progress" />
+          <PageHeader eyebrow={t('taskManagement.actionsEyebrow')} title={t('taskManagement.progressTitle')} />
 
           {canStart && (
             <button className="inline-button" type="button" disabled={processing} onClick={handleStart}>
-              {processing ? 'Starting...' : 'Start task'}
+              {processing ? t('taskManagement.starting') : t('taskManagement.start')}
             </button>
           )}
 
           {canComplete && (
             <form className="panel-form" onSubmit={handleComplete}>
-              <label htmlFor="resultNote">Result note</label>
+              <label htmlFor="resultNote">{t('taskManagement.resultNote')}</label>
               <textarea
                 id="resultNote"
                 name="resultNote"
@@ -152,7 +154,7 @@ export default function StaffTaskDetailPage() {
                 required
               />
 
-              <label htmlFor="resultImage">Result image</label>
+              <label htmlFor="resultImage">{t('taskManagement.resultImage')}</label>
               <input
                 id="resultImage"
                 name="resultImage"
@@ -162,14 +164,14 @@ export default function StaffTaskDetailPage() {
               />
 
               <button type="submit" disabled={processing}>
-                {processing ? 'Completing...' : 'Complete task'}
+                {processing ? t('taskManagement.completing') : t('taskManagement.complete')}
               </button>
             </form>
           )}
 
           {canReject && (
             <form className="panel-form" onSubmit={handleReject}>
-              <label htmlFor="rejectNote">Rejection note</label>
+              <label htmlFor="rejectNote">{t('taskManagement.rejectionNote')}</label>
               <textarea
                 id="rejectNote"
                 name="rejectNote"
@@ -178,13 +180,13 @@ export default function StaffTaskDetailPage() {
                 onChange={(event) => setRejectNote(event.target.value)}
               />
               <button className="secondary-button" type="submit" disabled={processing}>
-                {processing ? 'Rejecting...' : 'Reject task'}
+                {processing ? t('taskManagement.rejecting') : t('taskManagement.reject')}
               </button>
             </form>
           )}
 
           {!canStart && !canComplete && !canReject && (
-            <div className="empty-state">No staff action is available for this task status.</div>
+            <div className="empty-state">{t('taskManagement.noAction')}</div>
           )}
         </aside>
       </section>

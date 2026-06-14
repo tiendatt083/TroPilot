@@ -1,12 +1,16 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export default function ContractUploadForm({
   loading,
   onSubmit,
-  submitLabel = 'Upload contract',
-  loadingLabel = 'Uploading...',
+  submitLabel,
+  loadingLabel,
 }) {
+  const { t } = useTranslation();
   const [file, setFile] = useState(null);
+  const resolvedSubmitLabel = submitLabel || t('contracts.upload.submit');
+  const resolvedLoadingLabel = loadingLabel || t('contracts.upload.uploading');
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -15,7 +19,7 @@ export default function ContractUploadForm({
 
   return (
     <form className="panel-form upload-form" onSubmit={handleSubmit}>
-      <label htmlFor="contractFile">Contract file</label>
+      <label htmlFor="contractFile">{t('contracts.upload.file')}</label>
       <input
         id="contractFile"
         name="contractFile"
@@ -24,9 +28,9 @@ export default function ContractUploadForm({
         onChange={(event) => setFile(event.target.files?.[0] || null)}
         required
       />
-      <p className="muted-text">Allowed file types: jpg, jpeg, png, pdf. Maximum size: 10 MB.</p>
+      <p className="muted-text">{t('contracts.upload.help')}</p>
       <button type="submit" disabled={loading || !file}>
-        {loading ? loadingLabel : submitLabel}
+        {loading ? resolvedLoadingLabel : resolvedSubmitLabel}
       </button>
     </form>
   );

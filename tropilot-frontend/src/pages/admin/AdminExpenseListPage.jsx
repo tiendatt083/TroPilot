@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import * as expenseApi from '../../features/payments/expenseApi.js';
 import ExpenseTable from '../../components/ExpenseTable.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
 
 export default function AdminExpenseListPage() {
+  const { t } = useTranslation();
   const [expenses, setExpenses] = useState([]);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
@@ -17,7 +19,7 @@ export default function AdminExpenseListPage() {
       const response = await expenseApi.getAdminExpenses();
       setExpenses(response.data);
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Expenses could not be loaded');
+      setError(apiError.response?.data?.message || t('expenseManagement.loadError'));
     }
   };
 
@@ -26,7 +28,7 @@ export default function AdminExpenseListPage() {
   }, []);
 
   const handleCancel = async (expense) => {
-    if (!window.confirm('Cancel this expense?')) {
+    if (!window.confirm(t('expenseManagement.cancelConfirm'))) {
       return;
     }
 
@@ -36,10 +38,10 @@ export default function AdminExpenseListPage() {
 
     try {
       await expenseApi.cancelAdminExpense(expense.id);
-      setMessage('Expense cancelled successfully.');
+      setMessage(t('expenseManagement.cancelled'));
       await loadExpenses();
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Expense could not be cancelled');
+      setError(apiError.response?.data?.message || t('expenseManagement.cancelError'));
     } finally {
       setCancellingId(null);
     }
@@ -52,19 +54,19 @@ export default function AdminExpenseListPage() {
       disabled={expense.status === 'CANCELLED' || cancellingId === expense.id}
       onClick={() => handleCancel(expense)}
     >
-      Cancel
+      {t('expenseManagement.cancel')}
     </button>
   );
 
   return (
     <section className="content-section">
-      <PageHeader eyebrow="Administrator" title="Expenses" />
+      <PageHeader eyebrow={t('role.admin')} title={t('expenseManagement.title')} />
 
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
 
       {loading ? (
-        <div className="empty-state">Loading expenses...</div>
+        <div className="empty-state">{t('expenseManagement.loading')}</div>
       ) : (
         <ExpenseTable expenses={expenses} renderActions={renderActions} />
       )}

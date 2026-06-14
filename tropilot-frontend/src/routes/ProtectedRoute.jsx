@@ -1,12 +1,14 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext.jsx';
 
 export default function ProtectedRoute() {
+  const { t } = useTranslation();
   const location = useLocation();
   const { isAuthenticated, loading, user } = useAuth();
 
   if (loading) {
-    return <div className="route-state">Loading session...</div>;
+    return <div className="route-state">{t('auth.loadingSession')}</div>;
   }
 
   if (!isAuthenticated) {

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import * as expenseApi from '../../features/payments/expenseApi.js';
 import * as roomApi from '../../features/rooms/api.js';
@@ -6,6 +7,7 @@ import ExpenseForm from '../../components/ExpenseForm.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
 
 export default function StaffExpenseCreatePage() {
+  const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
   const [rooms, setRooms] = useState([]);
@@ -17,7 +19,7 @@ export default function StaffExpenseCreatePage() {
     roomApi
       .getStaffRooms()
       .then((response) => setRooms(response.data))
-      .catch((apiError) => setError(apiError.response?.data?.message || 'Rooms could not be loaded'))
+      .catch((apiError) => setError(apiError.response?.data?.message || t('expenseManagement.roomsLoadError')))
       .finally(() => setLoadingRooms(false));
   }, []);
 
@@ -29,7 +31,7 @@ export default function StaffExpenseCreatePage() {
       await expenseApi.createStaffExpense(payload);
       navigate('/staff/expenses', { replace: true });
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Expense could not be created');
+      setError(apiError.response?.data?.message || t('expenseManagement.createError'));
       throw apiError;
     } finally {
       setCreating(false);
@@ -37,15 +39,15 @@ export default function StaffExpenseCreatePage() {
   };
 
   if (loadingRooms) {
-    return <div className="empty-state">Loading rooms...</div>;
+    return <div className="empty-state">{t('expenseManagement.loadingRooms')}</div>;
   }
 
   return (
     <section className="content-section narrow-section">
       <div className="page-title-row">
-        <PageHeader eyebrow="Operations staff" title="Create expense" />
+        <PageHeader eyebrow={t('role.staff')} title={t('expenseManagement.createTitle')} />
         <Link className="secondary-link" to="/staff/expenses">
-          Back to expenses
+          {t('expenseManagement.back')}
         </Link>
       </div>
 

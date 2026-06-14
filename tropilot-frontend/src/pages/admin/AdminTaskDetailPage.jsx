@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
 import * as taskApi from '../../features/maintenance/taskApi.js';
 import * as roomApi from '../../features/rooms/api.js';
@@ -12,6 +13,7 @@ function activeStaff(users) {
 }
 
 export default function AdminTaskDetailPage() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const [task, setTask] = useState(null);
   const [rooms, setRooms] = useState([]);
@@ -34,7 +36,7 @@ export default function AdminTaskDetailPage() {
       })
       .catch((apiError) => {
         if (active) {
-          setError(apiError.response?.data?.message || 'Task could not be loaded');
+          setError(apiError.response?.data?.message || t('taskManagement.loadOneError'));
         }
       })
       .finally(() => {
@@ -56,28 +58,28 @@ export default function AdminTaskDetailPage() {
     try {
       const response = await taskApi.updateAdminTask(id, payload);
       setTask(response.data);
-      setMessage('Task updated successfully.');
+      setMessage(t('taskManagement.updated'));
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Task could not be updated');
+      setError(apiError.response?.data?.message || t('taskManagement.updateError'));
     } finally {
       setSaving(false);
     }
   };
 
   if (loading) {
-    return <div className="empty-state">Loading task...</div>;
+    return <div className="empty-state">{t('taskManagement.loadingOne')}</div>;
   }
 
   if (!task) {
-    return <div className="empty-state">{error || 'Task not found.'}</div>;
+    return <div className="empty-state">{error || t('taskManagement.notFound')}</div>;
   }
 
   return (
     <section className="content-section">
       <div className="page-title-row">
-        <PageHeader eyebrow="Administrator" title={task.title} />
+        <PageHeader eyebrow={t('role.admin')} title={task.title} />
         <Link className="secondary-link" to="/admin/tasks">
-          Back to tasks
+          {t('taskManagement.back')}
         </Link>
       </div>
 
@@ -87,13 +89,13 @@ export default function AdminTaskDetailPage() {
       <section className="task-workspace">
         <TaskDetail task={task} />
         <div>
-          <PageHeader eyebrow="Edit" title="Task details" />
+          <PageHeader eyebrow={t('taskManagement.editEyebrow')} title={t('taskManagement.detailsTitle')} />
           <TaskForm
             initialValues={task}
             rooms={rooms}
             staffUsers={staffUsers}
             loading={saving}
-            submitLabel="Save changes"
+            submitLabel={t('taskManagement.saveChanges')}
             includeStatus
             onSubmit={handleSubmit}
           />

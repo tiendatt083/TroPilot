@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import * as contractApi from '../../features/contracts/api.js';
 import PageHeader from '../../components/PageHeader.jsx';
-import { getContractStatusClass, getContractStatusLabel } from '../../utils/contractStatusOptions.js';
+import { getContractStatusClass } from '../../utils/contractStatusOptions.js';
 import { formatDisplayDate } from '../../utils/dateFormat.js';
+import { formatEnumLabel } from '../../utils/i18nFormat.js';
 import { formatRoomCode } from '../../utils/roomDisplay.js';
 
 function formatNumber(value) {
@@ -14,6 +16,7 @@ function formatNumber(value) {
 }
 
 export default function AdminContractListPage() {
+  const { t } = useTranslation();
   const [contracts, setContracts] = useState([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
@@ -30,7 +33,7 @@ export default function AdminContractListPage() {
       })
       .catch((apiError) => {
         if (active) {
-          setError(apiError.response?.data?.message || 'Rental contracts could not be loaded');
+          setError(apiError.response?.data?.message || t('contracts.listLoadError'));
         }
       })
       .finally(() => {
@@ -46,23 +49,23 @@ export default function AdminContractListPage() {
 
   return (
     <section className="content-section">
-      <PageHeader eyebrow="Administrator" title="Rental contracts" />
+      <PageHeader eyebrow={t('contracts.adminEyebrow')} title={t('contracts.listTitle')} />
 
       {error && <div className="alert error-alert">{error}</div>}
 
       {loading ? (
-        <div className="empty-state">Loading rental contracts...</div>
+        <div className="empty-state">{t('contracts.listLoading')}</div>
       ) : (
         <div className="table-wrap">
           <table className="data-table">
             <thead>
               <tr>
-                <th>Room</th>
-                <th>Head Resident</th>
-                <th>Period</th>
-                <th>Deposit</th>
-                <th>Status</th>
-                <th>Details</th>
+                <th>{t('tables.common.room')}</th>
+                <th>{t('tables.common.headResident')}</th>
+                <th>{t('tables.common.period')}</th>
+                <th>{t('tables.common.depositAmount')}</th>
+                <th>{t('tables.common.status')}</th>
+                <th>{t('workspace.buildings.details')}</th>
               </tr>
             </thead>
             <tbody>
@@ -71,24 +74,26 @@ export default function AdminContractListPage() {
                   <td>{formatRoomCode(contract)}</td>
                   <td>{contract.residentHeadName}</td>
                   <td>
-                    {formatDisplayDate(contract.startDate)} to {formatDisplayDate(contract.endDate)}
+                    {formatDisplayDate(contract.startDate)} {t('common.to')} {formatDisplayDate(contract.endDate)}
                   </td>
                   <td>{formatNumber(contract.depositAmount)}</td>
                   <td>
                     <span className={getContractStatusClass(contract.contractStatus)}>
-                      {getContractStatusLabel(contract.contractStatus)}
+                      {formatEnumLabel(t, 'contractStatus', contract.contractStatus)}
                     </span>
                   </td>
                   <td>
                     <Link className="secondary-link compact-link" to={`/admin/contracts/${contract.id}`}>
-                      View
+                      {t('common.view')}
                     </Link>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-          {contracts.length === 0 && <div className="empty-state flat-empty-state">No active rental contracts found.</div>}
+          {contracts.length === 0 && (
+            <div className="empty-state flat-empty-state">{t('contracts.listEmpty')}</div>
+          )}
         </div>
       )}
     </section>

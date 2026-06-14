@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import * as paymentApi from '../../features/payments/api.js';
 import EmptyState from '../../components/common/EmptyState.jsx';
 import PageHeader from '../../components/common/PageHeader.jsx';
@@ -6,6 +7,7 @@ import ReceiptDetail from '../../components/ReceiptDetail.jsx';
 import ReceiptTable from '../../components/ReceiptTable.jsx';
 
 export default function AdminReceiptListPage() {
+  const { t } = useTranslation();
   const [receipts, setReceipts] = useState([]);
   const [selectedReceipt, setSelectedReceipt] = useState(null);
   const [error, setError] = useState('');
@@ -16,7 +18,7 @@ export default function AdminReceiptListPage() {
     paymentApi
       .getAdminReceipts()
       .then((response) => setReceipts(response.data))
-      .catch((apiError) => setError(apiError.response?.data?.message || 'Receipts could not be loaded'))
+      .catch((apiError) => setError(apiError.response?.data?.message || t('tables.receipts.loadError')))
       .finally(() => setLoading(false));
   }, []);
 
@@ -28,7 +30,7 @@ export default function AdminReceiptListPage() {
       const response = await paymentApi.getAdminReceipt(receipt.id);
       setSelectedReceipt(response.data);
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Receipt could not be loaded');
+      setError(apiError.response?.data?.message || t('tables.receipts.detailLoadError'));
     } finally {
       setLoadingDetailId(null);
     }
@@ -41,18 +43,18 @@ export default function AdminReceiptListPage() {
       disabled={loadingDetailId === receipt.id}
       onClick={() => handleView(receipt)}
     >
-      View
+      {t('common.view')}
     </button>
   );
 
   return (
     <section className="content-section">
-      <PageHeader eyebrow="Administrator" title="Receipts" />
+      <PageHeader eyebrow={t('tables.receipts.adminEyebrow')} title={t('tables.receipts.title')} />
 
       {error && <div className="alert error-alert">{error}</div>}
 
       {loading ? (
-        <EmptyState message="Loading receipts..." />
+        <EmptyState message={t('tables.receipts.loading')} />
       ) : (
         <section className="receipt-workspace">
           <ReceiptTable receipts={receipts} renderActions={renderActions} />

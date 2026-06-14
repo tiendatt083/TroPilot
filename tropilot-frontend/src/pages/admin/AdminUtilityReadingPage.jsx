@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import * as utilityReadingApi from '../../features/invoices/utilityReadingApi.js';
 import * as roomApi from '../../features/rooms/api.js';
 import PageHeader from '../../components/PageHeader.jsx';
@@ -9,6 +10,7 @@ import { isOccupiedRoom } from '../../utils/roomEligibility.js';
 import { formatRoomCode } from '../../utils/roomDisplay.js';
 
 export default function AdminUtilityReadingPage() {
+  const { t } = useTranslation();
   const [rooms, setRooms] = useState([]);
   const [readings, setReadings] = useState([]);
   const [editingReading, setEditingReading] = useState(null);
@@ -30,7 +32,7 @@ export default function AdminUtilityReadingPage() {
       setRooms(roomsResponse.data);
       setReadings(readingsResponse.data);
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Utility readings could not be loaded');
+      setError(apiError.response?.data?.message || t('utilityReadingManagement.loadError'));
     }
   };
 
@@ -45,11 +47,11 @@ export default function AdminUtilityReadingPage() {
 
     try {
       await utilityReadingApi.createUtilityReading(payload);
-      setMessage('Utility reading created successfully.');
+      setMessage(t('utilityReadingManagement.created'));
       setFormKey((current) => current + 1);
       await loadData();
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Utility reading could not be created');
+      setError(apiError.response?.data?.message || t('utilityReadingManagement.createError'));
     } finally {
       setSaving(false);
     }
@@ -62,11 +64,11 @@ export default function AdminUtilityReadingPage() {
 
     try {
       await utilityReadingApi.updateAdminUtilityReading(editingReading.id, payload);
-      setMessage('Utility reading updated successfully.');
+      setMessage(t('utilityReadingManagement.updated'));
       setEditingReading(null);
       await loadData();
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Utility reading could not be updated');
+      setError(apiError.response?.data?.message || t('utilityReadingManagement.updateError'));
     } finally {
       setSaving(false);
     }
@@ -75,26 +77,26 @@ export default function AdminUtilityReadingPage() {
   const renderActions = (reading) => (
     <div className="table-actions">
       <button className="secondary-button compact-button" type="button" onClick={() => setEditingReading(reading)}>
-        Edit
+        {t('utilityReadingManagement.edit')}
       </button>
     </div>
   );
 
   return (
     <section className="content-section">
-      <PageHeader eyebrow="Administrator" title="Utility readings" />
+      <PageHeader eyebrow={t('role.admin')} title={t('utilityReadingManagement.title')} />
 
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
 
       {loading ? (
-        <div className="empty-state">Loading utility readings...</div>
+        <div className="empty-state">{t('utilityReadingManagement.loading')}</div>
       ) : (
         <section className="utility-reading-workspace">
           <div>
             <PageHeader
-              eyebrow={editingReading ? 'Edit reading' : 'New reading'}
-              title={editingReading ? `${formatRoomCode(editingReading)} - ${formatDisplayMonth(editingReading.month)}` : 'Record reading'}
+              eyebrow={editingReading ? t('utilityReadingManagement.editReading') : t('utilityReadingManagement.newReading')}
+              title={editingReading ? `${formatRoomCode(editingReading)} - ${formatDisplayMonth(editingReading.month)}` : t('utilityReadingManagement.record')}
             />
             <UtilityReadingForm
               key={editingReading?.id || `new-reading-${formKey}`}
@@ -103,7 +105,7 @@ export default function AdminUtilityReadingPage() {
               initialValues={editingReading}
               loading={saving}
               mode={editingReading ? 'edit' : 'create'}
-              submitLabel={editingReading ? 'Save changes' : 'Record reading'}
+              submitLabel={editingReading ? t('buildingManagement.saveChanges') : t('utilityReadingManagement.record')}
               onSubmit={editingReading ? handleUpdate : handleCreate}
               onCancel={editingReading ? () => setEditingReading(null) : undefined}
             />

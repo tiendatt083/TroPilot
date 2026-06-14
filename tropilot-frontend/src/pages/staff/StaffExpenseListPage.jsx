@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import * as expenseApi from '../../features/payments/expenseApi.js';
 import CashFlowSummary from '../../components/CashFlowSummary.jsx';
@@ -7,6 +8,7 @@ import PageHeader from '../../components/PageHeader.jsx';
 import { formatMonthInputValue } from '../../utils/dateFormat.js';
 
 export default function StaffExpenseListPage() {
+  const { t } = useTranslation();
   const [expenses, setExpenses] = useState([]);
   const [cashFlow, setCashFlow] = useState(null);
   const [month, setMonth] = useState(formatMonthInputValue());
@@ -24,7 +26,7 @@ export default function StaffExpenseListPage() {
       setExpenses(expensesResponse.data);
       setCashFlow(cashFlowResponse.data);
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Expenses could not be loaded');
+      setError(apiError.response?.data?.message || t('expenseManagement.loadError'));
     }
   };
 
@@ -40,9 +42,9 @@ export default function StaffExpenseListPage() {
   return (
     <section className="content-section">
       <div className="page-title-row">
-        <PageHeader eyebrow="Operations staff" title="Expenses" />
+        <PageHeader eyebrow={t('role.staff')} title={t('expenseManagement.title')} />
         <Link className="button-link" to="/staff/expenses/create">
-          Create expense
+          {t('expenseManagement.create')}
         </Link>
       </div>
 
@@ -51,12 +53,12 @@ export default function StaffExpenseListPage() {
       <form className="month-filter-row" onSubmit={handleMonthSubmit}>
         <input type="month" lang="en-GB" value={month} onChange={(event) => setMonth(event.target.value)} required />
         <button className="inline-button" type="submit">
-          View cash flow
+          {t('expenseManagement.viewCashFlow')}
         </button>
       </form>
 
       {loading ? (
-        <div className="empty-state">Loading expenses...</div>
+        <div className="empty-state">{t('expenseManagement.loading')}</div>
       ) : (
         <section className="expense-workspace">
           <CashFlowSummary cashFlow={cashFlow} />

@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import * as feedbackApi from '../../features/notifications/feedbackApi.js';
 import FeedbackTable from '../../components/FeedbackTable.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
 import { FEEDBACK_STATUS_OPTIONS } from '../../utils/feedbackOptions.js';
+import { formatEnumLabel } from '../../utils/i18nFormat.js';
 
 export default function AdminFeedbackPage() {
+  const { t } = useTranslation();
   const [feedbacks, setFeedbacks] = useState([]);
   const [replyMap, setReplyMap] = useState({});
   const [statusMap, setStatusMap] = useState({});
@@ -21,7 +24,7 @@ export default function AdminFeedbackPage() {
 
   useEffect(() => {
     loadFeedbacks()
-      .catch((apiError) => setError(apiError.response?.data?.message || 'Feedbacks could not be loaded'))
+      .catch((apiError) => setError(apiError.response?.data?.message || t('feedbackManagement.feedbacksLoadError')))
       .finally(() => setLoading(false));
   }, []);
 
@@ -40,9 +43,9 @@ export default function AdminFeedbackPage() {
       const response = await feedbackApi.replyAdminFeedback(feedback.id, { reply });
       updateFeedbackInList(response.data);
       setReplyMap((current) => ({ ...current, [feedback.id]: '' }));
-      setMessage('Feedback replied successfully.');
+      setMessage(t('feedbackManagement.feedbackReplied'));
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Feedback could not be replied');
+      setError(apiError.response?.data?.message || t('feedbackManagement.feedbackReplyError'));
     } finally {
       setProcessingId(null);
     }
@@ -58,9 +61,9 @@ export default function AdminFeedbackPage() {
         status: statusMap[feedback.id]
       });
       updateFeedbackInList(response.data);
-      setMessage('Feedback status updated successfully.');
+      setMessage(t('feedbackManagement.feedbackStatusUpdated'));
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Feedback status could not be updated');
+      setError(apiError.response?.data?.message || t('feedbackManagement.feedbackStatusError'));
     } finally {
       setProcessingId(null);
     }
@@ -74,7 +77,7 @@ export default function AdminFeedbackPage() {
       >
         {FEEDBACK_STATUS_OPTIONS.map((option) => (
           <option key={option.value} value={option.value}>
-            {option.label}
+            {formatEnumLabel(t, 'feedbackStatus', option.value)}
           </option>
         ))}
       </select>
@@ -84,13 +87,13 @@ export default function AdminFeedbackPage() {
         disabled={processingId === feedback.id}
         onClick={() => handleStatus(feedback)}
       >
-        Save status
+        {t('feedbackManagement.saveStatus')}
       </button>
       <textarea
         rows="3"
         value={replyMap[feedback.id] || ''}
         onChange={(event) => setReplyMap((current) => ({ ...current, [feedback.id]: event.target.value }))}
-        placeholder="Reply content"
+        placeholder={t('feedbackManagement.replyContent')}
       />
       <button
         className="secondary-button compact-button"
@@ -98,20 +101,20 @@ export default function AdminFeedbackPage() {
         disabled={processingId === feedback.id}
         onClick={() => handleReply(feedback)}
       >
-        Reply
+        {t('feedbackManagement.reply')}
       </button>
     </div>
   );
 
   return (
     <section className="content-section">
-      <PageHeader eyebrow="Administrator" title="Feedbacks" />
+      <PageHeader eyebrow={t('feedbackManagement.adminEyebrow')} title={t('feedbackManagement.feedbacksTitle')} />
 
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
 
       {loading ? (
-        <div className="empty-state">Loading feedbacks...</div>
+        <div className="empty-state">{t('feedbackManagement.feedbacksLoading')}</div>
       ) : (
         <FeedbackTable feedbacks={feedbacks} renderActions={renderActions} />
       )}

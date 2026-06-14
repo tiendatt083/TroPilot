@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
 import * as roomApi from '../../features/rooms/api.js';
 import PageHeader from '../../components/PageHeader.jsx';
 import { formatRoomCode } from '../../utils/roomDisplay.js';
-import { getRoomStatusLabel } from '../../utils/roomStatusOptions.js';
+import { formatEnumLabel } from '../../utils/i18nFormat.js';
 
 function formatNumber(value) {
   const numberValue = Number(value);
@@ -17,6 +18,7 @@ function statusClass(status) {
 }
 
 export default function StaffRoomDetailPage() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const [room, setRoom] = useState(null);
   const [error, setError] = useState('');
@@ -34,7 +36,7 @@ export default function StaffRoomDetailPage() {
       })
       .catch((apiError) => {
         if (active) {
-          setError(apiError.response?.data?.message || 'Room could not be loaded');
+          setError(apiError.response?.data?.message || t('roomManagement.loadOneError'));
         }
       })
       .finally(() => {
@@ -49,11 +51,11 @@ export default function StaffRoomDetailPage() {
   }, [id]);
 
   if (loading) {
-    return <div className="empty-state">Loading room...</div>;
+    return <div className="empty-state">{t('roomManagement.loadingOne')}</div>;
   }
 
   if (!room) {
-    return <div className="empty-state">{error || 'Room not found.'}</div>;
+    return <div className="empty-state">{error || t('roomManagement.notFound')}</div>;
   }
 
   return (
@@ -61,7 +63,7 @@ export default function StaffRoomDetailPage() {
       <div className="page-title-row">
         <PageHeader eyebrow={formatRoomCode(room)} title={room.roomName} />
         <Link className="secondary-link" to="/staff/rooms">
-          Back to rooms
+          {t('roomManagement.backToRooms')}
         </Link>
       </div>
 
@@ -69,36 +71,36 @@ export default function StaffRoomDetailPage() {
 
       <div className="detail-panel">
         <div>
-          <span>Building</span>
+          <span>{t('tables.common.building')}</span>
           <strong>
             {room.buildingCode} - {room.buildingName}
           </strong>
         </div>
         <div>
-          <span>Status</span>
+          <span>{t('tables.common.status')}</span>
           <strong>
-            <span className={statusClass(room.status)}>{getRoomStatusLabel(room.status)}</span>
+            <span className={statusClass(room.status)}>{formatEnumLabel(t, 'roomStatus', room.status)}</span>
           </strong>
         </div>
         <div>
-          <span>Floor</span>
+          <span>{t('tables.common.floor')}</span>
           <strong>{room.floor}</strong>
         </div>
         <div>
-          <span>Maximum occupants</span>
+          <span>{t('roomManagement.maximumOccupants')}</span>
           <strong>{room.maxOccupants}</strong>
         </div>
         <div>
-          <span>Price</span>
+          <span>{t('tables.common.price')}</span>
           <strong>{formatNumber(room.price)}</strong>
         </div>
         <div>
-          <span>Area</span>
+          <span>{t('tables.common.area')}</span>
           <strong>{formatNumber(room.area)}</strong>
         </div>
         <div className="detail-wide">
-          <span>Description</span>
-          <p>{room.description || 'No description provided.'}</p>
+          <span>{t('tables.common.description')}</span>
+          <p>{room.description || t('roomManagement.noDescription')}</p>
         </div>
       </div>
     </section>

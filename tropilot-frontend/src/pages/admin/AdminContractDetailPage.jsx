@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
 import * as contractApi from '../../features/contracts/api.js';
 import ContractFileHistoryList from '../../components/ContractFileHistoryList.jsx';
 import ContractUploadForm from '../../components/ContractUploadForm.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
-import { getContractStatusClass, getContractStatusLabel } from '../../utils/contractStatusOptions.js';
+import { getContractStatusClass } from '../../utils/contractStatusOptions.js';
 import { formatDisplayDate } from '../../utils/dateFormat.js';
 import { resolveFileUrl } from '../../utils/fileUrl.js';
+import { formatEnumLabel } from '../../utils/i18nFormat.js';
 import { formatRoomCode, formatRoomLabel } from '../../utils/roomDisplay.js';
 
 function formatNumber(value) {
@@ -17,6 +19,7 @@ function formatNumber(value) {
 }
 
 export default function AdminContractDetailPage() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const [contract, setContract] = useState(null);
   const [message, setMessage] = useState('');
@@ -33,7 +36,7 @@ export default function AdminContractDetailPage() {
       setContract(response.data);
       setShowUploadForm(false);
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Rental contract could not be loaded');
+      setError(apiError.response?.data?.message || t('contracts.detailLoadError'));
     }
   };
 
@@ -51,9 +54,9 @@ export default function AdminContractDetailPage() {
       const response = await contractApi.uploadAdminContract(id, file);
       setContract(response.data);
       setShowUploadForm(false);
-      setMessage(isChangingContract ? 'Rental contract changed successfully.' : 'Rental contract uploaded successfully.');
+      setMessage(isChangingContract ? t('contracts.changed') : t('contracts.uploaded'));
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Rental contract could not be uploaded');
+      setError(apiError.response?.data?.message || t('contracts.uploadError'));
     } finally {
       setUploading(false);
     }
@@ -66,11 +69,11 @@ export default function AdminContractDetailPage() {
   };
 
   if (loading) {
-    return <div className="empty-state">Loading rental contract...</div>;
+    return <div className="empty-state">{t('contracts.detailLoading')}</div>;
   }
 
   if (!contract) {
-    return <div className="empty-state">{error || 'Rental contract not found.'}</div>;
+    return <div className="empty-state">{error || t('contracts.notFound')}</div>;
   }
 
   const hasContractFile = Boolean(contract.contractFileUrl);
@@ -79,19 +82,19 @@ export default function AdminContractDetailPage() {
   return (
     <section className="content-section">
       <div className="page-title-row">
-        <PageHeader eyebrow={formatRoomCode(contract)} title="Rental contract" />
+        <PageHeader eyebrow={formatRoomCode(contract)} title={t('contracts.title')} />
         <div className="button-row">
           <Link className="secondary-link" to="/admin/contracts">
-            Back
+            {t('contracts.back')}
           </Link>
           {hasContractFile && (
             <a className="button-link" href={resolveFileUrl(contract.contractFileUrl)} target="_blank" rel="noreferrer">
-              Open file
+              {t('contracts.openFile')}
             </a>
           )}
           {hasContractFile && !showUploadForm && (
             <button className="secondary-button inline-button" type="button" onClick={handleChangeContract}>
-              Change contract
+              {t('contracts.change')}
             </button>
           )}
           {hasContractFile && showUploadForm && (
@@ -101,7 +104,7 @@ export default function AdminContractDetailPage() {
               disabled={uploading}
               onClick={() => setShowUploadForm(false)}
             >
-              Cancel change
+              {t('contracts.cancelChange')}
             </button>
           )}
         </div>
@@ -112,63 +115,63 @@ export default function AdminContractDetailPage() {
 
       <div className="detail-panel">
         <div>
-          <span>Room</span>
+          <span>{t('tables.common.room')}</span>
           <strong>{formatRoomLabel(contract)}</strong>
         </div>
         <div>
-          <span>Building</span>
+          <span>{t('tables.common.building')}</span>
           <strong>
             {contract.buildingCode} - {contract.buildingName}
           </strong>
         </div>
         <div>
-          <span>Head Resident</span>
+          <span>{t('tables.common.headResident')}</span>
           <strong>{contract.residentHeadName}</strong>
         </div>
         <div>
-          <span>Email</span>
+          <span>{t('profile.fields.email')}</span>
           <strong>{contract.residentHeadEmail}</strong>
         </div>
         <div>
-          <span>Contract period</span>
+          <span>{t('contracts.period')}</span>
           <strong>
-            {formatDisplayDate(contract.startDate)} to {formatDisplayDate(contract.endDate)}
+            {formatDisplayDate(contract.startDate)} {t('common.to')} {formatDisplayDate(contract.endDate)}
           </strong>
         </div>
         <div>
-          <span>Deposit amount</span>
+          <span>{t('tables.common.depositAmount')}</span>
           <strong>{formatNumber(contract.depositAmount)}</strong>
         </div>
         <div>
-          <span>Contract status</span>
+          <span>{t('contracts.status')}</span>
           <strong>
             <span className={getContractStatusClass(contract.contractStatus)}>
-              {getContractStatusLabel(contract.contractStatus)}
+              {formatEnumLabel(t, 'contractStatus', contract.contractStatus)}
             </span>
           </strong>
         </div>
         <div>
-          <span>Rental status</span>
-          <strong>{contract.rentalStatus}</strong>
+          <span>{t('contracts.rentalStatus')}</span>
+          <strong>{formatEnumLabel(t, 'rentalStatus', contract.rentalStatus)}</strong>
         </div>
       </div>
 
       <section className="assignment-panel">
         <PageHeader
-          eyebrow={hasContractFile ? 'Uploaded file' : 'Upload'}
-          title={hasContractFile ? 'Current contract file' : 'Contract file'}
+          eyebrow={hasContractFile ? t('contracts.uploadedFile') : t('contracts.uploadEyebrow')}
+          title={hasContractFile ? t('contracts.currentFile') : t('contracts.upload.file')}
         />
         {hasContractFile && !showUploadForm && (
           <div className="contract-file-summary">
-            <strong>Contract file is uploaded</strong>
-            <p>Use Change contract only when the signed contract file must be replaced.</p>
+            <strong>{t('contracts.fileUploaded')}</strong>
+            <p>{t('contracts.changeHelp')}</p>
           </div>
         )}
         {shouldShowUploadForm && (
           <ContractUploadForm
             loading={uploading}
-            loadingLabel={hasContractFile ? 'Changing contract...' : 'Uploading...'}
-            submitLabel={hasContractFile ? 'Save new contract' : 'Upload contract'}
+            loadingLabel={hasContractFile ? t('contracts.changing') : t('contracts.upload.uploading')}
+            submitLabel={hasContractFile ? t('contracts.saveNew') : t('contracts.upload.submit')}
             onSubmit={handleUpload}
           />
         )}

@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
 import * as paymentApi from '../../features/payments/api.js';
 import PageHeader from '../PageHeader.jsx';
 import PaymentTable from '../PaymentTable.jsx';
 
 export default function BuildingPaymentWorkspace() {
+  const { t } = useTranslation();
   const { building } = useOutletContext();
   const [payments, setPayments] = useState([]);
   const [message, setMessage] = useState('');
@@ -21,7 +23,7 @@ export default function BuildingPaymentWorkspace() {
       const response = await paymentApi.getPendingPayments(buildingFilter);
       setPayments(response.data);
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Building pending payments could not be loaded');
+      setError(apiError.response?.data?.message || t('workspace.payments.loadError'));
     }
   };
 
@@ -36,18 +38,18 @@ export default function BuildingPaymentWorkspace() {
     setError('');
 
     try {
-      await paymentApi.approvePayment(payment.id, { note: 'Payment proof approved' }, buildingFilter);
-      setMessage('Payment approved successfully.');
+      await paymentApi.approvePayment(payment.id, { note: t('workspace.payments.approvedNote') }, buildingFilter);
+      setMessage(t('workspace.payments.approved'));
       await loadPayments();
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Payment could not be approved');
+      setError(apiError.response?.data?.message || t('workspace.payments.approveError'));
     } finally {
       setProcessingId(null);
     }
   };
 
   const handleReject = async (payment) => {
-    const note = window.prompt('Enter rejection note');
+    const note = window.prompt(t('workspace.payments.rejectPrompt'));
     if (note === null) {
       return;
     }
@@ -57,11 +59,11 @@ export default function BuildingPaymentWorkspace() {
     setError('');
 
     try {
-      await paymentApi.rejectPayment(payment.id, { note: note || 'Payment proof rejected' }, buildingFilter);
-      setMessage('Payment rejected successfully.');
+      await paymentApi.rejectPayment(payment.id, { note: note || t('workspace.payments.rejectedNote') }, buildingFilter);
+      setMessage(t('workspace.payments.rejected'));
       await loadPayments();
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Payment could not be rejected');
+      setError(apiError.response?.data?.message || t('workspace.payments.rejectError'));
     } finally {
       setProcessingId(null);
     }
@@ -75,7 +77,7 @@ export default function BuildingPaymentWorkspace() {
         disabled={processingId === payment.id}
         onClick={() => handleApprove(payment)}
       >
-        Approve
+        {t('workspace.payments.approve')}
       </button>
       <button
         className="secondary-button compact-button"
@@ -83,20 +85,20 @@ export default function BuildingPaymentWorkspace() {
         disabled={processingId === payment.id}
         onClick={() => handleReject(payment)}
       >
-        Reject
+        {t('workspace.payments.reject')}
       </button>
     </div>
   );
 
   return (
     <div className="building-workspace">
-      <PageHeader eyebrow="Building payments" title="Pending payments in this building" />
+      <PageHeader eyebrow={t('workspace.payments.eyebrow')} title={t('workspace.payments.title')} />
 
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
 
       {loading ? (
-        <div className="empty-state">Loading pending payments...</div>
+        <div className="empty-state">{t('workspace.payments.loading')}</div>
       ) : (
         <PaymentTable payments={payments} renderActions={renderActions} />
       )}

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
 import * as taskApi from '../../features/maintenance/taskApi.js';
 import * as roomApi from '../../features/rooms/api.js';
@@ -12,6 +13,7 @@ function activeStaff(users) {
 }
 
 export default function AdminBuildingTaskPage() {
+  const { t } = useTranslation();
   const { building } = useOutletContext();
   const [tasks, setTasks] = useState([]);
   const [rooms, setRooms] = useState([]);
@@ -38,7 +40,7 @@ export default function AdminBuildingTaskPage() {
       setStaffUsers(activeStaff(usersResponse.data));
       setRooms(roomsResponse.data);
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Building tasks could not be loaded');
+      setError(apiError.response?.data?.message || t('taskManagement.buildingLoadError'));
     }
   };
 
@@ -54,11 +56,11 @@ export default function AdminBuildingTaskPage() {
 
     try {
       await taskApi.createAdminTask(payload, buildingFilter);
-      setMessage('Task created successfully.');
+      setMessage(t('taskManagement.created'));
       setFormVersion((current) => current + 1);
       await loadData();
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Task could not be created');
+      setError(apiError.response?.data?.message || t('taskManagement.createError'));
     } finally {
       setSaving(false);
     }
@@ -66,25 +68,25 @@ export default function AdminBuildingTaskPage() {
 
   return (
     <div className="building-workspace">
-      <PageHeader eyebrow="Building tasks" title="Tasks in this building" />
+      <PageHeader eyebrow={t('taskManagement.buildingEyebrow')} title={t('taskManagement.buildingTitle')} />
 
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
 
       {loading ? (
-        <div className="empty-state">Loading tasks...</div>
+        <div className="empty-state">{t('taskManagement.loading')}</div>
       ) : (
         <section className="task-workspace">
           <div>
-            <PageHeader eyebrow="Create" title="Create task for this building" />
+            <PageHeader eyebrow={t('taskManagement.create')} title={t('taskManagement.createForBuilding')} />
             <TaskForm
               key={formVersion}
               rooms={rooms}
               staffUsers={staffUsers}
               loading={saving}
-              submitLabel="Create task"
+              submitLabel={t('taskManagement.create')}
               roomRequired
-              roomPlaceholder="Select room"
+              roomPlaceholder={t('forms.task.selectRoom')}
               onSubmit={handleSubmit}
             />
           </div>

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import * as memberApi from '../../features/residents/api.js';
 import * as vehicleApi from '../../features/residents/vehicleApi.js';
 import PageHeader from '../../components/PageHeader.jsx';
@@ -10,6 +11,7 @@ function canRequestCancel(vehicle) {
 }
 
 export default function ResidentVehiclePage() {
+  const { t } = useTranslation();
   const [vehicles, setVehicles] = useState([]);
   const [members, setMembers] = useState([]);
   const [message, setMessage] = useState('');
@@ -35,7 +37,7 @@ export default function ResidentVehiclePage() {
       setVehicles(vehiclesResponse.data);
       setMembers(membersResponse.data);
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Vehicles could not be loaded');
+      setError(apiError.response?.data?.message || t('vehicles.loadError'));
     }
   };
 
@@ -50,18 +52,18 @@ export default function ResidentVehiclePage() {
 
     try {
       await vehicleApi.requestResidentVehicle(payload);
-      setMessage('Vehicle registration submitted for approval successfully.');
+      setMessage(t('vehicles.submitted'));
       setFormKey((current) => current + 1);
       await loadData();
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Vehicle registration could not be submitted');
+      setError(apiError.response?.data?.message || t('vehicles.submitError'));
     } finally {
       setSaving(false);
     }
   };
 
   const handleRequestCancel = async (vehicle) => {
-    const confirmed = window.confirm(`Request cancellation for vehicle ${vehicle.licensePlate}?`);
+    const confirmed = window.confirm(t('vehicles.cancelConfirm', { plate: vehicle.licensePlate }));
     if (!confirmed) {
       return;
     }
@@ -72,10 +74,10 @@ export default function ResidentVehiclePage() {
 
     try {
       await vehicleApi.requestVehicleCancel(vehicle.id);
-      setMessage('Vehicle cancellation requested successfully.');
+      setMessage(t('vehicles.cancelled'));
       await loadData();
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Vehicle cancellation could not be requested');
+      setError(apiError.response?.data?.message || t('vehicles.cancelError'));
     } finally {
       setProcessingId(null);
     }
@@ -90,30 +92,30 @@ export default function ResidentVehiclePage() {
           disabled={processingId === vehicle.id}
           onClick={() => handleRequestCancel(vehicle)}
         >
-          Cancel
+          {t('common.cancel')}
         </button>
       ) : (
-        <span className="muted-text">No action</span>
+        <span className="muted-text">{t('vehicles.noAction')}</span>
       )}
     </div>
   );
 
   return (
     <section className="content-section">
-      <PageHeader eyebrow="Head resident" title="Vehicles" />
+      <PageHeader eyebrow={t('resident.eyebrow')} title={t('vehicles.title')} />
 
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
 
       <section className="vehicle-workspace">
         <div>
-          <PageHeader eyebrow="New request" title="Request vehicle registration" />
+          <PageHeader eyebrow={t('vehicles.requestEyebrow')} title={t('vehicles.requestTitle')} />
           <VehicleForm key={formKey} approvedMembers={approvedMembers} loading={saving} onSubmit={handleRequestVehicle} />
         </div>
 
         <div>
           {loading ? (
-            <div className="empty-state">Loading vehicles...</div>
+            <div className="empty-state">{t('vehicles.loading')}</div>
           ) : (
             <VehicleTable vehicles={vehicles} renderActions={renderActions} />
           )}
