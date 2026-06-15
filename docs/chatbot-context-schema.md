@@ -1,0 +1,124 @@
+# Tropilot Chatbot Context Schema
+
+## Purpose
+
+This document defines the stable JSON contract supplied to the Tropilot
+chatbot. Every role receives the same top-level structure. Role-specific
+builders may populate only the fields authorized for the authenticated user.
+
+The context is created from response DTOs and deliberately selected scalar
+values. JPA entities must never be serialized directly into this document.
+
+## Common Structure
+
+```json
+{
+  "generatedAt": "15/06/2026 10:30",
+  "user": {
+    "role": "ADMIN",
+    "dataScope": "GLOBAL_ADMIN"
+  },
+  "businessRules": {},
+  "summary": {},
+  "buildings": [],
+  "roomsNeedingAttention": [],
+  "invoicesNeedingAttention": [],
+  "expiringContracts": [],
+  "maintenanceRequests": [],
+  "tasks": []
+}
+```
+
+All top-level fields are always present, even when their value is an empty
+object or array. This gives Gemini a predictable structure and allows later
+phases to add data without changing the contract.
+
+## Field Definitions
+
+| Field | Type | Purpose |
+| --- | --- | --- |
+| `generatedAt` | String | Time the live context was generated, formatted as `dd/MM/yyyy HH:mm`. |
+| `user.role` | String | Authenticated Tropilot role: `ADMIN`, `STAFF`, or `RESIDENT_HEAD`. |
+| `user.dataScope` | String | Maximum authorized scope of the generated context. |
+| `businessRules` | Object | Stable Tropilot rules loaded from `chat/tropilot-business-rules.json` and used to explain business behavior. |
+| `summary` | Object | Role-specific summary values and current-room summary for a Head Resident. |
+| `buildings` | Array | Authorized building summaries. Populated in a later phase. |
+| `roomsNeedingAttention` | Array | Authorized rooms requiring operational attention. |
+| `invoicesNeedingAttention` | Array | Authorized unpaid, overdue, disputed, or otherwise actionable invoices. |
+| `expiringContracts` | Array | Authorized active contracts approaching their end date. |
+| `maintenanceRequests` | Array | Authorized unresolved or recent maintenance requests. |
+| `tasks` | Array | Authorized active tasks. |
+
+## Data Scopes
+
+| Role | `dataScope` | Meaning |
+| --- | --- | --- |
+| `ADMIN` | `GLOBAL_ADMIN` | May receive authorized global system summaries and building-level operational data. |
+| `STAFF` | `STAFF_OPERATIONAL` | May receive operational data permitted for Staff. Restricted Admin-only data must be excluded. |
+| `RESIDENT_HEAD` | `RESIDENT_OWN_ROOM_ONLY` | May receive only data belonging to the authenticated Head Resident's active room. |
+
+## Current Summary Population
+
+### Admin
+
+`summary` currently contains global dashboard metrics, including building,
+room, occupant, vehicle, contract, invoice, cash-flow, maintenance, task, and
+feedback counts or totals.
+
+### Staff
+
+`summary` currently contains operational dashboard metrics and high-level room
+counts permitted for Staff.
+
+### Head Resident
+
+`summary.currentRoom` currently contains a deliberately selected subset of the
+active room assignment DTO:
+
+```json
+{
+  "assigned": true,
+  "roomCode": "BD01-P101",
+  "roomName": "Room 101",
+  "roomStatus": "OCCUPIED",
+  "buildingCode": "BD01",
+  "buildingName": "Building 01",
+  "approvedMemberCount": 2,
+  "activeVehicleCount": 1,
+  "unreadNotificationCount": 3,
+  "recentMaintenanceRequestCount": 1,
+  "currentContract": {},
+  "latestInvoice": {}
+}
+```
+
+## Data Safety Rules
+
+The generated context must never contain:
+
+- Passwords or temporary passwords.
+- Password hashes or encrypted password values.
+- JWT tokens, API keys, webhook secrets, or encryption secrets.
+- Bank credentials.
+- Full JPA entities or uncontrolled entity relationships.
+- Data outside the authenticated role's authorized scope.
+- Personal information that is unnecessary for answering supported questions.
+
+## Fixed Business Knowledge
+
+`businessRules` is loaded from
+`tropilot-backend/src/main/resources/chat/tropilot-business-rules.json`.
+The resource contains concise, English-only rules for residency, occupancy,
+contracts, utility readings, invoices, service fees, SePay payments, and role
+permissions.
+
+The resource is read once when the backend starts. Each chatbot context receives
+an independent JSON copy so a request cannot mutate the shared rule set.
+
+## Evolution Rules
+
+- Do not rename or remove top-level fields without a versioned migration.
+- Add detailed values only through selected DTO fields or explicit maps.
+- Keep every list bounded when detailed records are added.
+- Keep `summary` concise; detailed records belong in the relevant arrays.
+- Tests must verify the common top-level schema for all three roles.

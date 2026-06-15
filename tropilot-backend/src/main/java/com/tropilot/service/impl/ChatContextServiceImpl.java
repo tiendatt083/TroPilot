@@ -11,6 +11,7 @@ import com.tropilot.entity.User;
 import com.tropilot.enums.RoomStatus;
 import com.tropilot.repository.BuildingRepository;
 import com.tropilot.repository.RoomRepository;
+import com.tropilot.service.ChatBusinessRuleProvider;
 import com.tropilot.service.ChatContextService;
 import com.tropilot.service.DashboardService;
 import lombok.RequiredArgsConstructor;
@@ -18,109 +19,148 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class ChatContextServiceImpl implements ChatContextService {
 
+    private static final DateTimeFormatter CONTEXT_TIMESTAMP_FORMAT =
+            DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+    private static final String GLOBAL_ADMIN_SCOPE = "GLOBAL_ADMIN";
+    private static final String STAFF_OPERATIONAL_SCOPE = "STAFF_OPERATIONAL";
+    private static final String RESIDENT_OWN_ROOM_SCOPE = "RESIDENT_OWN_ROOM_ONLY";
+
     private final DashboardService dashboardService;
     private final BuildingRepository buildingRepository;
     private final RoomRepository roomRepository;
+    private final ChatBusinessRuleProvider chatBusinessRuleProvider;
     private final ObjectMapper objectMapper;
 
     @Override
     @Transactional(readOnly = true)
     public String buildContext(User user) {
-        Map<String, Object> context = new LinkedHashMap<>();
-        context.put("generatedAt", LocalDateTime.now());
-        context.put("userRole", user.getRole().name());
+        Map<String, Object> context = createBaseContext(user);
+        Map<String, Object> summary = getSummary(context);
 
         switch (user.getRole()) {
-            case ADMIN -> addAdminContext(context);
-            case STAFF -> addStaffContext(context, user.getId());
-            case RESIDENT_HEAD -> addResidentContext(context, user.getId());
+            case ADMIN -> addAdminSummary(summary);
+            case STAFF -> addStaffSummary(summary, user.getId());
+            case RESIDENT_HEAD -> addResidentSummary(summary, user.getId());
         }
 
         return objectMapper.valueToTree(context).toString();
     }
 
-    private void addAdminContext(Map<String, Object> context) {
+    private Map<String, Object> createBaseContext(User user) {
+        Map<String, Object> context = new LinkedHashMap<>();
+        Map<String, Object> userContext = new LinkedHashMap<>();
+
+        userContext.put("role", user.getRole().name());
+        userContext.put("dataScope", resolveDataScope(user));
+
+        context.put("generatedAt", LocalDateTime.now().format(CONTEXT_TIMESTAMP_FORMAT));
+        context.put("user", userContext);
+        context.put("businessRules", chatBusinessRuleProvider.getBusinessRules());
+        context.put("summary", new LinkedHashMap<>());
+        context.put("buildings", List.of());
+        context.put("roomsNeedingAttention", List.of());
+        context.put("invoicesNeedingAttention", List.of());
+        context.put("expiringContracts", List.of());
+        context.put("maintenanceRequests", List.of());
+        context.put("tasks", List.of());
+        return context;
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> getSummary(Map<String, Object> context) {
+        return (Map<String, Object>) context.get("summary");
+    }
+
+    private String resolveDataScope(User user) {
+        return switch (user.getRole()) {
+            case ADMIN -> GLOBAL_ADMIN_SCOPE;
+            case STAFF -> STAFF_OPERATIONAL_SCOPE;
+            case RESIDENT_HEAD -> RESIDENT_OWN_ROOM_SCOPE;
+        };
+    }
+
+    private void addAdminSummary(Map<String, Object> summary) {
         AdminDashboardResponse dashboard = dashboardService.getAdminDashboard();
-        Map<String, Object> metrics = new LinkedHashMap<>();
 
-        context.put("dataScope", "GLOBAL_ADMIN");
-        metrics.put("totalBuildings", dashboard.getTotalBuildings());
-        metrics.put("totalRooms", dashboard.getTotalRooms());
-        metrics.put("emptyRooms", dashboard.getEmptyRooms());
-        metrics.put("occupiedRooms", dashboard.getOccupiedRooms());
-        metrics.put("maintenanceRooms", dashboard.getMaintenanceRooms());
-        metrics.put("totalHeadResidents", dashboard.getTotalHeadResidents());
-        metrics.put("totalApprovedRoomMembers", dashboard.getTotalApprovedRoomMembers());
-        metrics.put("totalPendingRoomMembers", dashboard.getTotalPendingRoomMembers());
-        metrics.put("totalOccupants", dashboard.getTotalOccupants());
-        metrics.put("totalActiveVehicles", dashboard.getTotalActiveVehicles());
-        metrics.put("expiringContracts", dashboard.getExpiringContracts());
-        metrics.put("unpaidInvoices", dashboard.getUnpaidInvoices());
-        metrics.put("overdueInvoices", dashboard.getOverdueInvoices());
-        metrics.put("totalIncome", dashboard.getTotalIncome());
-        metrics.put("unpaidAmount", dashboard.getUnpaidAmount());
-        metrics.put("totalExpense", dashboard.getTotalExpense());
-        metrics.put("remainingCash", dashboard.getRemainingCash());
-        metrics.put("pendingMaintenanceRequests", dashboard.getPendingMaintenanceRequests());
-        metrics.put("inProgressTasks", dashboard.getInProgressTasks());
-        metrics.put("unresolvedFeedbacks", dashboard.getUnresolvedFeedbacks());
-        context.put("metrics", metrics);
+        summary.put("totalBuildings", dashboard.getTotalBuildings());
+        summary.put("totalRooms", dashboard.getTotalRooms());
+        summary.put("emptyRooms", dashboard.getEmptyRooms());
+        summary.put("occupiedRooms", dashboard.getOccupiedRooms());
+        summary.put("maintenanceRooms", dashboard.getMaintenanceRooms());
+        summary.put("totalHeadResidents", dashboard.getTotalHeadResidents());
+        summary.put("totalApprovedRoomMembers", dashboard.getTotalApprovedRoomMembers());
+        summary.put("totalPendingRoomMembers", dashboard.getTotalPendingRoomMembers());
+        summary.put("totalOccupants", dashboard.getTotalOccupants());
+        summary.put("totalActiveVehicles", dashboard.getTotalActiveVehicles());
+        summary.put("expiringContracts", dashboard.getExpiringContracts());
+        summary.put("unpaidInvoices", dashboard.getUnpaidInvoices());
+        summary.put("overdueInvoices", dashboard.getOverdueInvoices());
+        summary.put("totalIncome", dashboard.getTotalIncome());
+        summary.put("unpaidAmount", dashboard.getUnpaidAmount());
+        summary.put("totalExpense", dashboard.getTotalExpense());
+        summary.put("remainingCash", dashboard.getRemainingCash());
+        summary.put("pendingMaintenanceRequests", dashboard.getPendingMaintenanceRequests());
+        summary.put("inProgressTasks", dashboard.getInProgressTasks());
+        summary.put("unresolvedFeedbacks", dashboard.getUnresolvedFeedbacks());
     }
 
-    private void addStaffContext(Map<String, Object> context, Long staffId) {
+    private void addStaffSummary(Map<String, Object> summary, Long staffId) {
         StaffDashboardResponse dashboard = dashboardService.getStaffDashboard(staffId);
-        Map<String, Object> metrics = new LinkedHashMap<>();
 
-        context.put("dataScope", "STAFF_OPERATIONAL");
-        metrics.put("totalBuildings", buildingRepository.count());
-        metrics.put("totalRooms", roomRepository.count());
-        metrics.put("emptyRooms", roomRepository.countByStatus(RoomStatus.EMPTY));
-        metrics.put("occupiedRooms", roomRepository.countByStatus(RoomStatus.OCCUPIED));
-        metrics.put("maintenanceRooms", roomRepository.countByStatus(RoomStatus.MAINTENANCE));
-        metrics.put("assignedTasks", dashboard.getAssignedTasks());
-        metrics.put("overdueTasks", dashboard.getOverdueTasks());
-        metrics.put("roomsNeedingUtilityReading", dashboard.getRoomsNeedingUtilityReading());
-        metrics.put("pendingPaymentConfirmations", dashboard.getPendingPaymentConfirmations());
-        metrics.put("activeMaintenanceRequests", dashboard.getActiveMaintenanceRequests());
-        metrics.put("createdExpenses", dashboard.getCreatedExpenses());
-        context.put("metrics", metrics);
+        summary.put("totalBuildings", buildingRepository.count());
+        summary.put("totalRooms", roomRepository.count());
+        summary.put("emptyRooms", roomRepository.countByStatus(RoomStatus.EMPTY));
+        summary.put("occupiedRooms", roomRepository.countByStatus(RoomStatus.OCCUPIED));
+        summary.put("maintenanceRooms", roomRepository.countByStatus(RoomStatus.MAINTENANCE));
+        summary.put("assignedTasks", dashboard.getAssignedTasks());
+        summary.put("overdueTasks", dashboard.getOverdueTasks());
+        summary.put("roomsNeedingUtilityReading", dashboard.getRoomsNeedingUtilityReading());
+        summary.put("pendingPaymentConfirmations", dashboard.getPendingPaymentConfirmations());
+        summary.put("activeMaintenanceRequests", dashboard.getActiveMaintenanceRequests());
+        summary.put("createdExpenses", dashboard.getCreatedExpenses());
     }
 
-    private void addResidentContext(Map<String, Object> context, Long residentHeadId) {
+    private void addResidentSummary(Map<String, Object> summary, Long residentHeadId) {
         ResidentDashboardResponse dashboard = dashboardService.getResidentDashboard(residentHeadId);
         HeadResidentAssignmentResponse room = dashboard.getCurrentRoom();
-        Map<String, Object> ownRoom = new LinkedHashMap<>();
+        Map<String, Object> currentRoom = new LinkedHashMap<>();
 
-        context.put("dataScope", "RESIDENT_OWN_ROOM_ONLY");
-        ownRoom.put("assigned", room != null && room.isAssigned());
+        currentRoom.put("assigned", room != null && room.isAssigned());
 
         if (room != null && room.isAssigned()) {
-            ownRoom.put("roomCode", room.getRoomCode());
-            ownRoom.put("roomName", room.getRoomName());
-            ownRoom.put("roomStatus", room.getRoomStatus());
-            ownRoom.put("buildingCode", room.getBuildingCode());
-            ownRoom.put("buildingName", room.getBuildingName());
-            ownRoom.put("approvedMemberCount", dashboard.getApprovedMemberCount());
-            ownRoom.put("activeVehicleCount", dashboard.getActiveVehicles().size());
-            ownRoom.put("unreadNotificationCount", dashboard.getUnreadNotifications());
-            ownRoom.put("recentMaintenanceRequestCount", dashboard.getRecentMaintenanceRequests().size());
-            addResidentContract(ownRoom, dashboard.getCurrentContract());
-            addResidentInvoice(ownRoom, dashboard.getLatestInvoice());
+            currentRoom.put("roomCode", room.getRoomCode());
+            currentRoom.put("roomName", room.getRoomName());
+            currentRoom.put("roomStatus", room.getRoomStatus());
+            currentRoom.put("buildingCode", room.getBuildingCode());
+            currentRoom.put("buildingName", room.getBuildingName());
+            currentRoom.put("approvedMemberCount", dashboard.getApprovedMemberCount());
+            currentRoom.put("activeVehicleCount", sizeOf(dashboard.getActiveVehicles()));
+            currentRoom.put("unreadNotificationCount", dashboard.getUnreadNotifications());
+            currentRoom.put("recentMaintenanceRequestCount", sizeOf(dashboard.getRecentMaintenanceRequests()));
+            addResidentContract(currentRoom, dashboard.getCurrentContract());
+            addResidentInvoice(currentRoom, dashboard.getLatestInvoice());
         }
 
-        context.put("ownRoom", ownRoom);
+        summary.put("currentRoom", currentRoom);
     }
 
-    private void addResidentContract(Map<String, Object> ownRoom, RentalContractResponse contract) {
+    private int sizeOf(Collection<?> values) {
+        return values == null ? 0 : values.size();
+    }
+
+    private void addResidentContract(Map<String, Object> currentRoom, RentalContractResponse contract) {
         if (contract == null) {
-            ownRoom.put("currentContract", null);
+            currentRoom.put("currentContract", null);
             return;
         }
 
@@ -129,12 +169,12 @@ public class ChatContextServiceImpl implements ChatContextService {
         contractData.put("rentalStatus", contract.getRentalStatus());
         contractData.put("startDate", contract.getStartDate());
         contractData.put("endDate", contract.getEndDate());
-        ownRoom.put("currentContract", contractData);
+        currentRoom.put("currentContract", contractData);
     }
 
-    private void addResidentInvoice(Map<String, Object> ownRoom, InvoiceResponse invoice) {
+    private void addResidentInvoice(Map<String, Object> currentRoom, InvoiceResponse invoice) {
         if (invoice == null) {
-            ownRoom.put("latestInvoice", null);
+            currentRoom.put("latestInvoice", null);
             return;
         }
 
@@ -143,6 +183,6 @@ public class ChatContextServiceImpl implements ChatContextService {
         invoiceData.put("totalAmount", invoice.getTotalAmount());
         invoiceData.put("dueDate", invoice.getDueDate());
         invoiceData.put("status", invoice.getStatus());
-        ownRoom.put("latestInvoice", invoiceData);
+        currentRoom.put("latestInvoice", invoiceData);
     }
 }

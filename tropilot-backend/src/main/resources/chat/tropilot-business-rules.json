@@ -1,0 +1,172 @@
+{
+  "version": "1.0",
+  "headResidentAndMembers": [
+    {
+      "id": "RESIDENCY-001",
+      "rule": "Only an active RESIDENT_HEAD account can be assigned as a Head Resident."
+    },
+    {
+      "id": "RESIDENCY-002",
+      "rule": "Each room can have only one active Head Resident, and each Head Resident can represent only one active room."
+    },
+    {
+      "id": "RESIDENCY-003",
+      "rule": "A Head Resident can add and manage room members only for their own active room."
+    },
+    {
+      "id": "RESIDENCY-004",
+      "rule": "New room members start as PENDING and become active occupants only after Admin approval."
+    },
+    {
+      "id": "RESIDENCY-005",
+      "rule": "Room members are resident records and do not receive login accounts."
+    },
+    {
+      "id": "RESIDENCY-006",
+      "rule": "When the Head Resident leaves, pending and approved room members become LEFT, active and pending vehicles become INACTIVE, and the room becomes EMPTY."
+    }
+  ],
+  "occupancyLimits": [
+    {
+      "id": "OCCUPANCY-001",
+      "rule": "Total active occupants equal one active Head Resident plus approved room members."
+    },
+    {
+      "id": "OCCUPANCY-002",
+      "rule": "PENDING, REJECTED, and LEFT room members do not count as active occupants."
+    },
+    {
+      "id": "OCCUPANCY-003",
+      "rule": "Admin approval of a room member is blocked when it would exceed the room maximum occupants."
+    }
+  ],
+  "contracts": [
+    {
+      "id": "CONTRACT-001",
+      "rule": "Assigning a Head Resident creates an active room assignment and an active rental contract for that room and resident."
+    },
+    {
+      "id": "CONTRACT-002",
+      "rule": "The current contract management list contains only contracts whose rental and room assignment statuses are ACTIVE."
+    },
+    {
+      "id": "CONTRACT-003",
+      "rule": "Removing the active Head Resident ends the active assignment and contract on the removal date."
+    },
+    {
+      "id": "CONTRACT-004",
+      "rule": "Ended contracts are retained as historical records and are not treated as current rentals."
+    }
+  ],
+  "utilityReadings": [
+    {
+      "id": "UTILITY-001",
+      "rule": "Admin and Staff can record utility readings only for OCCUPIED rooms with an active Head Resident."
+    },
+    {
+      "id": "UTILITY-002",
+      "rule": "A room can have only one utility reading for each month."
+    },
+    {
+      "id": "UTILITY-003",
+      "rule": "New electricity and water readings must be greater than or equal to their old readings."
+    },
+    {
+      "id": "UTILITY-004",
+      "rule": "A usage-based invoice uses the room utility reading from the month before the invoice month."
+    },
+    {
+      "id": "UTILITY-005",
+      "rule": "The first invoice for a Head Resident does not charge usage-based electricity or water."
+    }
+  ],
+  "invoices": [
+    {
+      "id": "INVOICE-001",
+      "rule": "Admin and Staff can generate invoices only for OCCUPIED rooms with an active Head Resident."
+    },
+    {
+      "id": "INVOICE-002",
+      "rule": "A room can have only one invoice for each invoice month."
+    },
+    {
+      "id": "INVOICE-003",
+      "rule": "The first invoice for a Head Resident includes the initial deposit, room rent, and applicable non-usage service fees."
+    },
+    {
+      "id": "INVOICE-004",
+      "rule": "Later invoices include room rent, applicable service fees, and electricity and water according to the configured calculation method."
+    },
+    {
+      "id": "INVOICE-005",
+      "rule": "Invoice total amount must equal the sum of its invoice items and cannot be negative."
+    },
+    {
+      "id": "INVOICE-006",
+      "rule": "Only Admin can delete an invoice. UNPAID, PENDING_CONFIRMATION, OVERDUE, or REJECTED invoices can be deleted only when no approved payment or valid receipt exists."
+    },
+    {
+      "id": "INVOICE-007",
+      "rule": "PAID invoices cannot be deleted, and a Head Resident can view only invoices for their own active room."
+    }
+  ],
+  "serviceFees": [
+    {
+      "id": "FEE-001",
+      "rule": "Each building can have only one active electricity fee and one active water fee."
+    },
+    {
+      "id": "FEE-002",
+      "rule": "Electricity and water fees can be calculated BY_USAGE or BY_PERSON."
+    },
+    {
+      "id": "FEE-003",
+      "rule": "Additional service fees use fee type OTHER and can be calculated FIXED per room or BY_PERSON."
+    },
+    {
+      "id": "FEE-004",
+      "rule": "Only active service fees are used during invoice generation."
+    },
+    {
+      "id": "FEE-005",
+      "rule": "Admin manages service fee configuration. Staff can view service fees but cannot create, update, activate, deactivate, or delete them."
+    }
+  ],
+  "sepayPayments": [
+    {
+      "id": "SEPAY-001",
+      "rule": "When SePay is configured, an invoice receives one payment code and a QR code for the exact invoice total."
+    },
+    {
+      "id": "SEPAY-002",
+      "rule": "The SePay webhook must pass authorization and identify a matching invoice payment code."
+    },
+    {
+      "id": "SEPAY-003",
+      "rule": "Only an incoming transfer to the configured account with an amount exactly equal to the invoice total can pay the invoice."
+    },
+    {
+      "id": "SEPAY-004",
+      "rule": "A valid SePay webhook changes the payment and invoice to PAID, creates one valid receipt if needed, and sends a paid notification."
+    },
+    {
+      "id": "SEPAY-005",
+      "rule": "Repeated valid webhooks for an already paid SePay payment do not create duplicate receipts."
+    }
+  ],
+  "permissions": {
+    "ADMIN": [
+      "Has global system control, including account, building, room, Head Resident assignment, contract, service fee, invoice deletion, receipt, expense, task, notification, and activity log management.",
+      "Can approve or reject pending room members and manage operational records across buildings."
+    ],
+    "STAFF": [
+      "Can view buildings, rooms, and service fees, record utility readings, generate invoices, confirm payments, create expenses, process assigned maintenance requests, and handle assigned tasks.",
+      "Cannot create users, assign Head Residents, change service fee configuration, delete invoices, cancel receipts or expenses, or access global Admin activity logs."
+    ],
+    "RESIDENT_HEAD": [
+      "Can access only their own active room and related contract, members, vehicles, utility readings, invoices, payments, maintenance requests, feedback, and authorized notifications.",
+      "Can submit room members for Admin approval, register vehicles, submit maintenance requests, upload payment proof, and report invoice issues.",
+      "Without an active room assignment, resident features that require room access are unavailable."
+    ]
+  }
+}

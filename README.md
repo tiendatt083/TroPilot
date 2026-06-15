@@ -357,6 +357,12 @@ The official chatbot question scope and acceptance checklist is maintained in:
 docs/chatbot-question-scope.md
 ```
 
+The stable chatbot context JSON contract is maintained in:
+
+```text
+docs/chatbot-context-schema.md
+```
+
 1. Log in as Admin using the default Admin account.
 2. Create a Staff account.
 3. Create a Head Resident account.

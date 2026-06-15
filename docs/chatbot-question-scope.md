@@ -6,6 +6,9 @@ This document defines the official question scope for the Tropilot chatbot.
 It is the acceptance checklist for future chatbot context, prompt, permission,
 and response-quality work.
 
+The stable JSON context contract used to support these questions is defined in
+`docs/chatbot-context-schema.md`.
+
 The chatbot is currently read-only. It may explain authorized data and
 recommend actions, but it must never claim that it created, updated, deleted,
 approved, rejected, or paid a record.

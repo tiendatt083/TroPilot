@@ -46,7 +46,8 @@ class ChatServiceImplTest {
                 .build();
         ChatMessageRequest request = new ChatMessageRequest();
         request.setMessage("How many buildings are there?");
-        String context = "{\"metrics\":{\"totalBuildings\":4}}";
+        String context = "{\"user\":{\"role\":\"ADMIN\",\"dataScope\":\"GLOBAL_ADMIN\"},"
+                + "\"summary\":{\"totalBuildings\":4}}";
 
         when(currentUserProvider.getCurrentUser()).thenReturn(admin);
         when(chatContextService.buildContext(admin)).thenReturn(context);
