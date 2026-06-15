@@ -2,7 +2,7 @@ package com.tropilot.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tropilot.service.ChatBusinessRuleProvider;
+import com.tropilot.service.BusinessRuleContextProvider;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
@@ -10,13 +10,13 @@ import java.io.IOException;
 import java.io.InputStream;
 
 @Component
-public class ClasspathChatBusinessRuleProvider implements ChatBusinessRuleProvider {
+public class ClasspathBusinessRuleContextProvider implements BusinessRuleContextProvider {
 
     static final String BUSINESS_RULES_PATH = "chat/tropilot-business-rules.json";
 
     private final JsonNode businessRules;
 
-    public ClasspathChatBusinessRuleProvider(ObjectMapper objectMapper) {
+    public ClasspathBusinessRuleContextProvider(ObjectMapper objectMapper) {
         this.businessRules = loadBusinessRules(objectMapper);
     }
 

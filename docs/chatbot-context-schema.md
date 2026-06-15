@@ -42,7 +42,7 @@ phases to add data without changing the contract.
 | `user.dataScope` | String | Maximum authorized scope of the generated context. |
 | `businessRules` | Object | Stable Tropilot rules loaded from `chat/tropilot-business-rules.json` and used to explain business behavior. |
 | `summary` | Object | Role-specific summary values and current-room summary for a Head Resident. |
-| `buildings` | Array | Authorized building summaries. Populated in a later phase. |
+| `buildings` | Array | Authorized building summaries. Admin receives per-building operational and cash-flow statistics, Staff receives operational statistics, and a Head Resident receives only their assigned building and room identity. |
 | `roomsNeedingAttention` | Array | Authorized rooms requiring operational attention. |
 | `invoicesNeedingAttention` | Array | Authorized unpaid, overdue, disputed, or otherwise actionable invoices. |
 | `expiringContracts` | Array | Authorized active contracts approaching their end date. |
@@ -57,23 +57,49 @@ phases to add data without changing the contract.
 | `STAFF` | `STAFF_OPERATIONAL` | May receive operational data permitted for Staff. Restricted Admin-only data must be excluded. |
 | `RESIDENT_HEAD` | `RESIDENT_OWN_ROOM_ONLY` | May receive only data belonging to the authenticated Head Resident's active room. |
 
-## Current Summary Population
+## Role Builder Architecture
+
+`ChatContextServiceImpl` owns only the stable schema, timestamp, role scope,
+business-rule context, and builder selection. Detailed live data is populated
+by one builder per role:
+
+- `AdminChatContextBuilder`
+- `StaffChatContextBuilder`
+- `ResidentChatContextBuilder`
+
+`BusinessRuleContextProvider` loads the fixed business-rule context separately.
+This separation prevents one role builder from accidentally inheriting another
+role's data queries.
+
+## Current Context Population
 
 ### Admin
 
-`summary` currently contains global dashboard metrics, including building,
-room, occupant, vehicle, contract, invoice, cash-flow, maintenance, task, and
+`summary` contains global dashboard metrics, including building, room,
+occupant, vehicle, contract, invoice, cash-flow, maintenance, task, and
 feedback counts or totals.
+
+`buildings` contains per-building room status, missing-reading, contract,
+invoice, maintenance, task, and current-month cash-flow summaries.
+
+The attention arrays contain bounded, explicitly mapped records for rooms
+missing readings or invoices, actionable invoices, expiring contracts,
+unfinished maintenance requests, and unfinished tasks.
 
 ### Staff
 
-`summary` currently contains operational dashboard metrics and high-level room
-counts permitted for Staff.
+`summary` contains Staff operational dashboard metrics. `buildings` contains
+only operational counts needed by Staff. Detailed arrays contain only rooms
+missing readings, pending payment confirmations, maintenance assigned to the
+authenticated Staff member, and tasks assigned to that Staff member.
+
+Admin-only contract and cash-flow detail is excluded.
 
 ### Head Resident
 
-`summary.currentRoom` currently contains a deliberately selected subset of the
-active room assignment DTO:
+`summary.currentRoom` contains a deliberately selected subset of the active
+room assignment DTO plus approved members, active vehicles, recent authorized
+notifications, the current contract, and the latest invoice:
 
 ```json
 {
@@ -87,10 +113,16 @@ active room assignment DTO:
   "activeVehicleCount": 1,
   "unreadNotificationCount": 3,
   "recentMaintenanceRequestCount": 1,
+  "activeMembers": [],
+  "activeVehicles": [],
+  "recentNotifications": [],
   "currentContract": {},
   "latestInvoice": {}
 }
 ```
+
+The Head Resident receives only their own assigned building identity, own-room
+invoices, own contract approaching expiry, and own maintenance requests.
 
 ## Data Safety Rules
 

@@ -10,7 +10,7 @@ import java.util.stream.StreamSupport;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class ClasspathChatBusinessRuleProviderTest {
+class ClasspathBusinessRuleContextProviderTest {
 
     private static final Set<String> REQUIRED_SECTIONS = Set.of(
             "version",
@@ -27,7 +27,7 @@ class ClasspathChatBusinessRuleProviderTest {
     @Test
     void loadsCompleteBusinessRulesFromClasspath() {
         ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
-        ClasspathChatBusinessRuleProvider provider = new ClasspathChatBusinessRuleProvider(objectMapper);
+        ClasspathBusinessRuleContextProvider provider = new ClasspathBusinessRuleContextProvider(objectMapper);
 
         JsonNode rules = provider.getBusinessRules();
         Set<String> actualSections = StreamSupport.stream(
@@ -52,7 +52,7 @@ class ClasspathChatBusinessRuleProviderTest {
     @Test
     void returnsIndependentRuleCopies() {
         ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
-        ClasspathChatBusinessRuleProvider provider = new ClasspathChatBusinessRuleProvider(objectMapper);
+        ClasspathBusinessRuleContextProvider provider = new ClasspathBusinessRuleContextProvider(objectMapper);
 
         JsonNode firstCopy = provider.getBusinessRules();
         firstCopy.withObject("/permissions").remove("ADMIN");
