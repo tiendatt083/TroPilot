@@ -24,10 +24,8 @@ final class ChatContextRecordMapper {
 
     static Map<String, Object> room(RoomResponse room, List<String> reasons) {
         Map<String, Object> data = new LinkedHashMap<>();
-        data.put("roomId", room.getId());
         data.put("roomCode", room.getRoomCode());
         data.put("roomName", room.getRoomName());
-        data.put("buildingId", room.getBuildingId());
         data.put("buildingCode", room.getBuildingCode());
         data.put("buildingName", room.getBuildingName());
         data.put("status", room.getStatus());
@@ -37,7 +35,6 @@ final class ChatContextRecordMapper {
 
     static Map<String, Object> invoice(InvoiceResponse invoice) {
         Map<String, Object> data = new LinkedHashMap<>();
-        data.put("invoiceId", invoice.getId());
         data.put("buildingCode", invoice.getBuildingCode());
         data.put("roomCode", invoice.getRoomCode());
         data.put("residentHeadName", invoice.getResidentHeadName());
@@ -59,7 +56,6 @@ final class ChatContextRecordMapper {
 
     static Map<String, Object> contract(RentalContractResponse contract) {
         Map<String, Object> data = new LinkedHashMap<>();
-        data.put("contractId", contract.getId());
         data.put("buildingCode", contract.getBuildingCode());
         data.put("roomCode", contract.getRoomCode());
         data.put("residentHeadName", contract.getResidentHeadName());
@@ -73,7 +69,6 @@ final class ChatContextRecordMapper {
 
     static Map<String, Object> maintenance(MaintenanceRequestResponse request) {
         Map<String, Object> data = new LinkedHashMap<>();
-        data.put("requestId", request.getId());
         data.put("buildingCode", request.getBuildingCode());
         data.put("roomCode", request.getRoomCode());
         data.put("equipmentCode", request.getEquipmentCode());
@@ -88,7 +83,6 @@ final class ChatContextRecordMapper {
 
     static Map<String, Object> task(TaskResponse task) {
         Map<String, Object> data = new LinkedHashMap<>();
-        data.put("taskId", task.getId());
         data.put("buildingCode", task.getBuildingCode());
         data.put("roomCode", task.getRoomCode());
         data.put("title", task.getTitle());
@@ -102,8 +96,6 @@ final class ChatContextRecordMapper {
 
     static Map<String, Object> payment(PaymentResponse payment) {
         Map<String, Object> data = new LinkedHashMap<>();
-        data.put("paymentId", payment.getId());
-        data.put("invoiceId", payment.getInvoiceId());
         data.put("buildingCode", payment.getBuildingCode());
         data.put("roomCode", payment.getRoomCode());
         data.put("residentHeadName", payment.getResidentHeadName());
@@ -117,7 +109,6 @@ final class ChatContextRecordMapper {
 
     static Map<String, Object> member(RoomMemberResponse member) {
         Map<String, Object> data = new LinkedHashMap<>();
-        data.put("memberId", member.getId());
         data.put("fullName", member.getFullName());
         data.put("relationship", member.getRelationship());
         data.put("moveInDate", member.getMoveInDate());
@@ -127,7 +118,6 @@ final class ChatContextRecordMapper {
 
     static Map<String, Object> vehicle(VehicleResponse vehicle) {
         Map<String, Object> data = new LinkedHashMap<>();
-        data.put("vehicleId", vehicle.getId());
         data.put("ownerName", vehicle.getOwnerName());
         data.put("ownerType", vehicle.getOwnerType());
         data.put("vehicleType", vehicle.getVehicleType());
@@ -139,7 +129,6 @@ final class ChatContextRecordMapper {
 
     static Map<String, Object> notification(NotificationResponse notification) {
         Map<String, Object> data = new LinkedHashMap<>();
-        data.put("notificationId", notification.getId());
         data.put("title", notification.getTitle());
         data.put("content", notification.getContent());
         data.put("createdAt", notification.getCreatedAt());

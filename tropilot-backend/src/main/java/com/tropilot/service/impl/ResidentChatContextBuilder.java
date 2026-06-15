@@ -25,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +35,7 @@ import java.util.Map;
 public class ResidentChatContextBuilder implements ChatRoleContextBuilder {
 
     private static final int EXPIRING_CONTRACT_DAYS = 30;
+    private static final int RECENT_RECORD_DAYS = 90;
     private static final int MAX_RECENT_RECORDS = 10;
 
     private final DashboardService dashboardService;
@@ -51,6 +53,7 @@ public class ResidentChatContextBuilder implements ChatRoleContextBuilder {
     @Override
     public Map<String, Object> build(User user) {
         Long residentHeadId = user.getId();
+        LocalDate today = LocalDate.now();
         ResidentDashboardResponse dashboard = dashboardService.getResidentDashboard(residentHeadId);
         HeadResidentAssignmentResponse room = dashboard.getCurrentRoom();
         Map<String, Object> context = new LinkedHashMap<>();
@@ -85,13 +88,13 @@ public class ResidentChatContextBuilder implements ChatRoleContextBuilder {
         context.put("summary", summary);
         context.put("buildings", List.of(buildOwnBuilding(room)));
         context.put("invoicesNeedingAttention", invoices.stream()
-                .filter(invoice -> invoice.getStatus() != InvoiceStatus.PAID || invoice.isHasInvoiceComplaint())
+                .filter(invoice -> isRelevantInvoice(invoice, today))
                 .limit(MAX_RECENT_RECORDS)
                 .map(ChatContextRecordMapper::invoice)
                 .toList());
         context.put("expiringContracts", ownExpiringContract(dashboard.getCurrentContract()));
         context.put("maintenanceRequests", maintenanceRequests.stream()
-                .filter(this::isRelevantMaintenance)
+                .filter(request -> isRelevantMaintenance(request, today))
                 .limit(MAX_RECENT_RECORDS)
                 .map(ChatContextRecordMapper::maintenance)
                 .toList());
@@ -107,11 +110,9 @@ public class ResidentChatContextBuilder implements ChatRoleContextBuilder {
     ) {
         Map<String, Object> currentRoom = new LinkedHashMap<>();
         currentRoom.put("assigned", true);
-        currentRoom.put("roomId", room.getRoomId());
         currentRoom.put("roomCode", room.getRoomCode());
         currentRoom.put("roomName", room.getRoomName());
         currentRoom.put("roomStatus", room.getRoomStatus());
-        currentRoom.put("buildingId", room.getBuildingId());
         currentRoom.put("buildingCode", room.getBuildingCode());
         currentRoom.put("buildingName", room.getBuildingName());
         currentRoom.put("approvedMemberCount", dashboard.getApprovedMemberCount());
@@ -141,10 +142,8 @@ public class ResidentChatContextBuilder implements ChatRoleContextBuilder {
 
     private Map<String, Object> buildOwnBuilding(HeadResidentAssignmentResponse room) {
         Map<String, Object> building = new LinkedHashMap<>();
-        building.put("buildingId", room.getBuildingId());
         building.put("buildingCode", room.getBuildingCode());
         building.put("buildingName", room.getBuildingName());
-        building.put("roomId", room.getRoomId());
         building.put("roomCode", room.getRoomCode());
         return building;
     }
@@ -162,7 +161,28 @@ public class ResidentChatContextBuilder implements ChatRoleContextBuilder {
         return List.of(ChatContextRecordMapper.contract(contract));
     }
 
-    private boolean isRelevantMaintenance(MaintenanceRequestResponse request) {
-        return request.getStatus() != MaintenanceStatus.REJECTED;
+    private boolean isRelevantInvoice(InvoiceResponse invoice, LocalDate today) {
+        return invoice.getStatus() != InvoiceStatus.PAID
+                || invoice.isHasInvoiceComplaint()
+                || isRecent(invoice.getInvoiceDate(), today)
+                || isRecent(invoice.getDueDate(), today)
+                || isRecent(invoice.getCreatedAt(), today);
+    }
+
+    private boolean isRelevantMaintenance(MaintenanceRequestResponse request, LocalDate today) {
+        return isUnfinishedMaintenance(request) || isRecent(request.getCreatedAt(), today);
+    }
+
+    private boolean isUnfinishedMaintenance(MaintenanceRequestResponse request) {
+        return request.getStatus() != MaintenanceStatus.COMPLETED
+                && request.getStatus() != MaintenanceStatus.REJECTED;
+    }
+
+    private boolean isRecent(LocalDate value, LocalDate today) {
+        return value != null && !value.isBefore(today.minusDays(RECENT_RECORD_DAYS));
+    }
+
+    private boolean isRecent(LocalDateTime value, LocalDate today) {
+        return value != null && isRecent(value.toLocalDate(), today);
     }
 }

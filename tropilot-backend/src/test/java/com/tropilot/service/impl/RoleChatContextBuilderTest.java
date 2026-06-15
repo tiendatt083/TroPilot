@@ -46,9 +46,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -139,6 +141,79 @@ class RoleChatContextBuilderTest {
         assertThat(list(context, "maintenanceRequests")).hasSize(1);
         assertThat(list(context, "tasks")).hasSize(1);
         assertThat(map(list(context, "buildings").get(0)).get("cashFlow")).isNotNull();
+        assertThat(map(list(context, "roomsNeedingAttention").get(0))).doesNotContainKeys("roomId", "buildingId");
+        assertThat(map(list(context, "invoicesNeedingAttention").get(0))).doesNotContainKey("invoiceId");
+        assertThat(map(list(context, "maintenanceRequests").get(0))).doesNotContainKey("requestId");
+        assertThat(map(list(context, "tasks").get(0))).doesNotContainKey("taskId");
+    }
+
+    @Test
+    void adminBuilderLimitsAttentionListsAndSkipsOldCompletedMaintenance() {
+        String month = YearMonth.now().toString();
+        BuildingResponse building = building();
+        RoomResponse room = room();
+        List<InvoiceResponse> invoices = IntStream.range(0, 55)
+                .mapToObj(index -> InvoiceResponse.builder()
+                        .id((long) index)
+                        .buildingCode("BD01")
+                        .roomCode("BD01-P101")
+                        .residentHeadName("Resident")
+                        .month(month)
+                        .invoiceDate(LocalDate.now())
+                        .totalAmount(BigDecimal.valueOf(1000 + index))
+                        .status(InvoiceStatus.UNPAID)
+                        .build())
+                .toList();
+        MaintenanceRequestResponse oldCompletedMaintenance = maintenance(
+                "Old completed request",
+                MaintenanceStatus.COMPLETED,
+                LocalDateTime.now().minusDays(120)
+        );
+        MaintenanceRequestResponse recentCompletedMaintenance = maintenance(
+                "Recent completed request",
+                MaintenanceStatus.COMPLETED,
+                LocalDateTime.now().minusDays(5)
+        );
+
+        when(dashboardService.getAdminDashboard()).thenReturn(AdminDashboardResponse.builder()
+                .totalBuildings(1)
+                .totalRooms(1)
+                .occupiedRooms(1)
+                .unpaidInvoices(55)
+                .build());
+        when(buildingService.getBuildings(null)).thenReturn(List.of(building));
+        when(roomService.getRooms(1L, null, null)).thenReturn(List.of(room));
+        when(invoiceService.getBuildingInvoices(1L)).thenReturn(invoices);
+        when(rentalContractService.getContracts(1L)).thenReturn(List.of());
+        when(utilityReadingService.getOverview(1L, month)).thenReturn(UtilityReadingOverviewResponse.builder()
+                .month(month)
+                .totalRooms(1)
+                .pendingRooms(0)
+                .eligibleRooms(List.of())
+                .build());
+        when(maintenanceRequestService.getRequests(null)).thenReturn(List.of(
+                oldCompletedMaintenance,
+                recentCompletedMaintenance
+        ));
+        when(taskService.getTasks(null)).thenReturn(List.of());
+        when(cashFlowService.getCashFlow(month, 1L)).thenReturn(cashFlow());
+
+        Map<String, Object> context = new AdminChatContextBuilder(
+                dashboardService,
+                buildingService,
+                roomService,
+                invoiceService,
+                rentalContractService,
+                utilityReadingService,
+                maintenanceRequestService,
+                taskService,
+                cashFlowService
+        ).build(user(1L, UserRole.ADMIN));
+
+        assertThat(list(context, "invoicesNeedingAttention")).hasSize(50);
+        assertThat(list(context, "maintenanceRequests")).hasSize(1);
+        assertThat(map(list(context, "maintenanceRequests").get(0)).get("title"))
+                .isEqualTo("Recent completed request");
     }
 
     @Test
@@ -255,6 +330,9 @@ class RoleChatContextBuilderTest {
         assertThat(list(context, "buildings")).hasSize(1);
         assertThat(list(context, "invoicesNeedingAttention")).hasSize(1);
         assertThat(context).doesNotContainKeys("tasks", "roomsNeedingAttention");
+        assertThat(currentRoom).doesNotContainKeys("roomId", "buildingId");
+        assertThat(map(list(currentRoom, "activeMembers").get(0))).doesNotContainKey("memberId");
+        assertThat(map(list(currentRoom, "activeVehicles").get(0))).doesNotContainKey("vehicleId");
     }
 
     private BuildingResponse building() {
@@ -300,6 +378,22 @@ class RoleChatContextBuilderTest {
                 .roomCode("BD01-P101")
                 .title("Repair request")
                 .status(MaintenanceStatus.IN_PROGRESS)
+                .build();
+    }
+
+    private MaintenanceRequestResponse maintenance(
+            String title,
+            MaintenanceStatus status,
+            LocalDateTime createdAt
+    ) {
+        return MaintenanceRequestResponse.builder()
+                .id(91L)
+                .buildingId(1L)
+                .buildingCode("BD01")
+                .roomCode("BD01-P101")
+                .title(title)
+                .status(status)
+                .createdAt(createdAt)
                 .build();
     }
 

@@ -29,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -43,6 +44,7 @@ import java.util.stream.Collectors;
 public class AdminChatContextBuilder implements ChatRoleContextBuilder {
 
     private static final int EXPIRING_CONTRACT_DAYS = 30;
+    private static final int RECENT_RECORD_DAYS = 90;
     private static final int MAX_DETAIL_RECORDS = 50;
 
     private final DashboardService dashboardService;
@@ -68,7 +70,12 @@ public class AdminChatContextBuilder implements ChatRoleContextBuilder {
         Map<Long, RoomAttention> roomsNeedingAttention = new LinkedHashMap<>();
         List<Map<String, Object>> invoicesNeedingAttention = new ArrayList<>();
         List<Map<String, Object>> expiringContracts = new ArrayList<>();
-        List<MaintenanceRequestResponse> unfinishedMaintenance = maintenanceRequestService.getRequests(null)
+        List<MaintenanceRequestResponse> allMaintenance = maintenanceRequestService.getRequests(null);
+        List<MaintenanceRequestResponse> relevantMaintenance = allMaintenance
+                .stream()
+                .filter(request -> isRelevantMaintenance(request, today))
+                .toList();
+        List<MaintenanceRequestResponse> unfinishedMaintenance = relevantMaintenance
                 .stream()
                 .filter(this::isUnfinishedMaintenance)
                 .toList();
@@ -97,7 +104,7 @@ public class AdminChatContextBuilder implements ChatRoleContextBuilder {
         context.put("roomsNeedingAttention", limitRooms(roomsNeedingAttention));
         context.put("invoicesNeedingAttention", limit(invoicesNeedingAttention));
         context.put("expiringContracts", limit(expiringContracts));
-        context.put("maintenanceRequests", unfinishedMaintenance.stream()
+        context.put("maintenanceRequests", relevantMaintenance.stream()
                 .limit(MAX_DETAIL_RECORDS)
                 .map(ChatContextRecordMapper::maintenance)
                 .toList());
@@ -146,7 +153,7 @@ public class AdminChatContextBuilder implements ChatRoleContextBuilder {
         addMissingReadingRooms(readingOverview, roomsNeedingAttention);
         addMissingInvoiceRooms(rooms, invoices, roomsNeedingAttention, currentMonth);
         invoices.stream()
-                .filter(this::requiresInvoiceAttention)
+                .filter(invoice -> isRelevantInvoice(invoice, today))
                 .map(ChatContextRecordMapper::invoice)
                 .forEach(invoicesNeedingAttention::add);
         contracts.stream()
@@ -193,7 +200,6 @@ public class AdminChatContextBuilder implements ChatRoleContextBuilder {
             LocalDate today
     ) {
         Map<String, Object> data = new LinkedHashMap<>();
-        data.put("buildingId", building.getId());
         data.put("buildingCode", building.getBuildingCode());
         data.put("buildingName", building.getName());
         data.put("address", building.getAddress());
@@ -250,6 +256,16 @@ public class AdminChatContextBuilder implements ChatRoleContextBuilder {
         return invoice.getStatus() != InvoiceStatus.PAID || invoice.isHasInvoiceComplaint();
     }
 
+    private boolean isRelevantInvoice(InvoiceResponse invoice, LocalDate today) {
+        return requiresInvoiceAttention(invoice) || isRecentInvoice(invoice, today);
+    }
+
+    private boolean isRecentInvoice(InvoiceResponse invoice, LocalDate today) {
+        return isRecent(invoice.getInvoiceDate(), today)
+                || isRecent(invoice.getDueDate(), today)
+                || isRecent(invoice.getCreatedAt(), today);
+    }
+
     private boolean isOverdue(InvoiceResponse invoice, LocalDate today) {
         return invoice.getStatus() == InvoiceStatus.OVERDUE
                 || (invoice.getStatus() != InvoiceStatus.PAID
@@ -266,6 +282,18 @@ public class AdminChatContextBuilder implements ChatRoleContextBuilder {
     private boolean isUnfinishedMaintenance(MaintenanceRequestResponse request) {
         return request.getStatus() != MaintenanceStatus.COMPLETED
                 && request.getStatus() != MaintenanceStatus.REJECTED;
+    }
+
+    private boolean isRelevantMaintenance(MaintenanceRequestResponse request, LocalDate today) {
+        return isUnfinishedMaintenance(request) || isRecent(request.getCreatedAt(), today);
+    }
+
+    private boolean isRecent(LocalDateTime value, LocalDate today) {
+        return value != null && isRecent(value.toLocalDate(), today);
+    }
+
+    private boolean isRecent(LocalDate value, LocalDate today) {
+        return value != null && !value.isBefore(today.minusDays(RECENT_RECORD_DAYS));
     }
 
     private boolean isUnfinishedTask(TaskResponse task) {

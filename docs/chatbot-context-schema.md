@@ -83,8 +83,9 @@ feedback counts or totals.
 invoice, maintenance, task, and current-month cash-flow summaries.
 
 The attention arrays contain bounded, explicitly mapped records for rooms
-missing readings or invoices, actionable invoices, expiring contracts,
-unfinished maintenance requests, and unfinished tasks.
+missing readings or invoices, unpaid, overdue, disputed, or recent invoices,
+active contracts expiring soon, unfinished or recent maintenance requests, and
+unfinished tasks.
 
 ### Staff
 
@@ -93,7 +94,9 @@ only operational counts needed by Staff. Detailed arrays contain only rooms
 missing readings, pending payment confirmations, maintenance assigned to the
 authenticated Staff member, and tasks assigned to that Staff member.
 
-Admin-only contract and cash-flow detail is excluded.
+Admin-only contract and cash-flow detail is excluded. Assigned maintenance may
+include unfinished requests plus recently completed or rejected requests when
+they are still operationally useful to explain recent work.
 
 ### Head Resident
 
@@ -122,7 +125,24 @@ notifications, the current contract, and the latest invoice:
 ```
 
 The Head Resident receives only their own assigned building identity, own-room
-invoices, own contract approaching expiry, and own maintenance requests.
+unpaid, disputed, or recent invoices, their own contract approaching expiry,
+and their own unfinished or recent maintenance requests.
+
+## Data Limits
+
+The chatbot context is not a database export. Builders must keep detailed
+records small and operational:
+
+- Each detailed array is limited to approximately 50 records for Admin and
+  Staff.
+- Head Resident recent lists are limited to approximately 10 records.
+- Contracts are limited to active contracts that are approaching expiry.
+- Invoices are limited to unpaid, overdue, disputed, or recent invoices.
+- Maintenance requests are limited to unfinished or recent requests.
+- Tasks are limited to unfinished tasks.
+- Building data is aggregated into statistics. Child room, invoice,
+  maintenance, task, or resident histories must not be nested under each
+  building.
 
 ## Data Safety Rules
 
@@ -132,6 +152,11 @@ The generated context must never contain:
 - Password hashes or encrypted password values.
 - JWT tokens, API keys, webhook secrets, or encryption secrets.
 - Bank credentials.
+- Bank account numbers generated for payment QR codes.
+- Gemini keys, SePay secrets, webhook API keys, or encrypted configuration
+  values.
+- Internal numeric identifiers unless they are strictly needed for a supported
+  chatbot answer.
 - Full JPA entities or uncontrolled entity relationships.
 - Data outside the authenticated role's authorized scope.
 - Personal information that is unnecessary for answering supported questions.

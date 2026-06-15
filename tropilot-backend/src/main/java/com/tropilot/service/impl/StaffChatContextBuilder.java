@@ -20,6 +20,8 @@ import com.tropilot.service.UtilityReadingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -31,6 +33,7 @@ import java.util.Map;
 public class StaffChatContextBuilder implements ChatRoleContextBuilder {
 
     private static final int MAX_DETAIL_RECORDS = 50;
+    private static final int RECENT_RECORD_DAYS = 90;
 
     private final DashboardService dashboardService;
     private final BuildingService buildingService;
@@ -47,14 +50,18 @@ public class StaffChatContextBuilder implements ChatRoleContextBuilder {
     @Override
     public Map<String, Object> build(User user) {
         String currentMonth = YearMonth.now().toString();
+        LocalDate today = LocalDate.now();
         Long staffId = user.getId();
         List<TaskResponse> activeTasks = taskService.getStaffTasks(staffId)
                 .stream()
                 .filter(this::isUnfinishedTask)
                 .toList();
-        List<MaintenanceRequestResponse> activeMaintenance = maintenanceRequestService
+        List<MaintenanceRequestResponse> relevantMaintenance = maintenanceRequestService
                 .getStaffRequests(staffId, null)
                 .stream()
+                .filter(request -> isRelevantMaintenance(request, today))
+                .toList();
+        List<MaintenanceRequestResponse> activeMaintenance = relevantMaintenance.stream()
                 .filter(this::isUnfinishedMaintenance)
                 .toList();
         List<Map<String, Object>> buildings = new ArrayList<>();
@@ -85,7 +92,7 @@ public class StaffChatContextBuilder implements ChatRoleContextBuilder {
         context.put("buildings", buildings);
         context.put("roomsNeedingAttention", limit(roomsNeedingAttention));
         context.put("invoicesNeedingAttention", limit(pendingPayments));
-        context.put("maintenanceRequests", activeMaintenance.stream()
+        context.put("maintenanceRequests", relevantMaintenance.stream()
                 .limit(MAX_DETAIL_RECORDS)
                 .map(ChatContextRecordMapper::maintenance)
                 .toList());
@@ -116,7 +123,6 @@ public class StaffChatContextBuilder implements ChatRoleContextBuilder {
             List<TaskResponse> activeTasks
     ) {
         Map<String, Object> data = new LinkedHashMap<>();
-        data.put("buildingId", building.getId());
         data.put("buildingCode", building.getBuildingCode());
         data.put("buildingName", building.getName());
         data.put("roomsMissingUtilityReadings", overview.getPendingRooms());
@@ -133,6 +139,14 @@ public class StaffChatContextBuilder implements ChatRoleContextBuilder {
     private boolean isUnfinishedMaintenance(MaintenanceRequestResponse request) {
         return request.getStatus() != MaintenanceStatus.COMPLETED
                 && request.getStatus() != MaintenanceStatus.REJECTED;
+    }
+
+    private boolean isRelevantMaintenance(MaintenanceRequestResponse request, LocalDate today) {
+        return isUnfinishedMaintenance(request) || isRecent(request.getCreatedAt(), today);
+    }
+
+    private boolean isRecent(LocalDateTime value, LocalDate today) {
+        return value != null && !value.toLocalDate().isBefore(today.minusDays(RECENT_RECORD_DAYS));
     }
 
     private boolean isUnfinishedTask(TaskResponse task) {
