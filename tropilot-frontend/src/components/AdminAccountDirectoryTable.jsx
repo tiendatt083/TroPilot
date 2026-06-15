@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { formatDisplayDate } from '../utils/dateFormat.js';
 
@@ -50,82 +50,71 @@ export default function AdminAccountDirectoryTable({
               const members = account.members || [];
 
               return (
-                <Fragment key={account.id}>
-                  <tr className={showMembersInline && members.length > 0 ? 'account-row-with-members' : undefined}>
-                    <td className="account-sequence-cell">{index + 1}</td>
-                    <td>
-                      <strong>{account.fullName}</strong>
-                      <span className="table-subtext">
-                        {account.phone || t('common.notProvided')}
-                      </span>
-                    </td>
-                    <td>{account.email}</td>
-                    {showRoom && <td>{formatRoom(account, t)}</td>}
-                    <td>
-                      <span className={`status-pill status-${account.status.toLowerCase()}`}>
-                        {formatStatus(account.status, t)}
-                      </span>
-                    </td>
-                    <td>
-                      {account.mustChangePassword ? (
-                        <span className="temporary-password-value">
-                          {account.temporaryPassword || t('userManagement.passwordUnavailable')}
+                <tr key={account.id}>
+                  <td className="account-sequence-cell">{index + 1}</td>
+                  <td>
+                    <strong>{account.fullName}</strong>
+                    <span className="table-subtext">
+                      {account.phone || t('common.notProvided')}
+                    </span>
+                    {showMembersInline && members.length > 0 && (
+                      <div className="account-inline-members">
+                        <span className="account-inline-members-label">
+                          {t('accountDirectory.inlineMembers')}
                         </span>
-                      ) : (
-                        <span className="muted-text">{t('userManagement.passwordChanged')}</span>
-                      )}
-                    </td>
-                    <td>
-                      <div className="table-actions">
-                        <button
-                          className="secondary-button compact-button"
-                          type="button"
-                          onClick={() => setSelectedAccount(account)}
-                        >
-                          {t('accountDirectory.actions.viewDetails')}
-                        </button>
-                        {account.role !== 'ADMIN' && (
-                          <button
-                            className="danger-button compact-button"
-                            type="button"
-                            disabled={deletingId === account.id}
-                            onClick={() => onDelete(account)}
-                          >
-                            {deletingId === account.id
-                              ? t('accountDirectory.actions.deleting')
-                              : t('common.delete')}
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                  {showMembersInline && members.length > 0 && (
-                    <tr className="account-inline-members-row">
-                      <td colSpan={showRoom ? 7 : 6}>
-                        <div className="account-inline-members">
-                          <span className="account-inline-members-label">
-                            {t('accountDirectory.inlineMembers')}
-                          </span>
-                          <div className="account-inline-member-list">
-                            {members.map((member) => (
-                              <span
-                                className="account-inline-member"
-                                key={member.id}
-                                title={[member.phone, member.email].filter(Boolean).join(' · ')}
-                              >
-                                <span className="account-inline-member-avatar">
-                                  {getInitial(member.fullName)}
-                                </span>
-                                <strong>{member.fullName}</strong>
-                                <span>{member.relationship || t('residentDirectory.member')}</span>
-                              </span>
-                            ))}
-                          </div>
+                        <div className="account-inline-member-list">
+                          {members.map((member) => (
+                            <span
+                              className="account-inline-member"
+                              key={member.id}
+                            >
+                              {member.fullName}
+                            </span>
+                          ))}
                         </div>
-                      </td>
-                    </tr>
-                  )}
-                </Fragment>
+                      </div>
+                    )}
+                  </td>
+                  <td>{account.email}</td>
+                  {showRoom && <td>{formatRoom(account, t)}</td>}
+                  <td>
+                    <span className={`status-pill status-${account.status.toLowerCase()}`}>
+                      {formatStatus(account.status, t)}
+                    </span>
+                  </td>
+                  <td>
+                    {account.mustChangePassword ? (
+                      <span className="temporary-password-value">
+                        {account.temporaryPassword || t('userManagement.passwordUnavailable')}
+                      </span>
+                    ) : (
+                      <span className="muted-text">{t('userManagement.passwordChanged')}</span>
+                    )}
+                  </td>
+                  <td>
+                    <div className="table-actions">
+                      <button
+                        className="secondary-button compact-button"
+                        type="button"
+                        onClick={() => setSelectedAccount(account)}
+                      >
+                        {t('accountDirectory.actions.viewDetails')}
+                      </button>
+                      {account.role !== 'ADMIN' && (
+                        <button
+                          className="danger-button compact-button"
+                          type="button"
+                          disabled={deletingId === account.id}
+                          onClick={() => onDelete(account)}
+                        >
+                          {deletingId === account.id
+                            ? t('accountDirectory.actions.deleting')
+                            : t('common.delete')}
+                        </button>
+                      )}
+                    </div>
+                  </td>
+                </tr>
               );
             })}
           </tbody>
@@ -268,8 +257,4 @@ function formatStatus(status, t) {
   }
 
   return t('userManagement.status.active');
-}
-
-function getInitial(fullName) {
-  return String(fullName || '?').trim().charAt(0).toUpperCase();
 }

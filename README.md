@@ -351,6 +351,12 @@ Issues found during the demo should be recorded in:
 docs/demo-bug-log.md
 ```
 
+The official chatbot question scope and acceptance checklist is maintained in:
+
+```text
+docs/chatbot-question-scope.md
+```
+
 1. Log in as Admin using the default Admin account.
 2. Create a Staff account.
 3. Create a Head Resident account.

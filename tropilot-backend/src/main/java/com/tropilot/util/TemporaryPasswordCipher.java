@@ -19,11 +19,18 @@ public class TemporaryPasswordCipher {
     private static final String ALGORITHM = "AES/GCM/NoPadding";
     private static final int IV_LENGTH = 12;
     private static final int TAG_LENGTH_BITS = 128;
+    private static final int MINIMUM_SECRET_LENGTH = 32;
 
     private final SecureRandom secureRandom = new SecureRandom();
     private final SecretKeySpec secretKey;
 
     public TemporaryPasswordCipher(@Value("${app.temporary-password.encryption-secret}") String secret) {
+        if (secret == null || secret.isBlank() || secret.length() < MINIMUM_SECRET_LENGTH) {
+            throw new IllegalStateException(
+                    "APP_TEMPORARY_PASSWORD_ENCRYPTION_SECRET must contain at least 32 characters"
+            );
+        }
+
         this.secretKey = new SecretKeySpec(sha256(secret), "AES");
     }
 
@@ -46,7 +53,7 @@ public class TemporaryPasswordCipher {
         try {
             String[] parts = value.split(":", 2);
             if (parts.length != 2) {
-                return null;
+                throw decryptionException(null);
             }
 
             byte[] iv = Base64.getDecoder().decode(parts[0]);
@@ -56,8 +63,15 @@ public class TemporaryPasswordCipher {
             cipher.init(Cipher.DECRYPT_MODE, secretKey, new GCMParameterSpec(TAG_LENGTH_BITS, iv));
             return new String(cipher.doFinal(encrypted), StandardCharsets.UTF_8);
         } catch (IllegalArgumentException | GeneralSecurityException exception) {
-            return null;
+            throw decryptionException(exception);
         }
+    }
+
+    private IllegalStateException decryptionException(Exception cause) {
+        return new IllegalStateException(
+                "Temporary password could not be decrypted. Verify APP_TEMPORARY_PASSWORD_ENCRYPTION_SECRET.",
+                cause
+        );
     }
 
     private byte[] sha256(String value) {
