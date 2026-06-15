@@ -39,6 +39,15 @@ class GeminiChatClientTest {
                         "Answer direct factual questions from it directly"
                 )))
                 .andExpect(content().string(containsString(
+                        "Use exact numbers, dates, statuses, names, and amounts"
+                )))
+                .andExpect(content().string(containsString(
+                        "Use LIVE_SYSTEM_CONTEXT.businessRules"
+                )))
+                .andExpect(content().string(containsString(
+                        "Respect LIVE_SYSTEM_CONTEXT.user.dataScope and role boundaries"
+                )))
+                .andExpect(content().string(containsString(
                         "Do not redirect the user to another page"
                 )))
                 .andExpect(content().string(containsString(
@@ -46,6 +55,15 @@ class GeminiChatClientTest {
                 )))
                 .andExpect(content().string(containsString(
                         "Do not infer, invent, or reveal values"
+                )))
+                .andExpect(content().string(containsString(
+                        "Never request or reveal passwords, API keys, JWT tokens"
+                )))
+                .andExpect(content().string(containsString(
+                        "explain the cause behind a result and suggest the next operational action"
+                )))
+                .andExpect(content().string(containsString(
+                        "Answer in the same language as the user's latest message"
                 )))
                 .andRespond(withSuccess("""
                         {

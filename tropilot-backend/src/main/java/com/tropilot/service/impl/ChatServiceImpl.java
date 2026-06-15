@@ -26,7 +26,7 @@ public class ChatServiceImpl implements ChatService {
         User currentUser = currentUserProvider.getCurrentUser();
         validateAccess(currentUser);
 
-        String liveContext = chatContextService.buildContext(currentUser);
+        String liveContext = chatContextService.buildContext(currentUser, request.getMessage());
         String reply = geminiChatClient.generateReply(
                 request.getHistory(),
                 request.getMessage(),

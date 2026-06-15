@@ -144,6 +144,28 @@ records small and operational:
   maintenance, task, or resident histories must not be nested under each
   building.
 
+## Question Topic Filtering
+
+`ChatContextServiceImpl` classifies the current user question with a small
+keyword-based topic detector before sending the context to Gemini. This keeps
+the payload focused without introducing tool calling.
+
+The base context always includes `generatedAt`, `user`, `businessRules`,
+`summary`, and building summaries. Detailed arrays are included only when the
+question matches a supported topic:
+
+| Topic | Example keywords | Included details |
+| --- | --- | --- |
+| Invoice and payment | `invoice`, `payment`, `receipt`, `hoa don`, `thanh toan`, `bien lai` | `invoicesNeedingAttention` and rooms missing a current invoice. |
+| Utility readings | `utility`, `reading`, `meter`, `dien`, `nuoc`, `chi so` | Rooms missing the current utility reading. |
+| Contracts | `contract`, `hop dong` | `expiringContracts`. |
+| Maintenance and equipment | `maintenance`, `equipment`, `bao tri`, `thiet bi` | `maintenanceRequests`. |
+| Staff tasks | `task`, `cong viec`, `nhiem vu` | `tasks`. |
+
+When no topic is detected, only the overview context is populated. The unused
+top-level arrays remain present as empty arrays so the JSON contract stays
+stable.
+
 ## Data Safety Rules
 
 The generated context must never contain:
