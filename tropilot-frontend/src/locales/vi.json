@@ -1167,13 +1167,15 @@
     "createError": "Không thể tạo thông báo",
     "atLeastOneBuilding": "Cần chọn ít nhất một tòa nhà nhận thông báo",
     "atLeastOneHeadResident": "Cần chọn ít nhất một chủ hộ",
+    "atLeastOneUser": "Cần chọn ít nhất một người dùng",
     "fields": {
       "title": "Tiêu đề",
       "content": "Nội dung",
       "target": "Đối tượng",
       "targetBuildings": "Tòa nhà nhận thông báo",
       "buildingReceiving": "Tòa nhà nhận thông báo",
-      "targetHeadResidents": "Chủ hộ nhận thông báo"
+      "targetHeadResidents": "Chủ hộ nhận thông báo",
+      "targetUsers": "Người dùng nhận thông báo"
     },
     "buildingTarget": {
       "all": "Tất cả tòa nhà",
@@ -1181,9 +1183,11 @@
     },
     "empty": {
       "buildings": "Không tìm thấy tòa nhà.",
-      "selectBuildingFirst": "Chọn ít nhất một tòa nhà để tải danh sách chủ hộ.",
+      "selectBuildingFirst": "Chọn ít nhất một tòa nhà để tải danh sách người dùng.",
       "headResidents": "Không tìm thấy chủ hộ được gán trong các tòa nhà đã chọn.",
-      "buildingHeadResidents": "Không tìm thấy chủ hộ được gán trong tòa nhà này."
+      "buildingHeadResidents": "Không tìm thấy chủ hộ được gán trong tòa nhà này.",
+      "users": "Không tìm thấy nhân viên hoặc chủ hộ được gán trong các tòa nhà đã chọn.",
+      "buildingUsers": "Không tìm thấy nhân viên hoặc chủ hộ được gán trong tòa nhà này."
     },
     "actions": {
       "creating": "Đang tạo...",
@@ -1688,7 +1692,7 @@
       "ALL_RESIDENT_HEADS": "Tất cả chủ hộ",
       "ALL": "Tất cả người dùng",
       "STAFF": "Tất cả nhân viên",
-      "SELECTED_USERS": "Chủ hộ đã chọn",
+      "SELECTED_USERS": "Chọn người dùng",
       "ONE_BUILDING": "Một tòa nhà",
       "ONE_ROOM": "Một phòng",
       "ONE_USER": "Một người dùng"

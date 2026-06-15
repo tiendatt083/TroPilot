@@ -1167,13 +1167,15 @@
     "createError": "Notification could not be created",
     "atLeastOneBuilding": "At least one target building is required",
     "atLeastOneHeadResident": "At least one Head Resident is required",
+    "atLeastOneUser": "At least one user is required",
     "fields": {
       "title": "Title",
       "content": "Content",
       "target": "Target",
       "targetBuildings": "Target buildings",
       "buildingReceiving": "Building receiving notification",
-      "targetHeadResidents": "Target Head Residents"
+      "targetHeadResidents": "Target Head Residents",
+      "targetUsers": "Target users"
     },
     "buildingTarget": {
       "all": "All buildings",
@@ -1181,9 +1183,11 @@
     },
     "empty": {
       "buildings": "No buildings found.",
-      "selectBuildingFirst": "Select at least one building to load Head Residents.",
+      "selectBuildingFirst": "Select at least one building to load users.",
       "headResidents": "No assigned Head Residents found for selected buildings.",
-      "buildingHeadResidents": "No assigned Head Residents found in this building."
+      "buildingHeadResidents": "No assigned Head Residents found in this building.",
+      "users": "No Staff or assigned Head Residents found for selected buildings.",
+      "buildingUsers": "No Staff or assigned Head Residents found in this building."
     },
     "actions": {
       "creating": "Creating...",
@@ -1688,7 +1692,7 @@
       "ALL_RESIDENT_HEADS": "All Head Residents",
       "ALL": "All users",
       "STAFF": "All Staff",
-      "SELECTED_USERS": "Selected Head Residents",
+      "SELECTED_USERS": "Selected users",
       "ONE_BUILDING": "One building",
       "ONE_ROOM": "One room",
       "ONE_USER": "One user"

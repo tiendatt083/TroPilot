@@ -18,15 +18,28 @@ const emptyForm = {
   buildingIds: []
 };
 
-function isAssignedResidentHead(user) {
-  return user.role === 'RESIDENT_HEAD' && user.assignedBuildingId;
+function isSelectableNotificationUser(user) {
+  return user.status === 'ACTIVE' && (user.role === 'STAFF' || (user.role === 'RESIDENT_HEAD' && user.assignedBuildingId));
 }
 
-function getResidentHeadDescription(user, t) {
+function getUserRoleLabel(user, t) {
+  if (user.role === 'STAFF') {
+    return t('role.staff');
+  }
+
+  if (user.role === 'RESIDENT_HEAD') {
+    return t('role.residentHead');
+  }
+
+  return user.role;
+}
+
+function getTargetUserDescription(user, t) {
+  const roleLabel = getUserRoleLabel(user, t);
   const roomLabel = user.assignedRoomCode ? `${t('tables.common.room')} ${user.assignedRoomCode}` : null;
   const buildingLabel = user.assignedBuildingCode ? `${t('tables.common.building')} ${user.assignedBuildingCode}` : null;
 
-  return [roomLabel, buildingLabel, user.email].filter(Boolean).join(' - ');
+  return [roleLabel, roomLabel, buildingLabel, user.email].filter(Boolean).join(' - ');
 }
 
 export default function AdminNotificationPage() {
@@ -40,14 +53,14 @@ export default function AdminNotificationPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  const residentHeads = useMemo(
-    () => users.filter(isAssignedResidentHead),
+  const selectableUsers = useMemo(
+    () => users.filter(isSelectableNotificationUser),
     [users]
   );
 
-  const availableResidentHeads = useMemo(() => {
+  const availableTargetUsers = useMemo(() => {
     if (form.buildingTargetType !== 'SELECTED') {
-      return residentHeads;
+      return selectableUsers;
     }
 
     if (form.buildingIds.length === 0) {
@@ -55,8 +68,10 @@ export default function AdminNotificationPage() {
     }
 
     const selectedBuildingIds = new Set(form.buildingIds.map(String));
-    return residentHeads.filter((user) => selectedBuildingIds.has(String(user.assignedBuildingId)));
-  }, [form.buildingIds, form.buildingTargetType, residentHeads]);
+    return selectableUsers.filter((user) => (
+      user.role === 'STAFF' || selectedBuildingIds.has(String(user.assignedBuildingId))
+    ));
+  }, [form.buildingIds, form.buildingTargetType, selectableUsers]);
 
   const loadNotifications = async () => {
     const response = await notificationApi.getAdminNotifications();
@@ -83,14 +98,14 @@ export default function AdminNotificationPage() {
       return;
     }
 
-    const availableResidentHeadIds = new Set(availableResidentHeads.map((user) => String(user.id)));
+    const availableTargetUserIds = new Set(availableTargetUsers.map((user) => String(user.id)));
     setForm((current) => {
-      const nextTargetUserIds = current.targetUserIds.filter((userId) => availableResidentHeadIds.has(String(userId)));
+      const nextTargetUserIds = current.targetUserIds.filter((userId) => availableTargetUserIds.has(String(userId)));
       return nextTargetUserIds.length === current.targetUserIds.length
         ? current
         : { ...current, targetUserIds: nextTargetUserIds };
     });
-  }, [availableResidentHeads, form.targetType]);
+  }, [availableTargetUsers, form.targetType]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -160,7 +175,7 @@ export default function AdminNotificationPage() {
     }
 
     if (form.targetType === 'SELECTED_USERS' && form.targetUserIds.length === 0) {
-      setError(t('notifications.atLeastOneHeadResident'));
+      setError(t('notifications.atLeastOneUser'));
       return;
     }
 
@@ -258,19 +273,19 @@ export default function AdminNotificationPage() {
 
           {needsSelectedUsers && (
             <div className="notification-field notification-selection-panel">
-              <label>{t('notifications.fields.targetHeadResidents')}</label>
+              <label>{t('notifications.fields.targetUsers')}</label>
               <CheckboxList
-                ariaLabel={t('notifications.fields.targetHeadResidents')}
-                items={availableResidentHeads}
+                ariaLabel={t('notifications.fields.targetUsers')}
+                items={availableTargetUsers}
                 selectedValues={form.targetUserIds}
                 onChange={handleTargetUsersChange}
                 getValue={(user) => user.id}
                 getLabel={(user) => user.fullName}
-                getDescription={(user) => getResidentHeadDescription(user, t)}
+                getDescription={(user) => getTargetUserDescription(user, t)}
                 emptyMessage={
                   needsSelectedBuildings && form.buildingIds.length === 0
                     ? t('notifications.empty.selectBuildingFirst')
-                    : t('notifications.empty.headResidents')
+                    : t('notifications.empty.users')
                 }
               />
             </div>

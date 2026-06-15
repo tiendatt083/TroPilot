@@ -16,9 +16,34 @@ const emptyForm = {
   targetUserIds: []
 };
 
-function getResidentHeadDescription(user, t) {
+function isBuildingNotificationUser(user, buildingId) {
+  if (user.status !== 'ACTIVE') {
+    return false;
+  }
+
+  if (user.role === 'STAFF') {
+    return true;
+  }
+
+  return user.role === 'RESIDENT_HEAD' && String(user.assignedBuildingId) === String(buildingId);
+}
+
+function getUserRoleLabel(user, t) {
+  if (user.role === 'STAFF') {
+    return t('role.staff');
+  }
+
+  if (user.role === 'RESIDENT_HEAD') {
+    return t('role.residentHead');
+  }
+
+  return user.role;
+}
+
+function getTargetUserDescription(user, t) {
+  const roleLabel = getUserRoleLabel(user, t);
   const roomLabel = user.assignedRoomCode ? `${t('tables.common.room')} ${user.assignedRoomCode}` : null;
-  return [roomLabel, user.email].filter(Boolean).join(' - ');
+  return [roleLabel, roomLabel, user.email].filter(Boolean).join(' - ');
 }
 
 export default function AdminBuildingNotificationPage() {
@@ -33,8 +58,8 @@ export default function AdminBuildingNotificationPage() {
   const [saving, setSaving] = useState(false);
 
   const buildingFilter = { buildingId: building.id };
-  const residentHeads = useMemo(
-    () => users.filter((user) => user.role === 'RESIDENT_HEAD' && String(user.assignedBuildingId) === String(building.id)),
+  const selectableUsers = useMemo(
+    () => users.filter((user) => isBuildingNotificationUser(user, building.id)),
     [building.id, users]
   );
 
@@ -83,7 +108,7 @@ export default function AdminBuildingNotificationPage() {
     const usesBuildingTarget = form.targetType !== 'STAFF';
 
     if (form.targetType === 'SELECTED_USERS' && form.targetUserIds.length === 0) {
-      setError(t('notifications.atLeastOneHeadResident'));
+      setError(t('notifications.atLeastOneUser'));
       return;
     }
 
@@ -144,16 +169,16 @@ export default function AdminBuildingNotificationPage() {
 
           {needsSelectedUsers && (
             <>
-              <label>{t('notifications.fields.targetHeadResidents')}</label>
+              <label>{t('notifications.fields.targetUsers')}</label>
               <CheckboxList
-                ariaLabel={t('notifications.fields.targetHeadResidents')}
-                items={residentHeads}
+                ariaLabel={t('notifications.fields.targetUsers')}
+                items={selectableUsers}
                 selectedValues={form.targetUserIds}
                 onChange={handleTargetUsersChange}
                 getValue={(user) => user.id}
                 getLabel={(user) => user.fullName}
-                getDescription={(user) => getResidentHeadDescription(user, t)}
-                emptyMessage={t('notifications.empty.buildingHeadResidents')}
+                getDescription={(user) => getTargetUserDescription(user, t)}
+                emptyMessage={t('notifications.empty.buildingUsers')}
               />
             </>
           )}

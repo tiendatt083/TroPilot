@@ -4,7 +4,7 @@ export const NOTIFICATION_TARGET_OPTIONS = [
   { value: 'ALL_RESIDENT_HEADS', label: 'All Head Residents' },
   { value: 'ALL', label: 'All users' },
   { value: 'STAFF', label: 'All Staff' },
-  { value: 'SELECTED_USERS', label: 'Selected Head Residents' }
+  { value: 'SELECTED_USERS', label: 'Selected users' }
 ];
 
 const legacyNotificationTargetLabels = {
