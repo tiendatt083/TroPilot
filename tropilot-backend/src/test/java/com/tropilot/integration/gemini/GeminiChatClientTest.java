@@ -63,6 +63,15 @@ class GeminiChatClientTest {
                         "explain the cause behind a result and suggest the next operational action"
                 )))
                 .andExpect(content().string(containsString(
+                        "never return only the total when the related records are"
+                )))
+                .andExpect(content().string(containsString(
+                        "For building questions, list each building by code and"
+                )))
+                .andExpect(content().string(containsString(
+                        "include the related record list required by the count and summary rule"
+                )))
+                .andExpect(content().string(containsString(
                         "Answer in the same language as the user's latest message"
                 )))
                 .andRespond(withSuccess("""

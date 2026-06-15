@@ -8,7 +8,6 @@ import { formatRoomCode } from '../../utils/roomDisplay.js';
 
 const emptyFilters = {
   search: '',
-  role: '',
   status: '',
   roomId: ''
 };
@@ -29,50 +28,75 @@ function recordMatchesSearch(record, searchValue) {
     record.identityNumber,
     record.relationship,
     record.roomCode,
-    record.roomName
+    record.roomName,
+    ...(record.members || []).flatMap((member) => [
+      member.fullName,
+      member.email,
+      member.phone,
+      member.identityNumber,
+      member.relationship
+    ])
   ];
 
   return searchableValues.some((value) => normalizeSearchValue(value).includes(searchValue));
 }
 
-function filterUsers(users, filters) {
+function createResidentHouseholds(users) {
+  const membersByRoom = users
+    .filter((user) => user.recordType === 'ROOM_MEMBER')
+    .reduce((members, member) => {
+      const roomMembers = members.get(member.roomId) || [];
+      roomMembers.push(member);
+      members.set(member.roomId, roomMembers);
+      return members;
+    }, new Map());
+
+  return users
+    .filter((user) => user.recordType === 'USER_ACCOUNT' && user.role === 'RESIDENT_HEAD')
+    .map((residentHead) => ({
+      ...residentHead,
+      members: (membersByRoom.get(residentHead.roomId) || [])
+        .sort((firstMember, secondMember) => (
+          normalizeSearchValue(firstMember.fullName).localeCompare(normalizeSearchValue(secondMember.fullName))
+        ))
+    }));
+}
+
+function filterHouseholds(households, filters) {
   const searchValue = normalizeSearchValue(filters.search);
 
-  return users.filter((user) => (
-    recordMatchesSearch(user, searchValue)
-    && (!filters.role || user.role === filters.role)
-    && (!filters.status || user.status === filters.status)
-    && (!filters.roomId || String(user.roomId || '') === filters.roomId)
+  return households.filter((residentHead) => (
+    recordMatchesSearch(residentHead, searchValue)
+    && (!filters.status || residentHead.status === filters.status)
+    && (!filters.roomId || String(residentHead.roomId || '') === filters.roomId)
   ));
 }
 
-function createRoomOptions(users) {
+function createRoomOptions(households) {
   const rooms = new Map();
 
-  users.forEach((user) => {
-    if (!user.roomId || rooms.has(user.roomId)) {
+  households.forEach((residentHead) => {
+    if (!residentHead.roomId || rooms.has(residentHead.roomId)) {
       return;
     }
 
-    rooms.set(user.roomId, {
-      id: user.roomId,
-      label: user.roomName ? `${formatRoomCode(user)} - ${user.roomName}` : formatRoomCode(user)
+    rooms.set(residentHead.roomId, {
+      id: residentHead.roomId,
+      label: residentHead.roomName
+        ? `${formatRoomCode(residentHead)} - ${residentHead.roomName}`
+        : formatRoomCode(residentHead)
     });
   });
 
   return Array.from(rooms.values()).sort((firstRoom, secondRoom) => firstRoom.label.localeCompare(secondRoom.label));
 }
 
-function createUniqueOptions(users, field) {
-  return Array.from(new Set(users.map((user) => user[field]).filter(Boolean))).sort();
+function createUniqueOptions(records, field) {
+  return Array.from(new Set(records.map((record) => record[field]).filter(Boolean))).sort();
 }
 
-function statusClass(record) {
-  if (record.recordType === 'ROOM_MEMBER') {
-    return `status-pill member-status-${String(record.status || '').toLowerCase()}`;
-  }
-
-  return `status-pill status-${String(record.status || '').toLowerCase()}`;
+function statusClass(residentHead) {
+  return `status-pill status-${String(residentHead.status || '').toLowerCase()}`;
 }
 
 export default function AdminBuildingUserPage() {
@@ -112,10 +136,13 @@ export default function AdminBuildingUserPage() {
     };
   }, [building.id, t]);
 
-  const filteredUsers = useMemo(() => filterUsers(users, filters), [users, filters]);
-  const roomOptions = useMemo(() => createRoomOptions(users), [users]);
-  const roleOptions = useMemo(() => createUniqueOptions(users, 'role'), [users]);
-  const statusOptions = useMemo(() => createUniqueOptions(users, 'status'), [users]);
+  const households = useMemo(() => createResidentHouseholds(users), [users]);
+  const filteredHouseholds = useMemo(
+    () => filterHouseholds(households, filters),
+    [households, filters]
+  );
+  const roomOptions = useMemo(() => createRoomOptions(households), [households]);
+  const statusOptions = useMemo(() => createUniqueOptions(households, 'status'), [households]);
 
   const handleFilterChange = (event) => {
     const { name, value } = event.target;
@@ -151,19 +178,6 @@ export default function AdminBuildingUserPage() {
           onChange={handleFilterChange}
           placeholder={t('buildingUsers.filters.searchPlaceholder')}
         />
-        <select
-          aria-label={t('buildingUsers.filters.roleAria')}
-          name="role"
-          value={filters.role}
-          onChange={handleFilterChange}
-        >
-          <option value="">{t('buildingUsers.filters.allRoles')}</option>
-          {roleOptions.map((role) => (
-            <option key={role} value={role}>
-              {formatRole(role, t)}
-            </option>
-          ))}
-        </select>
         <select
           aria-label={t('buildingUsers.filters.statusAria')}
           name="status"
@@ -206,80 +220,55 @@ export default function AdminBuildingUserPage() {
                 <th>{t('buildingUsers.columns.user')}</th>
                 <th>{t('buildingUsers.columns.phone')}</th>
                 <th>{t('buildingUsers.columns.identityNumber')}</th>
-                <th>{t('buildingUsers.columns.role')}</th>
                 <th>{t('buildingUsers.columns.room')}</th>
-                <th>{t('buildingUsers.columns.relationship')}</th>
                 <th>{t('buildingUsers.columns.moveInDate')}</th>
                 <th>{t('buildingUsers.columns.status')}</th>
               </tr>
             </thead>
             <tbody>
-              {filteredUsers.map((user) => (
-                <tr key={`${user.recordType}-${user.id}`}>
+              {filteredHouseholds.map((residentHead) => (
+                <tr key={residentHead.id}>
                   <td>
-                    <strong>{user.fullName}</strong>
-                    <span className="table-subtext">{user.email || t('common.notProvided')}</span>
+                    <strong>{residentHead.fullName}</strong>
+                    <span className="table-subtext">{residentHead.email || t('common.notProvided')}</span>
+                    {residentHead.members.length > 0 && (
+                      <div className="account-inline-members">
+                        <span className="account-inline-members-label">
+                          {t('accountDirectory.inlineMembers')}
+                        </span>
+                        <div className="account-inline-member-list">
+                          {residentHead.members.map((member) => (
+                            <span className="account-inline-member" key={member.id}>
+                              {member.fullName}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </td>
-                  <td>{user.phone || t('common.notProvided')}</td>
-                  <td>{user.identityNumber || t('common.notProvided')}</td>
+                  <td>{residentHead.phone || t('common.notProvided')}</td>
+                  <td>{residentHead.identityNumber || t('common.notProvided')}</td>
                   <td>
-                    <strong>{formatRole(user.role, t)}</strong>
-                    <span className="table-subtext">{formatRecordType(user.recordType, t)}</span>
-                  </td>
-                  <td>
-                    <Link className="secondary-link compact-link" to={`/admin/rooms/${user.roomId}`}>
-                      {formatRoomCode(user)}
+                    <Link className="secondary-link compact-link" to={`/admin/rooms/${residentHead.roomId}`}>
+                      {formatRoomCode(residentHead)}
                     </Link>
-                    <span className="table-subtext">{user.roomName || t('common.notProvided')}</span>
+                    <span className="table-subtext">{residentHead.roomName || t('common.notProvided')}</span>
                   </td>
-                  <td>{formatRelationship(user, t)}</td>
-                  <td>{formatDisplayDate(user.moveInDate, t('common.notSet'))}</td>
+                  <td>{formatDisplayDate(residentHead.moveInDate, t('common.notSet'))}</td>
                   <td>
-                    <span className={statusClass(user)}>{formatStatus(user.status, t)}</span>
+                    <span className={statusClass(residentHead)}>{formatStatus(residentHead.status, t)}</span>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-          {filteredUsers.length === 0 && (
+          {filteredHouseholds.length === 0 && (
             <div className="empty-state flat-empty-state">{t('buildingUsers.empty')}</div>
           )}
         </div>
       )}
     </div>
   );
-}
-
-function formatRole(role, t) {
-  const roleKey = String(role || '').toLowerCase();
-  const labels = {
-    admin: t('role.admin'),
-    staff: t('role.staff'),
-    resident_head: t('role.residentHead'),
-    room_member: t('buildingUsers.roles.roomMember')
-  };
-
-  return labels[roleKey] || role || t('common.notAvailable');
-}
-
-function formatRecordType(recordType, t) {
-  if (recordType === 'USER_ACCOUNT') {
-    return t('buildingUsers.recordTypes.account');
-  }
-
-  if (recordType === 'ROOM_MEMBER') {
-    return t('buildingUsers.recordTypes.roomMember');
-  }
-
-  return recordType || t('common.notAvailable');
-}
-
-function formatRelationship(user, t) {
-  if (user.role === 'RESIDENT_HEAD') {
-    return t('role.residentHead');
-  }
-
-  return user.relationship || t('common.notProvided');
 }
 
 function formatStatus(status, t) {
