@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as maintenanceApi from '../../features/maintenance/api.js';
 import * as adminUserApi from '../../features/users/api.js';
+import MaintenanceAssignmentAction from '../../components/MaintenanceAssignmentAction.jsx';
 import MaintenanceRequestTable from '../../components/MaintenanceRequestTable.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
 
@@ -73,28 +74,14 @@ export default function AdminMaintenancePage() {
   };
 
   const renderActions = (request) => (
-    <div className="assignment-action-row">
-      <select
-        value={assignmentMap[request.id] || ''}
-        disabled={request.status === 'COMPLETED' || processingId === request.id}
-        onChange={(event) => handleAssignmentChange(request.id, event.target.value)}
-      >
-        <option value="">{t('maintenance.admin.selectStaff')}</option>
-        {staffUsers.map((staff) => (
-          <option key={staff.id} value={staff.id}>
-            {staff.fullName}
-          </option>
-        ))}
-      </select>
-      <button
-        className="secondary-button compact-button"
-        type="button"
-        disabled={request.status === 'COMPLETED' || processingId === request.id}
-        onClick={() => handleAssign(request)}
-      >
-        {t('maintenance.admin.assign')}
-      </button>
-    </div>
+    <MaintenanceAssignmentAction
+      request={request}
+      staffUsers={staffUsers}
+      assignedToId={assignmentMap[request.id]}
+      processing={processingId === request.id}
+      onAssignmentChange={handleAssignmentChange}
+      onAssign={handleAssign}
+    />
   );
 
   return (

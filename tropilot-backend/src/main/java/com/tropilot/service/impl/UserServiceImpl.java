@@ -25,6 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.security.SecureRandom;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -35,6 +37,7 @@ public class UserServiceImpl implements UserService {
     private static final String TEMPORARY_PASSWORD_CHARACTERS =
             "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%";
     private static final int GENERATED_PASSWORD_LENGTH = 12;
+    private static final String ARCHIVED_EMAIL_DOMAIN = "tropilot.invalid";
 
     private final UserRepository userRepository;
     private final RoomAssignmentRepository roomAssignmentRepository;
@@ -49,10 +52,7 @@ public class UserServiceImpl implements UserService {
     public UserResponse createUser(AdminCreateUserRequest request) {
         validateAssignableRole(request.getRole());
         String email = normalizeEmail(request.getEmail());
-
-        if (userRepository.existsByEmail(email)) {
-            throw new BadRequestException("Email is already in use");
-        }
+        releaseEmailFromInactiveAccountOrReject(email);
 
         String temporaryPassword = generateTemporaryPassword();
 
@@ -174,6 +174,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void deleteUser(Long id) {
         User user = findUser(id);
+        String deletedEmail = user.getEmail();
 
         if (user.getRole() == UserRole.ADMIN) {
             throw new BadRequestException("Admin account cannot be deleted");
@@ -185,10 +186,31 @@ public class UserServiceImpl implements UserService {
         }
 
         user.setStatus(UserStatus.INACTIVE);
+        user.setEmail(createArchivedEmail(user.getId()));
         user.setTemporaryPasswordEncrypted(null);
         user.setMustChangePassword(false);
         userRepository.save(user);
-        activityLogService.recordCurrentUser("USER_DELETED", "Deleted user account for " + user.getEmail());
+        activityLogService.recordCurrentUser("USER_DELETED", "Deleted user account for " + deletedEmail);
+    }
+
+    private void releaseEmailFromInactiveAccountOrReject(String email) {
+        Optional<User> existingUser = userRepository.findByEmail(email);
+        if (existingUser.isEmpty()) {
+            return;
+        }
+
+        User user = existingUser.get();
+        if (user.getStatus() != UserStatus.INACTIVE) {
+            throw new BadRequestException("Email is already in use");
+        }
+
+        user.setEmail(createArchivedEmail(user.getId()));
+        userRepository.saveAndFlush(user);
+    }
+
+    private String createArchivedEmail(Long userId) {
+        return "deleted-" + userId + "-" + UUID.randomUUID().toString().replace("-", "")
+                + "@" + ARCHIVED_EMAIL_DOMAIN;
     }
 
     private User findUser(Long id) {
