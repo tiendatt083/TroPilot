@@ -229,12 +229,17 @@
       "locked": "Locked"
     },
     "actions": {
-      "create": "Create staff account"
+      "create": "Create staff account",
+      "exportExcel": "Export Excel"
     },
     "messages": {
       "loading": "Loading users...",
       "loadError": "Users could not be loaded",
-      "empty": "No users match the current search."
+      "empty": "No users match the current search.",
+      "exportEmpty": "No users to export."
+    },
+    "export": {
+      "sheetName": "Users"
     },
     "passwordUnavailable": "Temporary password unavailable",
     "passwordChanged": "Password changed"
@@ -364,13 +369,19 @@
     "allBuildings": "All buildings",
     "roomsInBuilding": "Rooms in this building",
     "createRoom": "Create room",
+    "groups": {
+      "accounts": "Accounts",
+      "communication": "Information and feedback",
+      "operations": "Operations",
+      "finance": "Finance"
+    },
     "overview": "Overview",
     "rooms": "Rooms",
     "accounts": "Accounts",
     "users": "Users",
     "residents": "Residents",
     "equipment": "Equipment",
-    "contracts": "Contracts",
+    "contracts": "Rental contracts",
     "billing": "Billing",
     "utilityReadings": "Utility readings",
     "invoices": "Invoices",

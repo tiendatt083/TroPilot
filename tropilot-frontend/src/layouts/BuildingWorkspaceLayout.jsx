@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import PageHeader from '../components/PageHeader.jsx';
@@ -8,7 +8,7 @@ export default function BuildingWorkspaceLayout({
   deleteBuilding,
   listPath,
   basePath,
-  tabs,
+  tabs = [],
   eyebrowKey = 'buildingWorkspace.eyebrow',
   actions = {}
 }) {
@@ -21,6 +21,13 @@ export default function BuildingWorkspaceLayout({
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState(false);
+  const [openGroups, setOpenGroups] = useState({});
+  const buildingPath = `${basePath}/${id}`;
+  const navigationGroups = useMemo(() => normalizeNavigationGroups(tabs), [tabs]);
+  const activeGroupId = useMemo(
+    () => findActiveGroupId(navigationGroups, buildingPath, location.pathname),
+    [buildingPath, location.pathname, navigationGroups]
+  );
 
   useEffect(() => {
     let active = true;
@@ -74,6 +81,24 @@ export default function BuildingWorkspaceLayout({
     }
   };
 
+  useEffect(() => {
+    if (!activeGroupId) {
+      return;
+    }
+
+    setOpenGroups((current) => ({
+      ...current,
+      [activeGroupId]: true
+    }));
+  }, [activeGroupId]);
+
+  const toggleGroup = (groupId) => {
+    setOpenGroups((current) => ({
+      ...current,
+      [groupId]: !current[groupId]
+    }));
+  };
+
   if (loading) {
     return <div className="empty-state">{t('buildingWorkspace.loading')}</div>;
   }
@@ -81,8 +106,6 @@ export default function BuildingWorkspaceLayout({
   if (!building) {
     return <div className="empty-state">{error || t('buildingWorkspace.notFound')}</div>;
   }
-
-  const buildingPath = `${basePath}/${building.id}`;
 
   return (
     <section className="content-section building-workspace-shell">
@@ -119,12 +142,42 @@ export default function BuildingWorkspaceLayout({
       {error && <div className="alert error-alert">{error}</div>}
 
       <div className="building-workspace-body">
-        <nav className="workspace-tabs building-workspace-tabs" aria-label={t('navigation.buildingWorkspace')}>
-          {tabs.map((tab) => (
-            <NavLink key={tab.path || 'overview'} end={tab.end} to={`${buildingPath}${tab.path}`}>
-              {t(tab.labelKey)}
-            </NavLink>
-          ))}
+        <nav className="workspace-tabs building-workspace-tabs grouped-workspace-tabs" aria-label={t('navigation.buildingWorkspace')}>
+          {navigationGroups.map((group) => {
+            const groupIsActive = group.id === activeGroupId;
+            const groupIsOpen = group.standalone || openGroups[group.id] || groupIsActive;
+
+            if (group.standalone) {
+              return group.items.map((tab) => (
+                <NavLink key={tab.path || 'overview'} end={tab.end} to={`${buildingPath}${tab.path}`}>
+                  {t(tab.labelKey)}
+                </NavLink>
+              ));
+            }
+
+            return (
+              <div className="workspace-tab-group" key={group.id}>
+                <button
+                  className={`workspace-tab-group-toggle${groupIsActive ? ' active-group' : ''}`}
+                  type="button"
+                  aria-expanded={groupIsOpen}
+                  onClick={() => toggleGroup(group.id)}
+                >
+                  <span>{t(group.labelKey)}</span>
+                  <span aria-hidden="true">{groupIsOpen ? '−' : '+'}</span>
+                </button>
+                {groupIsOpen && (
+                  <div className="workspace-tab-group-items">
+                    {group.items.map((tab) => (
+                      <NavLink key={tab.path || 'overview'} end={tab.end} to={`${buildingPath}${tab.path}`}>
+                        {t(tab.labelKey)}
+                      </NavLink>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </nav>
 
         <div className="building-workspace-content">
@@ -133,4 +186,38 @@ export default function BuildingWorkspaceLayout({
       </div>
     </section>
   );
+}
+
+function normalizeNavigationGroups(tabs) {
+  if (!tabs.length) {
+    return [];
+  }
+
+  if (tabs[0].items) {
+    return tabs;
+  }
+
+  return [
+    {
+      id: 'workspace',
+      standalone: true,
+      items: tabs
+    }
+  ];
+}
+
+function findActiveGroupId(groups, buildingPath, pathname) {
+  return groups.find((group) =>
+    group.items.some((tab) => isTabActive(buildingPath, tab, pathname))
+  )?.id;
+}
+
+function isTabActive(buildingPath, tab, pathname) {
+  const targetPath = `${buildingPath}${tab.path}`;
+
+  if (tab.end) {
+    return pathname === targetPath;
+  }
+
+  return pathname === targetPath || pathname.startsWith(`${targetPath}/`);
 }

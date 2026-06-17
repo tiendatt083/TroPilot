@@ -113,6 +113,16 @@ html[data-theme="dark"] .workspace-tabs {
     inset 0 1px 0 rgba(255, 255, 255, 0.035);
 }
 
+html[data-theme="dark"] .workspace-tab-group {
+  border-color: var(--color-border-soft);
+  background: rgba(255, 255, 255, 0.035);
+}
+
+html[data-theme="dark"] .workspace-tab-group-toggle:hover,
+html[data-theme="dark"] .workspace-tab-group-toggle.active-group {
+  background: rgba(36, 168, 190, 0.14);
+}
+
 html[data-theme="dark"] .dashboard-hero {
   background:
     linear-gradient(135deg, rgba(36, 168, 190, 0.1), rgba(118, 151, 232, 0.04) 44%, transparent 68%),

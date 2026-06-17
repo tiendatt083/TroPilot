@@ -229,12 +229,17 @@
       "locked": "Đã khóa"
     },
     "actions": {
-      "create": "Tạo nhân viên"
+      "create": "Tạo nhân viên",
+      "exportExcel": "Tải Excel"
     },
     "messages": {
       "loading": "Đang tải danh sách người dùng...",
       "loadError": "Không thể tải danh sách người dùng",
-      "empty": "Không có người dùng nào phù hợp với tìm kiếm."
+      "empty": "Không có người dùng nào phù hợp với tìm kiếm.",
+      "exportEmpty": "Không có người dùng để xuất."
+    },
+    "export": {
+      "sheetName": "Nguoi dung"
     },
     "passwordUnavailable": "Không có mật khẩu tạm thời",
     "passwordChanged": "Đã đổi mật khẩu"
@@ -364,13 +369,19 @@
     "allBuildings": "Tất cả tòa nhà",
     "roomsInBuilding": "Phòng trong tòa nhà này",
     "createRoom": "Tạo phòng",
+    "groups": {
+      "accounts": "Tài khoản",
+      "communication": "Thông tin và phản hồi",
+      "operations": "Vận hành",
+      "finance": "Tài chính"
+    },
     "overview": "Tổng quan",
     "rooms": "Phòng",
     "accounts": "Tài khoản",
     "users": "Người dùng",
     "residents": "Cư dân",
     "equipment": "Thiết bị",
-    "contracts": "Hợp đồng",
+    "contracts": "Hợp đồng thuê",
     "billing": "Lập hóa đơn",
     "utilityReadings": "Chỉ số điện nước",
     "invoices": "Hóa đơn",

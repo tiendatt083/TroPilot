@@ -156,6 +156,55 @@
   min-height: 40px;
 }
 
+.grouped-workspace-tabs {
+  gap: 0.55rem;
+}
+
+.workspace-tab-group {
+  display: grid;
+  gap: 0.4rem;
+  border: 1px solid rgba(214, 226, 236, 0.76);
+  border-radius: var(--radius-sm);
+  padding: 0.45rem;
+  background: rgba(245, 250, 252, 0.66);
+}
+
+.workspace-tab-group-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  min-height: 38px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  padding: 0.45rem 0.55rem;
+  color: var(--color-text);
+  background: transparent;
+  font: inherit;
+  font-weight: 850;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background 180ms ease,
+    color 180ms ease;
+}
+
+.workspace-tab-group-toggle:hover,
+.workspace-tab-group-toggle.active-group {
+  color: var(--color-primary);
+  background: rgba(10, 151, 177, 0.08);
+}
+
+.workspace-tab-group-items {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.workspace-tab-group-items a {
+  min-height: 36px;
+  padding-left: 0.85rem;
+}
+
 .building-workspace {
   display: grid;
   gap: 1rem;

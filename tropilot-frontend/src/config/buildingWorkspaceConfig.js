@@ -1,51 +1,86 @@
-export const ADMIN_BUILDING_TABS = [
-  { path: '', labelKey: 'buildingWorkspace.overview', end: true },
-  { path: '/rooms', labelKey: 'buildingWorkspace.rooms' },
-  { path: '/users', labelKey: 'buildingWorkspace.users' },
-  { path: '/equipment', labelKey: 'buildingWorkspace.equipment' },
-  { path: '/contracts', labelKey: 'buildingWorkspace.contracts' },
-  { path: '/utility-readings', labelKey: 'buildingWorkspace.utilityReadings' },
-  { path: '/invoices', labelKey: 'buildingWorkspace.invoices' },
-  { path: '/service-fees', labelKey: 'buildingWorkspace.serviceFees' },
-  { path: '/vehicles', labelKey: 'buildingWorkspace.vehicles' },
-  { path: '/payments', labelKey: 'buildingWorkspace.payments' },
-  { path: '/receipts', labelKey: 'buildingWorkspace.receipts' },
-  { path: '/members', labelKey: 'buildingWorkspace.roomMembers' },
-  { path: '/maintenance', labelKey: 'buildingWorkspace.maintenance' },
-  { path: '/expenses', labelKey: 'buildingWorkspace.expenses' },
-  { path: '/cashflow', labelKey: 'buildingWorkspace.cashFlow' },
-  { path: '/tasks', labelKey: 'buildingWorkspace.tasks' },
-  { path: '/feedbacks', labelKey: 'buildingWorkspace.feedbacks' },
-  { path: '/invoice-complaints', labelKey: 'buildingWorkspace.invoiceComplaints' },
-  { path: '/notifications', labelKey: 'buildingWorkspace.notifications' }
+const BUILDING_WORKSPACE_GROUPS = [
+  {
+    id: 'overview',
+    standalone: true,
+    items: [
+      { path: '', labelKey: 'buildingWorkspace.overview', end: true }
+    ]
+  },
+  {
+    id: 'accounts',
+    labelKey: 'buildingWorkspace.groups.accounts',
+    items: [
+      { path: '/users', labelKey: 'buildingWorkspace.users' },
+      { path: '/members', labelKey: 'buildingWorkspace.roomMembers' }
+    ]
+  },
+  {
+    id: 'communication',
+    labelKey: 'buildingWorkspace.groups.communication',
+    items: [
+      { path: '/notifications', labelKey: 'buildingWorkspace.notifications' },
+      { path: '/feedbacks', labelKey: 'buildingWorkspace.feedbacks' },
+      { path: '/invoice-complaints', labelKey: 'buildingWorkspace.invoiceComplaints' }
+    ]
+  },
+  {
+    id: 'operations',
+    labelKey: 'buildingWorkspace.groups.operations',
+    items: [
+      { path: '/rooms', labelKey: 'buildingWorkspace.rooms' },
+      { path: '/equipment', labelKey: 'buildingWorkspace.equipment' },
+      { path: '/contracts', labelKey: 'buildingWorkspace.contracts' },
+      { path: '/utility-readings', labelKey: 'buildingWorkspace.utilityReadings' },
+      { path: '/service-fees', labelKey: 'buildingWorkspace.serviceFees' },
+      { path: '/vehicles', labelKey: 'buildingWorkspace.vehicles' },
+      { path: '/maintenance', labelKey: 'buildingWorkspace.maintenance' },
+      { path: '/tasks', labelKey: 'buildingWorkspace.tasks' }
+    ]
+  },
+  {
+    id: 'finance',
+    labelKey: 'buildingWorkspace.groups.finance',
+    items: [
+      { path: '/invoices', labelKey: 'buildingWorkspace.invoices' },
+      { path: '/expenses', labelKey: 'buildingWorkspace.expenses' },
+      { path: '/cashflow', labelKey: 'buildingWorkspace.cashFlow' },
+      { path: '/payments', labelKey: 'buildingWorkspace.payments' },
+      { path: '/receipts', labelKey: 'buildingWorkspace.receipts' }
+    ]
+  }
 ];
+
+export const ADMIN_BUILDING_TABS = BUILDING_WORKSPACE_GROUPS;
 
 export const STAFF_BUILDING_TABS = [
-  { path: '', labelKey: 'buildingWorkspace.overview', end: true },
-  ...ADMIN_BUILDING_TABS.filter((tab) =>
-    [
-      '/rooms',
-      '/equipment',
-      '/utility-readings',
-      '/invoices',
-      '/service-fees',
-      '/vehicles',
-      '/payments',
-      '/maintenance',
-      '/expenses',
-      '/cashflow',
-      '/tasks'
-    ].includes(tab.path)
-  )
+  ...filterBuildingWorkspaceGroups([
+    '',
+    '/rooms',
+    '/equipment',
+    '/contracts',
+    '/utility-readings',
+    '/invoices',
+    '/service-fees',
+    '/vehicles',
+    '/payments',
+    '/maintenance',
+    '/expenses',
+    '/cashflow',
+    '/tasks'
+  ])
 ];
 
-export const ADMIN_BUILDING_ACTIONS = {
-  showRoomsLink: true,
-  canCreateRoom: true,
-  canEditBuilding: true,
-  canDeleteBuilding: true
-};
+export const ADMIN_BUILDING_ACTIONS = {};
 
-export const STAFF_BUILDING_ACTIONS = {
-  showRoomsLink: true
-};
+export const STAFF_BUILDING_ACTIONS = {};
+
+function filterBuildingWorkspaceGroups(allowedPaths) {
+  const allowed = new Set(allowedPaths);
+
+  return BUILDING_WORKSPACE_GROUPS
+    .map((group) => ({
+      ...group,
+      items: group.items.filter((item) => allowed.has(item.path))
+    }))
+    .filter((group) => group.items.length > 0);
+}

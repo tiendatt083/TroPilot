@@ -4,11 +4,21 @@ import { Link } from 'react-router-dom';
 import * as adminUserApi from '../../features/users/api.js';
 import AdminAccountDirectoryTable from '../../components/AdminAccountDirectoryTable.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
+import { exportRowsToExcel } from '../../utils/excelExport.js';
 
 const MANAGED_ACCOUNT_ROLES = new Set(['ADMIN', 'STAFF']);
 
 function normalize(value) {
   return String(value || '').trim().toLowerCase();
+}
+
+function buildExportFileName() {
+  const now = new Date();
+  const day = String(now.getDate()).padStart(2, '0');
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const year = now.getFullYear();
+
+  return `tropilot-users-${day}-${month}-${year}.xlsx`;
 }
 
 export default function AdminUserListPage() {
@@ -71,6 +81,32 @@ export default function AdminUserListPage() {
     }
   };
 
+  const handleExport = () => {
+    setMessage('');
+    setError('');
+
+    if (filteredAccounts.length === 0) {
+      setError(t('userManagement.messages.exportEmpty'));
+      return;
+    }
+
+    const rows = filteredAccounts.map((account, index) => ({
+      [t('accountDirectory.columns.id')]: index + 1,
+      [t('accountDirectory.columns.name')]: account.fullName || t('common.notProvided'),
+      [t('accountDirectory.detail.phone')]: account.phone || t('common.notProvided'),
+      [t('accountDirectory.columns.email')]: account.email || t('common.notProvided'),
+      [t('accountDirectory.detail.role')]: formatRole(account.role, t),
+      [t('accountDirectory.columns.status')]: formatStatus(account.status, t),
+      [t('accountDirectory.columns.temporaryPassword')]: formatTemporaryPassword(account, t)
+    }));
+
+    exportRowsToExcel({
+      rows,
+      fileName: buildExportFileName(),
+      sheetName: t('userManagement.export.sheetName')
+    });
+  };
+
   return (
     <section className="content-section account-directory-page">
       <div className="page-title-row">
@@ -78,12 +114,21 @@ export default function AdminUserListPage() {
           eyebrow={t('userManagement.eyebrow')}
           title={t('userManagement.title')}
         />
-        <Link
-          className="button-link"
-          to="/admin/users/create?role=STAFF&returnTo=/admin/users"
-        >
-          {t('userManagement.actions.create')}
-        </Link>
+        <div className="page-action-row">
+          <button
+            className="secondary-button inline-button"
+            type="button"
+            onClick={handleExport}
+          >
+            {t('userManagement.actions.exportExcel')}
+          </button>
+          <Link
+            className="button-link"
+            to="/admin/users/create?role=STAFF&returnTo=/admin/users"
+          >
+            {t('userManagement.actions.create')}
+          </Link>
+        </div>
       </div>
 
       {message && <div className="alert success-alert">{message}</div>}
@@ -117,4 +162,36 @@ export default function AdminUserListPage() {
       )}
     </section>
   );
+}
+
+function formatRole(role, t) {
+  if (role === 'STAFF') {
+    return t('role.staff');
+  }
+
+  if (role === 'RESIDENT_HEAD') {
+    return t('role.residentHead');
+  }
+
+  return t('role.admin');
+}
+
+function formatStatus(status, t) {
+  if (status === 'LOCKED') {
+    return t('userManagement.status.locked');
+  }
+
+  if (status === 'INACTIVE') {
+    return t('common.inactive');
+  }
+
+  return t('userManagement.status.active');
+}
+
+function formatTemporaryPassword(account, t) {
+  if (!account.mustChangePassword) {
+    return t('userManagement.passwordChanged');
+  }
+
+  return account.temporaryPassword || t('userManagement.passwordUnavailable');
 }
