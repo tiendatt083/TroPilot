@@ -2,17 +2,27 @@ import { NavLink, Outlet } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import ChatWidget from '../components/ChatWidget.jsx';
 import SidebarBrand from '../components/SidebarBrand.jsx';
+import SidebarNavGroup from '../components/SidebarNavGroup.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 
-const STAFF_NAV_ITEMS = [
-  { to: '/staff/dashboard', labelKey: 'navigation.dashboard' },
-  { to: '/staff/notifications', labelKey: 'navigation.notifications' },
+const STAFF_OPERATION_ITEMS = [
   { to: '/staff/buildings', labelKey: 'navigation.buildings' },
-  { to: '/staff/rooms', labelKey: 'navigation.rooms' },
   { to: '/staff/tasks', labelKey: 'navigation.tasks' },
-  { to: '/staff/maintenance', labelKey: 'navigation.maintenance' },
+  { to: '/staff/maintenance', labelKey: 'navigation.maintenance' }
+];
+
+const STAFF_INFORMATION_ITEMS = [
+  { to: '/staff/notifications', labelKey: 'navigation.notifications' },
+  { to: '/staff/contact', labelKey: 'navigation.contact' }
+];
+
+const STAFF_PRIMARY_ITEMS = [
+  { to: '/staff/dashboard', labelKey: 'navigation.dashboard' },
+  { to: '/staff/rooms', labelKey: 'navigation.rooms' }
+];
+
+const STAFF_ACCOUNT_ITEMS = [
   { to: '/staff/profile', labelKey: 'navigation.profile' },
-  { to: '/staff/contact', labelKey: 'navigation.contact' },
   { to: '/staff/settings', labelKey: 'settings.title' }
 ];
 
@@ -29,7 +39,14 @@ export default function StaffLayout() {
           <small>{t('sidebar.access.staff')}</small>
         </div>
         <nav aria-label={t('navigation.staff')}>
-          {STAFF_NAV_ITEMS.map((item) => (
+          {STAFF_PRIMARY_ITEMS.map((item) => (
+            <NavLink key={item.to} to={item.to}>
+              {t(item.labelKey)}
+            </NavLink>
+          ))}
+          <SidebarNavGroup labelKey="navigation.operations" items={STAFF_OPERATION_ITEMS} />
+          <SidebarNavGroup labelKey="navigation.informationAndFeedback" items={STAFF_INFORMATION_ITEMS} />
+          {STAFF_ACCOUNT_ITEMS.map((item) => (
             <NavLink key={item.to} to={item.to}>
               {t(item.labelKey)}
             </NavLink>

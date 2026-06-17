@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import * as buildingApi from '../../features/buildings/api.js';
 import * as roomApi from '../../features/rooms/api.js';
+import useRoomRouteContext from '../../features/rooms/useRoomRouteContext.js';
 import PageHeader from '../../components/PageHeader.jsx';
 import RoomForm from '../../components/RoomForm.jsx';
 
 export default function AdminRoomEditPage() {
-  const { id } = useParams();
+  const { roomBasePath, roomId } = useRoomRouteContext('admin');
   const navigate = useNavigate();
   const [room, setRoom] = useState(null);
   const [buildings, setBuildings] = useState([]);
@@ -17,7 +18,7 @@ export default function AdminRoomEditPage() {
   useEffect(() => {
     let active = true;
 
-    Promise.all([roomApi.getAdminRoom(id), buildingApi.getAdminBuildings()])
+    Promise.all([roomApi.getAdminRoom(roomId), buildingApi.getAdminBuildings()])
       .then(([roomResponse, buildingResponse]) => {
         if (active) {
           setRoom(roomResponse.data);
@@ -38,15 +39,15 @@ export default function AdminRoomEditPage() {
     return () => {
       active = false;
     };
-  }, [id]);
+  }, [roomId]);
 
   const handleSubmit = async (payload) => {
     setError('');
     setSaving(true);
 
     try {
-      const response = await roomApi.updateAdminRoom(id, payload);
-      navigate(`/admin/rooms/${response.data.id}`, {
+      const response = await roomApi.updateAdminRoom(roomId, payload);
+      navigate(`${roomBasePath}/${response.data.id}`, {
         replace: true,
         state: { message: 'Room updated successfully.' }
       });
@@ -65,7 +66,7 @@ export default function AdminRoomEditPage() {
     <section className="content-section narrow-section">
       <div className="page-title-row">
         <PageHeader eyebrow="Administrator" title="Edit room" />
-        <Link className="secondary-link" to={`/admin/rooms/${id}`}>
+        <Link className="secondary-link" to={`${roomBasePath}/${roomId}`}>
           Back to details
         </Link>
       </div>

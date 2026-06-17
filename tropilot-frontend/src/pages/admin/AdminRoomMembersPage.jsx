@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import * as memberApi from '../../features/residents/api.js';
 import * as roomApi from '../../features/rooms/api.js';
+import useRoomRouteContext from '../../features/rooms/useRoomRouteContext.js';
 import PageHeader from '../../components/PageHeader.jsx';
 import { formatDisplayDate } from '../../utils/dateFormat.js';
 import { formatEnumLabel } from '../../utils/i18nFormat.js';
@@ -30,7 +31,7 @@ function countText(headResident, members, room, t) {
 
 export default function AdminRoomMembersPage() {
   const { t } = useTranslation();
-  const { id } = useParams();
+  const { roomBasePath, roomId } = useRoomRouteContext('admin');
   const [room, setRoom] = useState(null);
   const [headResident, setHeadResident] = useState(null);
   const [members, setMembers] = useState([]);
@@ -44,9 +45,9 @@ export default function AdminRoomMembersPage() {
 
     try {
       const [roomResponse, headResponse, membersResponse] = await Promise.all([
-        roomApi.getAdminRoom(id),
-        roomApi.getHeadResidentAssignment(id),
-        memberApi.getAdminRoomMembers(id)
+        roomApi.getAdminRoom(roomId),
+        roomApi.getHeadResidentAssignment(roomId),
+        memberApi.getAdminRoomMembers(roomId)
       ]);
       setRoom(roomResponse.data);
       setHeadResident(headResponse.data);
@@ -58,7 +59,7 @@ export default function AdminRoomMembersPage() {
 
   useEffect(() => {
     loadData().finally(() => setLoading(false));
-  }, [id]);
+  }, [roomId]);
 
   const handleApprove = async (member) => {
     setProcessingId(member.id);
@@ -101,7 +102,7 @@ export default function AdminRoomMembersPage() {
       <div className="page-title-row">
         <PageHeader eyebrow={formatRoomCode(room) || t('tables.common.room')} title={t('roomManagement.membersTitle')} />
         <div className="button-row">
-          <Link className="secondary-link" to={`/admin/rooms/${id}`}>
+          <Link className="secondary-link" to={`${roomBasePath}/${roomId}`}>
             {t('roomManagement.backToRoom')}
           </Link>
           <div className="count-summary">{countText(headResident, members, room, t)}</div>

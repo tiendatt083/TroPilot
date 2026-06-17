@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
-import { NavLink, Outlet, useLocation } from 'react-router-dom';
+import { NavLink, Outlet } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import AdminProfileDialog from '../components/AdminProfileDialog.jsx';
 import ChatWidget from '../components/ChatWidget.jsx';
 import SidebarBrand from '../components/SidebarBrand.jsx';
+import SidebarNavGroup from '../components/SidebarNavGroup.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 
 const ADMIN_ACCOUNT_ITEMS = [
@@ -12,36 +13,33 @@ const ADMIN_ACCOUNT_ITEMS = [
   { to: '/admin/members/pending', labelKey: 'navigation.pendingMembers' }
 ];
 
-const ADMIN_NAV_ITEMS = [
-  { to: '/admin/notifications', labelKey: 'navigation.notifications' },
-  { to: '/admin/activity-logs', labelKey: 'navigation.activityLogs' },
-  { to: '/admin/feedbacks', labelKey: 'navigation.feedbacks' },
-  { to: '/admin/invoice-complaints', labelKey: 'navigation.invoiceComplaints' },
-  { to: '/admin/contracts', labelKey: 'navigation.contracts' },
+const ADMIN_OPERATION_ITEMS = [
+  { to: '/admin/buildings', labelKey: 'navigation.buildings' },
   { to: '/admin/tasks', labelKey: 'navigation.tasks' },
   { to: '/admin/maintenance', labelKey: 'navigation.maintenance' },
-  { to: '/admin/equipment', labelKey: 'navigation.equipment' },
-  { to: '/admin/buildings', labelKey: 'navigation.buildings' },
-  { to: '/admin/contact', labelKey: 'navigation.contact' },
+  { to: '/admin/equipment', labelKey: 'navigation.equipment' }
+];
+
+const ADMIN_INFORMATION_ITEMS = [
+  { to: '/admin/notifications', labelKey: 'navigation.notifications' },
+  { to: '/admin/feedbacks', labelKey: 'navigation.feedbacks' },
+  { to: '/admin/invoice-complaints', labelKey: 'navigation.invoiceComplaints' },
+  { to: '/admin/contact', labelKey: 'navigation.contact' }
+];
+
+const ADMIN_NAV_ITEMS = [
+  { to: '/admin/activity-logs', labelKey: 'navigation.activityLogs' },
+  { to: '/admin/contracts', labelKey: 'navigation.contracts' },
   { to: '/admin/settings', labelKey: 'settings.title' }
 ];
 
 export default function AdminLayout() {
   const { logout } = useAuth();
   const { t } = useTranslation();
-  const location = useLocation();
-  const accountSectionActive = ADMIN_ACCOUNT_ITEMS.some((item) => location.pathname.startsWith(item.to));
-  const [accountSectionOpen, setAccountSectionOpen] = useState(accountSectionActive);
   const [profileDialogOpen, setProfileDialogOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(
     () => localStorage.getItem('adminSidebarCollapsed') === 'true'
   );
-
-  useEffect(() => {
-    if (accountSectionActive) {
-      setAccountSectionOpen(true);
-    }
-  }, [accountSectionActive]);
 
   useEffect(() => {
     localStorage.setItem('adminSidebarCollapsed', String(sidebarCollapsed));
@@ -75,28 +73,9 @@ export default function AdminLayout() {
           <NavLink to="/admin/dashboard">
             {t('navigation.dashboard')}
           </NavLink>
-          <div className={`sidebar-nav-group${accountSectionActive ? ' is-active' : ''}`}>
-            <button
-              className="sidebar-nav-group-toggle"
-              type="button"
-              aria-expanded={accountSectionOpen}
-              onClick={() => setAccountSectionOpen((current) => !current)}
-            >
-              <span>{t('navigation.accounts')}</span>
-              <span className="sidebar-nav-group-chevron" aria-hidden="true">
-                {accountSectionOpen ? '−' : '+'}
-              </span>
-            </button>
-            {accountSectionOpen && (
-              <div className="sidebar-nav-group-links">
-                {ADMIN_ACCOUNT_ITEMS.map((item) => (
-                  <NavLink key={item.to} to={item.to}>
-                    {t(item.labelKey)}
-                  </NavLink>
-                ))}
-              </div>
-            )}
-          </div>
+          <SidebarNavGroup labelKey="navigation.accounts" items={ADMIN_ACCOUNT_ITEMS} />
+          <SidebarNavGroup labelKey="navigation.operations" items={ADMIN_OPERATION_ITEMS} />
+          <SidebarNavGroup labelKey="navigation.informationAndFeedback" items={ADMIN_INFORMATION_ITEMS} />
           {ADMIN_NAV_ITEMS.map((item) => (
             <NavLink key={item.to} to={item.to}>
               {t(item.labelKey)}

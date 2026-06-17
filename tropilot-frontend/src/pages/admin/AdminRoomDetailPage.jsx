@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import * as roomApi from '../../features/rooms/api.js';
 import * as adminUserApi from '../../features/users/api.js';
+import useRoomRouteContext from '../../features/rooms/useRoomRouteContext.js';
 import HeadResidentAssignmentForm from '../../components/HeadResidentAssignmentForm.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
 import { formatDateInputValue, formatDisplayDate } from '../../utils/dateFormat.js';
@@ -44,7 +45,7 @@ function getEndContractConfirmationMessage(room, headInfo, t) {
 
 export default function AdminRoomDetailPage() {
   const { t } = useTranslation();
-  const { id } = useParams();
+  const { roomBasePath, roomId } = useRoomRouteContext('admin');
   const location = useLocation();
   const navigate = useNavigate();
   const [room, setRoom] = useState(null);
@@ -60,8 +61,8 @@ export default function AdminRoomDetailPage() {
 
   const loadRoomDetails = async () => {
     const [roomResponse, headResponse, usersResponse] = await Promise.all([
-      roomApi.getAdminRoom(id),
-      roomApi.getHeadResidentAssignment(id),
+      roomApi.getAdminRoom(roomId),
+      roomApi.getHeadResidentAssignment(roomId),
       adminUserApi.getUsers()
     ]);
 
@@ -88,7 +89,7 @@ export default function AdminRoomDetailPage() {
     return () => {
       active = false;
     };
-  }, [id]);
+  }, [roomId]);
 
   const refreshRoomDetails = async () => {
     try {
@@ -148,7 +149,7 @@ export default function AdminRoomDetailPage() {
 
     try {
       await roomApi.deleteAdminRoom(room.id);
-      navigate('/admin/rooms', { replace: true });
+      navigate(roomBasePath, { replace: true });
     } catch (apiError) {
       setError(apiError.response?.data?.message || t('roomManagement.deleteError'));
     } finally {
@@ -172,13 +173,13 @@ export default function AdminRoomDetailPage() {
       <div className="page-title-row">
         <PageHeader eyebrow={formatRoomCode(room)} title={room.roomName} />
         <div className="button-row">
-          <Link className="secondary-link" to="/admin/rooms">
+          <Link className="secondary-link" to={roomBasePath}>
             {t('roomManagement.back')}
           </Link>
-          <Link className="button-link" to={`/admin/rooms/${room.id}/edit`}>
+          <Link className="button-link" to={`${roomBasePath}/${room.id}/edit`}>
             {t('common.edit')}
           </Link>
-          <Link className="secondary-link" to={`/admin/rooms/${room.id}/members`}>
+          <Link className="secondary-link" to={`${roomBasePath}/${room.id}/members`}>
             {t('roomManagement.members')}
           </Link>
           <button className="secondary-button inline-button" type="button" disabled={deleting} onClick={handleDelete}>

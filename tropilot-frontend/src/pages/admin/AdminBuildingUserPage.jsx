@@ -249,7 +249,10 @@ export default function AdminBuildingUserPage() {
                   <td>{residentHead.phone || t('common.notProvided')}</td>
                   <td>{residentHead.identityNumber || t('common.notProvided')}</td>
                   <td>
-                    <Link className="secondary-link compact-link" to={`/admin/rooms/${residentHead.roomId}`}>
+                    <Link
+                      className="secondary-link compact-link"
+                      to={`/admin/buildings/${building.id}/rooms/${residentHead.roomId}`}
+                    >
                       {formatRoomCode(residentHead)}
                     </Link>
                     <span className="table-subtext">{residentHead.roomName || t('common.notProvided')}</span>

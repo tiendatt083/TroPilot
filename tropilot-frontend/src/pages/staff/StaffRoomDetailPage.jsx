@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import * as roomApi from '../../features/rooms/api.js';
+import useRoomRouteContext from '../../features/rooms/useRoomRouteContext.js';
 import PageHeader from '../../components/PageHeader.jsx';
 import { formatRoomCode } from '../../utils/roomDisplay.js';
 import { formatEnumLabel } from '../../utils/i18nFormat.js';
@@ -19,7 +20,7 @@ function statusClass(status) {
 
 export default function StaffRoomDetailPage() {
   const { t } = useTranslation();
-  const { id } = useParams();
+  const { roomBasePath, roomId } = useRoomRouteContext('staff');
   const [room, setRoom] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
@@ -28,7 +29,7 @@ export default function StaffRoomDetailPage() {
     let active = true;
 
     roomApi
-      .getStaffRoom(id)
+      .getStaffRoom(roomId)
       .then((response) => {
         if (active) {
           setRoom(response.data);
@@ -48,7 +49,7 @@ export default function StaffRoomDetailPage() {
     return () => {
       active = false;
     };
-  }, [id]);
+  }, [roomId]);
 
   if (loading) {
     return <div className="empty-state">{t('roomManagement.loadingOne')}</div>;
@@ -62,7 +63,7 @@ export default function StaffRoomDetailPage() {
     <section className="content-section">
       <div className="page-title-row">
         <PageHeader eyebrow={formatRoomCode(room)} title={room.roomName} />
-        <Link className="secondary-link" to="/staff/rooms">
+        <Link className="secondary-link" to={roomBasePath}>
           {t('roomManagement.backToRooms')}
         </Link>
       </div>

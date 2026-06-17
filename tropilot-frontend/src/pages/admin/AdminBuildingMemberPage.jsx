@@ -130,7 +130,10 @@ export default function AdminBuildingMemberPage() {
                   </td>
                   <td>{member.phone}</td>
                   <td>
-                    <Link className="secondary-link compact-link" to={`/admin/rooms/${member.roomId}/members`}>
+                    <Link
+                      className="secondary-link compact-link"
+                      to={`/admin/buildings/${building.id}/rooms/${member.roomId}/members`}
+                    >
                       {formatRoomCode(member)}
                     </Link>
                   </td>

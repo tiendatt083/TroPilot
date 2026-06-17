@@ -21,6 +21,9 @@ import AdminBuildingTaskPage from '../pages/admin/AdminBuildingTaskPage.jsx';
 import AdminBuildingUserPage from '../pages/admin/AdminBuildingUserPage.jsx';
 import AdminBuildingUtilityReadingPage from '../pages/admin/AdminBuildingUtilityReadingPage.jsx';
 import AdminBuildingVehiclePage from '../pages/admin/AdminBuildingVehiclePage.jsx';
+import AdminRoomDetailPage from '../pages/admin/AdminRoomDetailPage.jsx';
+import AdminRoomEditPage from '../pages/admin/AdminRoomEditPage.jsx';
+import AdminRoomMembersPage from '../pages/admin/AdminRoomMembersPage.jsx';
 import StaffBuildingCashFlowPage from '../pages/staff/StaffBuildingCashFlowPage.jsx';
 import StaffBuildingEquipmentPage from '../pages/staff/StaffBuildingEquipmentPage.jsx';
 import StaffBuildingExpensePage from '../pages/staff/StaffBuildingExpensePage.jsx';
@@ -33,11 +36,15 @@ import StaffBuildingTaskPage from '../pages/staff/StaffBuildingTaskPage.jsx';
 import StaffBuildingUtilityReadingPage from '../pages/staff/StaffBuildingUtilityReadingPage.jsx';
 import StaffBuildingVehiclePage from '../pages/staff/StaffBuildingVehiclePage.jsx';
 import StaffMaintenancePage from '../pages/staff/StaffMaintenancePage.jsx';
+import StaffRoomDetailPage from '../pages/staff/StaffRoomDetailPage.jsx';
 
 export const adminBuildingWorkspaceRoutes = (
   <Route path="buildings/:id" element={<AdminBuildingWorkspaceLayout />}>
     <Route index element={<AdminBuildingDetailPage />} />
     <Route path="rooms" element={<AdminBuildingRoomsPage />} />
+    <Route path="rooms/:roomId" element={<AdminRoomDetailPage />} />
+    <Route path="rooms/:roomId/edit" element={<AdminRoomEditPage />} />
+    <Route path="rooms/:roomId/members" element={<AdminRoomMembersPage />} />
     <Route path="users" element={<AdminBuildingUserPage />} />
     <Route path="equipment" element={<AdminBuildingEquipmentPage />} />
     <Route path="contracts" element={<AdminBuildingContractPage />} />
@@ -64,6 +71,7 @@ export const staffBuildingWorkspaceRoutes = (
   <Route path="buildings/:id" element={<StaffBuildingWorkspaceLayout />}>
     <Route index element={<StaffBuildingOverviewPage />} />
     <Route path="rooms" element={<StaffBuildingRoomsPage />} />
+    <Route path="rooms/:roomId" element={<StaffRoomDetailPage />} />
     <Route path="equipment" element={<StaffBuildingEquipmentPage />} />
     <Route path="utility-readings" element={<StaffBuildingUtilityReadingPage />} />
     <Route path="invoices" element={<StaffBuildingInvoicePage />} />
