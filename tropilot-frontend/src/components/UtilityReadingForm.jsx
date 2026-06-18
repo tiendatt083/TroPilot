@@ -92,107 +92,64 @@ export default function UtilityReadingForm({
   const readingDateRange = getMonthDateRange(selectedMonth);
 
   return (
-    <form className="panel-form" onSubmit={handleSubmit}>
-      <label htmlFor="roomId">{t('tables.common.room')}</label>
-      <select
-        id="roomId"
-        name="roomId"
-        value={form.roomId}
-        onChange={handleChange}
-        required
-        disabled={editing || noEligibleRooms}
-      >
-        <option value="">
-          {noEligibleRooms
-            ? t('buildingUtilityReadings.noEligibleRooms')
-            : t('forms.utilityReading.selectRoom')}
-        </option>
-        {rooms.map((room) => (
-          <option key={room.id} value={room.id}>
-            {formatRoomLabel(room)}
+    <form className="panel-form utility-reading-entry-form" onSubmit={handleSubmit}>
+      <div className="utility-reading-shared-form">
+        <label htmlFor="roomId">{t('tables.common.room')}</label>
+        <select
+          id="roomId"
+          name="roomId"
+          value={form.roomId}
+          onChange={handleChange}
+          required
+          disabled={editing || noEligibleRooms}
+        >
+          <option value="">
+            {noEligibleRooms
+              ? t('buildingUtilityReadings.noEligibleRooms')
+              : t('forms.utilityReading.selectRoom')}
           </option>
-        ))}
-      </select>
+          {rooms.map((room) => (
+            <option key={room.id} value={room.id}>
+              {formatRoomLabel(room)}
+            </option>
+          ))}
+        </select>
+
+        <div>
+          <label htmlFor="readingDate">{t('tables.common.readingDate')}</label>
+          <input
+            id="readingDate"
+            name="readingDate"
+            type="date"
+            lang="en-GB"
+            value={form.readingDate}
+            onChange={handleChange}
+            min={readingDateRange.min}
+            max={readingDateRange.max}
+            required
+          />
+          <span className="field-help">{t('forms.utilityReading.readingDateHelp')}</span>
+        </div>
+      </div>
 
       {form.roomId && <PreviousReadingEvidence previousReading={previousReading} t={t} />}
 
-      <div className="form-grid">
-        <div>
-          <label htmlFor="oldElectricity">{t('forms.utilityReading.oldElectricity')}</label>
-          <input
-            id="oldElectricity"
-            name="oldElectricity"
-            type="number"
-            min="0"
-            step="0.01"
-            value={form.oldElectricity}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="newElectricity">{t('forms.utilityReading.newElectricity')}</label>
-          <input
-            id="newElectricity"
-            name="newElectricity"
-            type="number"
-            min="0"
-            step="0.01"
-            value={form.newElectricity}
-            onChange={handleChange}
-            required
-          />
-        </div>
+      <div className="utility-reading-form-sections">
+        <ElectricityReadingSubform
+          form={form}
+          t={t}
+          editing={editing}
+          onChange={handleChange}
+          onImageChange={setElectricityImage}
+        />
+        <WaterReadingSubform
+          form={form}
+          t={t}
+          editing={editing}
+          onChange={handleChange}
+          onImageChange={setWaterImage}
+        />
       </div>
-
-      <label htmlFor="electricityImage">{t('forms.utilityReading.electricityEvidenceImage')}</label>
-      <input
-        id="electricityImage"
-        name="electricityImage"
-        type="file"
-        accept=".jpg,.jpeg,.png,image/jpeg,image/png"
-        onChange={(event) => setElectricityImage(event.target.files?.[0] || null)}
-        required={!editing}
-      />
-
-      <div className="form-grid">
-        <div>
-          <label htmlFor="oldWater">{t('forms.utilityReading.oldWater')}</label>
-          <input
-            id="oldWater"
-            name="oldWater"
-            type="number"
-            min="0"
-            step="0.01"
-            value={form.oldWater}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="newWater">{t('forms.utilityReading.newWater')}</label>
-          <input
-            id="newWater"
-            name="newWater"
-            type="number"
-            min="0"
-            step="0.01"
-            value={form.newWater}
-            onChange={handleChange}
-            required
-          />
-        </div>
-      </div>
-
-      <label htmlFor="waterImage">{t('forms.utilityReading.waterEvidenceImage')}</label>
-      <input
-        id="waterImage"
-        name="waterImage"
-        type="file"
-        accept=".jpg,.jpeg,.png,image/jpeg,image/png"
-        onChange={(event) => setWaterImage(event.target.files?.[0] || null)}
-        required={!editing}
-      />
 
       <p className="muted-text">{t('forms.utilityReading.allowedImageTypes')}</p>
 
@@ -211,22 +168,6 @@ export default function UtilityReadingForm({
         </>
       )}
 
-      <div>
-        <label htmlFor="readingDate">{t('tables.common.readingDate')}</label>
-        <input
-          id="readingDate"
-          name="readingDate"
-          type="date"
-          lang="en-GB"
-          value={form.readingDate}
-          onChange={handleChange}
-          min={readingDateRange.min}
-          max={readingDateRange.max}
-          required
-        />
-        <span className="field-help">{t('forms.utilityReading.readingDateHelp')}</span>
-      </div>
-
       <div className="button-row form-button-row">
         <button type="submit" disabled={loading || noEligibleRooms}>
           {loading ? t('common.saving') : submitLabel}
@@ -238,6 +179,110 @@ export default function UtilityReadingForm({
         )}
       </div>
     </form>
+  );
+}
+
+function ElectricityReadingSubform({ form, t, editing, onChange, onImageChange }) {
+  return (
+    <fieldset className="utility-reading-meter-form meter-form-electricity">
+      <legend>{t('forms.utilityReading.electricitySectionTitle')}</legend>
+      <div className="utility-reading-meter-form-header">
+        <p>{t('forms.utilityReading.electricitySectionDescription')}</p>
+      </div>
+
+      <div className="utility-reading-meter-form-body">
+        <div className="form-grid">
+          <div>
+            <label htmlFor="oldElectricity">{t('forms.utilityReading.oldElectricity')}</label>
+            <input
+              id="oldElectricity"
+              name="oldElectricity"
+              type="number"
+              min="0"
+              step="0.01"
+              value={form.oldElectricity}
+              onChange={onChange}
+              required
+            />
+          </div>
+          <div>
+            <label htmlFor="newElectricity">{t('forms.utilityReading.newElectricity')}</label>
+            <input
+              id="newElectricity"
+              name="newElectricity"
+              type="number"
+              min="0"
+              step="0.01"
+              value={form.newElectricity}
+              onChange={onChange}
+              required
+            />
+          </div>
+        </div>
+
+        <label htmlFor="electricityImage">{t('forms.utilityReading.electricityEvidenceImage')}</label>
+        <input
+          id="electricityImage"
+          name="electricityImage"
+          type="file"
+          accept=".jpg,.jpeg,.png,image/jpeg,image/png"
+          onChange={(event) => onImageChange(event.target.files?.[0] || null)}
+          required={!editing}
+        />
+      </div>
+    </fieldset>
+  );
+}
+
+function WaterReadingSubform({ form, t, editing, onChange, onImageChange }) {
+  return (
+    <fieldset className="utility-reading-meter-form meter-form-water">
+      <legend>{t('forms.utilityReading.waterSectionTitle')}</legend>
+      <div className="utility-reading-meter-form-header">
+        <p>{t('forms.utilityReading.waterSectionDescription')}</p>
+      </div>
+
+      <div className="utility-reading-meter-form-body">
+        <div className="form-grid">
+          <div>
+            <label htmlFor="oldWater">{t('forms.utilityReading.oldWater')}</label>
+            <input
+              id="oldWater"
+              name="oldWater"
+              type="number"
+              min="0"
+              step="0.01"
+              value={form.oldWater}
+              onChange={onChange}
+              required
+            />
+          </div>
+          <div>
+            <label htmlFor="newWater">{t('forms.utilityReading.newWater')}</label>
+            <input
+              id="newWater"
+              name="newWater"
+              type="number"
+              min="0"
+              step="0.01"
+              value={form.newWater}
+              onChange={onChange}
+              required
+            />
+          </div>
+        </div>
+
+        <label htmlFor="waterImage">{t('forms.utilityReading.waterEvidenceImage')}</label>
+        <input
+          id="waterImage"
+          name="waterImage"
+          type="file"
+          accept=".jpg,.jpeg,.png,image/jpeg,image/png"
+          onChange={(event) => onImageChange(event.target.files?.[0] || null)}
+          required={!editing}
+        />
+      </div>
+    </fieldset>
   );
 }
 

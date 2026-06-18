@@ -686,6 +686,21 @@
       "pending": "Pending",
       "rejected": "Rejected",
       "left": "Left"
+    },
+    "assignment": {
+      "open": "Add Head Resident to room",
+      "eyebrow": "Room assignment",
+      "title": "Add Head Resident to an empty room",
+      "description": "Select an active Head Resident with no room and an empty room in this building.",
+      "loading": "Loading Head Residents and empty rooms...",
+      "room": "Empty room",
+      "selectHeadResident": "Select unassigned Head Resident",
+      "selectRoom": "Select empty room",
+      "noHeadResidents": "No active unassigned Head Residents are available.",
+      "noRooms": "No empty rooms are available in this building.",
+      "assigned": "Head Resident was added to the room successfully.",
+      "assignError": "Head Resident could not be added to the room",
+      "optionsLoadError": "Head Residents or empty rooms could not be loaded"
     }
   },
   "buildingBilling": {
@@ -1392,6 +1407,7 @@
       "contractStatus": "Contract status",
       "contractPeriod": "Contract period",
       "maintenanceBlocked": "Rooms in maintenance status cannot receive a Head Resident.",
+      "emptyOnlyBlocked": "Only empty rooms can receive a Head Resident.",
       "unassigned": "No Head Resident is assigned to this room."
     }
   },
@@ -1555,6 +1571,7 @@
       "allStatuses": "All statuses",
       "empty": "No rooms found.",
       "maxOccupants": "Max occupants",
+      "manage": "Manage",
       "details": "Details"
     },
     "payments": {
@@ -1986,9 +2003,13 @@
       },
       "utilityReading": {
         "selectRoom": "Select room",
+        "electricitySectionTitle": "Electricity reading",
+        "electricitySectionDescription": "Enter the old reading, new reading, and electricity evidence image.",
         "oldElectricity": "Old electricity",
         "newElectricity": "New electricity",
         "electricityEvidenceImage": "Electricity evidence image",
+        "waterSectionTitle": "Water reading",
+        "waterSectionDescription": "Enter the old reading, new reading, and water evidence image.",
         "oldWater": "Old water",
         "newWater": "New water",
         "waterEvidenceImage": "Water evidence image",

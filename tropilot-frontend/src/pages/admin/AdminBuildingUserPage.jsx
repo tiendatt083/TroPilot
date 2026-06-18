@@ -2,14 +2,25 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useOutletContext } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import * as buildingApi from '../../features/buildings/api.js';
+import * as roomApi from '../../features/rooms/api.js';
+import * as adminUserApi from '../../features/users/api.js';
 import PageHeader from '../../components/PageHeader.jsx';
-import { formatDisplayDate } from '../../utils/dateFormat.js';
-import { formatRoomCode } from '../../utils/roomDisplay.js';
+import { addMonthsToDateInput, formatDateInputValue, formatDisplayDate } from '../../utils/dateFormat.js';
+import { formatRoomCode, formatRoomLabel } from '../../utils/roomDisplay.js';
 
 const emptyFilters = {
   search: '',
   status: '',
   roomId: ''
+};
+
+const today = formatDateInputValue();
+
+const emptyAssignmentForm = {
+  residentHeadId: '',
+  roomId: '',
+  startDate: today,
+  endDate: addMonthsToDateInput(today, 6)
 };
 
 function normalizeSearchValue(value) {
@@ -99,13 +110,37 @@ function statusClass(residentHead) {
   return `status-pill status-${String(residentHead.status || '').toLowerCase()}`;
 }
 
+function getAvailableResidentHeads(users) {
+  return users
+    .filter((user) => user.role === 'RESIDENT_HEAD' && user.status === 'ACTIVE' && !user.assignedRoomId)
+    .sort((firstUser, secondUser) => (
+      normalizeSearchValue(firstUser.fullName).localeCompare(normalizeSearchValue(secondUser.fullName))
+    ));
+}
+
+function getAvailableRooms(rooms) {
+  return rooms
+    .filter((room) => room.status === 'EMPTY')
+    .sort((firstRoom, secondRoom) => formatRoomLabel(firstRoom).localeCompare(formatRoomLabel(secondRoom)));
+}
+
 export default function AdminBuildingUserPage() {
   const { t } = useTranslation();
   const { building } = useOutletContext();
   const [users, setUsers] = useState([]);
   const [filters, setFilters] = useState(emptyFilters);
+  const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
+  const [assignmentOpen, setAssignmentOpen] = useState(false);
+  const [assignmentForm, setAssignmentForm] = useState(emptyAssignmentForm);
+  const [assignmentOptions, setAssignmentOptions] = useState({
+    residentHeads: [],
+    rooms: []
+  });
+  const [assignmentLoading, setAssignmentLoading] = useState(false);
+  const [assignmentSubmitting, setAssignmentSubmitting] = useState(false);
+  const [assignmentError, setAssignmentError] = useState('');
 
   useEffect(() => {
     let active = true;
@@ -164,10 +199,96 @@ export default function AdminBuildingUserPage() {
     setFilters(emptyFilters);
   };
 
+  const refreshBuildingUsers = async () => {
+    const response = await buildingApi.getAdminBuildingUsers(building.id);
+    setUsers(response.data || []);
+  };
+
+  const loadAssignmentOptions = async () => {
+    setAssignmentLoading(true);
+    setAssignmentError('');
+
+    try {
+      const [usersResponse, roomsResponse] = await Promise.all([
+        adminUserApi.getUsers(),
+        roomApi.getAdminRooms({
+          buildingId: building.id,
+          status: 'EMPTY'
+        })
+      ]);
+
+      setAssignmentOptions({
+        residentHeads: getAvailableResidentHeads(usersResponse.data || []),
+        rooms: getAvailableRooms(roomsResponse.data || [])
+      });
+    } catch (apiError) {
+      setAssignmentError(apiError.response?.data?.message || t('buildingUsers.assignment.optionsLoadError'));
+    } finally {
+      setAssignmentLoading(false);
+    }
+  };
+
+  const handleOpenAssignment = () => {
+    setAssignmentForm(emptyAssignmentForm);
+    setAssignmentError('');
+    setMessage('');
+    setAssignmentOpen(true);
+    loadAssignmentOptions();
+  };
+
+  const handleCloseAssignment = () => {
+    if (assignmentSubmitting) {
+      return;
+    }
+
+    setAssignmentOpen(false);
+  };
+
+  const handleAssignmentChange = (event) => {
+    const { name, value } = event.target;
+    setAssignmentForm((currentForm) => ({
+      ...currentForm,
+      [name]: value,
+      ...(name === 'startDate' ? { endDate: addMonthsToDateInput(value, 6) } : {})
+    }));
+  };
+
+  const handleAssignHeadResident = async (event) => {
+    event.preventDefault();
+    setAssignmentSubmitting(true);
+    setAssignmentError('');
+    setMessage('');
+    setError('');
+
+    try {
+      await roomApi.assignHeadResident(Number(assignmentForm.roomId), {
+        residentHeadId: Number(assignmentForm.residentHeadId),
+        startDate: assignmentForm.startDate,
+        endDate: assignmentForm.endDate
+      });
+      await refreshBuildingUsers();
+      setAssignmentOpen(false);
+      setMessage(t('buildingUsers.assignment.assigned'));
+    } catch (apiError) {
+      setAssignmentError(apiError.response?.data?.message || t('buildingUsers.assignment.assignError'));
+    } finally {
+      setAssignmentSubmitting(false);
+    }
+  };
+
+  const hasResidentHeads = assignmentOptions.residentHeads.length > 0;
+  const hasRooms = assignmentOptions.rooms.length > 0;
+
   return (
     <div className="building-workspace">
-      <PageHeader eyebrow={t('buildingUsers.eyebrow')} title={t('buildingUsers.title')} />
+      <div className="page-title-row compact-title-row">
+        <PageHeader eyebrow={t('buildingUsers.eyebrow')} title={t('buildingUsers.title')} />
+        <button className="button-link" type="button" onClick={handleOpenAssignment}>
+          {t('buildingUsers.assignment.open')}
+        </button>
+      </div>
 
+      {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
 
       <form className="user-filter-row" onSubmit={handleSearch}>
@@ -268,6 +389,116 @@ export default function AdminBuildingUserPage() {
           {filteredHouseholds.length === 0 && (
             <div className="empty-state flat-empty-state">{t('buildingUsers.empty')}</div>
           )}
+        </div>
+      )}
+
+      {assignmentOpen && (
+        <div className="confirm-dialog-overlay" role="presentation" onMouseDown={handleCloseAssignment}>
+          <section
+            className="confirm-dialog assignment-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="assign-head-resident-title"
+            onMouseDown={(event) => event.stopPropagation()}
+          >
+            <div className="account-modal-header">
+              <div>
+                <span className="section-eyebrow">{t('buildingUsers.assignment.eyebrow')}</span>
+                <h2 id="assign-head-resident-title">{t('buildingUsers.assignment.title')}</h2>
+              </div>
+              <button className="account-modal-close" type="button" onClick={handleCloseAssignment}>
+                {t('common.close')}
+              </button>
+            </div>
+
+            <p className="assignment-dialog-description">{t('buildingUsers.assignment.description')}</p>
+
+            {assignmentError && <div className="alert error-alert">{assignmentError}</div>}
+
+            {assignmentLoading ? (
+              <div className="empty-state flat-empty-state">{t('buildingUsers.assignment.loading')}</div>
+            ) : (
+              <form className="panel-form assignment-form" onSubmit={handleAssignHeadResident}>
+                <label htmlFor="buildingUserResidentHeadId">
+                  {t('tables.common.headResident')}
+                </label>
+                <select
+                  id="buildingUserResidentHeadId"
+                  name="residentHeadId"
+                  value={assignmentForm.residentHeadId}
+                  onChange={handleAssignmentChange}
+                  required
+                  disabled={!hasResidentHeads}
+                >
+                  <option value="">
+                    {hasResidentHeads
+                      ? t('buildingUsers.assignment.selectHeadResident')
+                      : t('buildingUsers.assignment.noHeadResidents')}
+                  </option>
+                  {assignmentOptions.residentHeads.map((residentHead) => (
+                    <option key={residentHead.id} value={residentHead.id}>
+                      {residentHead.fullName} - {residentHead.email}
+                    </option>
+                  ))}
+                </select>
+
+                <label htmlFor="buildingUserRoomId">{t('buildingUsers.assignment.room')}</label>
+                <select
+                  id="buildingUserRoomId"
+                  name="roomId"
+                  value={assignmentForm.roomId}
+                  onChange={handleAssignmentChange}
+                  required
+                  disabled={!hasRooms}
+                >
+                  <option value="">
+                    {hasRooms ? t('buildingUsers.assignment.selectRoom') : t('buildingUsers.assignment.noRooms')}
+                  </option>
+                  {assignmentOptions.rooms.map((room) => (
+                    <option key={room.id} value={room.id}>
+                      {formatRoomLabel(room)}
+                    </option>
+                  ))}
+                </select>
+
+                <div className="form-grid">
+                  <div>
+                    <label htmlFor="buildingUserStartDate">{t('forms.assignment.startDate')}</label>
+                    <input
+                      id="buildingUserStartDate"
+                      name="startDate"
+                      type="date"
+                      lang="en-GB"
+                      value={assignmentForm.startDate}
+                      onChange={handleAssignmentChange}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="buildingUserEndDate">{t('forms.assignment.endDate')}</label>
+                    <input
+                      id="buildingUserEndDate"
+                      name="endDate"
+                      type="date"
+                      lang="en-GB"
+                      value={assignmentForm.endDate}
+                      onChange={handleAssignmentChange}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="confirm-dialog-actions">
+                  <button className="secondary-button inline-button" type="button" onClick={handleCloseAssignment}>
+                    {t('common.cancel')}
+                  </button>
+                  <button type="submit" disabled={assignmentSubmitting || !hasResidentHeads || !hasRooms}>
+                    {assignmentSubmitting ? t('forms.assignment.assigning') : t('forms.assignment.submit')}
+                  </button>
+                </div>
+              </form>
+            )}
+          </section>
         </div>
       )}
     </div>

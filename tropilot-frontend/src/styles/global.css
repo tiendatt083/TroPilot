@@ -236,16 +236,15 @@ html[data-theme="dark"] input[type="month"]::-webkit-calendar-picker-indicator {
 
   .building-workspace-tabs {
     position: static;
-    display: flex;
-    flex-wrap: nowrap;
+    display: grid;
+    align-content: start;
     max-height: none;
-    overflow-x: auto;
-    overflow-y: hidden;
+    overflow: visible;
   }
 
   .building-workspace-tabs a {
-    width: auto;
-    flex: 0 0 auto;
+    width: 100%;
+    flex: initial;
   }
 
   .service-fee-utility-grid,

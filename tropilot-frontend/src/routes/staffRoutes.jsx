@@ -14,6 +14,8 @@ import StaffRoomDetailPage from '../pages/staff/StaffRoomDetailPage.jsx';
 import StaffRoomListPage from '../pages/staff/StaffRoomListPage.jsx';
 import StaffTaskDetailPage from '../pages/staff/StaffTaskDetailPage.jsx';
 import StaffTaskListPage from '../pages/staff/StaffTaskListPage.jsx';
+import StaffUtilityReadingCreatePage from '../pages/staff/StaffUtilityReadingCreatePage.jsx';
+import StaffUtilityReadingListPage from '../pages/staff/StaffUtilityReadingListPage.jsx';
 import StaffVehicleListPage from '../pages/staff/StaffVehicleListPage.jsx';
 import RoleBasedRoute from './RoleBasedRoute.jsx';
 import { staffBuildingWorkspaceRoutes } from './buildingWorkspaceRoutes.jsx';
@@ -41,8 +43,8 @@ export const staffRoutes = (
       <Route path="rooms/:id" element={<StaffRoomDetailPage />} />
       <Route path="vehicles" element={<StaffVehicleListPage />} />
       <Route path="service-fees" element={<Navigate to="/staff/buildings" replace />} />
-      <Route path="utility-readings" element={<Navigate to="/staff/buildings" replace />} />
-      <Route path="utility-readings/create" element={<Navigate to="/staff/buildings" replace />} />
+      <Route path="utility-readings" element={<StaffUtilityReadingListPage />} />
+      <Route path="utility-readings/create" element={<StaffUtilityReadingCreatePage />} />
     </Route>
   </Route>
 );

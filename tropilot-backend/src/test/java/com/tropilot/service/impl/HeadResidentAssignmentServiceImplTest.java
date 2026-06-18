@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.verify;
@@ -121,6 +122,24 @@ class HeadResidentAssignmentServiceImplTest {
         assertThat(savedContract.getRentalStatus()).isEqualTo(RentalStatus.ACTIVE);
         assertThat(savedContract.getContractStatus()).isEqualTo(ContractStatus.NOT_UPLOADED);
         assertThat(savedContract.getDepositAmount()).isEqualByComparingTo(room.getPrice());
+    }
+
+    @Test
+    void assignHeadResidentRejectsNonEmptyRoom() {
+        Room room = BusinessRuleTestFixtures.room(RoomStatus.OCCUPIED);
+        User residentHead = BusinessRuleTestFixtures.residentHead();
+        AssignHeadResidentRequest request = assignmentRequest(
+                residentHead.getId(),
+                LocalDate.of(2026, 6, 1),
+                LocalDate.of(2026, 12, 1)
+        );
+
+        when(roomRepository.findById(room.getId())).thenReturn(Optional.of(room));
+        when(userRepository.findById(residentHead.getId())).thenReturn(Optional.of(residentHead));
+
+        assertThatThrownBy(() -> service.assignHeadResident(room.getId(), request))
+                .isInstanceOf(com.tropilot.exception.BadRequestException.class)
+                .hasMessageContaining("Only empty rooms");
     }
 
     @Test

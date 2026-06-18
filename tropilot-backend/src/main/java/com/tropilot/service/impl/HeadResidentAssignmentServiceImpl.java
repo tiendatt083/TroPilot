@@ -55,8 +55,8 @@ public class HeadResidentAssignmentServiceImpl implements HeadResidentAssignment
         validateResidentHead(residentHead);
         validateAssignmentDates(request);
 
-        if (room.getStatus() == RoomStatus.MAINTENANCE) {
-            throw new BadRequestException("Room in maintenance status cannot receive a Head Resident");
+        if (room.getStatus() != RoomStatus.EMPTY) {
+            throw new BadRequestException("Only empty rooms can receive a Head Resident");
         }
 
         if (roomAssignmentRepository.existsByRoom_IdAndStatus(roomId, RoomAssignmentStatus.ACTIVE)) {

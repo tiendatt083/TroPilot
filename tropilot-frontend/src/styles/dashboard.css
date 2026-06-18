@@ -140,14 +140,11 @@
 }
 
 .building-workspace-tabs {
-  position: sticky;
-  top: 1rem;
+  position: static;
   display: grid;
   align-content: start;
-  max-height: calc(100vh - 8.5rem);
-  overflow-y: auto;
-  scrollbar-color: #9aa6b2 transparent;
-  scrollbar-width: thin;
+  align-self: start;
+  overflow: visible;
 }
 
 .building-workspace-tabs a {

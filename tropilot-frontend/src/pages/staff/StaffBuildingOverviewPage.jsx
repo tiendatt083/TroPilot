@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import * as invoiceApi from '../../features/invoices/api.js';
 import * as maintenanceApi from '../../features/maintenance/api.js';
 import * as taskApi from '../../features/maintenance/taskApi.js';
 import * as vehicleApi from '../../features/residents/vehicleApi.js';
@@ -11,7 +10,6 @@ import { formatNumber } from '../../utils/numberFormat.js';
 
 const emptySummary = {
   rooms: [],
-  invoices: [],
   vehicles: [],
   maintenanceRequests: [],
   expenses: [],
@@ -44,10 +42,9 @@ export default function StaffBuildingOverviewPage() {
       setError('');
 
       try {
-        const [roomsResponse, invoicesResponse, vehiclesResponse, maintenanceResponse, expensesResponse, tasksResponse] =
+        const [roomsResponse, vehiclesResponse, maintenanceResponse, expensesResponse, tasksResponse] =
           await Promise.all([
             roomApi.getStaffRooms(buildingFilter),
-            invoiceApi.getStaffBuildingInvoices(building.id),
             vehicleApi.getStaffVehicles(buildingFilter),
             maintenanceApi.getStaffMaintenanceRequests(buildingFilter),
             expenseApi.getStaffExpenses(buildingFilter),
@@ -60,7 +57,6 @@ export default function StaffBuildingOverviewPage() {
 
         setSummary({
           rooms: roomsResponse.data || [],
-          invoices: invoicesResponse.data || [],
           vehicles: vehiclesResponse.data || [],
           maintenanceRequests: maintenanceResponse.data || [],
           expenses: expensesResponse.data || [],
@@ -89,7 +85,6 @@ export default function StaffBuildingOverviewPage() {
   }
 
   const activeVehicles = summary.vehicles.filter((vehicle) => vehicle.status === 'ACTIVE').length;
-  const unpaidInvoices = summary.invoices.filter((invoice) => invoice.status !== 'PAID').length;
   const openMaintenance = summary.maintenanceRequests.filter((request) =>
     ['PENDING', 'ASSIGNED', 'IN_PROGRESS'].includes(request.status)
   ).length;
@@ -123,10 +118,6 @@ export default function StaffBuildingOverviewPage() {
         <div className="dashboard-card">
           <span>Total rooms</span>
           <strong>{formatNumber(summary.rooms.length)}</strong>
-        </div>
-        <div className="dashboard-card">
-          <span>Unpaid invoices</span>
-          <strong>{formatNumber(unpaidInvoices)}</strong>
         </div>
         <div className="dashboard-card">
           <span>Active vehicles</span>

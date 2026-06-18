@@ -19,8 +19,7 @@ const BUILDING_WORKSPACE_GROUPS = [
     labelKey: 'buildingWorkspace.groups.communication',
     items: [
       { path: '/notifications', labelKey: 'buildingWorkspace.notifications' },
-      { path: '/feedbacks', labelKey: 'buildingWorkspace.feedbacks' },
-      { path: '/invoice-complaints', labelKey: 'buildingWorkspace.invoiceComplaints' }
+      { path: '/feedbacks', labelKey: 'buildingWorkspace.feedbacks' }
     ]
   },
   {
@@ -45,6 +44,7 @@ const BUILDING_WORKSPACE_GROUPS = [
       { path: '/expenses', labelKey: 'buildingWorkspace.expenses' },
       { path: '/cashflow', labelKey: 'buildingWorkspace.cashFlow' },
       { path: '/payments', labelKey: 'buildingWorkspace.payments' },
+      { path: '/invoice-complaints', labelKey: 'buildingWorkspace.invoiceComplaints' },
       { path: '/receipts', labelKey: 'buildingWorkspace.receipts' }
     ]
   }
@@ -57,15 +57,12 @@ export const STAFF_BUILDING_TABS = [
     '',
     '/rooms',
     '/equipment',
-    '/contracts',
     '/utility-readings',
-    '/invoices',
     '/service-fees',
     '/vehicles',
     '/payments',
     '/maintenance',
     '/expenses',
-    '/cashflow',
     '/tasks'
   ])
 ];

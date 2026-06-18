@@ -686,6 +686,21 @@
       "pending": "Đang chờ",
       "rejected": "Bị từ chối",
       "left": "Đã rời đi"
+    },
+    "assignment": {
+      "open": "Thêm chủ hộ vào phòng",
+      "eyebrow": "Phân phòng",
+      "title": "Thêm chủ hộ vào phòng trống",
+      "description": "Chọn một chủ hộ đang hoạt động chưa được gán phòng và một phòng trống trong tòa nhà này.",
+      "loading": "Đang tải chủ hộ và phòng trống...",
+      "room": "Phòng trống",
+      "selectHeadResident": "Chọn chủ hộ chưa có phòng",
+      "selectRoom": "Chọn phòng trống",
+      "noHeadResidents": "Không có chủ hộ đang hoạt động chưa được gán phòng.",
+      "noRooms": "Không có phòng trống trong tòa nhà này.",
+      "assigned": "Đã thêm chủ hộ vào phòng thành công.",
+      "assignError": "Không thể thêm chủ hộ vào phòng",
+      "optionsLoadError": "Không thể tải danh sách chủ hộ hoặc phòng trống"
     }
   },
   "buildingBilling": {
@@ -1392,6 +1407,7 @@
       "contractStatus": "Trạng thái hợp đồng",
       "contractPeriod": "Thời hạn hợp đồng",
       "maintenanceBlocked": "Không thể gán chủ hộ cho phòng đang bảo trì.",
+      "emptyOnlyBlocked": "Chỉ phòng trống mới có thể nhận chủ hộ.",
       "unassigned": "Phòng này chưa được gán chủ hộ."
     }
   },
@@ -1555,6 +1571,7 @@
       "allStatuses": "Tất cả trạng thái",
       "empty": "Không tìm thấy phòng.",
       "maxOccupants": "Số người tối đa",
+      "manage": "Quản lý",
       "details": "Chi tiết"
     },
     "payments": {
@@ -1986,9 +2003,13 @@
       },
       "utilityReading": {
         "selectRoom": "Chọn phòng",
+        "electricitySectionTitle": "Chỉ số điện",
+        "electricitySectionDescription": "Nhập chỉ số điện cũ, chỉ số điện mới và ảnh bằng chứng điện.",
         "oldElectricity": "Chỉ số điện cũ",
         "newElectricity": "Chỉ số điện mới",
         "electricityEvidenceImage": "Ảnh bằng chứng điện",
+        "waterSectionTitle": "Chỉ số nước",
+        "waterSectionDescription": "Nhập chỉ số nước cũ, chỉ số nước mới và ảnh bằng chứng nước.",
         "oldWater": "Chỉ số nước cũ",
         "newWater": "Chỉ số nước mới",
         "waterEvidenceImage": "Ảnh bằng chứng nước",

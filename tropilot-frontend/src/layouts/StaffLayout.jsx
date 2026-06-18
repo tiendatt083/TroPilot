@@ -17,8 +17,7 @@ const STAFF_INFORMATION_ITEMS = [
 ];
 
 const STAFF_PRIMARY_ITEMS = [
-  { to: '/staff/dashboard', labelKey: 'navigation.dashboard' },
-  { to: '/staff/rooms', labelKey: 'navigation.rooms' }
+  { to: '/staff/dashboard', labelKey: 'navigation.dashboard' }
 ];
 
 const STAFF_ACCOUNT_ITEMS = [

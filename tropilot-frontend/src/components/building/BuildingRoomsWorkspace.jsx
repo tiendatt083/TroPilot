@@ -20,18 +20,15 @@ export default function BuildingRoomsWorkspace({
   getRooms,
   roomBasePath,
   canManage = false,
-  createRoomPath,
-  deleteRoom
+  createRoomPath
 }) {
   const { t } = useTranslation();
   const { building } = useOutletContext();
   const [rooms, setRooms] = useState([]);
   const [filters, setFilters] = useState(emptyFilters);
   const [appliedFilters, setAppliedFilters] = useState(emptyFilters);
-  const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
-  const [deletingId, setDeletingId] = useState(null);
 
   const loadRooms = async (filterValues = appliedFilters) => {
     setLoading(true);
@@ -66,26 +63,6 @@ export default function BuildingRoomsWorkspace({
     setFilters(emptyFilters);
     setAppliedFilters(emptyFilters);
     loadRooms(emptyFilters);
-  };
-
-  const handleDelete = async (room) => {
-    if (!deleteRoom || !window.confirm(t('workspace.rooms.deleteConfirm', { code: formatRoomCode(room) }))) {
-      return;
-    }
-
-    setDeletingId(room.id);
-    setMessage('');
-    setError('');
-
-    try {
-      await deleteRoom(room.id);
-      setMessage(t('workspace.rooms.deleted'));
-      await loadRooms(appliedFilters);
-    } catch (apiError) {
-      setError(apiError.response?.data?.message || t('workspace.rooms.deleteError'));
-    } finally {
-      setDeletingId(null);
-    }
   };
 
   return (
@@ -126,7 +103,6 @@ export default function BuildingRoomsWorkspace({
         </button>
       </form>
 
-      {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
 
       {loading ? (
@@ -161,26 +137,8 @@ export default function BuildingRoomsWorkspace({
                   <td>
                     <div className="table-actions">
                       <Link className="secondary-link compact-link" to={`${roomBasePath}/${room.id}`}>
-                        {t('common.view')}
+                        {canManage ? t('workspace.rooms.manage') : t('common.view')}
                       </Link>
-                      {canManage && (
-                        <>
-                          <Link className="secondary-link compact-link" to={`${roomBasePath}/${room.id}/edit`}>
-                            {t('common.edit')}
-                          </Link>
-                          <Link className="secondary-link compact-link" to={`${roomBasePath}/${room.id}/members`}>
-                            {t('navigation.members')}
-                          </Link>
-                          <button
-                            className="secondary-button compact-button"
-                            type="button"
-                            disabled={deletingId === room.id}
-                            onClick={() => handleDelete(room)}
-                          >
-                            {t('common.delete')}
-                          </button>
-                        </>
-                      )}
                     </div>
                   </td>
                 </tr>

@@ -22,7 +22,11 @@ function statusClass(status) {
 }
 
 function getActiveResidentHeads(users) {
-  return users.filter((user) => user.role === 'RESIDENT_HEAD' && user.status === 'ACTIVE');
+  return users.filter((user) => (
+    user.role === 'RESIDENT_HEAD'
+    && user.status === 'ACTIVE'
+    && !user.assignedRoomId
+  ));
 }
 
 function isFutureDate(dateValue) {
@@ -166,7 +170,7 @@ export default function AdminRoomDetailPage() {
   }
 
   const hasHeadResident = Boolean(headInfo?.assigned);
-  const canAssignHead = !hasHeadResident && room.status !== 'MAINTENANCE';
+  const canAssignHead = !hasHeadResident && room.status === 'EMPTY';
 
   return (
     <section className="content-section">
@@ -297,8 +301,8 @@ export default function AdminRoomDetailPage() {
           </div>
         ) : (
           <div className="empty-state">
-            {room.status === 'MAINTENANCE'
-              ? t('roomManagement.assignment.maintenanceBlocked')
+            {room.status !== 'EMPTY'
+              ? t('roomManagement.assignment.emptyOnlyBlocked')
               : t('roomManagement.assignment.unassigned')}
           </div>
         )}

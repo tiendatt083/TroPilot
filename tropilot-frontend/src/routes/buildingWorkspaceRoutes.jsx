@@ -1,4 +1,4 @@
-import { Navigate, Route } from 'react-router-dom';
+import { Navigate, Route, useParams } from 'react-router-dom';
 import AdminBuildingWorkspaceLayout from '../layouts/AdminBuildingWorkspaceLayout.jsx';
 import StaffBuildingWorkspaceLayout from '../layouts/StaffBuildingWorkspaceLayout.jsx';
 import AdminBuildingCashFlowPage from '../pages/admin/AdminBuildingCashFlowPage.jsx';
@@ -24,10 +24,8 @@ import AdminBuildingVehiclePage from '../pages/admin/AdminBuildingVehiclePage.js
 import AdminRoomDetailPage from '../pages/admin/AdminRoomDetailPage.jsx';
 import AdminRoomEditPage from '../pages/admin/AdminRoomEditPage.jsx';
 import AdminRoomMembersPage from '../pages/admin/AdminRoomMembersPage.jsx';
-import StaffBuildingCashFlowPage from '../pages/staff/StaffBuildingCashFlowPage.jsx';
 import StaffBuildingEquipmentPage from '../pages/staff/StaffBuildingEquipmentPage.jsx';
 import StaffBuildingExpensePage from '../pages/staff/StaffBuildingExpensePage.jsx';
-import StaffBuildingInvoicePage from '../pages/staff/StaffBuildingInvoicePage.jsx';
 import StaffBuildingOverviewPage from '../pages/staff/StaffBuildingOverviewPage.jsx';
 import StaffBuildingPaymentPage from '../pages/staff/StaffBuildingPaymentPage.jsx';
 import StaffBuildingRoomsPage from '../pages/staff/StaffBuildingRoomsPage.jsx';
@@ -74,13 +72,19 @@ export const staffBuildingWorkspaceRoutes = (
     <Route path="rooms/:roomId" element={<StaffRoomDetailPage />} />
     <Route path="equipment" element={<StaffBuildingEquipmentPage />} />
     <Route path="utility-readings" element={<StaffBuildingUtilityReadingPage />} />
-    <Route path="invoices" element={<StaffBuildingInvoicePage />} />
+    <Route path="contracts" element={<StaffBuildingOverviewRedirect />} />
+    <Route path="invoices" element={<StaffBuildingOverviewRedirect />} />
     <Route path="service-fees" element={<StaffBuildingServiceFeePage />} />
     <Route path="vehicles" element={<StaffBuildingVehiclePage />} />
     <Route path="payments" element={<StaffBuildingPaymentPage />} />
     <Route path="maintenance" element={<StaffMaintenancePage />} />
     <Route path="expenses" element={<StaffBuildingExpensePage />} />
-    <Route path="cashflow" element={<StaffBuildingCashFlowPage />} />
+    <Route path="cashflow" element={<StaffBuildingOverviewRedirect />} />
     <Route path="tasks" element={<StaffBuildingTaskPage />} />
   </Route>
 );
+
+function StaffBuildingOverviewRedirect() {
+  const { id } = useParams();
+  return <Navigate to={`/staff/buildings/${id}`} replace />;
+}
