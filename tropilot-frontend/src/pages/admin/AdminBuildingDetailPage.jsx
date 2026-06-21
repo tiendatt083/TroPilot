@@ -27,7 +27,7 @@ const emptyBuildingOperations = {
   tasks: [],
   feedbacks: [],
   invoiceComplaints: [],
-  notifications: []
+  notificationCount: 0
 };
 
 function toNumber(value) {
@@ -236,7 +236,7 @@ export default function AdminBuildingDetailPage() {
           tasks: tasksResponse.data || [],
           feedbacks: feedbacksResponse.data || [],
           invoiceComplaints: invoiceComplaintsResponse.data || [],
-          notifications: notificationsResponse.data || []
+          notificationCount: notificationsResponse.data?.length || 0
         });
       } catch (apiError) {
         if (active) {
@@ -379,7 +379,7 @@ export default function AdminBuildingDetailPage() {
       metrics: [
         { label: t('buildingOverview.metrics.unresolvedFeedbacks'), value: formatNumber(unresolvedFeedbacks, locale) },
         { label: t('buildingOverview.metrics.invoiceComplaints'), value: formatNumber(operations.invoiceComplaints.length, locale) },
-        { label: t('buildingOverview.metrics.notifications'), value: formatNumber(operations.notifications.length, locale) }
+        { label: t('buildingOverview.metrics.notifications'), value: formatNumber(operations.notificationCount, locale) }
       ]
     }
   ];

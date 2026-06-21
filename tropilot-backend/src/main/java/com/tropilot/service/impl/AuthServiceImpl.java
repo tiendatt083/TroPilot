@@ -179,10 +179,6 @@ public class AuthServiceImpl implements AuthService {
         User user = findUser(userId);
         validateLoginStatus(user);
 
-        if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
-            throw new BadRequestException("Current password is incorrect");
-        }
-
         user.setFullName(request.getFullName().trim());
         user.setPhone(normalizeOptionalText(request.getPhone()));
         user.setIdentityNumber(normalizeOptionalText(request.getIdentityNumber()));

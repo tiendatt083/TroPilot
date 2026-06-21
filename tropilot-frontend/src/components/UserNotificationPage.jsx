@@ -1,20 +1,32 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as notificationApi from '../features/notifications/api.js';
 import NotificationTable from './NotificationTable.jsx';
+import NotificationPaginationControls from './NotificationPaginationControls.jsx';
 import PageHeader from './PageHeader.jsx';
+
+const HISTORY_PAGE_SIZE = 30;
 
 export default function UserNotificationPage({ getNotifications, eyebrow, eyebrowKey }) {
   const { t } = useTranslation();
   const [notifications, setNotifications] = useState([]);
+  const [notificationPage, setNotificationPage] = useState(0);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [processingId, setProcessingId] = useState(null);
 
+  const pagedNotifications = useMemo(() => {
+    const start = notificationPage * HISTORY_PAGE_SIZE;
+    return notifications.slice(start, start + HISTORY_PAGE_SIZE);
+  }, [notificationPage, notifications]);
+
   useEffect(() => {
     getNotifications()
-      .then((response) => setNotifications(response.data))
+      .then((response) => {
+        setNotifications(response.data);
+        setNotificationPage(0);
+      })
       .catch((apiError) => setError(apiError.response?.data?.message || t('resident.notifications.loadError')))
       .finally(() => setLoading(false));
   }, [getNotifications]);
@@ -35,6 +47,10 @@ export default function UserNotificationPage({ getNotifications, eyebrow, eyebro
     }
   };
 
+  const handleNotificationPageChange = (page) => {
+    setNotificationPage(page);
+  };
+
   return (
     <section className="content-section">
       <PageHeader eyebrow={eyebrowKey ? t(eyebrowKey) : eyebrow} title={t('navigation.notifications')} />
@@ -45,12 +61,20 @@ export default function UserNotificationPage({ getNotifications, eyebrow, eyebro
       {loading ? (
         <div className="empty-state">{t('resident.notifications.loading')}</div>
       ) : (
-        <NotificationTable
-          notifications={notifications}
-          processingId={processingId}
-          showTarget={false}
-          onMarkRead={handleMarkRead}
-        />
+        <>
+          <NotificationTable
+            notifications={pagedNotifications}
+            processingId={processingId}
+            showTarget={false}
+            onMarkRead={handleMarkRead}
+          />
+          <NotificationPaginationControls
+            page={notificationPage}
+            pageSize={HISTORY_PAGE_SIZE}
+            totalItems={notifications.length}
+            onPageChange={handleNotificationPageChange}
+          />
+        </>
       )}
     </section>
   );

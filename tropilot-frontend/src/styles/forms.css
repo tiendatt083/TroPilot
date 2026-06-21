@@ -1052,6 +1052,39 @@
   min-width: 900px;
 }
 
+.notification-pagination button {
+  white-space: nowrap;
+}
+
+.notification-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem;
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-sm);
+  padding: 0.7rem 0.8rem;
+  color: var(--color-text-muted);
+  background: var(--color-surface-muted);
+}
+
+.notification-pagination label,
+.notification-pagination strong {
+  color: var(--color-text);
+}
+
+.notification-page-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.notification-page-buttons .is-active {
+  border-color: var(--color-primary);
+  color: #fff;
+  background: var(--color-primary);
+}
+
 .feedback-table {
   min-width: 1260px;
 }
@@ -1211,4 +1244,19 @@
 .cashflow-summary strong {
   color: var(--color-text);
   font-size: 1.2rem;
+}
+
+@media (max-width: 760px) {
+  .notification-pagination {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .notification-page-buttons {
+    flex-direction: column;
+  }
+
+  .notification-pagination button {
+    width: 100%;
+  }
 }

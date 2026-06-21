@@ -4,8 +4,7 @@ import { useAuth } from '../context/AuthContext.jsx';
 
 const EMPTY_FORM = {
   fullName: '',
-  phone: '',
-  currentPassword: ''
+  phone: ''
 };
 
 export default function AdminProfileDialog({ open, onClose }) {
@@ -23,8 +22,7 @@ export default function AdminProfileDialog({ open, onClose }) {
 
     setForm({
       fullName: user?.fullName || '',
-      phone: user?.phone || '',
-      currentPassword: ''
+      phone: user?.phone || ''
     });
     setMessage('');
     setError('');
@@ -57,10 +55,8 @@ export default function AdminProfileDialog({ open, onClose }) {
     try {
       await updateProfile({
         fullName: form.fullName.trim(),
-        phone: form.phone.trim(),
-        currentPassword: form.currentPassword
+        phone: form.phone.trim()
       });
-      setForm((current) => ({ ...current, currentPassword: '' }));
       setMessage(t('profile.messages.updated'));
     } catch (apiError) {
       setError(apiError.response?.data?.message || t('profile.messages.updateError'));
@@ -142,21 +138,6 @@ export default function AdminProfileDialog({ open, onClose }) {
               />
             </div>
 
-            <div className="form-grid-wide">
-              <label htmlFor="adminProfileCurrentPassword">
-                {t('profile.fields.currentPassword')}
-              </label>
-              <input
-                id="adminProfileCurrentPassword"
-                autoComplete="current-password"
-                name="currentPassword"
-                required
-                type="password"
-                value={form.currentPassword}
-                onChange={handleChange}
-              />
-              <span className="field-help">{t('profile.passwordHelp')}</span>
-            </div>
           </div>
 
           <div className="admin-profile-actions">

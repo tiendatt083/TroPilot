@@ -4,6 +4,7 @@ import * as buildingApi from '../../features/buildings/api.js';
 import * as notificationApi from '../../features/notifications/api.js';
 import * as adminUserApi from '../../features/users/api.js';
 import CheckboxList from '../../components/CheckboxList.jsx';
+import NotificationPaginationControls from '../../components/NotificationPaginationControls.jsx';
 import NotificationTable from '../../components/NotificationTable.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
 import { formatEnumLabel } from '../../utils/i18nFormat.js';
@@ -17,6 +18,8 @@ const emptyForm = {
   buildingTargetType: 'ALL',
   buildingIds: []
 };
+
+const HISTORY_PAGE_SIZE = 30;
 
 function isSelectableNotificationUser(user) {
   return user.status === 'ACTIVE' && (user.role === 'STAFF' || (user.role === 'RESIDENT_HEAD' && user.assignedBuildingId));
@@ -46,6 +49,7 @@ export default function AdminNotificationPage() {
   const { t } = useTranslation();
   const [form, setForm] = useState(emptyForm);
   const [notifications, setNotifications] = useState([]);
+  const [notificationPage, setNotificationPage] = useState(0);
   const [buildings, setBuildings] = useState([]);
   const [users, setUsers] = useState([]);
   const [message, setMessage] = useState('');
@@ -73,9 +77,19 @@ export default function AdminNotificationPage() {
     ));
   }, [form.buildingIds, form.buildingTargetType, selectableUsers]);
 
+  const pagedNotifications = useMemo(() => {
+    const start = notificationPage * HISTORY_PAGE_SIZE;
+    return notifications.slice(start, start + HISTORY_PAGE_SIZE);
+  }, [notificationPage, notifications]);
+
   const loadNotifications = async () => {
-    const response = await notificationApi.getAdminNotifications();
-    setNotifications(response.data);
+    try {
+      const response = await notificationApi.getAdminNotifications();
+      setNotifications(response.data);
+      setNotificationPage(0);
+    } catch (apiError) {
+      setError(apiError.response?.data?.message || t('notifications.loadError'));
+    }
   };
 
   useEffect(() => {
@@ -160,6 +174,10 @@ export default function AdminNotificationPage() {
       buildingIds,
       targetUserIds: current.targetType === 'SELECTED_USERS' ? [] : current.targetUserIds
     }));
+  };
+
+  const handleNotificationPageChange = (page) => {
+    setNotificationPage(page);
   };
 
   const handleSubmit = async (event) => {
@@ -301,7 +319,13 @@ export default function AdminNotificationPage() {
 
       <section className="building-section">
         <PageHeader eyebrow={t('notifications.title')} title={t('notifications.allTitle')} />
-        <NotificationTable notifications={notifications} showReadStatus={false} />
+        <NotificationTable notifications={pagedNotifications} showReadStatus={false} />
+        <NotificationPaginationControls
+          page={notificationPage}
+          pageSize={HISTORY_PAGE_SIZE}
+          totalItems={notifications.length}
+          onPageChange={handleNotificationPageChange}
+        />
       </section>
     </section>
   );

@@ -78,9 +78,6 @@ export default function ForgotPasswordPage() {
           <Link className="auth-link" to="/login">
             {t('auth.common.backToLogin')}
           </Link>
-          <Link className="auth-link" to="/reset-password">
-            {t('auth.forgotPassword.haveCode')}
-          </Link>
         </div>
       </section>
     </main>

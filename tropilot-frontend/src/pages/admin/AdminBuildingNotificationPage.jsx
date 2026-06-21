@@ -4,6 +4,7 @@ import { useOutletContext } from 'react-router-dom';
 import * as notificationApi from '../../features/notifications/api.js';
 import * as adminUserApi from '../../features/users/api.js';
 import CheckboxList from '../../components/CheckboxList.jsx';
+import NotificationPaginationControls from '../../components/NotificationPaginationControls.jsx';
 import NotificationTable from '../../components/NotificationTable.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
 import { formatEnumLabel } from '../../utils/i18nFormat.js';
@@ -15,6 +16,8 @@ const emptyForm = {
   targetType: 'ALL_RESIDENT_HEADS',
   targetUserIds: []
 };
+
+const HISTORY_PAGE_SIZE = 30;
 
 function isBuildingNotificationUser(user, buildingId) {
   if (user.status !== 'ACTIVE') {
@@ -52,6 +55,7 @@ export default function AdminBuildingNotificationPage() {
   const [form, setForm] = useState(emptyForm);
   const [users, setUsers] = useState([]);
   const [notifications, setNotifications] = useState([]);
+  const [notificationPage, setNotificationPage] = useState(0);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
@@ -63,6 +67,11 @@ export default function AdminBuildingNotificationPage() {
     [building.id, users]
   );
 
+  const pagedNotifications = useMemo(() => {
+    const start = notificationPage * HISTORY_PAGE_SIZE;
+    return notifications.slice(start, start + HISTORY_PAGE_SIZE);
+  }, [notificationPage, notifications]);
+
   const loadData = async () => {
     setError('');
 
@@ -73,6 +82,7 @@ export default function AdminBuildingNotificationPage() {
       ]);
       setUsers(usersResponse.data);
       setNotifications(notificationsResponse.data);
+      setNotificationPage(0);
     } catch (apiError) {
       setError(apiError.response?.data?.message || t('workspace.notifications.loadError'));
     }
@@ -98,6 +108,10 @@ export default function AdminBuildingNotificationPage() {
       ...current,
       targetUserIds
     }));
+  };
+
+  const handleNotificationPageChange = (page) => {
+    setNotificationPage(page);
   };
 
   const handleSubmit = async (event) => {
@@ -195,7 +209,15 @@ export default function AdminBuildingNotificationPage() {
           </button>
         </form>
 
-        <NotificationTable notifications={notifications} />
+        <div>
+          <NotificationTable notifications={pagedNotifications} />
+          <NotificationPaginationControls
+            page={notificationPage}
+            pageSize={HISTORY_PAGE_SIZE}
+            totalItems={notifications.length}
+            onPageChange={handleNotificationPageChange}
+          />
+        </div>
       </section>
     </div>
   );

@@ -5,8 +5,7 @@ import { useAuth } from '../context/AuthContext.jsx';
 
 const initialForm = {
   fullName: '',
-  phone: '',
-  currentPassword: ''
+  phone: ''
 };
 
 function getRoleLabel(t, role) {
@@ -79,10 +78,8 @@ export default function ProfilePage() {
     try {
       await updateProfile({
         fullName: form.fullName,
-        phone: form.phone,
-        currentPassword: form.currentPassword
+        phone: form.phone
       });
-      setForm((current) => ({ ...current, currentPassword: '' }));
       setMessage(t('profile.messages.updated'));
     } catch (apiError) {
       setError(apiError.response?.data?.message || t('profile.messages.updateError'));
@@ -168,18 +165,6 @@ export default function ProfilePage() {
             onChange={handleChange}
             maxLength={30}
           />
-
-          <label htmlFor="profileCurrentPassword">{t('profile.fields.currentPassword')}</label>
-          <input
-            id="profileCurrentPassword"
-            name="currentPassword"
-            type="password"
-            autoComplete="current-password"
-            value={form.currentPassword}
-            onChange={handleChange}
-            required
-          />
-          <span className="field-help">{t('profile.passwordHelp')}</span>
 
           <button type="submit" disabled={loading}>
             {loading ? t('profile.actions.saving') : t('profile.actions.save')}

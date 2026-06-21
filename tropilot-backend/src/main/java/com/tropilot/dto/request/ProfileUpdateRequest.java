@@ -19,7 +19,4 @@ public class ProfileUpdateRequest {
 
     @Size(max = 60, message = "Citizen ID must not exceed 60 characters")
     private String identityNumber;
-
-    @NotBlank(message = "Current password is required")
-    private String currentPassword;
 }

@@ -88,9 +88,8 @@
   "profile": {
     "title": "Personal information",
     "eyebrow": "Account",
-    "description": "View your account details and update basic contact information after confirming your current password.",
+    "description": "View your account details and update basic contact information.",
     "editTitle": "Edit personal information",
-    "passwordHelp": "Enter your current password to confirm this profile update.",
     "emailHelp": "Email is used for login and cannot be changed on this page.",
     "sections": {
       "account": "Account information",
@@ -101,8 +100,7 @@
       "email": "Email",
       "phone": "Phone",
       "role": "Role",
-      "status": "Account status",
-      "currentPassword": "Current password"
+      "status": "Account status"
     },
     "status": {
       "locked": "Locked"
@@ -865,6 +863,12 @@
     "notAvailable": "Not available",
     "filterPlaceholder": "Filter by action",
     "filterAriaLabel": "Action filter",
+    "pagination": {
+      "summary": "Showing {{from}}-{{to}} of {{total}} logs",
+      "previous": "Previous",
+      "next": "Next",
+      "ariaLabel": "Activity log pagination"
+    },
     "columns": {
       "time": "Time",
       "user": "User",
@@ -1093,7 +1097,6 @@
       "submit": "Send verification code",
       "sent": "A verification code has been sent to your email.",
       "notRegistered": "Email is incorrect or not registered. Please try again.",
-      "haveCode": "I already have a code",
       "error": "Verification code could not be sent"
     },
     "resetPassword": {
@@ -1254,6 +1257,12 @@
       "buildingReceiving": "Building receiving notification",
       "targetHeadResidents": "Target Head Residents",
       "targetUsers": "Target users"
+    },
+    "pagination": {
+      "summary": "Showing {{from}}-{{to}} of {{total}} notifications",
+      "previous": "Previous",
+      "next": "Next",
+      "ariaLabel": "Notification pagination"
     },
     "buildingTarget": {
       "all": "All buildings",
