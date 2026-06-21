@@ -17,6 +17,7 @@ import com.tropilot.repository.ReceiptRepository;
 import com.tropilot.repository.SepayPaymentRepository;
 import com.tropilot.service.ActivityLogService;
 import com.tropilot.service.NotificationService;
+import com.tropilot.service.PaymentEmailService;
 import com.tropilot.service.ReceiptCreationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -63,6 +64,9 @@ class SepayPaymentServiceImplTest {
 
     @Mock
     private ActivityLogService activityLogService;
+
+    @Mock
+    private PaymentEmailService paymentEmailService;
 
     @InjectMocks
     private SepayPaymentServiceImpl service;
@@ -112,6 +116,7 @@ class SepayPaymentServiceImplTest {
         verify(receiptRepository).save(receipt);
         verify(sepayPaymentRepository).save(payment);
         verify(notificationService).createInvoicePaidNotification(admin, invoice, payment);
+        verify(paymentEmailService).sendPaymentSuccessEmail(eq(invoice), any(LocalDateTime.class));
     }
 
     @Test
@@ -135,6 +140,7 @@ class SepayPaymentServiceImplTest {
         verify(sepayPaymentRepository).save(payment);
         verify(invoiceRepository, never()).save(any());
         verify(receiptRepository, never()).save(any());
+        verify(paymentEmailService, never()).sendPaymentSuccessEmail(any(), any());
     }
 
     @Test
@@ -155,6 +161,7 @@ class SepayPaymentServiceImplTest {
         verify(receiptRepository, never()).save(any());
         verify(sepayPaymentRepository, never()).save(any());
         verify(notificationService, never()).createInvoicePaidNotification(any(), any(), any());
+        verify(paymentEmailService, never()).sendPaymentSuccessEmail(any(), any());
     }
 
     private SepayPayment payment(Invoice invoice) {

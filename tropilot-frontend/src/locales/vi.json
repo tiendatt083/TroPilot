@@ -260,7 +260,12 @@
       "household": "Căn hộ / Chủ hộ"
     },
     "actions": {
-      "create": "Tạo tài khoản chủ hộ"
+      "create": "Tạo tài khoản chủ hộ",
+      "exportExcel": "Tải Excel"
+    },
+    "recordTypes": {
+      "headResident": "Chủ hộ",
+      "member": "Thành viên phòng"
     },
     "memberCount_one": "{{count}} thành viên liên quan",
     "memberCount_other": "{{count}} thành viên liên quan",
@@ -271,7 +276,11 @@
     "messages": {
       "loading": "Đang tải danh sách cư dân...",
       "loadError": "Không thể tải danh sách cư dân",
-      "empty": "Không tìm thấy tài khoản chủ hộ phù hợp."
+      "empty": "Không tìm thấy tài khoản chủ hộ phù hợp.",
+      "exportEmpty": "Không có khách thuê để xuất."
+    },
+    "export": {
+      "sheetName": "Khach thue"
     }
   },
   "accountDirectory": {
@@ -653,6 +662,15 @@
     "loading": "Đang tải người dùng của tòa nhà...",
     "loadError": "Không thể tải người dùng của tòa nhà",
     "empty": "Không tìm thấy người dùng trong tòa nhà này.",
+    "actions": {
+      "exportExcel": "Tải Excel"
+    },
+    "messages": {
+      "exportEmpty": "Không có người dùng để xuất."
+    },
+    "export": {
+      "sheetName": "Nguoi dung"
+    },
     "filters": {
       "searchPlaceholder": "Tìm theo tên, email, số điện thoại, căn cước hoặc phòng",
       "searchAria": "Tìm kiếm người dùng của tòa nhà",
@@ -664,6 +682,7 @@
       "allRooms": "Tất cả phòng"
     },
     "columns": {
+      "recordType": "Loại hồ sơ",
       "user": "Người dùng",
       "phone": "Số điện thoại",
       "identityNumber": "Căn cước công dân (ID)",
@@ -1668,6 +1687,11 @@
       "rejectError": "Không thể từ chối thành viên phòng",
       "occupants": "Người đang ở",
       "occupantCount": "{{total}} / {{max}}",
+      "exportExcel": "Tải Excel",
+      "exportEmpty": "Không có thành viên phòng để xuất.",
+      "export": {
+        "sheetName": "Thanh vien phong"
+      },
       "empty": "Không tìm thấy thành viên phòng."
     }
   },

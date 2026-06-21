@@ -23,6 +23,7 @@ import com.tropilot.repository.ReceiptRepository;
 import com.tropilot.repository.RoomAssignmentRepository;
 import com.tropilot.repository.UserRepository;
 import com.tropilot.service.ActivityLogService;
+import com.tropilot.service.PaymentEmailService;
 import com.tropilot.service.PaymentService;
 import com.tropilot.service.ReceiptCreationService;
 import lombok.RequiredArgsConstructor;
@@ -47,6 +48,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentMapper paymentMapper;
     private final ReceiptCreationService receiptCreationService;
     private final ActivityLogService activityLogService;
+    private final PaymentEmailService paymentEmailService;
 
     @Override
     @Transactional
@@ -141,7 +143,10 @@ public class PaymentServiceImpl implements PaymentService {
                 "System created receipt for invoice " + invoice.getId()
         );
 
-        return paymentMapper.toResponse(paymentRepository.save(payment));
+        Payment savedPayment = paymentRepository.save(payment);
+        paymentEmailService.sendPaymentSuccessEmail(invoice, now);
+
+        return paymentMapper.toResponse(savedPayment);
     }
 
     @Override

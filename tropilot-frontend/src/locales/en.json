@@ -260,7 +260,12 @@
       "household": "Room / Head resident"
     },
     "actions": {
-      "create": "Create head resident account"
+      "create": "Create head resident account",
+      "exportExcel": "Export Excel"
+    },
+    "recordTypes": {
+      "headResident": "Head Resident",
+      "member": "Room member"
     },
     "memberCount_one": "{{count}} related member",
     "memberCount_other": "{{count}} related members",
@@ -271,7 +276,11 @@
     "messages": {
       "loading": "Loading residents...",
       "loadError": "Residents could not be loaded",
-      "empty": "No head resident accounts match the current filters."
+      "empty": "No head resident accounts match the current filters.",
+      "exportEmpty": "No residents to export."
+    },
+    "export": {
+      "sheetName": "Residents"
     }
   },
   "accountDirectory": {
@@ -653,6 +662,15 @@
     "loading": "Loading building users...",
     "loadError": "Building users could not be loaded",
     "empty": "No users found in this building.",
+    "actions": {
+      "exportExcel": "Export Excel"
+    },
+    "messages": {
+      "exportEmpty": "No users to export."
+    },
+    "export": {
+      "sheetName": "Users"
+    },
     "filters": {
       "searchPlaceholder": "Search by name, email, phone, ID, or room",
       "searchAria": "Search building users",
@@ -664,6 +682,7 @@
       "allRooms": "All rooms"
     },
     "columns": {
+      "recordType": "Record type",
       "user": "User",
       "phone": "Phone",
       "identityNumber": "Citizen ID",
@@ -1668,6 +1687,11 @@
       "rejectError": "Room member could not be rejected",
       "occupants": "Occupants",
       "occupantCount": "{{total}} of {{max}}",
+      "exportExcel": "Export Excel",
+      "exportEmpty": "No room members to export.",
+      "export": {
+        "sheetName": "Room members"
+      },
       "empty": "No room members found."
     }
   },

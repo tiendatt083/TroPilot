@@ -6,6 +6,7 @@ import * as roomApi from '../../features/rooms/api.js';
 import * as adminUserApi from '../../features/users/api.js';
 import PageHeader from '../../components/PageHeader.jsx';
 import { addMonthsToDateInput, formatDateInputValue, formatDisplayDate } from '../../utils/dateFormat.js';
+import { exportRowsToExcel } from '../../utils/excelExport.js';
 import { formatRoomCode, formatRoomLabel } from '../../utils/roomDisplay.js';
 
 const emptyFilters = {
@@ -124,6 +125,20 @@ function getAvailableRooms(rooms) {
     .sort((firstRoom, secondRoom) => formatRoomLabel(firstRoom).localeCompare(formatRoomLabel(secondRoom)));
 }
 
+function buildExportFileName(building) {
+  const now = new Date();
+  const day = String(now.getDate()).padStart(2, '0');
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const year = now.getFullYear();
+  const buildingCode = String(building?.buildingCode || building?.code || 'building')
+    .trim()
+    .replace(/[^a-zA-Z0-9-]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .toLowerCase();
+
+  return `tropilot-${buildingCode || 'building'}-users-${day}-${month}-${year}.xlsx`;
+}
+
 export default function AdminBuildingUserPage() {
   const { t } = useTranslation();
   const { building } = useOutletContext();
@@ -197,6 +212,44 @@ export default function AdminBuildingUserPage() {
 
   const handleClearFilters = () => {
     setFilters(emptyFilters);
+  };
+
+  const handleExport = () => {
+    setMessage('');
+    setError('');
+
+    if (filteredHouseholds.length === 0) {
+      setError(t('buildingUsers.messages.exportEmpty'));
+      return;
+    }
+
+    const rows = [];
+
+    filteredHouseholds.forEach((residentHead) => {
+      rows.push(toExportRow({
+        record: residentHead,
+        index: rows.length + 1,
+        recordType: t('buildingUsers.recordTypes.account'),
+        headResidentName: '',
+        t
+      }));
+
+      residentHead.members.forEach((member) => {
+        rows.push(toExportRow({
+          record: member,
+          index: rows.length + 1,
+          recordType: t('buildingUsers.recordTypes.roomMember'),
+          headResidentName: residentHead.fullName,
+          t
+        }));
+      });
+    });
+
+    exportRowsToExcel({
+      rows,
+      fileName: buildExportFileName(building),
+      sheetName: t('buildingUsers.export.sheetName')
+    });
   };
 
   const refreshBuildingUsers = async () => {
@@ -283,9 +336,14 @@ export default function AdminBuildingUserPage() {
     <div className="building-workspace">
       <div className="page-title-row compact-title-row">
         <PageHeader eyebrow={t('buildingUsers.eyebrow')} title={t('buildingUsers.title')} />
-        <button className="button-link" type="button" onClick={handleOpenAssignment}>
-          {t('buildingUsers.assignment.open')}
-        </button>
+        <div className="page-action-row">
+          <button className="secondary-button inline-button" type="button" onClick={handleExport}>
+            {t('buildingUsers.actions.exportExcel')}
+          </button>
+          <button className="button-link" type="button" onClick={handleOpenAssignment}>
+            {t('buildingUsers.assignment.open')}
+          </button>
+        </div>
       </div>
 
       {message && <div className="alert success-alert">{message}</div>}
@@ -503,6 +561,22 @@ export default function AdminBuildingUserPage() {
       )}
     </div>
   );
+}
+
+function toExportRow({ record, index, recordType, headResidentName, t }) {
+  return {
+    [t('accountDirectory.columns.id')]: index,
+    [t('buildingUsers.columns.recordType')]: recordType,
+    [t('buildingUsers.columns.user')]: record.fullName || t('common.notProvided'),
+    [t('accountDirectory.columns.email')]: record.email || t('common.notProvided'),
+    [t('buildingUsers.columns.phone')]: record.phone || t('common.notProvided'),
+    [t('buildingUsers.columns.identityNumber')]: record.identityNumber || t('common.notProvided'),
+    [t('buildingUsers.columns.room')]: formatRoomCode(record) || t('common.notProvided'),
+    [t('buildingUsers.columns.relationship')]: record.relationship || t('common.notApplicable'),
+    [t('tables.common.headResident')]: headResidentName || t('common.notApplicable'),
+    [t('buildingUsers.columns.moveInDate')]: formatDisplayDate(record.moveInDate, t('common.notSet')),
+    [t('buildingUsers.columns.status')]: formatStatus(record.status, t)
+  };
 }
 
 function formatStatus(status, t) {

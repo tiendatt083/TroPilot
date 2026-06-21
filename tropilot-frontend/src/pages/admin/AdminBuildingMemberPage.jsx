@@ -4,11 +4,26 @@ import { Link, useOutletContext } from 'react-router-dom';
 import * as memberApi from '../../features/residents/api.js';
 import PageHeader from '../../components/PageHeader.jsx';
 import { formatDisplayDate } from '../../utils/dateFormat.js';
+import { exportRowsToExcel } from '../../utils/excelExport.js';
 import { formatEnumLabel } from '../../utils/i18nFormat.js';
 import { formatRoomCode } from '../../utils/roomDisplay.js';
 
 function statusClass(status) {
   return `status-pill member-status-${status.toLowerCase()}`;
+}
+
+function buildExportFileName(building) {
+  const now = new Date();
+  const day = String(now.getDate()).padStart(2, '0');
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const year = now.getFullYear();
+  const buildingCode = String(building?.buildingCode || 'building')
+    .trim()
+    .replace(/[^a-zA-Z0-9-]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .toLowerCase();
+
+  return `tropilot-${buildingCode || 'building'}-room-members-${day}-${month}-${year}.xlsx`;
 }
 
 export default function AdminBuildingMemberPage() {
@@ -97,9 +112,49 @@ export default function AdminBuildingMemberPage() {
     );
   };
 
+  const handleExport = () => {
+    setMessage('');
+    setError('');
+
+    if (members.length === 0) {
+      setError(t('workspace.members.exportEmpty'));
+      return;
+    }
+
+    const rows = members.map((member, index) => ({
+      [t('accountDirectory.columns.id')]: index + 1,
+      [t('pendingMemberReview.columns.name')]: member.fullName || t('common.notProvided'),
+      [t('accountDirectory.columns.email')]: member.email || t('common.notProvided'),
+      [t('profile.fields.phone')]: member.phone || t('common.notProvided'),
+      [t('buildingUsers.columns.identityNumber')]: member.identityNumber || t('common.notProvided'),
+      [t('forms.member.relationship')]: member.relationship || t('common.notProvided'),
+      [t('tables.common.room')]: formatRoomCode(member) || t('common.notProvided'),
+      [t('tables.common.headResident')]: member.residentHeadName || t('common.notProvided'),
+      [t('residentDirectory.columns.login')]: member.residentHeadEmail || t('common.notProvided'),
+      [t('tables.common.status')]: formatEnumLabel(t, 'memberStatus', member.status),
+      [t('workspace.members.occupants')]: t('workspace.members.occupantCount', {
+        total: member.totalOccupants,
+        max: member.maxOccupants
+      }),
+      [t('forms.member.moveInDate')]: formatDisplayDate(member.moveInDate, t('common.notSet')),
+      [t('roomManagement.moveOut')]: formatDisplayDate(member.moveOutDate, t('common.notSet'))
+    }));
+
+    exportRowsToExcel({
+      rows,
+      fileName: buildExportFileName(building),
+      sheetName: t('workspace.members.export.sheetName')
+    });
+  };
+
   return (
     <div className="building-workspace">
-      <PageHeader eyebrow={t('workspace.members.eyebrow')} title={t('workspace.members.title')} />
+      <div className="page-title-row compact-title-row">
+        <PageHeader eyebrow={t('workspace.members.eyebrow')} title={t('workspace.members.title')} />
+        <button className="secondary-button inline-button" type="button" onClick={handleExport}>
+          {t('workspace.members.exportExcel')}
+        </button>
+      </div>
 
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}

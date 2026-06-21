@@ -6,6 +6,8 @@ import * as memberApi from '../../features/residents/api.js';
 import * as adminUserApi from '../../features/users/api.js';
 import AdminAccountDirectoryTable from '../../components/AdminAccountDirectoryTable.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
+import { formatDisplayDate } from '../../utils/dateFormat.js';
+import { exportRowsToExcel } from '../../utils/excelExport.js';
 
 const emptyFilters = {
   search: '',
@@ -63,6 +65,15 @@ function filterResidents(residents, filters) {
 
     return matchesBuilding && matchesSearch;
   });
+}
+
+function buildExportFileName() {
+  const now = new Date();
+  const day = String(now.getDate()).padStart(2, '0');
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const year = now.getFullYear();
+
+  return `tropilot-residents-${day}-${month}-${year}.xlsx`;
 }
 
 export default function AdminResidentListPage() {
@@ -136,6 +147,44 @@ export default function AdminResidentListPage() {
     }
   };
 
+  const handleExport = () => {
+    setMessage('');
+    setError('');
+
+    if (filteredResidents.length === 0) {
+      setError(t('residentDirectory.messages.exportEmpty'));
+      return;
+    }
+
+    const rows = [];
+
+    filteredResidents.forEach((resident) => {
+      rows.push(toResidentExportRow({
+        record: resident,
+        index: rows.length + 1,
+        recordType: t('residentDirectory.recordTypes.headResident'),
+        headResidentName: '',
+        t
+      }));
+
+      resident.members.forEach((member) => {
+        rows.push(toResidentExportRow({
+          record: member,
+          index: rows.length + 1,
+          recordType: t('residentDirectory.recordTypes.member'),
+          headResidentName: resident.fullName,
+          t
+        }));
+      });
+    });
+
+    exportRowsToExcel({
+      rows,
+      fileName: buildExportFileName(),
+      sheetName: t('residentDirectory.export.sheetName')
+    });
+  };
+
   return (
     <section className="content-section account-directory-page">
       <div className="page-title-row">
@@ -143,12 +192,17 @@ export default function AdminResidentListPage() {
           eyebrow={t('residentDirectory.eyebrow')}
           title={t('residentDirectory.title')}
         />
-        <Link
-          className="button-link"
-          to="/admin/users/create?role=RESIDENT_HEAD&returnTo=/admin/residents"
-        >
-          {t('residentDirectory.actions.create')}
-        </Link>
+        <div className="page-action-row">
+          <button className="secondary-button inline-button" type="button" onClick={handleExport}>
+            {t('residentDirectory.actions.exportExcel')}
+          </button>
+          <Link
+            className="button-link"
+            to="/admin/users/create?role=RESIDENT_HEAD&returnTo=/admin/residents"
+          >
+            {t('residentDirectory.actions.create')}
+          </Link>
+        </div>
       </div>
 
       {message && <div className="alert success-alert">{message}</div>}
@@ -198,4 +252,57 @@ export default function AdminResidentListPage() {
       )}
     </section>
   );
+}
+
+function toResidentExportRow({ record, index, recordType, headResidentName, t }) {
+  return {
+    [t('accountDirectory.columns.id')]: index,
+    [t('buildingUsers.columns.recordType')]: recordType,
+    [t('accountDirectory.columns.name')]: record.fullName || t('common.notProvided'),
+    [t('accountDirectory.columns.email')]: record.email || t('common.notProvided'),
+    [t('profile.fields.phone')]: record.phone || t('common.notProvided'),
+    [t('buildingUsers.columns.identityNumber')]: record.identityNumber || t('common.notProvided'),
+    [t('tables.common.building')]: formatAssignedBuilding(record, t),
+    [t('tables.common.room')]: formatAssignedRoom(record, t),
+    [t('forms.member.relationship')]: record.relationship || t('common.notApplicable'),
+    [t('tables.common.headResident')]: headResidentName || t('common.notApplicable'),
+    [t('roomManagement.moveIn')]: formatDisplayDate(record.moveInDate, t('common.notSet')),
+    [t('accountDirectory.columns.status')]: formatResidentStatus(record.status, t)
+  };
+}
+
+function formatAssignedBuilding(record, t) {
+  const buildingLabel = [record.assignedBuildingCode || record.buildingCode, record.assignedBuildingName || record.buildingName]
+    .filter(Boolean)
+    .join(' - ');
+
+  return buildingLabel || t('common.notAssigned');
+}
+
+function formatAssignedRoom(record, t) {
+  const roomLabel = [record.assignedRoomCode || record.roomCode, record.assignedRoomName || record.roomName]
+    .filter(Boolean)
+    .join(' - ');
+
+  return roomLabel || t('common.notAssigned');
+}
+
+function formatResidentStatus(status, t) {
+  if (['PENDING', 'APPROVED', 'REJECTED', 'LEFT'].includes(status)) {
+    return t(`enum.memberStatus.${status}`);
+  }
+
+  if (status === 'ACTIVE') {
+    return t('common.active');
+  }
+
+  if (status === 'LOCKED') {
+    return t('userManagement.status.locked');
+  }
+
+  if (status === 'INACTIVE') {
+    return t('common.inactive');
+  }
+
+  return status ? t('common.active') : t('common.notAvailable');
 }

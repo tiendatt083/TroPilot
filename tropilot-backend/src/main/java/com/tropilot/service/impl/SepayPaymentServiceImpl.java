@@ -13,6 +13,7 @@ import com.tropilot.repository.ReceiptRepository;
 import com.tropilot.repository.SepayPaymentRepository;
 import com.tropilot.service.ActivityLogService;
 import com.tropilot.service.NotificationService;
+import com.tropilot.service.PaymentEmailService;
 import com.tropilot.service.ReceiptCreationService;
 import com.tropilot.service.SepayPaymentService;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +43,7 @@ public class SepayPaymentServiceImpl implements SepayPaymentService {
     private final ReceiptCreationService receiptCreationService;
     private final NotificationService notificationService;
     private final ActivityLogService activityLogService;
+    private final PaymentEmailService paymentEmailService;
 
     @Override
     @Transactional
@@ -125,6 +127,7 @@ public class SepayPaymentServiceImpl implements SepayPaymentService {
                         + ", month " + invoice.getMonth().format(MONTH_FORMATTER)
         );
         notificationService.createInvoicePaidNotification(invoice.getCreatedBy(), invoice, payment);
+        paymentEmailService.sendPaymentSuccessEmail(invoice, paidAt);
 
         sepayPaymentRepository.save(payment);
     }
