@@ -23,6 +23,7 @@ import com.tropilot.repository.BuildingRepository;
 import com.tropilot.repository.TaskRepository;
 import com.tropilot.repository.UserRepository;
 import com.tropilot.service.ActivityLogService;
+import com.tropilot.service.TaskEmailService;
 import com.tropilot.service.TaskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -43,6 +44,7 @@ public class TaskServiceImpl implements TaskService {
     private final TaskResultImageStorageService taskResultImageStorageService;
     private final TaskMapper taskMapper;
     private final ActivityLogService activityLogService;
+    private final TaskEmailService taskEmailService;
 
     @Override
     @Transactional
@@ -70,6 +72,7 @@ public class TaskServiceImpl implements TaskService {
                 "TASK_CREATED",
                 "Created task " + savedTask.getTitle() + " for " + assignedTo.getEmail()
         );
+        taskEmailService.sendTaskAssignedEmail(savedTask);
 
         return taskMapper.toResponse(savedTask);
     }

@@ -26,7 +26,6 @@ const RESIDENT_ROOM_ITEMS = [
 ];
 
 const RESIDENT_OPERATION_ITEMS = [
-  { to: '/resident/maintenance', labelKey: 'navigation.maintenance', requiresRoom: true },
   { to: '/resident/equipment', labelKey: 'navigation.equipment', requiresRoom: true }
 ];
 

@@ -199,7 +199,7 @@
     "vehicles": "Xe",
     "equipment": "Thiết bị",
     "serviceFees": "Phí dịch vụ",
-    "utilityReadings": "Chỉ số tiện ích",
+    "utilityReadings": "Chỉ số điện nước",
     "members": "Thành viên",
     "contract": "Hợp đồng",
     "profile": "Thông tin cá nhân",
@@ -488,7 +488,7 @@
     "adminGlobalDescription": "Quản lý thiết bị dùng chung và thiết bị riêng của từng phòng trong toàn bộ hệ thống.",
     "adminDescription": "Quản lý thiết bị dùng chung của tòa nhà và thiết bị được gán riêng cho từng phòng.",
     "staffDescription": "Xem thiết bị, lịch sử bảo trì và gửi yêu cầu xử lý sự cố thiết bị.",
-    "residentDescription": "Xem thiết bị dùng chung trong tòa nhà và thiết bị được gán cho phòng của bạn.",
+    "residentDescription": "Xem thiết bị được gán cho phòng của bạn.",
     "fields": {
       "code": "Mã thiết bị",
       "name": "Tên thiết bị",
@@ -621,6 +621,8 @@
     "deleteConfirm": "Xóa phí dịch vụ {{name}}?",
     "utilitySaved": "Đã lưu phí điện và nước mặc định.",
     "utilitySaveError": "Không thể lưu phí điện và nước mặc định",
+    "saved": "Đã lưu cấu hình phí dịch vụ.",
+    "saveError": "Không thể lưu cấu hình phí dịch vụ",
     "defaultsEyebrow": "Giá trị mặc định cho phòng",
     "defaultsTitle": "Giá điện nước mặc định",
     "defaultsDescription": "Các giá trị này được dùng khi tạo hóa đơn phòng trong tòa nhà này.",
@@ -1078,9 +1080,35 @@
       "title": "Đăng nhập",
       "email": "Địa chỉ email",
       "password": "Mật khẩu",
+      "forgotPassword": "Quên mật khẩu?",
       "submitting": "Đang đăng nhập...",
       "submit": "Đăng nhập",
       "error": "Đăng nhập thất bại"
+    },
+    "forgotPassword": {
+      "title": "Quên mật khẩu",
+      "description": "Nhập email tài khoản để nhận mã xác nhận đặt lại mật khẩu.",
+      "email": "Địa chỉ email",
+      "submitting": "Đang gửi mã...",
+      "submit": "Gửi mã xác nhận",
+      "sent": "Mã xác nhận đã được gửi đến email của bạn.",
+      "notRegistered": "Email không đúng hoặc chưa được đăng ký, vui lòng nhập lại.",
+      "haveCode": "Tôi đã có mã",
+      "error": "Không thể gửi mã xác nhận"
+    },
+    "resetPassword": {
+      "title": "Đặt lại mật khẩu",
+      "description": "Nhập mã 6 số trong email và mật khẩu mới của bạn.",
+      "email": "Địa chỉ email",
+      "code": "Mã xác nhận",
+      "newPassword": "Mật khẩu mới",
+      "confirmPassword": "Xác nhận mật khẩu",
+      "submitting": "Đang đặt lại mật khẩu...",
+      "submit": "Đặt lại mật khẩu",
+      "success": "Mật khẩu đã được đặt lại thành công. Bạn có thể đăng nhập bằng mật khẩu mới.",
+      "requestNewCode": "Gửi mã mới",
+      "passwordMismatch": "Mật khẩu mới và xác nhận mật khẩu không khớp.",
+      "error": "Không thể đặt lại mật khẩu"
     },
     "changePassword": {
       "title": "Đổi mật khẩu tạm thời",
@@ -1090,6 +1118,9 @@
       "submitting": "Đang đổi mật khẩu...",
       "submit": "Đổi mật khẩu",
       "error": "Đổi mật khẩu thất bại"
+    },
+    "common": {
+      "backToLogin": "Quay lại đăng nhập"
     },
     "loadingSession": "Đang tải phiên đăng nhập..."
   },

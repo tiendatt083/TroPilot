@@ -192,6 +192,30 @@
   background: rgba(10, 151, 177, 0.08);
 }
 
+.workspace-tab-group-chevron {
+  display: inline-grid;
+  place-items: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  flex: 0 0 auto;
+  color: var(--color-text-muted);
+  font-size: 1.25rem;
+  line-height: 1;
+  transform: rotate(90deg);
+  transition:
+    color 160ms ease,
+    transform 180ms ease;
+}
+
+.workspace-tab-group-toggle:hover .workspace-tab-group-chevron,
+.workspace-tab-group-toggle.active-group .workspace-tab-group-chevron {
+  color: var(--color-primary);
+}
+
+.workspace-tab-group-chevron.is-open {
+  transform: rotate(-90deg);
+}
+
 .workspace-tab-group-items {
   display: grid;
   gap: 0.3rem;

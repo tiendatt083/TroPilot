@@ -388,9 +388,12 @@ public class MaintenanceRequestServiceImpl implements MaintenanceRequestService 
             throw new ForbiddenException("Equipment does not belong to the current Head Resident building");
         }
 
-        if (equipment.getScope() == EquipmentScope.ROOM
-                && (equipment.getRoom() == null
-                || !Objects.equals(equipment.getRoom().getId(), assignment.getRoom().getId()))) {
+        if (equipment.getScope() != EquipmentScope.ROOM) {
+            throw new ForbiddenException("Head Resident can only request maintenance for room equipment");
+        }
+
+        if (equipment.getRoom() == null
+                || !Objects.equals(equipment.getRoom().getId(), assignment.getRoom().getId())) {
             throw new ForbiddenException("Room equipment does not belong to the current Head Resident room");
         }
     }

@@ -19,7 +19,7 @@ export default function ResidentEquipmentPage() {
 
     try {
       const response = await equipmentApi.getResidentEquipment();
-      setEquipment(response.data);
+      setEquipment((response.data || []).filter((item) => item.scope === 'ROOM'));
     } catch (apiError) {
       setError(apiError.response?.data?.message || t('equipment.messages.loadError'));
     }

@@ -32,8 +32,8 @@ export default function SidebarNavGroup({ labelKey, items }) {
         onClick={() => setOpen((current) => !current)}
       >
         <span>{t(labelKey)}</span>
-        <span className="sidebar-nav-group-chevron" aria-hidden="true">
-          {open ? '-' : '+'}
+        <span className={`sidebar-nav-group-chevron${open ? ' is-open' : ''}`} aria-hidden="true">
+          ›
         </span>
       </button>
       {open && (

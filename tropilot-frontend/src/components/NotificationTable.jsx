@@ -11,7 +11,13 @@ function getBuildingLabel(notification, t) {
     : t('tables.notifications.selectedBuildings');
 }
 
-export default function NotificationTable({ notifications, onMarkRead, processingId, showReadStatus = true }) {
+export default function NotificationTable({
+  notifications,
+  onMarkRead,
+  processingId,
+  showReadStatus = true,
+  showTarget = true
+}) {
   const { t } = useTranslation();
 
   return (
@@ -20,7 +26,7 @@ export default function NotificationTable({ notifications, onMarkRead, processin
         <thead>
           <tr>
             <th>{t('tables.notifications.title')}</th>
-            <th>{t('tables.common.target')}</th>
+            {showTarget && <th>{t('tables.common.target')}</th>}
             <th>{t('tables.common.createdBy')}</th>
             <th>{t('tables.common.created')}</th>
             {showReadStatus && <th>{t('tables.notifications.readStatus')}</th>}
@@ -34,13 +40,15 @@ export default function NotificationTable({ notifications, onMarkRead, processin
                 <strong>{notification.title}</strong>
                 <span className="table-subtext">{notification.content}</span>
               </td>
-              <td>
-                <strong>{formatEnumLabel(t, 'notificationTarget', notification.targetType)}</strong>
-                <span className="table-subtext">{getBuildingLabel(notification, t)}</span>
-                {notification.targetUserNames?.length > 0 && (
-                  <span className="table-subtext">{notification.targetUserNames.join(', ')}</span>
-                )}
-              </td>
+              {showTarget && (
+                <td>
+                  <strong>{formatEnumLabel(t, 'notificationTarget', notification.targetType)}</strong>
+                  <span className="table-subtext">{getBuildingLabel(notification, t)}</span>
+                  {notification.targetUserNames?.length > 0 && (
+                    <span className="table-subtext">{notification.targetUserNames.join(', ')}</span>
+                  )}
+                </td>
+              )}
               <td>
                 <strong>{notification.createdByName}</strong>
                 <span className="table-subtext">{notification.createdByRole}</span>

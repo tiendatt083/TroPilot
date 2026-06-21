@@ -488,7 +488,7 @@
     "adminGlobalDescription": "Manage shared equipment and room equipment across all buildings.",
     "adminDescription": "Manage shared building equipment and equipment assigned to individual rooms.",
     "staffDescription": "View building equipment, review maintenance history, and report equipment issues.",
-    "residentDescription": "View shared equipment in your building and equipment assigned to your room.",
+    "residentDescription": "View equipment assigned to your room.",
     "fields": {
       "code": "Equipment code",
       "name": "Equipment name",
@@ -621,6 +621,8 @@
     "deleteConfirm": "Delete service fee {{name}}?",
     "utilitySaved": "Default electricity and water fees saved successfully.",
     "utilitySaveError": "Default electricity and water fees could not be saved",
+    "saved": "Service fee configuration saved successfully.",
+    "saveError": "Service fee configuration could not be saved",
     "defaultsEyebrow": "Default room values",
     "defaultsTitle": "Default utility pricing",
     "defaultsDescription": "These values are used when creating room invoices in this building.",
@@ -1078,9 +1080,35 @@
       "title": "Sign in",
       "email": "Email address",
       "password": "Password",
+      "forgotPassword": "Forgot password?",
       "submitting": "Signing in...",
       "submit": "Sign in",
       "error": "Login failed"
+    },
+    "forgotPassword": {
+      "title": "Forgot password",
+      "description": "Enter your account email to receive a verification code.",
+      "email": "Email address",
+      "submitting": "Sending code...",
+      "submit": "Send verification code",
+      "sent": "A verification code has been sent to your email.",
+      "notRegistered": "Email is incorrect or not registered. Please try again.",
+      "haveCode": "I already have a code",
+      "error": "Verification code could not be sent"
+    },
+    "resetPassword": {
+      "title": "Reset password",
+      "description": "Enter the 6-digit code from your email and choose a new password.",
+      "email": "Email address",
+      "code": "Verification code",
+      "newPassword": "New password",
+      "confirmPassword": "Confirm password",
+      "submitting": "Resetting password...",
+      "submit": "Reset password",
+      "success": "Your password has been reset successfully. You can sign in with the new password.",
+      "requestNewCode": "Send new code",
+      "passwordMismatch": "New password and confirm password do not match.",
+      "error": "Password could not be reset"
     },
     "changePassword": {
       "title": "Change temporary password",
@@ -1090,6 +1118,9 @@
       "submitting": "Changing password...",
       "submit": "Change password",
       "error": "Password change failed"
+    },
+    "common": {
+      "backToLogin": "Back to sign in"
     },
     "loadingSession": "Loading session..."
   },

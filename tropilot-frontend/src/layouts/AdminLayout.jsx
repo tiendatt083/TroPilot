@@ -15,21 +15,19 @@ const ADMIN_ACCOUNT_ITEMS = [
 
 const ADMIN_OPERATION_ITEMS = [
   { to: '/admin/buildings', labelKey: 'navigation.buildings' },
+  { to: '/admin/contracts', labelKey: 'navigation.contracts' },
   { to: '/admin/tasks', labelKey: 'navigation.tasks' },
-  { to: '/admin/maintenance', labelKey: 'navigation.maintenance' },
-  { to: '/admin/equipment', labelKey: 'navigation.equipment' }
+  { to: '/admin/maintenance', labelKey: 'navigation.maintenance' }
 ];
 
 const ADMIN_INFORMATION_ITEMS = [
   { to: '/admin/notifications', labelKey: 'navigation.notifications' },
   { to: '/admin/feedbacks', labelKey: 'navigation.feedbacks' },
-  { to: '/admin/invoice-complaints', labelKey: 'navigation.invoiceComplaints' },
   { to: '/admin/contact', labelKey: 'navigation.contact' }
 ];
 
 const ADMIN_NAV_ITEMS = [
   { to: '/admin/activity-logs', labelKey: 'navigation.activityLogs' },
-  { to: '/admin/contracts', labelKey: 'navigation.contracts' },
   { to: '/admin/settings', labelKey: 'settings.title' }
 ];
 

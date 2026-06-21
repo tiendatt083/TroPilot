@@ -45,7 +45,12 @@ export default function UserNotificationPage({ getNotifications, eyebrow, eyebro
       {loading ? (
         <div className="empty-state">{t('resident.notifications.loading')}</div>
       ) : (
-        <NotificationTable notifications={notifications} processingId={processingId} onMarkRead={handleMarkRead} />
+        <NotificationTable
+          notifications={notifications}
+          processingId={processingId}
+          showTarget={false}
+          onMarkRead={handleMarkRead}
+        />
       )}
     </section>
   );

@@ -1,11 +1,13 @@
 package com.tropilot.service.impl;
 
-import com.tropilot.mapper.UserMapper;
 import com.tropilot.dto.request.ChangePasswordFirstTimeRequest;
+import com.tropilot.dto.request.ForgotPasswordRequest;
 import com.tropilot.dto.request.LoginRequest;
 import com.tropilot.dto.request.ProfileUpdateRequest;
+import com.tropilot.dto.request.ResetPasswordWithCodeRequest;
 import com.tropilot.dto.response.LoginResponse;
 import com.tropilot.dto.response.UserResponse;
+import com.tropilot.entity.PasswordResetCode;
 import com.tropilot.entity.RoomAssignment;
 import com.tropilot.entity.User;
 import com.tropilot.enums.RoomAssignmentStatus;
@@ -13,26 +15,45 @@ import com.tropilot.enums.UserStatus;
 import com.tropilot.exception.BadRequestException;
 import com.tropilot.exception.ResourceNotFoundException;
 import com.tropilot.exception.UnauthorizedException;
+import com.tropilot.mapper.UserMapper;
+import com.tropilot.repository.PasswordResetCodeRepository;
 import com.tropilot.repository.RoomAssignmentRepository;
 import com.tropilot.repository.UserRepository;
 import com.tropilot.security.JwtService;
 import com.tropilot.service.ActivityLogService;
 import com.tropilot.service.AuthService;
+import com.tropilot.service.PasswordResetEmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.time.LocalDateTime;
+import java.util.HexFormat;
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
+    private static final int RESET_CODE_EXPIRATION_MINUTES = 10;
+    private static final int RESET_CODE_MAX_ATTEMPTS = 5;
+    private static final String UNKNOWN_RESET_EMAIL_MESSAGE = "Email is not registered";
+    private static final String INVALID_RESET_CODE_MESSAGE = "Invalid or expired verification code";
+
     private final UserRepository userRepository;
+    private final PasswordResetCodeRepository passwordResetCodeRepository;
     private final RoomAssignmentRepository roomAssignmentRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final UserMapper userMapper;
     private final ActivityLogService activityLogService;
+    private final PasswordResetEmailService passwordResetEmailService;
+    private final SecureRandom secureRandom = new SecureRandom();
 
     @Override
     @Transactional(readOnly = true)
@@ -56,6 +77,89 @@ public class AuthServiceImpl implements AuthService {
                 .role(user.getRole())
                 .mustChangePassword(user.isMustChangePassword())
                 .build();
+    }
+
+    @Override
+    @Transactional
+    public void requestPasswordResetCode(ForgotPasswordRequest request) {
+        String email = normalizeEmail(request.getEmail());
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+        if (optionalUser.isEmpty()) {
+            throw new BadRequestException(UNKNOWN_RESET_EMAIL_MESSAGE);
+        }
+
+        User user = optionalUser.get();
+        if (user.getStatus() != UserStatus.ACTIVE) {
+            throw new BadRequestException(UNKNOWN_RESET_EMAIL_MESSAGE);
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+        passwordResetCodeRepository.markUnusedCodesAsUsed(user, now);
+
+        String code = generateResetCode();
+        LocalDateTime expiresAt = now.plusMinutes(RESET_CODE_EXPIRATION_MINUTES);
+        PasswordResetCode resetCode = PasswordResetCode.builder()
+                .user(user)
+                .codeHash(hashResetCode(email, code))
+                .expiresAt(expiresAt)
+                .attemptCount(0)
+                .build();
+
+        passwordResetCodeRepository.save(resetCode);
+        passwordResetEmailService.sendPasswordResetCodeEmail(user, code, expiresAt);
+    }
+
+    @Override
+    @Transactional
+    public void resetPasswordWithCode(ResetPasswordWithCodeRequest request) {
+        String email = normalizeEmail(request.getEmail());
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new BadRequestException(INVALID_RESET_CODE_MESSAGE));
+
+        if (user.getStatus() != UserStatus.ACTIVE) {
+            throw new BadRequestException(INVALID_RESET_CODE_MESSAGE);
+        }
+
+        if (!request.getNewPassword().equals(request.getConfirmPassword())) {
+            throw new BadRequestException("New password and confirm password do not match");
+        }
+
+        PasswordResetCode resetCode = passwordResetCodeRepository
+                .findFirstByUserAndUsedAtIsNullOrderByCreatedAtDesc(user)
+                .orElseThrow(() -> new BadRequestException(INVALID_RESET_CODE_MESSAGE));
+
+        LocalDateTime now = LocalDateTime.now();
+        if (resetCode.getExpiresAt().isBefore(now) || resetCode.getAttemptCount() >= RESET_CODE_MAX_ATTEMPTS) {
+            resetCode.setUsedAt(now);
+            passwordResetCodeRepository.save(resetCode);
+            throw new BadRequestException(INVALID_RESET_CODE_MESSAGE);
+        }
+
+        String codeHash = hashResetCode(email, normalizeCode(request.getCode()));
+        if (!MessageDigest.isEqual(
+                resetCode.getCodeHash().getBytes(StandardCharsets.UTF_8),
+                codeHash.getBytes(StandardCharsets.UTF_8)
+        )) {
+            resetCode.setAttemptCount(resetCode.getAttemptCount() + 1);
+            if (resetCode.getAttemptCount() >= RESET_CODE_MAX_ATTEMPTS) {
+                resetCode.setUsedAt(now);
+            }
+            passwordResetCodeRepository.save(resetCode);
+            throw new BadRequestException(INVALID_RESET_CODE_MESSAGE);
+        }
+
+        if (passwordEncoder.matches(request.getNewPassword(), user.getPassword())) {
+            throw new BadRequestException("New password must be different from the current password");
+        }
+
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        user.setMustChangePassword(false);
+        user.setTemporaryPasswordEncrypted(null);
+        resetCode.setUsedAt(now);
+
+        userRepository.save(user);
+        passwordResetCodeRepository.save(resetCode);
+        activityLogService.record(user, "PASSWORD_RESET", "Reset password with verification code");
     }
 
     @Override
@@ -139,6 +243,24 @@ public class AuthServiceImpl implements AuthService {
 
     private String normalizeEmail(String email) {
         return email.trim().toLowerCase();
+    }
+
+    private String normalizeCode(String code) {
+        return code == null ? "" : code.trim();
+    }
+
+    private String generateResetCode() {
+        return String.valueOf(100000 + secureRandom.nextInt(900000));
+    }
+
+    private String hashResetCode(String email, String code) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hashedBytes = digest.digest((email + ":" + code).getBytes(StandardCharsets.UTF_8));
+            return HexFormat.of().formatHex(hashedBytes);
+        } catch (NoSuchAlgorithmException exception) {
+            throw new IllegalStateException("SHA-256 algorithm is not available", exception);
+        }
     }
 
     private String normalizeOptionalText(String value) {

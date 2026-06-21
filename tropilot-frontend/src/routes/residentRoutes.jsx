@@ -9,7 +9,6 @@ import ResidentEquipmentPage from '../pages/resident/ResidentEquipmentPage.jsx';
 import ResidentFeedbackPage from '../pages/resident/ResidentFeedbackPage.jsx';
 import ResidentInvoiceDetailPage from '../pages/resident/ResidentInvoiceDetailPage.jsx';
 import ResidentInvoiceListPage from '../pages/resident/ResidentInvoiceListPage.jsx';
-import ResidentMaintenanceCreatePage from '../pages/resident/ResidentMaintenanceCreatePage.jsx';
 import ResidentMaintenanceListPage from '../pages/resident/ResidentMaintenanceListPage.jsx';
 import ResidentMemberPage from '../pages/resident/ResidentMemberPage.jsx';
 import ResidentNotificationPage from '../pages/resident/ResidentNotificationPage.jsx';
@@ -34,7 +33,6 @@ export const residentRoutes = (
         <Route path="invoices/:id" element={<ResidentInvoiceDetailPage />} />
         <Route path="members" element={<ResidentMemberPage />} />
         <Route path="maintenance" element={<ResidentMaintenanceListPage />} />
-        <Route path="maintenance/create" element={<ResidentMaintenanceCreatePage />} />
         <Route path="contract" element={<ResidentContractPage />} />
         <Route path="vehicles" element={<ResidentVehiclePage />} />
         <Route path="equipment" element={<ResidentEquipmentPage />} />

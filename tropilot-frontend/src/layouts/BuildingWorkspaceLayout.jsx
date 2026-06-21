@@ -164,7 +164,9 @@ export default function BuildingWorkspaceLayout({
                   onClick={() => toggleGroup(group.id)}
                 >
                   <span>{t(group.labelKey)}</span>
-                  <span aria-hidden="true">{groupIsOpen ? '−' : '+'}</span>
+                  <span className={`workspace-tab-group-chevron${groupIsOpen ? ' is-open' : ''}`} aria-hidden="true">
+                    ›
+                  </span>
                 </button>
                 {groupIsOpen && (
                   <div className="workspace-tab-group-items">

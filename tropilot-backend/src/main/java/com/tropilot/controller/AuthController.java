@@ -1,8 +1,10 @@
 package com.tropilot.controller;
 
 import com.tropilot.dto.request.ChangePasswordFirstTimeRequest;
+import com.tropilot.dto.request.ForgotPasswordRequest;
 import com.tropilot.dto.request.LoginRequest;
 import com.tropilot.dto.request.ProfileUpdateRequest;
+import com.tropilot.dto.request.ResetPasswordWithCodeRequest;
 import com.tropilot.dto.response.ApiResponse;
 import com.tropilot.dto.response.LoginResponse;
 import com.tropilot.dto.response.UserResponse;
@@ -29,6 +31,18 @@ public class AuthController {
     @PostMapping("/login")
     public ApiResponse<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
         return ApiResponse.success("Login completed successfully", authService.login(request));
+    }
+
+    @PostMapping("/forgot-password")
+    public ApiResponse<Void> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+        authService.requestPasswordResetCode(request);
+        return ApiResponse.success("If the email exists, a verification code has been sent");
+    }
+
+    @PostMapping("/reset-password")
+    public ApiResponse<Void> resetPassword(@Valid @RequestBody ResetPasswordWithCodeRequest request) {
+        authService.resetPasswordWithCode(request);
+        return ApiResponse.success("Password reset successfully");
     }
 
     @GetMapping("/me")

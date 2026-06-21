@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import * as maintenanceApi from '../../features/maintenance/api.js';
 import MaintenanceRequestTable from '../../components/MaintenanceRequestTable.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
@@ -43,9 +43,6 @@ export default function ResidentMaintenanceListPage() {
     <section className="content-section">
       <div className="page-title-row">
         <PageHeader eyebrow={t('resident.eyebrow')} title={t('maintenance.title')} />
-        <Link className="button-link" to="/resident/maintenance/create">
-          {t('maintenance.create')}
-        </Link>
       </div>
 
       {message && <div className="alert success-alert">{message}</div>}

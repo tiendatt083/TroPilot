@@ -61,8 +61,7 @@ export default function AdminBuildingServiceFeePage() {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
-  const [savingUtilityFees, setSavingUtilityFees] = useState(false);
-  const [savingAdditionalFee, setSavingAdditionalFee] = useState(false);
+  const [savingServiceFees, setSavingServiceFees] = useState(false);
   const [processingId, setProcessingId] = useState(null);
 
   const utilityFees = useMemo(
@@ -76,6 +75,12 @@ export default function AdminBuildingServiceFeePage() {
   const additionalFees = useMemo(
     () => serviceFees.filter((serviceFee) => serviceFee.feeType === 'OTHER'),
     [serviceFees]
+  );
+
+  const hasAdditionalDraft = Boolean(
+    editingAdditionalFee ||
+      additionalForm.name.trim() ||
+      String(additionalForm.unitPrice ?? '').trim()
   );
 
   const loadServiceFees = async () => {
@@ -144,26 +149,6 @@ export default function AdminBuildingServiceFeePage() {
     return serviceFeeApi.createAdminBuildingServiceFee(building.id, payload);
   };
 
-  const handleSaveUtilityFees = async (event) => {
-    event.preventDefault();
-    setSavingUtilityFees(true);
-    setMessage('');
-    setError('');
-
-    try {
-      for (const config of utilityFeeConfigs) {
-        await saveUtilityFee(config);
-      }
-
-      setMessage(t('buildingServiceFees.utilitySaved'));
-      await loadServiceFees();
-    } catch (apiError) {
-      setError(apiError.response?.data?.message || t('buildingServiceFees.utilitySaveError'));
-    } finally {
-      setSavingUtilityFees(false);
-    }
-  };
-
   const handleAdditionalChange = (event) => {
     const { name, value } = event.target;
     setAdditionalForm((current) => ({
@@ -172,12 +157,7 @@ export default function AdminBuildingServiceFeePage() {
     }));
   };
 
-  const handleAdditionalSubmit = async (event) => {
-    event.preventDefault();
-    setSavingAdditionalFee(true);
-    setMessage('');
-    setError('');
-
+  const saveAdditionalFee = async () => {
     const trimmedName = additionalForm.name.trim();
     const payload = {
       name: trimmedName,
@@ -187,25 +167,37 @@ export default function AdminBuildingServiceFeePage() {
       vehicleType: null
     };
 
+    if (editingAdditionalFee) {
+      await serviceFeeApi.updateAdminBuildingServiceFee(building.id, editingAdditionalFee.id, payload);
+      return;
+    }
+
+    await serviceFeeApi.createAdminBuildingServiceFee(building.id, payload);
+  };
+
+  const handleSaveServiceFees = async (event) => {
+    event.preventDefault();
+    setSavingServiceFees(true);
+    setMessage('');
+    setError('');
+
     try {
-      if (editingAdditionalFee) {
-        await serviceFeeApi.updateAdminBuildingServiceFee(building.id, editingAdditionalFee.id, payload);
-        setMessage(t('buildingServiceFees.updated'));
-      } else {
-        await serviceFeeApi.createAdminBuildingServiceFee(building.id, payload);
-        setMessage(t('buildingServiceFees.created'));
+      for (const config of utilityFeeConfigs) {
+        await saveUtilityFee(config);
+      }
+
+      if (hasAdditionalDraft) {
+        await saveAdditionalFee();
       }
 
       setEditingAdditionalFee(null);
       setAdditionalForm(emptyAdditionalForm);
+      setMessage(t('buildingServiceFees.saved'));
       await loadServiceFees();
     } catch (apiError) {
-      setError(
-        apiError.response?.data?.message ||
-          (editingAdditionalFee ? t('buildingServiceFees.updateError') : t('buildingServiceFees.createError'))
-      );
+      setError(apiError.response?.data?.message || t('buildingServiceFees.saveError'));
     } finally {
-      setSavingAdditionalFee(false);
+      setSavingServiceFees(false);
     }
   };
 
@@ -321,18 +313,15 @@ export default function AdminBuildingServiceFeePage() {
       {loading ? (
         <div className="empty-state">{t('buildingServiceFees.loading')}</div>
       ) : (
-        <section className="building-service-fee-page">
-          <form className="settings-card building-fee-defaults-card" onSubmit={handleSaveUtilityFees}>
+        <form className="building-service-fee-page" onSubmit={handleSaveServiceFees}>
+          <section className="settings-card building-fee-defaults-card">
             <div className="settings-card-heading">
               <span>{t('buildingServiceFees.defaultsEyebrow')}</span>
               <h2>{t('buildingServiceFees.defaultsTitle')}</h2>
               <p>{t('buildingServiceFees.defaultsDescription')}</p>
             </div>
             <div className="service-fee-utility-grid">{utilityFeeConfigs.map(renderUtilityCard)}</div>
-            <button type="submit" disabled={savingUtilityFees}>
-              {savingUtilityFees ? t('common.saving') : t('buildingServiceFees.saveDefaultFees')}
-            </button>
-          </form>
+          </section>
 
           <section className="settings-card additional-service-card">
             <div className="settings-card-heading">
@@ -342,7 +331,7 @@ export default function AdminBuildingServiceFeePage() {
             </div>
 
             <div className="additional-service-layout">
-              <form className="panel-form additional-service-form" onSubmit={handleAdditionalSubmit}>
+              <div className="panel-form additional-service-form">
                 <label htmlFor="additionalServiceName">{t('buildingServiceFees.additional.name')}</label>
                 <input
                   id="additionalServiceName"
@@ -350,7 +339,7 @@ export default function AdminBuildingServiceFeePage() {
                   value={additionalForm.name}
                   onChange={handleAdditionalChange}
                   maxLength={120}
-                  required
+                  required={hasAdditionalDraft}
                 />
 
                 <label htmlFor="additionalServiceUnitPrice">{t('buildingServiceFees.additional.unitPrice')}</label>
@@ -362,7 +351,7 @@ export default function AdminBuildingServiceFeePage() {
                   step="0.01"
                   value={additionalForm.unitPrice}
                   onChange={handleAdditionalChange}
-                  required
+                  required={hasAdditionalDraft}
                 />
 
                 <label htmlFor="additionalServiceCalculationType">
@@ -382,24 +371,20 @@ export default function AdminBuildingServiceFeePage() {
                   ))}
                 </select>
 
-                <button type="submit" disabled={savingAdditionalFee}>
-                  {savingAdditionalFee
-                    ? t('common.saving')
-                    : editingAdditionalFee
-                      ? t('buildingServiceFees.save')
-                      : t('buildingServiceFees.addService')}
+                <button type="submit" disabled={savingServiceFees}>
+                  {savingServiceFees ? t('common.saving') : t('buildingServiceFees.save')}
                 </button>
                 {editingAdditionalFee && (
                   <button
                     className="secondary-button"
                     type="button"
-                    disabled={savingAdditionalFee}
+                    disabled={savingServiceFees}
                     onClick={handleCancelAdditionalEdit}
                   >
                     {t('buildingServiceFees.cancelEdit')}
                   </button>
                 )}
-              </form>
+              </div>
 
               <div className="table-wrap additional-service-table-wrap">
                 <table className="data-table additional-service-table">
@@ -465,7 +450,7 @@ export default function AdminBuildingServiceFeePage() {
               </div>
             </div>
           </section>
-        </section>
+        </form>
       )}
     </div>
   );

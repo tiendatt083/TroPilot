@@ -130,8 +130,9 @@ public class EquipmentServiceImpl implements EquipmentService {
                         EquipmentCondition.INACTIVE
                 )
                 .stream()
-                .filter(equipment -> equipment.getScope() == EquipmentScope.BUILDING
-                        || (equipment.getRoom() != null && Objects.equals(equipment.getRoom().getId(), roomId)))
+                .filter(equipment -> equipment.getScope() == EquipmentScope.ROOM
+                        && equipment.getRoom() != null
+                        && Objects.equals(equipment.getRoom().getId(), roomId))
                 .map(equipmentMapper::toResponse)
                 .toList();
     }

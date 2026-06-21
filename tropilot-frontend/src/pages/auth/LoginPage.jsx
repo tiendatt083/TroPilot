@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { getDashboardPath } from '../../utils/roleRoutes.js';
 
@@ -77,6 +77,11 @@ export default function LoginPage() {
             onChange={handleChange}
             required
           />
+          <div className="auth-link-row">
+            <Link className="auth-link" to="/forgot-password">
+              {t('auth.signIn.forgotPassword')}
+            </Link>
+          </div>
 
           <button type="submit" disabled={loading}>
             {loading ? t('auth.signIn.submitting') : t('auth.signIn.submit')}

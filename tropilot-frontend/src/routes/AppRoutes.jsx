@@ -1,6 +1,8 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import ChangePasswordPage from '../pages/auth/ChangePasswordPage.jsx';
+import ForgotPasswordPage from '../pages/auth/ForgotPasswordPage.jsx';
 import LoginPage from '../pages/auth/LoginPage.jsx';
+import ResetPasswordPage from '../pages/auth/ResetPasswordPage.jsx';
 import { adminRoutes } from './adminRoutes.jsx';
 import HomeRedirect from './HomeRedirect.jsx';
 import ProtectedRoute from './ProtectedRoute.jsx';
@@ -13,6 +15,8 @@ export default function AppRoutes() {
       <Routes>
         <Route path="/" element={<HomeRedirect />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
 
         <Route element={<ProtectedRoute />}>
           <Route path="/change-password" element={<ChangePasswordPage />} />
