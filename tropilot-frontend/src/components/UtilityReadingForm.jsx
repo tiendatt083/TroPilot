@@ -8,6 +8,7 @@ import {
   getMonthFromDateInput
 } from '../utils/dateFormat.js';
 import { resolveFileUrl } from '../utils/fileUrl.js';
+import { formatNumber } from '../utils/numberFormat.js';
 import { formatRoomLabel } from '../utils/roomDisplay.js';
 
 const emptyForm = {
@@ -70,6 +71,48 @@ export default function UtilityReadingForm({
     [readings, form.roomId, form.readingDate, initialValues?.id]
   );
 
+  const editing = mode === 'edit';
+
+  useEffect(() => {
+    if (editing) {
+      return;
+    }
+
+    const oldElectricity = previousReading?.newElectricity ?? 0;
+    const oldWater = previousReading?.newWater ?? 0;
+
+    setForm((current) => {
+      const normalizedNewElectricity = Number(current.newElectricity) < Number(oldElectricity)
+        ? oldElectricity
+        : current.newElectricity;
+      const normalizedNewWater = Number(current.newWater) < Number(oldWater)
+        ? oldWater
+        : current.newWater;
+
+      if (
+        String(current.oldElectricity) === String(oldElectricity)
+        && String(current.oldWater) === String(oldWater)
+        && String(current.newElectricity) === String(normalizedNewElectricity)
+        && String(current.newWater) === String(normalizedNewWater)
+      ) {
+        return current;
+      }
+
+      return {
+        ...current,
+        oldElectricity,
+        oldWater,
+        newElectricity: normalizedNewElectricity,
+        newWater: normalizedNewWater
+      };
+    });
+  }, [
+    editing,
+    previousReading?.id,
+    previousReading?.newElectricity,
+    previousReading?.newWater
+  ]);
+
   const handleSubmit = (event) => {
     event.preventDefault();
 
@@ -87,7 +130,6 @@ export default function UtilityReadingForm({
     });
   };
 
-  const editing = mode === 'edit';
   const noEligibleRooms = !editing && rooms.length === 0;
   const readingDateRange = getMonthDateRange(selectedMonth);
 
@@ -183,31 +225,27 @@ export default function UtilityReadingForm({
 }
 
 function ElectricityReadingSubform({ form, t, editing, onChange, onImageChange }) {
+  const unit = t('forms.utilityReading.electricityUnit');
+
   return (
     <fieldset className="utility-reading-meter-form meter-form-electricity">
-      <legend>{t('forms.utilityReading.electricitySectionTitle')}</legend>
-      <div className="utility-reading-meter-form-header">
-        <p>{t('forms.utilityReading.electricitySectionDescription')}</p>
-      </div>
+      <legend>
+        {t('forms.utilityReading.electricitySectionTitle')}
+        <span className="meter-title-unit">({unit})</span>
+      </legend>
 
       <div className="utility-reading-meter-form-body">
-        <div className="form-grid">
-          <div>
-            <label htmlFor="oldElectricity">{t('forms.utilityReading.oldElectricity')}</label>
+        <div className="utility-meter-reading-row">
+          <MeterDisplay
+            label={t('forms.utilityReading.oldElectricity')}
+            value={form.oldElectricity}
+          />
+          <div className="utility-meter-field">
+            <div className="meter-field-label">
+              <label htmlFor="newElectricity">{t('forms.utilityReading.newElectricity')}</label>
+            </div>
             <input
-              id="oldElectricity"
-              name="oldElectricity"
-              type="number"
-              min="0"
-              step="0.01"
-              value={form.oldElectricity}
-              onChange={onChange}
-              required
-            />
-          </div>
-          <div>
-            <label htmlFor="newElectricity">{t('forms.utilityReading.newElectricity')}</label>
-            <input
+              className="utility-reading-meter-value-input"
               id="newElectricity"
               name="newElectricity"
               type="number"
@@ -220,46 +258,44 @@ function ElectricityReadingSubform({ form, t, editing, onChange, onImageChange }
           </div>
         </div>
 
-        <label htmlFor="electricityImage">{t('forms.utilityReading.electricityEvidenceImage')}</label>
-        <input
-          id="electricityImage"
-          name="electricityImage"
-          type="file"
-          accept=".jpg,.jpeg,.png,image/jpeg,image/png"
-          onChange={(event) => onImageChange(event.target.files?.[0] || null)}
-          required={!editing}
-        />
+        <div className="utility-reading-evidence-field">
+          <label htmlFor="electricityImage">{t('forms.utilityReading.electricityEvidenceImage')}</label>
+          <input
+            id="electricityImage"
+            name="electricityImage"
+            type="file"
+            accept=".jpg,.jpeg,.png,image/jpeg,image/png"
+            onChange={(event) => onImageChange(event.target.files?.[0] || null)}
+            required={!editing}
+          />
+        </div>
       </div>
     </fieldset>
   );
 }
 
 function WaterReadingSubform({ form, t, editing, onChange, onImageChange }) {
+  const unit = t('forms.utilityReading.waterUnit');
+
   return (
     <fieldset className="utility-reading-meter-form meter-form-water">
-      <legend>{t('forms.utilityReading.waterSectionTitle')}</legend>
-      <div className="utility-reading-meter-form-header">
-        <p>{t('forms.utilityReading.waterSectionDescription')}</p>
-      </div>
+      <legend>
+        {t('forms.utilityReading.waterSectionTitle')}
+        <span className="meter-title-unit">({unit})</span>
+      </legend>
 
       <div className="utility-reading-meter-form-body">
-        <div className="form-grid">
-          <div>
-            <label htmlFor="oldWater">{t('forms.utilityReading.oldWater')}</label>
+        <div className="utility-meter-reading-row">
+          <MeterDisplay
+            label={t('forms.utilityReading.oldWater')}
+            value={form.oldWater}
+          />
+          <div className="utility-meter-field">
+            <div className="meter-field-label">
+              <label htmlFor="newWater">{t('forms.utilityReading.newWater')}</label>
+            </div>
             <input
-              id="oldWater"
-              name="oldWater"
-              type="number"
-              min="0"
-              step="0.01"
-              value={form.oldWater}
-              onChange={onChange}
-              required
-            />
-          </div>
-          <div>
-            <label htmlFor="newWater">{t('forms.utilityReading.newWater')}</label>
-            <input
+              className="utility-reading-meter-value-input"
               id="newWater"
               name="newWater"
               type="number"
@@ -272,17 +308,32 @@ function WaterReadingSubform({ form, t, editing, onChange, onImageChange }) {
           </div>
         </div>
 
-        <label htmlFor="waterImage">{t('forms.utilityReading.waterEvidenceImage')}</label>
-        <input
-          id="waterImage"
-          name="waterImage"
-          type="file"
-          accept=".jpg,.jpeg,.png,image/jpeg,image/png"
-          onChange={(event) => onImageChange(event.target.files?.[0] || null)}
-          required={!editing}
-        />
+        <div className="utility-reading-evidence-field">
+          <label htmlFor="waterImage">{t('forms.utilityReading.waterEvidenceImage')}</label>
+          <input
+            id="waterImage"
+            name="waterImage"
+            type="file"
+            accept=".jpg,.jpeg,.png,image/jpeg,image/png"
+            onChange={(event) => onImageChange(event.target.files?.[0] || null)}
+            required={!editing}
+          />
+        </div>
       </div>
     </fieldset>
+  );
+}
+
+function MeterDisplay({ label, value }) {
+  return (
+    <div className="utility-meter-field">
+      <div className="meter-field-label">
+        <span>{label}</span>
+      </div>
+      <div className="meter-readonly-value" aria-label={label}>
+        <strong>{formatNumber(value)}</strong>
+      </div>
+    </div>
   );
 }
 

@@ -48,6 +48,7 @@ export default function BuildingEquipmentPage({ role }) {
   const [rooms, setRooms] = useState([]);
   const [filters, setFilters] = useState(EMPTY_FILTERS);
   const [editingEquipment, setEditingEquipment] = useState(null);
+  const [formOpen, setFormOpen] = useState(false);
   const [panel, setPanel] = useState({ type: '', equipment: null });
   const [history, setHistory] = useState([]);
   const [message, setMessage] = useState('');
@@ -103,6 +104,17 @@ export default function BuildingEquipmentPage({ role }) {
     setLoading(false);
   };
 
+  const handleOpenForm = () => {
+    setEditingEquipment(null);
+    setPanel({ type: '', equipment: null });
+    setFormOpen(true);
+  };
+
+  const handleCloseForm = () => {
+    setEditingEquipment(null);
+    setFormOpen(false);
+  };
+
   const handleSave = async (payload) => {
     setSaving(true);
     setMessage('');
@@ -119,6 +131,7 @@ export default function BuildingEquipmentPage({ role }) {
       }
 
       setEditingEquipment(null);
+      setFormOpen(false);
       await loadData();
     } catch (apiError) {
       setError(
@@ -204,6 +217,7 @@ export default function BuildingEquipmentPage({ role }) {
             disabled={processingId === item.id}
             onClick={() => {
               setEditingEquipment(item);
+              setFormOpen(true);
               setPanel({ type: '', equipment: null });
             }}
           >
@@ -240,7 +254,17 @@ export default function BuildingEquipmentPage({ role }) {
 
   return (
     <div className="building-workspace equipment-page">
-      <PageHeader eyebrow={t('equipment.eyebrow')} title={t('equipment.title')} />
+      <PageHeader
+        eyebrow={t('equipment.eyebrow')}
+        title={t('equipment.title')}
+        actions={
+          canManage && !formOpen && (
+            <button className="button-link" type="button" onClick={handleOpenForm}>
+              {t('equipment.actions.add')}
+            </button>
+          )
+        }
+      />
       <p className="page-support-text">
         {canManage ? t('equipment.adminDescription') : t('equipment.staffDescription')}
       </p>
@@ -248,8 +272,8 @@ export default function BuildingEquipmentPage({ role }) {
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
 
-      {canManage && (
-        <section className="building-section">
+      {canManage && formOpen && (
+        <section className="building-section equipment-editor-section">
           <PageHeader
             eyebrow={editingEquipment ? t('equipment.form.editEyebrow') : t('equipment.form.addEyebrow')}
             title={editingEquipment ? t('equipment.form.editTitle') : t('equipment.form.addTitle')}
@@ -260,7 +284,8 @@ export default function BuildingEquipmentPage({ role }) {
             fixedBuilding={building}
             saving={saving}
             onSubmit={handleSave}
-            onCancel={() => setEditingEquipment(null)}
+            onCancel={handleCloseForm}
+            showCancel
           />
         </section>
       )}

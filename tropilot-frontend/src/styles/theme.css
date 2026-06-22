@@ -220,6 +220,7 @@ a:focus-visible {
 }
 
 .eyebrow,
+.page-eyebrow,
 .page-header span {
   display: block;
   margin: 0 0 0.35rem;

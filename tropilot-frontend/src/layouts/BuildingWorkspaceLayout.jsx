@@ -23,6 +23,11 @@ export default function BuildingWorkspaceLayout({
   const [deleting, setDeleting] = useState(false);
   const [openGroups, setOpenGroups] = useState({});
   const buildingPath = `${basePath}/${id}`;
+  const shellClasses = [
+    'content-section',
+    'building-workspace-shell',
+    basePath.startsWith('/admin') ? 'admin-building-workspace-shell' : 'staff-building-workspace-shell'
+  ].join(' ');
   const navigationGroups = useMemo(() => normalizeNavigationGroups(tabs), [tabs]);
   const activeGroupId = useMemo(
     () => findActiveGroupId(navigationGroups, buildingPath, location.pathname),
@@ -108,7 +113,7 @@ export default function BuildingWorkspaceLayout({
   }
 
   return (
-    <section className="content-section building-workspace-shell">
+    <section className={shellClasses}>
       <div className="page-title-row">
         <PageHeader eyebrow={t(eyebrowKey)} title={`${building.buildingCode} - ${building.name}`} />
         <div className="button-row">

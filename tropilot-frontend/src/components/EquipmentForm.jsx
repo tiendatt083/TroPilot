@@ -67,10 +67,12 @@ export default function EquipmentForm({
   fixedBuilding = null,
   saving,
   onSubmit,
-  onCancel
+  onCancel,
+  showCancel = false
 }) {
   const { t } = useTranslation();
   const [values, setValues] = useState(() => valuesFromEquipment(equipment, fixedBuilding));
+  const shouldShowCancel = Boolean(onCancel) && (Boolean(equipment) || showCancel);
 
   useEffect(() => {
     setValues(valuesFromEquipment(equipment, fixedBuilding));
@@ -282,7 +284,7 @@ export default function EquipmentForm({
       </div>
 
       <div className="button-row form-button-row">
-        {equipment && (
+        {shouldShowCancel && (
           <button className="secondary-button inline-button" type="button" disabled={saving} onClick={onCancel}>
             {t('common.cancel')}
           </button>

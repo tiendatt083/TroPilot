@@ -82,11 +82,21 @@
   min-width: 0;
 }
 
+.admin-building-workspace-shell {
+  max-width: none;
+  margin-inline: 0;
+}
+
 .building-workspace-body {
   display: grid;
   grid-template-columns: minmax(224px, 232px) minmax(0, 1fr);
   gap: var(--space-5);
   align-items: start;
+}
+
+.admin-building-workspace-shell .building-workspace-body {
+  grid-template-columns: minmax(210px, 224px) minmax(0, 1fr);
+  gap: var(--space-4);
 }
 
 .building-workspace-content {

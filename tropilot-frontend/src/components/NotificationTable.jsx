@@ -21,41 +21,43 @@ export default function NotificationTable({
   const { t } = useTranslation();
 
   return (
-    <div className="table-wrap">
+    <div className="table-wrap notification-table-wrap">
       <table className="data-table notification-table">
         <thead>
           <tr>
-            <th>{t('tables.notifications.title')}</th>
-            {showTarget && <th>{t('tables.common.target')}</th>}
-            <th>{t('tables.common.createdBy')}</th>
-            <th>{t('tables.common.created')}</th>
-            {showReadStatus && <th>{t('tables.notifications.readStatus')}</th>}
-            {onMarkRead && <th>{t('tables.common.actions')}</th>}
+            <th className="notification-title-column">{t('tables.notifications.title')}</th>
+            {showTarget && <th className="notification-target-column">{t('tables.common.target')}</th>}
+            <th className="notification-author-column">{t('tables.common.createdBy')}</th>
+            <th className="notification-date-column">{t('tables.common.created')}</th>
+            {showReadStatus && <th className="notification-status-column">{t('tables.notifications.readStatus')}</th>}
+            {onMarkRead && <th className="notification-action-column">{t('tables.common.actions')}</th>}
           </tr>
         </thead>
         <tbody>
           {notifications.map((notification) => (
             <tr key={notification.id}>
-              <td>
-                <strong>{notification.title}</strong>
-                <span className="table-subtext">{notification.content}</span>
+              <td className="notification-message-cell">
+                <strong className="notification-title-text">{notification.title}</strong>
+                <span className="table-subtext notification-content-text">{notification.content}</span>
               </td>
               {showTarget && (
-                <td>
-                  <strong>{formatEnumLabel(t, 'notificationTarget', notification.targetType)}</strong>
-                  <span className="table-subtext">{getBuildingLabel(notification, t)}</span>
+                <td className="notification-target-cell">
+                  <span className="status-pill notification-target-pill">
+                    {formatEnumLabel(t, 'notificationTarget', notification.targetType)}
+                  </span>
+                  <span className="table-subtext notification-meta-line">{getBuildingLabel(notification, t)}</span>
                   {notification.targetUserNames?.length > 0 && (
-                    <span className="table-subtext">{notification.targetUserNames.join(', ')}</span>
+                    <span className="table-subtext notification-meta-line">{notification.targetUserNames.join(', ')}</span>
                   )}
                 </td>
               )}
-              <td>
+              <td className="notification-author-cell">
                 <strong>{notification.createdByName}</strong>
-                <span className="table-subtext">{notification.createdByRole}</span>
+                <span className="table-subtext notification-meta-line">{notification.createdByRole}</span>
               </td>
-              <td>{formatDateTime(notification.createdAt, t)}</td>
+              <td className="notification-date-cell">{formatDateTime(notification.createdAt, t)}</td>
               {showReadStatus && (
-                <td>
+                <td className="notification-status-cell">
                   <span className={notification.read ? 'status-pill read-status-read' : 'status-pill read-status-unread'}>
                     {notification.read ? t('enum.readStatus.READ') : t('enum.readStatus.UNREAD')}
                   </span>

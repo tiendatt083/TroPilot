@@ -622,3 +622,91 @@
   background: var(--color-primary-soft);
   box-shadow: inset 0 0 0 1px rgba(36, 125, 131, 0.16);
 }
+
+.notification-table-wrap {
+  box-shadow: var(--shadow-xs);
+}
+
+.notification-table {
+  min-width: 760px;
+  table-layout: fixed;
+}
+
+.notification-table th,
+.notification-table td {
+  padding-top: var(--space-3);
+  padding-bottom: var(--space-3);
+  vertical-align: top;
+}
+
+.notification-title-column {
+  width: 42%;
+}
+
+.notification-target-column {
+  width: 24%;
+}
+
+.notification-author-column {
+  width: 15%;
+}
+
+.notification-date-column {
+  width: 13%;
+}
+
+.notification-status-column,
+.notification-action-column {
+  width: 12%;
+}
+
+.notification-message-cell {
+  min-width: 0;
+}
+
+.notification-title-text {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.notification-content-text {
+  display: -webkit-box;
+  max-width: 100%;
+  margin-top: var(--space-1);
+  overflow: hidden;
+  color: var(--color-text-muted);
+  line-height: 1.45;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.notification-target-pill {
+  width: fit-content;
+  max-width: 100%;
+  border-color: rgba(36, 125, 131, 0.16);
+  color: var(--color-primary);
+  background: var(--color-primary-soft);
+  white-space: normal;
+}
+
+.notification-meta-line {
+  display: -webkit-box;
+  max-width: 100%;
+  overflow: hidden;
+  line-height: 1.45;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.notification-author-cell strong,
+.notification-date-cell {
+  overflow-wrap: anywhere;
+}
+
+.notification-history-section {
+  display: grid;
+  gap: var(--space-3);
+}

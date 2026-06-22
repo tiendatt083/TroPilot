@@ -60,6 +60,7 @@ export default function AdminBuildingNotificationPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [composerOpen, setComposerOpen] = useState(false);
 
   const buildingFilter = { buildingId: building.id };
   const selectableUsers = useMemo(
@@ -90,6 +91,7 @@ export default function AdminBuildingNotificationPage() {
 
   useEffect(() => {
     setForm(emptyForm);
+    setComposerOpen(false);
     setLoading(true);
     loadData().finally(() => setLoading(false));
   }, [building.id]);
@@ -112,6 +114,21 @@ export default function AdminBuildingNotificationPage() {
 
   const handleNotificationPageChange = (page) => {
     setNotificationPage(page);
+  };
+
+  const handleOpenComposer = () => {
+    setMessage('');
+    setError('');
+    setComposerOpen(true);
+  };
+
+  const handleCloseComposer = () => {
+    if (saving) {
+      return;
+    }
+
+    setForm(emptyForm);
+    setComposerOpen(false);
   };
 
   const handleSubmit = async (event) => {
@@ -141,6 +158,7 @@ export default function AdminBuildingNotificationPage() {
         buildingFilter
       );
       setForm(emptyForm);
+      setComposerOpen(false);
       setMessage(t('notifications.created'));
       await loadData();
     } catch (apiError) {
@@ -159,65 +177,90 @@ export default function AdminBuildingNotificationPage() {
 
   return (
     <div className="building-workspace">
-      <PageHeader eyebrow={t('workspace.notifications.eyebrow')} title={t('workspace.notifications.title')} />
+      <PageHeader
+        eyebrow={t('workspace.notifications.eyebrow')}
+        title={t('workspace.notifications.title')}
+        actions={
+          !composerOpen && (
+            <button className="button-link" type="button" onClick={handleOpenComposer}>
+              {t('notifications.actions.create')}
+            </button>
+          )
+        }
+      />
 
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
 
-      <section className="task-workspace">
-        <form className="panel-form" onSubmit={handleSubmit}>
-          <label htmlFor="title">{t('notifications.fields.title')}</label>
-          <input id="title" name="title" value={form.title} onChange={handleChange} maxLength={160} required />
+      {composerOpen && (
+        <div className="notification-composer-shell">
+          <form className="panel-form notification-composer-form" onSubmit={handleSubmit}>
+            <div className="notification-field notification-field-full">
+              <label htmlFor="title">{t('notifications.fields.title')}</label>
+              <input id="title" name="title" value={form.title} onChange={handleChange} maxLength={160} required />
+            </div>
 
-          <label htmlFor="content">{t('notifications.fields.content')}</label>
-          <textarea id="content" name="content" rows="6" value={form.content} onChange={handleChange} required />
+            <div className="notification-field notification-field-full">
+              <label htmlFor="content">{t('notifications.fields.content')}</label>
+              <textarea id="content" name="content" rows="5" value={form.content} onChange={handleChange} required />
+            </div>
 
-          <label htmlFor="targetType">{t('notifications.fields.target')}</label>
-          <select id="targetType" name="targetType" value={form.targetType} onChange={handleChange} required>
-            {NOTIFICATION_TARGET_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {formatEnumLabel(t, 'notificationTarget', option.value)}
-              </option>
-            ))}
-          </select>
+            <div className="notification-form-grid">
+              <div className="notification-field">
+                <label htmlFor="targetType">{t('notifications.fields.target')}</label>
+                <select id="targetType" name="targetType" value={form.targetType} onChange={handleChange} required>
+                  {NOTIFICATION_TARGET_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {formatEnumLabel(t, 'notificationTarget', option.value)}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-          {needsSelectedUsers && (
-            <>
-              <label>{t('notifications.fields.targetUsers')}</label>
-              <CheckboxList
-                ariaLabel={t('notifications.fields.targetUsers')}
-                items={selectableUsers}
-                selectedValues={form.targetUserIds}
-                onChange={handleTargetUsersChange}
-                getValue={(user) => user.id}
-                getLabel={(user) => user.fullName}
-                getDescription={(user) => getTargetUserDescription(user, t)}
-                emptyMessage={t('notifications.empty.buildingUsers')}
-              />
-            </>
-          )}
+              {usesBuildingTarget && (
+                <div className="notification-field">
+                  <label htmlFor="targetBuilding">{t('notifications.fields.buildingReceiving')}</label>
+                  <input id="targetBuilding" value={`${building.buildingCode} - ${building.name}`} disabled readOnly />
+                </div>
+              )}
+            </div>
 
-          {usesBuildingTarget && (
-            <>
-              <label htmlFor="targetBuilding">{t('notifications.fields.buildingReceiving')}</label>
-              <input id="targetBuilding" value={`${building.buildingCode} - ${building.name}`} disabled readOnly />
-            </>
-          )}
+            {needsSelectedUsers && (
+              <div className="notification-field notification-selection-panel">
+                <label>{t('notifications.fields.targetUsers')}</label>
+                <CheckboxList
+                  ariaLabel={t('notifications.fields.targetUsers')}
+                  items={selectableUsers}
+                  selectedValues={form.targetUserIds}
+                  onChange={handleTargetUsersChange}
+                  getValue={(user) => user.id}
+                  getLabel={(user) => user.fullName}
+                  getDescription={(user) => getTargetUserDescription(user, t)}
+                  emptyMessage={t('notifications.empty.buildingUsers')}
+                />
+              </div>
+            )}
 
-          <button type="submit" disabled={saving}>
-            {saving ? t('notifications.actions.creating') : t('notifications.actions.create')}
-          </button>
-        </form>
-
-        <div>
-          <NotificationTable notifications={pagedNotifications} />
-          <NotificationPaginationControls
-            page={notificationPage}
-            pageSize={HISTORY_PAGE_SIZE}
-            totalItems={notifications.length}
-            onPageChange={handleNotificationPageChange}
-          />
+            <div className="notification-submit-row">
+              <button className="secondary-button inline-button" type="button" disabled={saving} onClick={handleCloseComposer}>
+                {t('common.cancel')}
+              </button>
+              <button type="submit" disabled={saving}>
+                {saving ? t('notifications.actions.creating') : t('notifications.actions.create')}
+              </button>
+            </div>
+          </form>
         </div>
+      )}
+
+      <section className="building-section notification-history-section">
+        <NotificationTable notifications={pagedNotifications} showReadStatus={false} />
+        <NotificationPaginationControls
+          page={notificationPage}
+          pageSize={HISTORY_PAGE_SIZE}
+          totalItems={notifications.length}
+          onPageChange={handleNotificationPageChange}
+        />
       </section>
     </div>
   );
