@@ -79,6 +79,9 @@
     "english": "English",
     "appearance": "Appearance",
     "themeDescription": "The interface is currently using the {{theme}} theme.",
+    "account": "Account",
+    "session": "Signed-in session",
+    "signOutDescription": "Sign out of the current account on this device.",
     "themes": {
       "light": "Light",
       "dark": "Dark",
@@ -672,7 +675,7 @@
       "sheetName": "Users"
     },
     "filters": {
-      "searchPlaceholder": "Search by name, email, phone, ID, or room",
+      "searchPlaceholder": "Search by name, email, phone, or room",
       "searchAria": "Search building users",
       "roleAria": "Filter by role",
       "statusAria": "Filter by status",
@@ -685,7 +688,6 @@
       "recordType": "Record type",
       "user": "User",
       "phone": "Phone",
-      "identityNumber": "Citizen ID",
       "role": "Role",
       "room": "Room",
       "relationship": "Relationship",
@@ -2041,7 +2043,6 @@
         "fullName": "Full name",
         "phone": "Phone",
         "email": "Email",
-        "identityNumber": "Citizen ID",
         "relationship": "Relationship",
         "dateOfBirth": "Date of birth",
         "moveInDate": "Move-in date"

@@ -1246,6 +1246,251 @@
   font-size: 1.2rem;
 }
 
+/* Phase 5: shared form and filter normalization. */
+.panel-form,
+.form-card,
+.invoice-command-panel,
+.invoice-preview-panel,
+.settings-card,
+.billing-setting-card,
+.additional-service-form,
+.equipment-maintenance-panel,
+.utility-reading-overview {
+  border-color: var(--color-border-soft);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-xs);
+}
+
+.panel-form,
+.form-card {
+  gap: var(--space-4);
+  padding: clamp(0.95rem, 1.7vw, 1.25rem);
+}
+
+.form-card-header {
+  gap: var(--space-1);
+  border-bottom: 1px solid var(--color-border-soft);
+  padding-bottom: var(--space-3);
+}
+
+.form-card-header h2,
+.settings-card-heading h2,
+.billing-setting-title-row h2,
+.billing-setting-card h3,
+.equipment-record-groups h3 {
+  font-weight: var(--font-weight-strong);
+  line-height: 1.25;
+}
+
+.form-card-header h2 {
+  font-size: var(--font-size-lg);
+}
+
+.panel-form label,
+.notification-field label,
+.equipment-filter-row label,
+.compact-equipment-form .field-label,
+.utility-reading-month-control strong {
+  display: block;
+  margin-bottom: 0.32rem;
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-strong);
+  line-height: 1.3;
+}
+
+.panel-form input,
+.panel-form select,
+.panel-form textarea,
+.notification-field input,
+.notification-field select,
+.notification-field textarea,
+.search-row input,
+.search-row select,
+.filter-row input,
+.filter-row select,
+.user-filter-row input,
+.user-filter-row select,
+.building-filter-row input,
+.building-filter-row select,
+.equipment-filter-row input,
+.equipment-filter-row select,
+.month-filter-row input,
+.month-filter-row select {
+  min-height: 40px;
+  border-color: var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 0.56rem 0.7rem;
+  background: var(--color-input);
+}
+
+.panel-form textarea,
+.notification-field textarea {
+  min-height: 108px;
+  line-height: 1.55;
+}
+
+.panel-form .field-help,
+.field-help-text,
+.compact-equipment-form small,
+.utility-reading-meter-form-header p,
+.settings-card-heading p,
+.billing-setting-card h3 {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+}
+
+.panel-form > button[type="submit"],
+.panel-form .primary-action-button,
+.notification-submit-row button {
+  width: auto;
+  min-width: 148px;
+  justify-self: start;
+  margin-top: var(--space-2);
+}
+
+.notification-submit-row {
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: var(--space-3);
+}
+
+.button-row,
+.form-button-row {
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.search-row,
+.filter-row,
+.user-filter-row,
+.filter-bar,
+.month-filter-row,
+.building-filter-row,
+.equipment-filter-row {
+  align-items: end;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+  border-color: var(--color-border-soft);
+  border-radius: var(--radius-lg);
+  padding: var(--space-2);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-xs);
+}
+
+.search-row button,
+.filter-row button,
+.user-filter-row button,
+.filter-bar button,
+.month-filter-row button,
+.building-filter-row button,
+.equipment-filter-row button {
+  min-height: 40px;
+  padding: 0.54rem 0.78rem;
+}
+
+.form-grid,
+.notification-form-grid {
+  gap: var(--space-3);
+  align-items: start;
+}
+
+.form-grid > div,
+.notification-form-grid > div,
+.panel-form fieldset {
+  min-width: 0;
+}
+
+.panel-form fieldset,
+.utility-reading-meter-form,
+.billing-setting-card,
+.additional-service-form,
+.notification-selection-panel,
+.previous-reading-panel {
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-muted);
+  box-shadow: none;
+}
+
+.utility-reading-meter-form {
+  overflow: hidden;
+}
+
+.utility-reading-meter-form legend {
+  padding: var(--space-3) var(--space-4) 0;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-strong);
+}
+
+.utility-reading-meter-form-header,
+.meter-form-electricity .utility-reading-meter-form-header,
+.meter-form-electricity legend,
+.meter-form-water .utility-reading-meter-form-header,
+.meter-form-water legend {
+  background: var(--color-surface-muted);
+}
+
+.utility-reading-meter-form-body,
+.billing-setting-card,
+.additional-service-form,
+.notification-selection-panel {
+  padding: var(--space-4);
+}
+
+.service-fee-utility-grid,
+.additional-service-layout,
+.invoice-bulk-columns {
+  gap: var(--space-4);
+}
+
+.segmented-control {
+  gap: var(--space-1);
+  background: var(--color-input-disabled);
+}
+
+.segmented-control button.active {
+  border-color: rgba(36, 125, 131, 0.22);
+  color: var(--color-primary);
+  background: var(--color-primary-soft);
+  box-shadow: inset 0 0 0 1px rgba(36, 125, 131, 0.14);
+}
+
+.radio-option {
+  min-height: 2.25rem;
+  border-radius: var(--radius-sm);
+  padding: 0.45rem 0.6rem;
+  background: var(--color-surface);
+}
+
+.notification-composer-form {
+  overflow: visible;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-xs);
+}
+
+.notification-composer-form::before {
+  display: none;
+}
+
+.notification-selection-panel {
+  background: var(--color-surface-muted);
+}
+
+.notification-selection-panel .checkbox-list {
+  background: var(--color-surface);
+}
+
+.count-summary,
+.cashflow-summary div,
+.invoice-bulk-summary div {
+  border-color: var(--color-border-soft);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-xs);
+}
+
 @media (max-width: 760px) {
   .notification-pagination {
     align-items: stretch;

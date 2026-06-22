@@ -37,7 +37,7 @@ function getDonutStyle(segments) {
   return {
     background: total > 0
       ? `conic-gradient(${stops.join(', ')})`
-      : 'conic-gradient(#d9e5ee 0deg 360deg)'
+      : 'conic-gradient(var(--color-border) 0deg 360deg)'
   };
 }
 
@@ -233,17 +233,17 @@ export default function AdminDashboardPage() {
     : [];
   const roomSegments = dashboard
     ? [
-        { label: t('dashboard.admin.metrics.occupiedRooms'), value: dashboard.occupiedRooms, color: '#10b981' },
-        { label: t('dashboard.admin.metrics.emptyRooms'), value: dashboard.emptyRooms, color: '#3b82f6' },
-        { label: t('dashboard.admin.metrics.maintenanceRooms'), value: dashboard.maintenanceRooms, color: '#f59e0b' }
+        { label: t('dashboard.admin.metrics.occupiedRooms'), value: dashboard.occupiedRooms, color: 'var(--color-success)' },
+        { label: t('dashboard.admin.metrics.emptyRooms'), value: dashboard.emptyRooms, color: 'var(--color-info)' },
+        { label: t('dashboard.admin.metrics.maintenanceRooms'), value: dashboard.maintenanceRooms, color: 'var(--color-warning)' }
       ]
     : [];
   const attentionSegments = dashboard
     ? [
-        { label: t('dashboard.admin.metrics.unpaidInvoices'), value: dashboard.unpaidInvoices, color: '#f59e0b' },
-        { label: t('dashboard.admin.metrics.overdueInvoices'), value: dashboard.overdueInvoices, color: '#ef4444' },
-        { label: t('dashboard.admin.metrics.pendingMaintenance'), value: dashboard.pendingMaintenanceRequests, color: '#14b8a6' },
-        { label: t('dashboard.admin.metrics.unresolvedFeedbacks'), value: dashboard.unresolvedFeedbacks, color: '#64748b' }
+        { label: t('dashboard.admin.metrics.unpaidInvoices'), value: dashboard.unpaidInvoices, color: 'var(--color-warning)' },
+        { label: t('dashboard.admin.metrics.overdueInvoices'), value: dashboard.overdueInvoices, color: 'var(--color-danger)' },
+        { label: t('dashboard.admin.metrics.pendingMaintenance'), value: dashboard.pendingMaintenanceRequests, color: 'var(--color-primary)' },
+        { label: t('dashboard.admin.metrics.unresolvedFeedbacks'), value: dashboard.unresolvedFeedbacks, color: 'var(--color-text-muted)' }
       ]
     : [];
   const financeRows = dashboard

@@ -60,7 +60,7 @@ function getDonutStyle(segments) {
   return {
     background: total > 0
       ? `conic-gradient(${stops.join(', ')})`
-      : 'conic-gradient(#d9e5ee 0deg 360deg)'
+      : 'conic-gradient(var(--color-border) 0deg 360deg)'
   };
 }
 
@@ -330,16 +330,16 @@ export default function AdminBuildingDetailPage() {
   ];
 
   const roomSegments = [
-    { label: t('buildingOverview.metrics.occupiedRooms'), value: occupiedRooms, color: '#10b981' },
-    { label: t('buildingOverview.metrics.emptyRooms'), value: emptyRooms, color: '#3b82f6' },
-    { label: t('buildingOverview.metrics.maintenanceRooms'), value: maintenanceRooms, color: '#f59e0b' }
+    { label: t('buildingOverview.metrics.occupiedRooms'), value: occupiedRooms, color: 'var(--color-success)' },
+    { label: t('buildingOverview.metrics.emptyRooms'), value: emptyRooms, color: 'var(--color-info)' },
+    { label: t('buildingOverview.metrics.maintenanceRooms'), value: maintenanceRooms, color: 'var(--color-warning)' }
   ];
 
   const attentionSegments = [
-    { label: t('buildingOverview.metrics.pendingMembers'), value: pendingMembers, color: '#f59e0b' },
-    { label: t('buildingOverview.metrics.pendingPayments'), value: operations.pendingPayments.length, color: '#ef4444' },
-    { label: t('buildingOverview.metrics.openMaintenance'), value: openMaintenanceRequests, color: '#14b8a6' },
-    { label: t('buildingOverview.metrics.openTasks'), value: openTasks, color: '#64748b' }
+    { label: t('buildingOverview.metrics.pendingMembers'), value: pendingMembers, color: 'var(--color-warning)' },
+    { label: t('buildingOverview.metrics.pendingPayments'), value: operations.pendingPayments.length, color: 'var(--color-danger)' },
+    { label: t('buildingOverview.metrics.openMaintenance'), value: openMaintenanceRequests, color: 'var(--color-primary)' },
+    { label: t('buildingOverview.metrics.openTasks'), value: openTasks, color: 'var(--color-text-muted)' }
   ];
 
   const financeRows = [

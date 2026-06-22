@@ -91,7 +91,7 @@ export default function StaffBuildingOverviewPage() {
   const openTasks = summary.tasks.filter((task) => ['NEW', 'IN_PROGRESS', 'OVERDUE'].includes(task.status)).length;
 
   return (
-    <div className="building-workspace">
+    <div className="building-workspace staff-building-overview-page">
       {error && <div className="alert error-alert">{error}</div>}
 
       <div className="detail-panel">

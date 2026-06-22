@@ -181,7 +181,6 @@ public class AuthServiceImpl implements AuthService {
 
         user.setFullName(request.getFullName().trim());
         user.setPhone(normalizeOptionalText(request.getPhone()));
-        user.setIdentityNumber(normalizeOptionalText(request.getIdentityNumber()));
 
         User savedUser = userRepository.save(user);
         activityLogService.record(savedUser, "PROFILE_UPDATED", "Updated profile information");

@@ -18,7 +18,8 @@ export default function DataTable({
   caption,
   rowClassName,
 }) {
-  const wrapperClasses = ['table-wrap', className].filter(Boolean).join(' ');
+  const isEmpty = rows.length === 0;
+  const wrapperClasses = ['table-wrap', isEmpty ? 'table-wrap-empty' : '', className].filter(Boolean).join(' ');
   const tableClasses = ['data-table', tableClassName].filter(Boolean).join(' ');
 
   return (
@@ -49,7 +50,7 @@ export default function DataTable({
           ))}
         </tbody>
       </table>
-      {rows.length === 0 && emptyMessage && <EmptyState flat message={emptyMessage} />}
+      {isEmpty && emptyMessage && <EmptyState flat className="table-empty-state" message={emptyMessage} />}
     </div>
   );
 }

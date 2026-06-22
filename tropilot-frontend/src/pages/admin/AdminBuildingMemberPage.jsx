@@ -126,7 +126,6 @@ export default function AdminBuildingMemberPage() {
       [t('pendingMemberReview.columns.name')]: member.fullName || t('common.notProvided'),
       [t('accountDirectory.columns.email')]: member.email || t('common.notProvided'),
       [t('profile.fields.phone')]: member.phone || t('common.notProvided'),
-      [t('buildingUsers.columns.identityNumber')]: member.identityNumber || t('common.notProvided'),
       [t('forms.member.relationship')]: member.relationship || t('common.notProvided'),
       [t('tables.common.room')]: formatRoomCode(member) || t('common.notProvided'),
       [t('tables.common.headResident')]: member.residentHeadName || t('common.notProvided'),

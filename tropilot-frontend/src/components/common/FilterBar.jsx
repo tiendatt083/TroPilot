@@ -4,7 +4,7 @@ export default function FilterBar({
   as: Component = 'form',
   ...props
 }) {
-  const classes = ['search-row', className].filter(Boolean).join(' ');
+  const classes = ['search-row', 'filter-bar', className].filter(Boolean).join(' ');
 
   return (
     <Component className={classes} {...props}>

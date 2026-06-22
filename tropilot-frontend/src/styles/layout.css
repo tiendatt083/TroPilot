@@ -2,11 +2,11 @@
 
 .main-panel {
   min-width: 0;
-  max-height: 100vh;
-  padding: clamp(0.9rem, 1.35vw, 1.55rem);
+  max-height: 100dvh;
+  padding: clamp(1.15rem, 1.8vw, 2rem);
   overflow-x: hidden;
   overflow-y: auto;
-  scrollbar-color: #a8b3bf transparent;
+  scrollbar-color: #b8c4cb transparent;
   scrollbar-width: thin;
 }
 
@@ -31,7 +31,11 @@
 }
 
 .page-header {
-  margin-bottom: 1rem;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
 }
 
 .page-header h1 {
@@ -39,16 +43,16 @@
   color: var(--color-text);
   font-size: clamp(1.45rem, 2vw, 2rem);
   line-height: 1.14;
+  font-weight: var(--font-weight-strong);
   text-wrap: balance;
 }
 
 .empty-state {
-  border: 1px dashed #aec9d8;
+  border: 1px dashed #b9c8ce;
   border-radius: var(--radius-md);
-  padding: 1.25rem;
+  padding: var(--space-5);
   color: var(--color-text-muted);
-  background:
-    linear-gradient(180deg, rgba(232, 247, 250, 0.62), rgba(255, 255, 255, 0.86));
+  background: var(--color-surface-muted);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
 }
 
@@ -64,11 +68,11 @@
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 1rem;
+  gap: var(--space-5);
   min-width: 0;
-  margin-bottom: 1rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid rgba(213, 224, 234, 0.78);
+  margin-bottom: var(--space-5);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--color-border-soft);
 }
 
 .page-title-row .page-header {
@@ -79,14 +83,14 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
-  gap: 0.65rem;
+  gap: var(--space-2);
 }
 
 .page-support-text {
-  max-width: 760px;
-  margin: -0.55rem 0 1rem;
+  max-width: 68ch;
+  margin: 0.35rem 0 var(--space-4);
   color: var(--color-text-muted);
-  line-height: 1.55;
+  line-height: 1.6;
 }
 
 .narrow-section {
@@ -96,22 +100,19 @@
 .panel-form {
   display: grid;
   min-width: 0;
-  gap: 1rem;
+  gap: var(--space-4);
   border: 1px solid var(--color-border-soft);
-  border-radius: var(--radius-md);
-  padding: clamp(1rem, 2vw, 1.35rem);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(247, 251, 253, 0.98));
-  box-shadow:
-    0 12px 30px rgba(16, 32, 51, 0.055),
-    inset 0 1px 0 rgba(255, 255, 255, 0.88);
+  border-radius: var(--radius-lg);
+  padding: clamp(1rem, 2vw, 1.45rem);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
 }
 
 .panel-form label {
   display: block;
   margin-bottom: 0.4rem;
   color: var(--color-text);
-  font-weight: 750;
+  font-weight: var(--font-weight-medium);
   line-height: 1.25;
   text-wrap: pretty;
 }
@@ -120,7 +121,7 @@
   display: block;
   margin-top: 0.35rem;
   color: var(--color-text-muted);
-  font-size: 0.86rem;
+  font-size: var(--font-size-sm);
   line-height: 1.45;
 }
 
@@ -184,28 +185,28 @@
 .search-row {
   display: grid;
   grid-template-columns: minmax(240px, 1fr) auto auto;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
 }
 
 .filter-row {
   display: grid;
   grid-template-columns: minmax(260px, 1.2fr) minmax(210px, 1fr) minmax(170px, 0.75fr) auto auto;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
 }
 
 .user-filter-row {
   display: grid;
   grid-template-columns: minmax(260px, 1.2fr) minmax(220px, 0.9fr) auto auto;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
 }
 
 .page-header-actions {
   display: flex;
   align-items: center;
-  gap: 0.65rem;
+  gap: var(--space-2);
 }
 
 .form-card-header {
@@ -230,18 +231,15 @@
   align-items: end;
   border: 1px solid var(--color-border-soft);
   border-radius: var(--radius-md);
-  padding: 0.75rem;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(247, 251, 253, 0.94));
-  box-shadow:
-    0 10px 26px rgba(16, 32, 51, 0.045),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  padding: var(--space-3);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-xs);
 }
 
 .form-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.85rem;
+  gap: var(--space-3);
 }
 
 .form-grid-wide {
@@ -279,6 +277,13 @@
 .button-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: var(--space-3);
   justify-content: flex-end;
+}
+
+.split-workspace {
+  display: grid;
+  grid-template-columns: minmax(300px, 0.82fr) minmax(0, 1.18fr);
+  gap: var(--space-5);
+  align-items: start;
 }

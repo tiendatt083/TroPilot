@@ -53,9 +53,6 @@ public class RoomMember {
     @Column(length = 120)
     private String email;
 
-    @Column(length = 60)
-    private String identityNumber;
-
     private LocalDate dateOfBirth;
 
     @Column(length = 80)

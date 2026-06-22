@@ -23,7 +23,7 @@ test.describe('Tropilot smoke flow', () => {
     await expectNoVisibleAppError(page);
   });
 
-  test('staff can log in and open an allowed building invoice screen', async ({ page }) => {
+  test('staff can log in and open operational work screens', async ({ page }) => {
     await mockTropilotApi(page);
 
     await loginAs(page, 'staff');
@@ -31,8 +31,12 @@ test.describe('Tropilot smoke flow', () => {
     await expect(page).toHaveURL(/\/staff\/dashboard$/);
     await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();
 
-    await page.goto('/staff/buildings/1/invoices');
-    await expect(page.getByRole('heading', { name: 'Invoices in this building' })).toBeVisible();
+    await page.goto('/staff/tasks');
+    await expect(page.getByRole('heading', { name: 'My tasks' })).toBeVisible();
+    await expectNoVisibleAppError(page);
+
+    await page.goto('/staff/maintenance');
+    await expect(page.getByRole('heading', { name: 'Maintenance requests' })).toBeVisible();
     await expectNoVisibleAppError(page);
   });
 

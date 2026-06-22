@@ -16,7 +16,4 @@ public class ProfileUpdateRequest {
 
     @Pattern(regexp = "^[0-9+()\\-\\s]{0,30}$", message = "Phone number is invalid")
     private String phone;
-
-    @Size(max = 60, message = "Citizen ID must not exceed 60 characters")
-    private String identityNumber;
 }

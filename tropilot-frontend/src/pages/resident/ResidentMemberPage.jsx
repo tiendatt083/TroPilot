@@ -23,7 +23,6 @@ function createReturnRequestDraft(member) {
     fullName: member.fullName || '',
     phone: member.phone || '',
     email: member.email || '',
-    identityNumber: member.identityNumber || '',
     relationship: member.relationship || '',
     moveInDate: formatDateInputValue(),
     sourceMemberId: member.id

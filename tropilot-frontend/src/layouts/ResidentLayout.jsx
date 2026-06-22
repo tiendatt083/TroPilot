@@ -5,7 +5,6 @@ import * as residentApi from '../api/residentApi.js';
 import ChatWidget from '../components/ChatWidget.jsx';
 import SidebarBrand from '../components/SidebarBrand.jsx';
 import SidebarNavGroup from '../components/SidebarNavGroup.jsx';
-import { useAuth } from '../context/AuthContext.jsx';
 
 const RESIDENT_PRIMARY_ITEMS = [
   { to: '/resident/dashboard', labelKey: 'navigation.dashboard', requiresRoom: true }
@@ -35,7 +34,6 @@ const RESIDENT_ACCOUNT_ITEMS = [
 ];
 
 export default function ResidentLayout() {
-  const { logout } = useAuth();
   const { t } = useTranslation();
   const [assignment, setAssignment] = useState(null);
   const [assignmentLoading, setAssignmentLoading] = useState(true);
@@ -113,9 +111,6 @@ export default function ResidentLayout() {
             </NavLink>
           ))}
         </nav>
-        <button className="secondary-button" type="button" onClick={logout}>
-          {t('common.signOut')}
-        </button>
       </aside>
       <main className="main-panel">
         {assignmentLoadFailed && (

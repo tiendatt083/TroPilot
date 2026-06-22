@@ -40,7 +40,6 @@ public class UserMapper {
                 .fullName(user.getFullName())
                 .email(user.getEmail())
                 .phone(user.getPhone())
-                .identityNumber(user.getIdentityNumber())
                 .role(user.getRole())
                 .status(user.getStatus())
                 .mustChangePassword(user.isMustChangePassword())

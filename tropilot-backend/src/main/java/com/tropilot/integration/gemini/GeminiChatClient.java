@@ -39,7 +39,7 @@ public class GeminiChatClient {
             Do not infer, invent, or reveal values that are absent from the authorized context.
             If the context does not contain enough data to answer, clearly say which data is missing.
             Do not claim that you performed an action or accessed any data beyond LIVE_SYSTEM_CONTEXT.
-            Never request or reveal passwords, API keys, JWT tokens, bank credentials, or identity numbers.
+            Never request or reveal passwords, API keys, JWT tokens, or bank credentials.
 
             For count, summary, and overview questions, never return only the total when the related records are
             available in LIVE_SYSTEM_CONTEXT. State the total first, then provide a compact list of the relevant

@@ -72,7 +72,7 @@ export default function StaffDashboardPage() {
     : [];
 
   return (
-    <section className="content-section dashboard-page">
+    <section className="content-section dashboard-page staff-dashboard-page">
       <div className="dashboard-hero">
         <div>
           <PageHeader eyebrow={t('dashboard.staff.eyebrow')} title={t('dashboard.staff.title')} />

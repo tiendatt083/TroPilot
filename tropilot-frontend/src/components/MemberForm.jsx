@@ -5,7 +5,6 @@ const emptyForm = {
   fullName: '',
   phone: '',
   email: '',
-  identityNumber: '',
   relationship: '',
   moveInDate: ''
 };
@@ -36,7 +35,6 @@ export default function MemberForm({ initialValues, loading, submitLabel, onSubm
       fullName: form.fullName,
       phone: form.phone,
       email: form.email,
-      identityNumber: form.identityNumber,
       relationship: form.relationship,
       moveInDate: form.moveInDate
     });
@@ -68,30 +66,15 @@ export default function MemberForm({ initialValues, loading, submitLabel, onSubm
         required
       />
 
-      <div className="form-grid">
-        <div>
-          <label htmlFor="identityNumber">{t('forms.member.identityNumber')}</label>
-          <input
-            id="identityNumber"
-            name="identityNumber"
-            value={form.identityNumber || ''}
-            onChange={handleChange}
-            maxLength={60}
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="relationship">{t('forms.member.relationship')}</label>
-          <input
-            id="relationship"
-            name="relationship"
-            value={form.relationship || ''}
-            onChange={handleChange}
-            maxLength={80}
-            required
-          />
-        </div>
-      </div>
+      <label htmlFor="relationship">{t('forms.member.relationship')}</label>
+      <input
+        id="relationship"
+        name="relationship"
+        value={form.relationship || ''}
+        onChange={handleChange}
+        maxLength={80}
+        required
+      />
 
       <label htmlFor="moveInDate">{t('forms.member.moveInDate')}</label>
       <input

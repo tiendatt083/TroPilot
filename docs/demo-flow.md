@@ -5,7 +5,7 @@ This document defines the fixed academic demonstration flow for Tropilot. Use th
 ## Demo Rules
 
 - Use only clean demo data.
-- Do not use real personal information, real identity numbers, private contract files, or private payment screenshots.
+- Do not use real personal information, private contract files, or private payment screenshots.
 - Do not commit temporary passwords, bank data, webhook secrets, or API keys.
 - Use one demo building as the main walkthrough target.
 - Use the building workspace for detailed building-level operations such as rooms, service fees, utility readings, invoices, vehicles, payments, receipts, expenses, and maintenance.
@@ -58,7 +58,6 @@ For a real low-value SePay transfer test, create a separate low-value room or te
 | Full name | Demo Member One |
 | Phone | 0900000001 |
 | Email | member.one@tropilot.test |
-| Identity number | DEMO-ID-001 |
 | Relationship | Roommate |
 | Move-in date | Current demo date |
 
@@ -158,4 +157,3 @@ If any issue appears during the walkthrough:
 2. Record it in `docs/demo-bug-log.md`.
 3. Include the role, page URL, action, expected result, actual result, and severity.
 4. Reproduce the issue once after the demo before changing code.
-

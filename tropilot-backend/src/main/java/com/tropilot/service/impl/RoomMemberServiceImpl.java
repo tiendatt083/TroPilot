@@ -47,7 +47,6 @@ public class RoomMemberServiceImpl implements RoomMemberService {
                 .fullName(request.getFullName().trim())
                 .phone(request.getPhone().trim())
                 .email(request.getEmail().trim())
-                .identityNumber(normalizeOptionalText(request.getIdentityNumber()))
                 .dateOfBirth(request.getDateOfBirth())
                 .relationship(normalizeOptionalText(request.getRelationship()))
                 .moveInDate(resolveMoveInDate(request.getMoveInDate()))
@@ -92,7 +91,6 @@ public class RoomMemberServiceImpl implements RoomMemberService {
         member.setFullName(request.getFullName().trim());
         member.setPhone(request.getPhone().trim());
         member.setEmail(request.getEmail().trim());
-        member.setIdentityNumber(normalizeOptionalText(request.getIdentityNumber()));
         member.setDateOfBirth(request.getDateOfBirth());
         member.setRelationship(normalizeOptionalText(request.getRelationship()));
         member.setMoveInDate(resolveMoveInDate(request.getMoveInDate()));

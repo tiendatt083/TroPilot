@@ -1,6 +1,6 @@
 export default function DashboardMetricGrid({ metrics, compact = false }) {
   return (
-    <div className={compact ? 'dashboard-grid compact-dashboard-grid' : 'dashboard-grid'}>
+    <div className={['dashboard-grid', 'dashboard-metric-grid', compact ? 'compact-dashboard-grid' : ''].filter(Boolean).join(' ')}>
       {metrics.map((metric) => (
         <div
           className={[

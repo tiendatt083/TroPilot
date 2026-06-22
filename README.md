@@ -337,7 +337,7 @@ Head Residents can only access information and actions for their currently assig
 
 ## Demo Flow
 
-Use clean demo data only. Do not use real personal information in names, phone numbers, identity numbers, contract files, proof images, or notes.
+Use clean demo data only. Do not use real personal information in names, phone numbers, contract files, proof images, or notes.
 
 The official fixed demo checklist is maintained in:
 

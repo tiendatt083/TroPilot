@@ -6,7 +6,7 @@ export default function FormCard({
   as: Component = 'section',
   ...props
 }) {
-  const classes = ['panel-form', className].filter(Boolean).join(' ');
+  const classes = ['panel-form', 'form-card', className].filter(Boolean).join(' ');
 
   return (
     <Component className={classes} {...props}>

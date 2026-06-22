@@ -209,7 +209,6 @@ class HeadResidentAssignmentServiceImplTest {
                 .fullName("Room Member")
                 .phone("0900000002")
                 .email("member@test.local")
-                .identityNumber("123456789")
                 .relationship("Family")
                 .moveInDate(LocalDate.of(2026, 1, 1))
                 .status(status)

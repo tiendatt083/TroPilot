@@ -261,7 +261,6 @@ function toResidentExportRow({ record, index, recordType, headResidentName, t })
     [t('accountDirectory.columns.name')]: record.fullName || t('common.notProvided'),
     [t('accountDirectory.columns.email')]: record.email || t('common.notProvided'),
     [t('profile.fields.phone')]: record.phone || t('common.notProvided'),
-    [t('buildingUsers.columns.identityNumber')]: record.identityNumber || t('common.notProvided'),
     [t('tables.common.building')]: formatAssignedBuilding(record, t),
     [t('tables.common.room')]: formatAssignedRoom(record, t),
     [t('forms.member.relationship')]: record.relationship || t('common.notApplicable'),

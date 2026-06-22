@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import PageHeader from '../components/PageHeader.jsx';
+import { useAuth } from '../context/AuthContext.jsx';
 import { useTheme } from '../context/ThemeContext.jsx';
 
 const LANGUAGE_STORAGE_KEY = 'lang';
@@ -11,6 +12,7 @@ function normalizeLanguage(language) {
 
 export default function Settings() {
   const { t, i18n } = useTranslation();
+  const { logout } = useAuth();
   const { theme, resolvedTheme, setTheme } = useTheme();
   const currentLanguage = normalizeLanguage(i18n.language);
 
@@ -78,6 +80,16 @@ export default function Settings() {
                 {t(`settings.themes.${themeOption}`)}
               </button>
             ))}
+          </div>
+        </div>
+
+        <div className="settings-divider" />
+
+        <div className="settings-group">
+          <div className="settings-language-actions">
+            <button className="danger-button inline-button" type="button" onClick={logout}>
+              {t('common.signOut')}
+            </button>
           </div>
         </div>
       </section>

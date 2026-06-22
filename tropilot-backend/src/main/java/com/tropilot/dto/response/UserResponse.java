@@ -17,7 +17,6 @@ public class UserResponse {
     private String fullName;
     private String email;
     private String phone;
-    private String identityNumber;
     private UserRole role;
     private UserStatus status;
     private boolean mustChangePassword;

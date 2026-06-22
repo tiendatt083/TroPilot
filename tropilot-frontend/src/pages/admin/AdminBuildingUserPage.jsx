@@ -37,7 +37,6 @@ function recordMatchesSearch(record, searchValue) {
     record.fullName,
     record.email,
     record.phone,
-    record.identityNumber,
     record.relationship,
     record.roomCode,
     record.roomName,
@@ -45,7 +44,6 @@ function recordMatchesSearch(record, searchValue) {
       member.fullName,
       member.email,
       member.phone,
-      member.identityNumber,
       member.relationship
     ])
   ];
@@ -398,7 +396,6 @@ export default function AdminBuildingUserPage() {
               <tr>
                 <th>{t('buildingUsers.columns.user')}</th>
                 <th>{t('buildingUsers.columns.phone')}</th>
-                <th>{t('buildingUsers.columns.identityNumber')}</th>
                 <th>{t('buildingUsers.columns.room')}</th>
                 <th>{t('buildingUsers.columns.moveInDate')}</th>
                 <th>{t('buildingUsers.columns.status')}</th>
@@ -426,7 +423,6 @@ export default function AdminBuildingUserPage() {
                     )}
                   </td>
                   <td>{residentHead.phone || t('common.notProvided')}</td>
-                  <td>{residentHead.identityNumber || t('common.notProvided')}</td>
                   <td>
                     <Link
                       className="secondary-link compact-link"
@@ -570,7 +566,6 @@ function toExportRow({ record, index, recordType, headResidentName, t }) {
     [t('buildingUsers.columns.user')]: record.fullName || t('common.notProvided'),
     [t('accountDirectory.columns.email')]: record.email || t('common.notProvided'),
     [t('buildingUsers.columns.phone')]: record.phone || t('common.notProvided'),
-    [t('buildingUsers.columns.identityNumber')]: record.identityNumber || t('common.notProvided'),
     [t('buildingUsers.columns.room')]: formatRoomCode(record) || t('common.notProvided'),
     [t('buildingUsers.columns.relationship')]: record.relationship || t('common.notApplicable'),
     [t('tables.common.headResident')]: headResidentName || t('common.notApplicable'),

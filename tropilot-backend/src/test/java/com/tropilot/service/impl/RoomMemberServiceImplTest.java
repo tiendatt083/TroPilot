@@ -120,7 +120,6 @@ class RoomMemberServiceImplTest {
                 .fullName("Pending Member")
                 .phone("0900000003")
                 .email("pending@test.local")
-                .identityNumber("987654321")
                 .relationship("Family")
                 .moveInDate(LocalDate.of(2026, 6, 1))
                 .status(RoomMemberStatus.PENDING)

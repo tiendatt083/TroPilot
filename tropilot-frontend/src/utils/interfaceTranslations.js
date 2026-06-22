@@ -224,7 +224,6 @@ export const EN_TO_VI_TRANSLATIONS = {
   'Head residents': 'Chủ hộ',
   'Household member': 'Thành viên hộ',
   'High': 'Cao',
-  'Identity number': 'Số giấy tờ',
   'Image': 'Hình ảnh',
   'Images': 'Hình ảnh',
   'Income': 'Thu nhập',

@@ -87,7 +87,7 @@ export default function ResidentDashboardPage() {
     : [];
 
   return (
-    <section className="content-section dashboard-page">
+    <section className="content-section dashboard-page resident-dashboard-page">
       <div className="dashboard-hero">
         <div>
           <PageHeader eyebrow={t('dashboard.resident.eyebrow')} title={t('dashboard.resident.title')} />

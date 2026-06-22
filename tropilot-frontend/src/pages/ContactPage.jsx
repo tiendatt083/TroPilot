@@ -154,9 +154,8 @@ export default function ContactPage() {
       {loading ? (
         <div className="empty-state">{t('contact.messages.loading')}</div>
       ) : (
-        <div className={`contact-layout${isAdmin ? ' is-editable' : ''}`}>
-          <ContactSummary contact={contact} t={t} />
-          {isAdmin && (
+        <div className="contact-layout">
+          {isAdmin ? (
             <ContactEditor
               form={form}
               saving={saving}
@@ -167,6 +166,8 @@ export default function ContactPage() {
               onRemovePhone={removePhone}
               onSubmit={handleSubmit}
             />
+          ) : (
+            <ContactSummary contact={contact} t={t} />
           )}
         </div>
       )}

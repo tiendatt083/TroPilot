@@ -79,6 +79,9 @@
     "english": "Tiếng Anh",
     "appearance": "Giao diện",
     "themeDescription": "Giao diện hiện đang sử dụng chế độ {{theme}}.",
+    "account": "Tài khoản",
+    "session": "Phiên đăng nhập",
+    "signOutDescription": "Đăng xuất khỏi tài khoản hiện tại trên thiết bị này.",
     "themes": {
       "light": "Sáng",
       "dark": "Tối",
@@ -672,7 +675,7 @@
       "sheetName": "Nguoi dung"
     },
     "filters": {
-      "searchPlaceholder": "Tìm theo tên, email, số điện thoại, căn cước hoặc phòng",
+      "searchPlaceholder": "Tìm theo tên, email, số điện thoại hoặc phòng",
       "searchAria": "Tìm kiếm người dùng của tòa nhà",
       "roleAria": "Lọc theo vai trò",
       "statusAria": "Lọc theo trạng thái",
@@ -685,7 +688,6 @@
       "recordType": "Loại hồ sơ",
       "user": "Người dùng",
       "phone": "Số điện thoại",
-      "identityNumber": "Căn cước công dân (ID)",
       "role": "Vai trò",
       "room": "Phòng",
       "relationship": "Quan hệ",
@@ -2041,7 +2043,6 @@
         "fullName": "Họ và tên",
         "phone": "Số điện thoại",
         "email": "Gmail",
-        "identityNumber": "Căn cước công dân (ID)",
         "relationship": "Quan hệ",
         "dateOfBirth": "Ngày sinh",
         "moveInDate": "Ngày chuyển vào"

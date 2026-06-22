@@ -50,7 +50,6 @@ public class RoomMemberMapper {
                 .fullName(member.getFullName())
                 .phone(member.getPhone())
                 .email(member.getEmail())
-                .identityNumber(member.getIdentityNumber())
                 .dateOfBirth(member.getDateOfBirth())
                 .relationship(member.getRelationship())
                 .moveInDate(member.getMoveInDate())

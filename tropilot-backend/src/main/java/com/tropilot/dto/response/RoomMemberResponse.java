@@ -24,7 +24,6 @@ public class RoomMemberResponse {
     private String fullName;
     private String phone;
     private String email;
-    private String identityNumber;
     private LocalDate dateOfBirth;
     private String relationship;
     private LocalDate moveInDate;

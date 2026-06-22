@@ -362,7 +362,6 @@ CREATE TABLE IF NOT EXISTS `room_members` (
   `created_at` datetime(6) NOT NULL,
   `date_of_birth` date DEFAULT NULL,
   `full_name` varchar(120) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `identity_number` varchar(60) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `move_in_date` date NOT NULL,
   `move_out_date` date DEFAULT NULL,
   `note` varchar(1000) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -510,7 +509,6 @@ CREATE TABLE IF NOT EXISTS `users` (
   `status` enum('ACTIVE','LOCKED','INACTIVE') COLLATE utf8mb4_unicode_ci NOT NULL,
   `updated_at` datetime(6) NOT NULL,
   `temporary_password_encrypted` varchar(1024) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `identity_number` varchar(60) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `UK_6dotkott2kjsp8vw4d0m25fb7` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

@@ -26,10 +26,6 @@ public class RoomMemberUpsertRequest {
     @Size(max = 120, message = "Email must not exceed 120 characters")
     private String email;
 
-    @NotBlank(message = "Citizen ID is required")
-    @Size(max = 60, message = "Identity number must not exceed 60 characters")
-    private String identityNumber;
-
     private LocalDate dateOfBirth;
 
     @NotBlank(message = "Relationship is required")

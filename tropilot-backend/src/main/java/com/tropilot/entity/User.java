@@ -42,9 +42,6 @@ public class User {
     @Column(length = 30)
     private String phone;
 
-    @Column(length = 60)
-    private String identityNumber;
-
     @Column(nullable = false)
     private String password;
 
