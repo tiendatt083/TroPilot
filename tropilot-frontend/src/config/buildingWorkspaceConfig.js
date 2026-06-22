@@ -10,8 +10,7 @@ const BUILDING_WORKSPACE_GROUPS = [
     id: 'accounts',
     labelKey: 'buildingWorkspace.groups.accounts',
     items: [
-      { path: '/users', labelKey: 'buildingWorkspace.users' },
-      { path: '/members', labelKey: 'buildingWorkspace.roomMembers' }
+      { path: '/users', labelKey: 'buildingWorkspace.users' }
     ]
   },
   {

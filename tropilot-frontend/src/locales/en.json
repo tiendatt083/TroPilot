@@ -186,7 +186,7 @@
     "accounts": "Accounts",
     "operations": "Operations",
     "informationAndFeedback": "Information and feedback",
-    "users": "Users",
+    "users": "Staff",
     "residents": "Tenants",
     "pendingMembers": "Pending members",
     "contracts": "Contracts",
@@ -212,13 +212,13 @@
   },
   "userManagement": {
     "eyebrow": "System accounts",
-    "title": "User management",
+    "title": "Staff management",
     "filters": {
-      "searchAria": "Search users",
+      "searchAria": "Search staff",
       "searchPlaceholder": "Search by name, email, or phone number"
     },
     "columns": {
-      "name": "User name",
+      "name": "Staff name",
       "email": "Email",
       "role": "Role",
       "status": "Account status",
@@ -230,17 +230,17 @@
       "locked": "Locked"
     },
     "actions": {
-      "create": "Create staff account",
+      "create": "Add staff",
       "exportExcel": "Export Excel"
     },
     "messages": {
-      "loading": "Loading users...",
-      "loadError": "Users could not be loaded",
-      "empty": "No users match the current search.",
-      "exportEmpty": "No users to export."
+      "loading": "Loading staff...",
+      "loadError": "Staff could not be loaded",
+      "empty": "No staff match the current search.",
+      "exportEmpty": "No staff to export."
     },
     "export": {
-      "sheetName": "Users"
+      "sheetName": "Staff"
     },
     "passwordUnavailable": "Temporary password unavailable",
     "passwordChanged": "Password changed"
@@ -536,6 +536,8 @@
     },
     "filters": {
       "building": "Building",
+      "searchAria": "Search equipment",
+      "searchPlaceholder": "Search by code, name, room, or location",
       "scope": "Scope",
       "room": "Room",
       "condition": "Condition",
@@ -2058,7 +2060,10 @@
       "task": {
         "taskType": "Task type",
         "selectStaff": "Select staff",
-        "noRoomLinked": "No room linked"
+        "roomScope": "Room / scope",
+        "selectRoom": "Select room",
+        "generalBuildingTask": "General building task",
+        "noRoomLinked": "No specific room"
       },
       "expense": {
         "taskReference": "Task reference",

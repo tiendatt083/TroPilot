@@ -4,14 +4,12 @@ import { useTranslation } from 'react-i18next';
 import * as buildingApi from '../../features/buildings/api.js';
 import * as roomApi from '../../features/rooms/api.js';
 import * as adminUserApi from '../../features/users/api.js';
-import PageHeader from '../../components/PageHeader.jsx';
 import { addMonthsToDateInput, formatDateInputValue, formatDisplayDate } from '../../utils/dateFormat.js';
 import { exportRowsToExcel } from '../../utils/excelExport.js';
 import { formatRoomCode, formatRoomLabel } from '../../utils/roomDisplay.js';
 
 const emptyFilters = {
   search: '',
-  status: '',
   roomId: ''
 };
 
@@ -77,7 +75,6 @@ function filterHouseholds(households, filters) {
 
   return households.filter((residentHead) => (
     recordMatchesSearch(residentHead, searchValue)
-    && (!filters.status || residentHead.status === filters.status)
     && (!filters.roomId || String(residentHead.roomId || '') === filters.roomId)
   ));
 }
@@ -99,10 +96,6 @@ function createRoomOptions(households) {
   });
 
   return Array.from(rooms.values()).sort((firstRoom, secondRoom) => firstRoom.label.localeCompare(secondRoom.label));
-}
-
-function createUniqueOptions(records, field) {
-  return Array.from(new Set(records.map((record) => record[field]).filter(Boolean))).sort();
 }
 
 function statusClass(residentHead) {
@@ -190,7 +183,6 @@ export default function AdminBuildingUserPage() {
     [households, filters]
   );
   const roomOptions = useMemo(() => createRoomOptions(households), [households]);
-  const statusOptions = useMemo(() => createUniqueOptions(households, 'status'), [households]);
 
   const handleFilterChange = (event) => {
     const { name, value } = event.target;
@@ -333,7 +325,7 @@ export default function AdminBuildingUserPage() {
   return (
     <div className="building-workspace">
       <div className="page-title-row compact-title-row">
-        <PageHeader eyebrow={t('buildingUsers.eyebrow')} title={t('buildingUsers.title')} />
+        <span className="page-eyebrow">{t('buildingUsers.eyebrow')}</span>
         <div className="page-action-row">
           <button className="secondary-button inline-button" type="button" onClick={handleExport}>
             {t('buildingUsers.actions.exportExcel')}
@@ -347,7 +339,7 @@ export default function AdminBuildingUserPage() {
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
 
-      <form className="user-filter-row" onSubmit={handleSearch}>
+      <form className="user-filter-row building-user-filter-row" onSubmit={handleSearch}>
         <input
           aria-label={t('buildingUsers.filters.searchAria')}
           name="search"
@@ -355,19 +347,6 @@ export default function AdminBuildingUserPage() {
           onChange={handleFilterChange}
           placeholder={t('buildingUsers.filters.searchPlaceholder')}
         />
-        <select
-          aria-label={t('buildingUsers.filters.statusAria')}
-          name="status"
-          value={filters.status}
-          onChange={handleFilterChange}
-        >
-          <option value="">{t('buildingUsers.filters.allStatuses')}</option>
-          {statusOptions.map((status) => (
-            <option key={status} value={status}>
-              {formatStatus(status, t)}
-            </option>
-          ))}
-        </select>
         <select
           aria-label={t('buildingUsers.filters.roomAria')}
           name="roomId"
@@ -382,7 +361,11 @@ export default function AdminBuildingUserPage() {
           ))}
         </select>
         <button type="submit">{t('common.filter')}</button>
-        <button className="secondary-button inline-button" type="button" onClick={handleClearFilters}>
+        <button
+          className="secondary-button inline-button compact-clear-filter"
+          type="button"
+          onClick={handleClearFilters}
+        >
           {t('common.clear')}
         </button>
       </form>

@@ -1,6 +1,5 @@
 import { useTranslation } from 'react-i18next';
 import {
-  getTaskPriorityClass,
   getTaskStatusClass,
 } from '../utils/taskOptions.js';
 import { resolveFileUrl } from '../utils/fileUrl.js';
@@ -9,7 +8,9 @@ import { formatRoomLabel } from '../utils/roomDisplay.js';
 
 function roomText(task, t) {
   if (!task.roomCode) {
-    return t('common.notLinked');
+    return task.buildingId || task.buildingCode
+      ? t('forms.task.generalBuildingTask')
+      : t('forms.task.noRoomLinked');
   }
 
   return formatRoomLabel(task);
@@ -38,14 +39,6 @@ export default function TaskDetail({ task }) {
         <div>
           <span>{t('tables.common.type')}</span>
           <strong>{formatEnumLabel(t, 'taskType', task.taskType)}</strong>
-        </div>
-        <div>
-          <span>{t('tables.common.priority')}</span>
-          <strong>
-            <span className={getTaskPriorityClass(task.priority)}>
-              {formatEnumLabel(t, 'taskPriority', task.priority)}
-            </span>
-          </strong>
         </div>
         <div>
           <span>{t('tables.common.assignedStaff')}</span>

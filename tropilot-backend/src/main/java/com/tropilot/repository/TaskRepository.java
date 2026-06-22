@@ -24,6 +24,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     );
 
     @EntityGraph(attributePaths = {
+            "building",
             "room",
             "room.building",
             "assignedTo",
@@ -33,6 +34,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     @Query("""
             select taskEntity from Task taskEntity
+            left join fetch taskEntity.building taskBuilding
             left join fetch taskEntity.room room
             left join fetch room.building building
             join fetch taskEntity.assignedTo assignedTo
@@ -43,17 +45,19 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     @Query("""
             select taskEntity from Task taskEntity
-            join fetch taskEntity.room room
-            join fetch room.building building
+            left join fetch taskEntity.building taskBuilding
+            left join fetch taskEntity.room room
+            left join fetch room.building building
             join fetch taskEntity.assignedTo assignedTo
             join fetch taskEntity.createdBy createdBy
-            where building.id = :buildingId
+            where taskBuilding.id = :buildingId or building.id = :buildingId
             order by taskEntity.createdAt desc
             """)
     List<Task> findByBuildingIdWithDetails(@Param("buildingId") Long buildingId);
 
     @Query("""
             select taskEntity from Task taskEntity
+            left join fetch taskEntity.building taskBuilding
             left join fetch taskEntity.room room
             left join fetch room.building building
             join fetch taskEntity.assignedTo assignedTo

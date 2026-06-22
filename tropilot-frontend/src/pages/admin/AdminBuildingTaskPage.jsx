@@ -85,8 +85,7 @@ export default function AdminBuildingTaskPage() {
               staffUsers={staffUsers}
               loading={saving}
               submitLabel={t('taskManagement.create')}
-              roomRequired
-              roomPlaceholder={t('forms.task.selectRoom')}
+              roomPlaceholder={t('forms.task.generalBuildingTask')}
               onSubmit={handleSubmit}
             />
           </div>

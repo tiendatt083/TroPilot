@@ -92,7 +92,7 @@ export default function AdminUserListPage() {
 
     const rows = filteredAccounts.map((account, index) => ({
       [t('accountDirectory.columns.id')]: index + 1,
-      [t('accountDirectory.columns.name')]: account.fullName || t('common.notProvided'),
+      [t('userManagement.columns.name')]: account.fullName || t('common.notProvided'),
       [t('accountDirectory.detail.phone')]: account.phone || t('common.notProvided'),
       [t('accountDirectory.columns.email')]: account.email || t('common.notProvided'),
       [t('accountDirectory.detail.role')]: formatRole(account.role, t),
@@ -157,6 +157,7 @@ export default function AdminUserListPage() {
           accounts={filteredAccounts}
           deletingId={deletingId}
           emptyMessage={t('userManagement.messages.empty')}
+          nameColumnLabel={t('userManagement.columns.name')}
           onDelete={handleDelete}
         />
       )}

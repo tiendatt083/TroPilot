@@ -11,10 +11,33 @@ import { EQUIPMENT_CONDITIONS, EQUIPMENT_SCOPES } from '../utils/equipmentOption
 import { formatRoomLabel } from '../utils/roomDisplay.js';
 
 const EMPTY_FILTERS = {
+  search: '',
   scope: '',
   roomId: '',
   condition: ''
 };
+
+function normalizeSearchValue(value) {
+  return String(value || '').trim().toLowerCase();
+}
+
+function equipmentMatchesSearch(item, searchValue) {
+  if (!searchValue) {
+    return true;
+  }
+
+  const searchableValues = [
+    item.equipmentCode,
+    item.name,
+    item.buildingCode,
+    item.buildingName,
+    item.roomCode,
+    item.roomName,
+    item.locationDescription
+  ];
+
+  return searchableValues.some((value) => normalizeSearchValue(value).includes(searchValue));
+}
 
 function toEquipmentPayload(payload) {
   const { buildingId, ...equipmentPayload } = payload;
@@ -58,8 +81,12 @@ export default function BuildingEquipmentPage({ role }) {
   const [processingId, setProcessingId] = useState(null);
   const [historyLoading, setHistoryLoading] = useState(false);
   const [requestLoading, setRequestLoading] = useState(false);
-  const sharedEquipment = equipment.filter((item) => item.scope === 'BUILDING');
-  const roomEquipment = equipment.filter((item) => item.scope === 'ROOM');
+  const displayedEquipment = useMemo(() => {
+    const searchValue = normalizeSearchValue(filters.search);
+    return equipment.filter((item) => equipmentMatchesSearch(item, searchValue));
+  }, [equipment, filters.search]);
+  const sharedEquipment = displayedEquipment.filter((item) => item.scope === 'BUILDING');
+  const roomEquipment = displayedEquipment.filter((item) => item.scope === 'ROOM');
 
   const loadData = async (activeFilters = filters) => {
     setError('');
@@ -92,8 +119,13 @@ export default function BuildingEquipmentPage({ role }) {
 
   const handleApplyFilters = async (event) => {
     event.preventDefault();
+    const activeFilters = {
+      ...filters,
+      search: filters.search.trim()
+    };
+    setFilters(activeFilters);
     setLoading(true);
-    await loadData(filters);
+    await loadData(activeFilters);
     setLoading(false);
   };
 
@@ -254,17 +286,16 @@ export default function BuildingEquipmentPage({ role }) {
 
   return (
     <div className="building-workspace equipment-page">
-      <PageHeader
-        eyebrow={t('equipment.eyebrow')}
-        title={t('equipment.title')}
-        actions={
-          canManage && !formOpen && (
+      <div className="page-title-row compact-title-row">
+        <span className="page-eyebrow">{t('equipment.eyebrow')}</span>
+        {canManage && !formOpen && (
+          <div className="page-action-row">
             <button className="button-link" type="button" onClick={handleOpenForm}>
               {t('equipment.actions.add')}
             </button>
-          )
-        }
-      />
+          </div>
+        )}
+      </div>
       <p className="page-support-text">
         {canManage ? t('equipment.adminDescription') : t('equipment.staffDescription')}
       </p>
@@ -295,11 +326,18 @@ export default function BuildingEquipmentPage({ role }) {
           <PageHeader eyebrow={t('equipment.records.eyebrow')} title={t('equipment.records.title')} />
         </div>
 
-        <form className="equipment-filter-row" onSubmit={handleApplyFilters}>
+        <form className="equipment-filter-row building-equipment-filter-row" onSubmit={handleApplyFilters}>
+          <input
+            aria-label={t('equipment.filters.searchAria')}
+            name="search"
+            value={filters.search}
+            onChange={handleFilterChange}
+            placeholder={t('equipment.filters.searchPlaceholder')}
+          />
           <div>
-            <label htmlFor="equipmentScopeFilter">{t('equipment.filters.scope')}</label>
             <select
               id="equipmentScopeFilter"
+              aria-label={t('equipment.filters.scope')}
               name="scope"
               value={filters.scope}
               onChange={handleFilterChange}
@@ -313,9 +351,9 @@ export default function BuildingEquipmentPage({ role }) {
             </select>
           </div>
           <div>
-            <label htmlFor="equipmentRoomFilter">{t('equipment.filters.room')}</label>
             <select
               id="equipmentRoomFilter"
+              aria-label={t('equipment.filters.room')}
               name="roomId"
               value={filters.roomId}
               disabled={filters.scope !== 'ROOM'}
@@ -330,9 +368,9 @@ export default function BuildingEquipmentPage({ role }) {
             </select>
           </div>
           <div>
-            <label htmlFor="equipmentConditionFilter">{t('equipment.filters.condition')}</label>
             <select
               id="equipmentConditionFilter"
+              aria-label={t('equipment.filters.condition')}
               name="condition"
               value={filters.condition}
               onChange={handleFilterChange}

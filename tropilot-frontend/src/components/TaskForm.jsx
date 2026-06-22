@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  TASK_PRIORITY_OPTIONS,
   TASK_STATUS_OPTIONS,
   TASK_TYPE_OPTIONS,
   toDateTimeInputValue
@@ -92,19 +91,6 @@ export default function TaskForm({
           </select>
         </div>
         <div>
-          <label htmlFor="priority">{t('tables.common.priority')}</label>
-          <select id="priority" name="priority" value={form.priority} onChange={handleChange} required>
-            {TASK_PRIORITY_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {formatEnumLabel(t, 'taskPriority', option.value)}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      <div className="form-grid">
-        <div>
           <label htmlFor="assignedToId">{t('tables.common.assignedStaff')}</label>
           <select id="assignedToId" name="assignedToId" value={form.assignedToId} onChange={handleChange} required>
             <option value="">{t('forms.task.selectStaff')}</option>
@@ -115,6 +101,9 @@ export default function TaskForm({
             ))}
           </select>
         </div>
+      </div>
+
+      <div className="form-grid">
         <div>
           <label htmlFor="deadline">{t('tables.common.deadline')}</label>
           <input
@@ -127,17 +116,18 @@ export default function TaskForm({
             required
           />
         </div>
+        <div>
+          <label htmlFor="roomId">{t('forms.task.roomScope')}</label>
+          <select id="roomId" name="roomId" value={form.roomId} onChange={handleChange} required={roomRequired}>
+            <option value="">{roomPlaceholder || t('forms.task.generalBuildingTask')}</option>
+            {rooms.map((room) => (
+              <option key={room.id} value={room.id}>
+                {formatRoomLabel(room)}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
-
-      <label htmlFor="roomId">{t('tables.common.room')}</label>
-      <select id="roomId" name="roomId" value={form.roomId} onChange={handleChange} required={roomRequired}>
-        <option value="">{roomPlaceholder || t('forms.task.noRoomLinked')}</option>
-        {rooms.map((room) => (
-          <option key={room.id} value={room.id}>
-            {formatRoomLabel(room)}
-          </option>
-        ))}
-      </select>
 
       {includeStatus && (
         <>

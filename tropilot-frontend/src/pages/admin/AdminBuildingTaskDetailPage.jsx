@@ -107,8 +107,7 @@ export default function AdminBuildingTaskDetailPage() {
             loading={saving}
             submitLabel={t('buildingManagement.saveChanges')}
             includeStatus
-            roomRequired
-            roomPlaceholder={t('forms.task.selectRoom')}
+            roomPlaceholder={t('forms.task.generalBuildingTask')}
             onSubmit={handleSubmit}
           />
         </div>

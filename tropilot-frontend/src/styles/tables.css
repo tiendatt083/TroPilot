@@ -577,14 +577,15 @@
 .building-section .notification-pagination,
 .table-wrap + .notification-pagination {
   display: flex;
-  width: 100%;
+  width: fit-content;
+  max-width: min(100%, 620px);
   align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-  margin-top: var(--space-3);
+  justify-content: center;
+  gap: var(--space-2);
+  margin: var(--space-3) auto 0;
   border: 1px solid var(--color-border-soft);
   border-radius: var(--radius-lg);
-  padding: var(--space-2);
+  padding: 0.5rem 0.65rem;
   color: var(--color-text-muted);
   background: var(--color-surface);
   box-shadow: var(--shadow-xs);
@@ -601,8 +602,8 @@
 .building-section .notification-page-buttons,
 .table-wrap + .notification-pagination .notification-page-buttons {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
+  flex-wrap: nowrap;
+  justify-content: center;
   gap: var(--space-1);
 }
 

@@ -7,6 +7,7 @@ import com.tropilot.dto.request.TaskCreateRequest;
 import com.tropilot.dto.request.TaskRejectRequest;
 import com.tropilot.dto.request.TaskUpdateRequest;
 import com.tropilot.dto.response.TaskResponse;
+import com.tropilot.entity.Building;
 import com.tropilot.entity.Room;
 import com.tropilot.entity.Task;
 import com.tropilot.entity.User;
@@ -52,12 +53,13 @@ public class TaskServiceImpl implements TaskService {
         User createdBy = findUser(createdById);
         User assignedTo = findActiveStaff(request.getAssignedToId());
         Room room = request.getRoomId() == null ? null : findRoom(request.getRoomId());
-        validateRoomBelongsToBuilding(room, buildingId);
+        Building building = resolveTaskBuilding(room, buildingId, null);
 
         Task task = Task.builder()
                 .title(request.getTitle().trim())
                 .content(request.getContent().trim())
                 .taskType(parseTaskType(request.getTaskType()))
+                .building(building)
                 .room(room)
                 .assignedTo(assignedTo)
                 .deadline(request.getDeadline())
@@ -106,11 +108,12 @@ public class TaskServiceImpl implements TaskService {
         User assignedTo = findActiveStaff(request.getAssignedToId());
         Room room = request.getRoomId() == null ? null : findRoom(request.getRoomId());
         validateTaskBelongsToBuilding(task, buildingId);
-        validateRoomBelongsToBuilding(room, buildingId);
+        Building building = resolveTaskBuilding(room, buildingId, task.getBuilding());
 
         task.setTitle(request.getTitle().trim());
         task.setContent(request.getContent().trim());
         task.setTaskType(parseTaskType(request.getTaskType()));
+        task.setBuilding(building);
         task.setRoom(room);
         task.setAssignedTo(assignedTo);
         task.setDeadline(request.getDeadline());
@@ -218,18 +221,26 @@ public class TaskServiceImpl implements TaskService {
         }
     }
 
-    private void validateRoomBelongsToBuilding(Room room, Long buildingId) {
-        if (buildingId == null) {
+    private Building resolveTaskBuilding(Room room, Long buildingId, Building fallbackBuilding) {
+        if (buildingId != null) {
+            Building building = findBuilding(buildingId);
+            validateRoomBelongsToBuilding(room, building);
+            return building;
+        }
+
+        if (room != null) {
+            return room.getBuilding();
+        }
+
+        return fallbackBuilding;
+    }
+
+    private void validateRoomBelongsToBuilding(Room room, Building building) {
+        if (room == null || building == null) {
             return;
         }
 
-        validateBuildingExists(buildingId);
-
-        if (room == null) {
-            throw new BadRequestException("Room is required for building tasks");
-        }
-
-        if (!Objects.equals(room.getBuilding().getId(), buildingId)) {
+        if (!Objects.equals(room.getBuilding().getId(), building.getId())) {
             throw new BadRequestException("Task room does not belong to the selected building");
         }
     }
@@ -241,9 +252,19 @@ public class TaskServiceImpl implements TaskService {
 
         validateBuildingExists(buildingId);
 
-        if (task.getRoom() == null || !Objects.equals(task.getRoom().getBuilding().getId(), buildingId)) {
+        Long taskBuildingId = task.getBuilding() == null ? null : task.getBuilding().getId();
+        if (taskBuildingId == null && task.getRoom() != null) {
+            taskBuildingId = task.getRoom().getBuilding().getId();
+        }
+
+        if (!Objects.equals(taskBuildingId, buildingId)) {
             throw new BadRequestException("Task does not belong to the selected building");
         }
+    }
+
+    private Building findBuilding(Long buildingId) {
+        return buildingRepository.findById(buildingId)
+                .orElseThrow(() -> new ResourceNotFoundException("Building not found"));
     }
 
     private Room findRoom(Long roomId) {

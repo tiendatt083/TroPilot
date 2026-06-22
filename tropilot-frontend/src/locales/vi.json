@@ -186,7 +186,7 @@
     "accounts": "Tài khoản",
     "operations": "Vận hành",
     "informationAndFeedback": "Thông tin và phản hồi",
-    "users": "Người dùng",
+    "users": "Nhân viên",
     "residents": "Khách thuê",
     "pendingMembers": "Thành viên chờ duyệt",
     "contracts": "Hợp đồng",
@@ -212,13 +212,13 @@
   },
   "userManagement": {
     "eyebrow": "Tài khoản hệ thống",
-    "title": "Quản lý người dùng",
+    "title": "Quản lý nhân viên",
     "filters": {
-      "searchAria": "Tìm kiếm người dùng",
+      "searchAria": "Tìm kiếm nhân viên",
       "searchPlaceholder": "Tìm theo tên, email hoặc số điện thoại"
     },
     "columns": {
-      "name": "Tên người dùng",
+      "name": "Tên nhân viên",
       "email": "Email",
       "role": "Vai trò",
       "status": "Trạng thái tài khoản",
@@ -230,17 +230,17 @@
       "locked": "Đã khóa"
     },
     "actions": {
-      "create": "Tạo nhân viên",
+      "create": "Thêm nhân viên",
       "exportExcel": "Tải Excel"
     },
     "messages": {
-      "loading": "Đang tải danh sách người dùng...",
-      "loadError": "Không thể tải danh sách người dùng",
-      "empty": "Không có người dùng nào phù hợp với tìm kiếm.",
-      "exportEmpty": "Không có người dùng để xuất."
+      "loading": "Đang tải danh sách nhân viên...",
+      "loadError": "Không thể tải danh sách nhân viên",
+      "empty": "Không có nhân viên nào phù hợp với tìm kiếm.",
+      "exportEmpty": "Không có nhân viên để xuất."
     },
     "export": {
-      "sheetName": "Nguoi dung"
+      "sheetName": "Nhan vien"
     },
     "passwordUnavailable": "Không có mật khẩu tạm thời",
     "passwordChanged": "Đã đổi mật khẩu"
@@ -536,6 +536,8 @@
     },
     "filters": {
       "building": "Tòa nhà",
+      "searchAria": "Tìm kiếm thiết bị",
+      "searchPlaceholder": "Tìm theo mã, tên, phòng hoặc vị trí",
       "scope": "Phạm vi",
       "room": "Phòng",
       "condition": "Tình trạng",
@@ -2058,7 +2060,10 @@
       "task": {
         "taskType": "Loại công việc",
         "selectStaff": "Chọn nhân viên",
-        "noRoomLinked": "Không liên kết phòng"
+        "roomScope": "Phòng / phạm vi",
+        "selectRoom": "Chọn phòng",
+        "generalBuildingTask": "Công việc chung của tòa nhà",
+        "noRoomLinked": "Không gắn phòng cụ thể"
       },
       "expense": {
         "taskReference": "Mã công việc liên quan",

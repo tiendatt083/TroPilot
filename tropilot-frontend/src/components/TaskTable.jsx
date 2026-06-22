@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
-  getTaskPriorityClass,
   getTaskStatusClass,
 } from '../utils/taskOptions.js';
 import { formatDateTime, formatEnumLabel } from '../utils/i18nFormat.js';
@@ -9,7 +8,9 @@ import { formatRoomLabel } from '../utils/roomDisplay.js';
 
 function roomText(task, t) {
   if (!task.roomCode) {
-    return t('common.notLinked');
+    return task.buildingId || task.buildingCode
+      ? t('forms.task.generalBuildingTask')
+      : t('forms.task.noRoomLinked');
   }
 
   return formatRoomLabel(task);
@@ -27,7 +28,6 @@ export default function TaskTable({ tasks, detailBasePath }) {
             <th>{t('tables.common.room')}</th>
             <th>{t('tables.common.assignedStaff')}</th>
             <th>{t('tables.common.type')}</th>
-            <th>{t('tables.common.priority')}</th>
             <th>{t('tables.common.deadline')}</th>
             <th>{t('tables.common.status')}</th>
             <th>{t('tables.common.actions')}</th>
@@ -49,11 +49,6 @@ export default function TaskTable({ tasks, detailBasePath }) {
                 <span className="table-subtext">{task.assignedToEmail}</span>
               </td>
               <td>{formatEnumLabel(t, 'taskType', task.taskType)}</td>
-              <td>
-                <span className={getTaskPriorityClass(task.priority)}>
-                  {formatEnumLabel(t, 'taskPriority', task.priority)}
-                </span>
-              </td>
               <td>{formatDateTime(task.deadline, t)}</td>
               <td>
                 <span className={getTaskStatusClass(task.status)}>

@@ -97,6 +97,7 @@ export default function AdminTaskDetailPage() {
             loading={saving}
             submitLabel={t('taskManagement.saveChanges')}
             includeStatus
+            roomPlaceholder={t('forms.task.noRoomLinked')}
             onSubmit={handleSubmit}
           />
         </div>

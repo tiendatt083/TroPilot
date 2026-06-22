@@ -6,6 +6,7 @@ export default function AdminAccountDirectoryTable({
   accounts,
   emptyMessage,
   deletingId = null,
+  nameColumnLabel,
   onDelete,
   showRoom = false,
   showMembersInline = false
@@ -35,7 +36,7 @@ export default function AdminAccountDirectoryTable({
           <thead>
             <tr>
               <th className="account-id-column">{t('accountDirectory.columns.id')}</th>
-              <th className="account-name-column">{t('accountDirectory.columns.name')}</th>
+              <th className="account-name-column">{nameColumnLabel || t('accountDirectory.columns.name')}</th>
               <th className="account-email-column">{t('accountDirectory.columns.email')}</th>
               {showRoom && (
                 <th className="account-room-column">{t('accountDirectory.columns.room')}</th>

@@ -196,6 +196,45 @@ html[data-theme="dark"] input[type="month"]::-webkit-calendar-picker-indicator {
   filter: invert(1);
 }
 
+.building-user-filter-row {
+  grid-template-columns: minmax(320px, 1fr) minmax(145px, 170px) auto auto;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem;
+}
+
+.building-user-filter-row select {
+  min-width: 0;
+}
+
+.building-user-filter-row button {
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.building-user-filter-row .compact-clear-filter {
+  padding-inline: 0.72rem;
+}
+
+.building-equipment-filter-row {
+  grid-template-columns: minmax(220px, 1fr) minmax(112px, 130px) minmax(108px, 125px) minmax(120px, 135px) auto auto;
+  width: min(100%, 900px);
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem;
+}
+
+.building-equipment-filter-row > div,
+.building-equipment-filter-row input,
+.building-equipment-filter-row select {
+  min-width: 0;
+}
+
+.building-equipment-filter-row button {
+  min-width: 0;
+  white-space: nowrap;
+}
+
 @media (max-width: 1180px) {
   .filter-row,
   .user-filter-row {

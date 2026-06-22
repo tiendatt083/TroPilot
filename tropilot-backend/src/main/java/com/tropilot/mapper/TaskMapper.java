@@ -12,7 +12,10 @@ public class TaskMapper {
 
     public TaskResponse toResponse(Task task) {
         Room room = task.getRoom();
-        Building building = room == null ? null : room.getBuilding();
+        Building building = task.getBuilding();
+        if (building == null && room != null) {
+            building = room.getBuilding();
+        }
         User assignedTo = task.getAssignedTo();
         User createdBy = task.getCreatedBy();
 

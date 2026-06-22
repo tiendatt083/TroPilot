@@ -83,6 +83,7 @@ export default function AdminTaskCreatePage() {
         staffUsers={staffUsers}
         loading={saving}
         submitLabel={t('taskManagement.create')}
+        roomPlaceholder={t('forms.task.noRoomLinked')}
         onSubmit={handleSubmit}
       />
     </section>
