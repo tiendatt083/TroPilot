@@ -89,12 +89,17 @@ export default function AdminAccountDirectoryTable({
                         </span>
                         <div className="account-inline-member-list">
                           {members.map((member) => (
-                            <span
+                            <button
+                              aria-label={t('accountDirectory.actions.viewMemberDetails', {
+                                name: member.fullName
+                              })}
                               className="account-inline-member"
                               key={member.id}
+                              type="button"
+                              onClick={() => setSelectedAccount(toMemberDetailRecord(member, account))}
                             >
                               {member.fullName}
-                            </span>
+                            </button>
                           ))}
                         </div>
                       </div>
@@ -263,6 +268,7 @@ function TrashIcon() {
 
 function AccountDetailModal({ account, onClose, showRoom, t }) {
   const members = account.members || [];
+  const isRoomMember = account.role === 'ROOM_MEMBER';
 
   return (
     <div className="account-modal-overlay" role="presentation" onMouseDown={onClose}>
@@ -296,16 +302,34 @@ function AccountDetailModal({ account, onClose, showRoom, t }) {
             <DetailItem label={t('accountDirectory.detail.room')} value={formatRoom(account, t)} />
           )}
           <DetailItem label={t('accountDirectory.detail.status')} value={formatStatus(account.status, t)} />
+          {isRoomMember && (
+            <>
+              <DetailItem
+                label={t('forms.member.relationship')}
+                value={account.relationship || t('common.notProvided')}
+              />
+              <DetailItem
+                label={t('tables.common.headResident')}
+                value={account.residentHeadName || t('common.notProvided')}
+              />
+              <DetailItem
+                label={t('roomManagement.moveIn')}
+                value={formatDisplayDate(account.moveInDate, t('common.notSet'))}
+              />
+            </>
+          )}
           <DetailItem
             label={t('accountDirectory.detail.createdAt')}
             value={formatDisplayDate(account.createdAt, t('common.notAvailable'))}
           />
-          <DetailItem
-            label={t('accountDirectory.detail.temporaryPassword')}
-            value={account.mustChangePassword
-              ? account.temporaryPassword || t('userManagement.passwordUnavailable')
-              : t('userManagement.passwordChanged')}
-          />
+          {!isRoomMember && (
+            <DetailItem
+              label={t('accountDirectory.detail.temporaryPassword')}
+              value={account.mustChangePassword
+                ? account.temporaryPassword || t('userManagement.passwordUnavailable')
+                : t('userManagement.passwordChanged')}
+            />
+          )}
         </dl>
 
         {account.role === 'RESIDENT_HEAD' && (
@@ -350,11 +374,26 @@ function DetailItem({ label, value }) {
   );
 }
 
+function toMemberDetailRecord(member, headResident) {
+  return {
+    ...member,
+    assignedBuildingCode: member.assignedBuildingCode || member.buildingCode || headResident.assignedBuildingCode,
+    assignedBuildingId: member.assignedBuildingId || member.buildingId || headResident.assignedBuildingId,
+    assignedBuildingName: member.assignedBuildingName || member.buildingName || headResident.assignedBuildingName,
+    assignedRoomCode: member.assignedRoomCode || member.roomCode || headResident.assignedRoomCode,
+    assignedRoomId: member.assignedRoomId || member.roomId || headResident.assignedRoomId,
+    assignedRoomName: member.assignedRoomName || member.roomName || headResident.assignedRoomName,
+    createdAt: member.createdAt || member.moveInDate,
+    residentHeadName: member.residentHeadName || headResident.fullName,
+    role: 'ROOM_MEMBER'
+  };
+}
+
 function formatRoom(account, t) {
   const room = account.assignedRoomCode || account.roomCode || account.assignedRoomName || account.roomName;
 
   if (!room) {
-    return t('common.notAssigned');
+    return t('accountDirectory.noAssignedRoom');
   }
 
   return room;
@@ -381,6 +420,10 @@ function formatRole(role, t) {
 }
 
 function formatStatus(status, t) {
+  if (['PENDING', 'APPROVED', 'REJECTED', 'LEFT'].includes(status)) {
+    return t(`enum.memberStatus.${status}`);
+  }
+
   if (status === 'LOCKED') {
     return t('userManagement.status.locked');
   }

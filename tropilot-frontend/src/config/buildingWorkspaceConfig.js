@@ -42,7 +42,6 @@ const BUILDING_WORKSPACE_GROUPS = [
       { path: '/invoices', labelKey: 'buildingWorkspace.invoices' },
       { path: '/expenses', labelKey: 'buildingWorkspace.expenses' },
       { path: '/cashflow', labelKey: 'buildingWorkspace.cashFlow' },
-      { path: '/payments', labelKey: 'buildingWorkspace.payments' },
       { path: '/invoice-complaints', labelKey: 'buildingWorkspace.invoiceComplaints' },
       { path: '/receipts', labelKey: 'buildingWorkspace.receipts' }
     ]
@@ -59,7 +58,6 @@ export const STAFF_BUILDING_TABS = [
     '/utility-readings',
     '/service-fees',
     '/vehicles',
-    '/payments',
     '/maintenance',
     '/expenses',
     '/tasks'

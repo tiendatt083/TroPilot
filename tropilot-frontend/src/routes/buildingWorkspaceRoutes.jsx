@@ -11,7 +11,6 @@ import AdminBuildingInvoiceComplaintPage from '../pages/admin/AdminBuildingInvoi
 import AdminBuildingInvoicePage from '../pages/admin/AdminBuildingInvoicePage.jsx';
 import AdminBuildingMaintenancePage from '../pages/admin/AdminBuildingMaintenancePage.jsx';
 import AdminBuildingNotificationPage from '../pages/admin/AdminBuildingNotificationPage.jsx';
-import AdminBuildingPaymentPage from '../pages/admin/AdminBuildingPaymentPage.jsx';
 import AdminBuildingReceiptPage from '../pages/admin/AdminBuildingReceiptPage.jsx';
 import AdminBuildingRoomsPage from '../pages/admin/AdminBuildingRoomsPage.jsx';
 import AdminBuildingServiceFeePage from '../pages/admin/AdminBuildingServiceFeePage.jsx';
@@ -26,7 +25,6 @@ import AdminRoomMembersPage from '../pages/admin/AdminRoomMembersPage.jsx';
 import StaffBuildingEquipmentPage from '../pages/staff/StaffBuildingEquipmentPage.jsx';
 import StaffBuildingExpensePage from '../pages/staff/StaffBuildingExpensePage.jsx';
 import StaffBuildingOverviewPage from '../pages/staff/StaffBuildingOverviewPage.jsx';
-import StaffBuildingPaymentPage from '../pages/staff/StaffBuildingPaymentPage.jsx';
 import StaffBuildingRoomsPage from '../pages/staff/StaffBuildingRoomsPage.jsx';
 import StaffBuildingServiceFeePage from '../pages/staff/StaffBuildingServiceFeePage.jsx';
 import StaffBuildingTaskPage from '../pages/staff/StaffBuildingTaskPage.jsx';
@@ -50,7 +48,7 @@ export const adminBuildingWorkspaceRoutes = (
     <Route path="invoices" element={<AdminBuildingInvoicePage />} />
     <Route path="service-fees" element={<AdminBuildingServiceFeePage />} />
     <Route path="vehicles" element={<AdminBuildingVehiclePage />} />
-    <Route path="payments" element={<AdminBuildingPaymentPage />} />
+    <Route path="payments" element={<Navigate to="../invoices" replace />} />
     <Route path="receipts" element={<AdminBuildingReceiptPage />} />
     <Route path="members" element={<Navigate to="../users" replace />} />
     <Route path="maintenance" element={<AdminBuildingMaintenancePage />} />
@@ -75,7 +73,7 @@ export const staffBuildingWorkspaceRoutes = (
     <Route path="invoices" element={<StaffBuildingOverviewRedirect />} />
     <Route path="service-fees" element={<StaffBuildingServiceFeePage />} />
     <Route path="vehicles" element={<StaffBuildingVehiclePage />} />
-    <Route path="payments" element={<StaffBuildingPaymentPage />} />
+    <Route path="payments" element={<StaffBuildingOverviewRedirect />} />
     <Route path="maintenance" element={<StaffMaintenancePage />} />
     <Route path="expenses" element={<StaffBuildingExpensePage />} />
     <Route path="cashflow" element={<StaffBuildingOverviewRedirect />} />

@@ -302,6 +302,7 @@
     },
     "actions": {
       "viewDetails": "View details",
+      "viewMemberDetails": "View {{name}} details",
       "close": "Close",
       "deleting": "Deleting..."
     },
@@ -313,6 +314,7 @@
       "deleteError": "Account could not be deleted"
     },
     "inlineMembers": "Household members:",
+    "noAssignedRoom": "No room assigned",
     "detail": {
       "eyebrow": "Account details",
       "email": "Gmail",

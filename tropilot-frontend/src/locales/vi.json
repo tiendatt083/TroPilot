@@ -302,6 +302,7 @@
     },
     "actions": {
       "viewDetails": "Xem chi tiết",
+      "viewMemberDetails": "Xem chi tiết {{name}}",
       "close": "Đóng",
       "deleting": "Đang xóa..."
     },
@@ -313,6 +314,7 @@
       "deleteError": "Không thể xóa tài khoản"
     },
     "inlineMembers": "Thành viên trong hộ:",
+    "noAssignedRoom": "Chưa gán phòng",
     "detail": {
       "eyebrow": "Chi tiết tài khoản",
       "email": "Gmail",

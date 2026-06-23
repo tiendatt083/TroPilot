@@ -1,4 +1,5 @@
 import AppRoutes from './routes/AppRoutes.jsx';
+import GlobalTooltip from './components/common/GlobalTooltip.jsx';
 import { AuthProvider } from './context/AuthContext.jsx';
 import { useInterfaceTranslation } from './hooks/useInterfaceTranslation.js';
 
@@ -13,6 +14,7 @@ export default function App() {
     <AuthProvider>
       <InterfaceTranslationBridge />
       <AppRoutes />
+      <GlobalTooltip />
     </AuthProvider>
   );
 }

@@ -86,23 +86,37 @@ export default function BuildingListWorkspace({
     {
       key: 'actions',
       header: canManage ? t('tables.common.actions') : t('workspace.buildings.details'),
+      cellClassName: 'building-actions-cell',
+      headerClassName: 'building-actions-column',
       render: (building) => (
-        <div className="table-actions">
-          <Link className="secondary-link compact-link" to={`${basePath}/${building.id}`}>
-            {canManage ? t('workspace.buildings.manage') : t('common.view')}
+        <div className="table-actions icon-table-actions">
+          <Link
+            aria-label={canManage ? t('workspace.buildings.manage') : t('common.view')}
+            className="icon-action-button"
+            data-tooltip={canManage ? t('workspace.buildings.manage') : t('common.view')}
+            to={`${basePath}/${building.id}`}
+          >
+            <EyeIcon />
           </Link>
           {canManage && (
             <>
-              <Link className="secondary-link compact-link" to={`${basePath}/${building.id}/edit`}>
-                {t('common.edit')}
+              <Link
+                aria-label={t('common.edit')}
+                className="icon-action-button"
+                data-tooltip={t('common.edit')}
+                to={`${basePath}/${building.id}/edit`}
+              >
+                <EditIcon />
               </Link>
               <button
-                className="secondary-button compact-button"
+                aria-label={t('common.delete')}
+                className="icon-action-button icon-action-danger"
+                data-tooltip={t('common.delete')}
                 type="button"
                 disabled={deletingId === building.id}
                 onClick={() => setPendingDelete(building)}
               >
-                {t('common.delete')}
+                <TrashIcon />
               </button>
             </>
           )}
@@ -159,5 +173,35 @@ export default function BuildingListWorkspace({
         onConfirm={handleDelete}
       />
     </section>
+  );
+}
+
+function EyeIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24">
+      <path d="M2.5 12s3.4-6 9.5-6 9.5 6 9.5 6-3.4 6-9.5 6-9.5-6-9.5-6Z" />
+      <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+    </svg>
+  );
+}
+
+function EditIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24">
+      <path d="M12 20h9" />
+      <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z" />
+    </svg>
+  );
+}
+
+function TrashIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24">
+      <path d="M4 7h16" />
+      <path d="M10 11v6" />
+      <path d="M14 11v6" />
+      <path d="M6 7l1 14h10l1-14" />
+      <path d="M9 7V4h6v3" />
+    </svg>
   );
 }
