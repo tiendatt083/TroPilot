@@ -3,10 +3,10 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import * as adminUserApi from '../../features/users/api.js';
 import AdminAccountDirectoryTable from '../../components/AdminAccountDirectoryTable.jsx';
-import PageHeader from '../../components/PageHeader.jsx';
 import { exportRowsToExcel } from '../../utils/excelExport.js';
 
 const MANAGED_ACCOUNT_ROLES = new Set(['ADMIN', 'STAFF']);
+const ROLE_FILTERS = ['ALL', 'ADMIN', 'STAFF'];
 
 function normalize(value) {
   return String(value || '').trim().toLowerCase();
@@ -25,6 +25,7 @@ export default function AdminUserListPage() {
   const { t } = useTranslation();
   const [accounts, setAccounts] = useState([]);
   const [search, setSearch] = useState('');
+  const [roleFilter, setRoleFilter] = useState('ALL');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
@@ -51,15 +52,13 @@ export default function AdminUserListPage() {
   const filteredAccounts = useMemo(() => {
     const searchValue = normalize(search);
 
-    if (!searchValue) {
-      return accounts;
-    }
-
     return accounts.filter((account) => (
-      [account.fullName, account.email, account.phone]
+      (roleFilter === 'ALL' || account.role === roleFilter)
+      && (!searchValue || [account.fullName, account.email, account.phone]
         .some((value) => normalize(value).includes(searchValue))
+      )
     ));
-  }, [accounts, search]);
+  }, [accounts, roleFilter, search]);
 
   const handleDelete = async (account) => {
     if (!window.confirm(t('accountDirectory.confirmations.delete', { name: account.fullName }))) {
@@ -108,12 +107,12 @@ export default function AdminUserListPage() {
   };
 
   return (
-    <section className="content-section account-directory-page">
-      <div className="page-title-row">
-        <PageHeader
-          eyebrow={t('userManagement.eyebrow')}
-          title={t('userManagement.title')}
-        />
+    <section className="content-section account-directory-page modern-user-page">
+      <div className="account-page-hero">
+        <div>
+          <h1>{t('userManagement.title')}</h1>
+          <p>{t('userManagement.summary', { count: accounts.length })}</p>
+        </div>
         <div className="page-action-row">
           <button
             className="secondary-button inline-button"
@@ -134,20 +133,41 @@ export default function AdminUserListPage() {
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
 
-      <div className="user-filter-row account-filter-row">
-        <input
-          aria-label={t('userManagement.filters.searchAria')}
-          value={search}
-          onChange={(event) => setSearch(event.target.value)}
-          placeholder={t('userManagement.filters.searchPlaceholder')}
-        />
-        <button
-          className="secondary-button inline-button"
-          type="button"
-          onClick={() => setSearch('')}
-        >
-          {t('common.clear')}
-        </button>
+      <div className="account-control-panel">
+        <div className="account-role-filter">
+          <span>{t('userManagement.filters.roleLabel')}</span>
+          <div className="account-role-chips" role="group" aria-label={t('userManagement.filters.roleLabel')}>
+            {ROLE_FILTERS.map((role) => (
+              <button
+                className={`account-role-chip${roleFilter === role ? ' is-active' : ''}`}
+                key={role}
+                type="button"
+                aria-pressed={roleFilter === role}
+                onClick={() => setRoleFilter(role)}
+              >
+                {role === 'ALL' ? t('userManagement.filters.allRoles') : formatRole(role, t)}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="account-search-control">
+          <input
+            aria-label={t('userManagement.filters.searchAria')}
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder={t('userManagement.filters.searchPlaceholder')}
+          />
+          <button
+            className="secondary-button inline-button"
+            type="button"
+            onClick={() => {
+              setSearch('');
+              setRoleFilter('ALL');
+            }}
+          >
+            {t('common.clear')}
+          </button>
+        </div>
       </div>
 
       {loading ? (
@@ -158,6 +178,9 @@ export default function AdminUserListPage() {
           deletingId={deletingId}
           emptyMessage={t('userManagement.messages.empty')}
           nameColumnLabel={t('userManagement.columns.name')}
+          showRole
+          showStatus={false}
+          useIconActions
           onDelete={handleDelete}
         />
       )}

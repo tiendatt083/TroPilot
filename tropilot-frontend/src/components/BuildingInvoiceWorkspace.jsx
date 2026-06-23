@@ -6,11 +6,25 @@ import * as roomApi from '../features/rooms/api.js';
 import useInvoicePaymentPolling from '../hooks/useInvoicePaymentPolling.js';
 import { formatDateInputValue, formatDisplayDate, formatDisplayMonth } from '../utils/dateFormat.js';
 import { formatInvoiceAmount, formatInvoiceText } from '../utils/invoiceDisplay.js';
+import { formatEnumLabel } from '../utils/i18nFormat.js';
+import { exportRowsToExcel } from '../utils/excelExport.js';
 import { isOccupiedRoom } from '../utils/roomEligibility.js';
 import { formatRoomCode, formatRoomLabel } from '../utils/roomDisplay.js';
 import InvoiceDetail from './InvoiceDetail.jsx';
-import InvoiceTable from './InvoiceTable.jsx';
-import PageHeader from './PageHeader.jsx';
+import InvoiceTable, { formatInvoiceCode } from './InvoiceTable.jsx';
+
+const INVOICE_STATUS_FILTERS = [
+  'ALL',
+  'UNPAID',
+  'PAID',
+  'OVERDUE',
+  'PENDING_CONFIRMATION',
+  'REJECTED'
+];
+
+function normalize(value) {
+  return String(value || '').trim().toLowerCase();
+}
 
 function getDefaultDueDate(invoiceDateValue) {
   if (!invoiceDateValue) {
@@ -25,6 +39,48 @@ function getDefaultDueDate(invoiceDateValue) {
 
 function canDeleteInvoice(invoice) {
   return ['UNPAID', 'PENDING_CONFIRMATION', 'OVERDUE', 'REJECTED'].includes(invoice?.status);
+}
+
+function invoiceMatchesSearch(invoice, searchValue, t) {
+  if (!searchValue) {
+    return true;
+  }
+
+  return [
+    invoice.id,
+    formatInvoiceCode(invoice),
+    formatRoomCode(invoice),
+    formatRoomLabel(invoice),
+    invoice.roomName,
+    invoice.buildingCode,
+    invoice.buildingName,
+    invoice.residentHeadName,
+    invoice.residentHeadEmail,
+    invoice.month,
+    invoice.dueDate,
+    invoice.totalAmount,
+    formatEnumLabel(t, 'invoiceStatus', invoice.status)
+  ].some((value) => normalize(value).includes(searchValue));
+}
+
+function getInvoiceTime(invoice) {
+  const dateValue = invoice.createdAt || invoice.invoiceDate || invoice.dueDate || invoice.month;
+  const time = Date.parse(dateValue);
+  return Number.isFinite(time) ? time : 0;
+}
+
+function buildExportFileName(building) {
+  const now = new Date();
+  const day = String(now.getDate()).padStart(2, '0');
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const year = now.getFullYear();
+  const buildingCode = String(building?.buildingCode || building?.code || 'building')
+    .trim()
+    .replace(/[^a-zA-Z0-9-]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .toLowerCase();
+
+  return `tropilot-${buildingCode || 'building'}-invoices-${day}-${month}-${year}.xlsx`;
 }
 
 function createInitialForm() {
@@ -234,11 +290,16 @@ export default function BuildingInvoiceWorkspace({ role = 'admin' }) {
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [singlePreview, setSinglePreview] = useState(null);
   const [bulkPreview, setBulkPreview] = useState(null);
+  const [composerOpen, setComposerOpen] = useState(false);
   const [mode, setMode] = useState('single');
+  const [statusFilter, setStatusFilter] = useState('ALL');
+  const [search, setSearch] = useState('');
+  const [sortDirection, setSortDirection] = useState('desc');
   const [form, setForm] = useState(createInitialForm);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [loadingDetailId, setLoadingDetailId] = useState(null);
 
@@ -256,6 +317,19 @@ export default function BuildingInvoiceWorkspace({ role = 'admin' }) {
       return isOccupiedRoom(room) && !invoicedRoomIdsForMonth.has(room.id);
     });
   }, [rooms, invoicedRoomIdsForMonth]);
+  const filteredInvoices = useMemo(() => {
+    const searchValue = normalize(search);
+
+    return [...invoices]
+      .filter((invoice) => statusFilter === 'ALL' || invoice.status === statusFilter)
+      .filter((invoice) => invoiceMatchesSearch(invoice, searchValue, t))
+      .sort((left, right) => {
+        const result = getInvoiceTime(right) - getInvoiceTime(left)
+          || Number(right.id || 0) - Number(left.id || 0);
+
+        return sortDirection === 'desc' ? result : -result;
+      });
+  }, [invoices, search, sortDirection, statusFilter, t]);
 
   useEffect(() => {
     if (!form.roomId) {
@@ -315,6 +389,64 @@ export default function BuildingInvoiceWorkspace({ role = 'admin' }) {
     });
   };
 
+  const handleOpenComposer = (nextMode) => {
+    setMode(nextMode);
+    setComposerOpen(true);
+    setSinglePreview(null);
+    setBulkPreview(null);
+    setMessage('');
+    setError('');
+  };
+
+  const handleCloseComposer = () => {
+    if (processing) {
+      return;
+    }
+
+    setComposerOpen(false);
+    setSinglePreview(null);
+    setBulkPreview(null);
+  };
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await loadData();
+    setRefreshing(false);
+  };
+
+  const handleClearInvoiceFilters = () => {
+    setStatusFilter('ALL');
+    setSearch('');
+    setSortDirection('desc');
+  };
+
+  const handleExport = () => {
+    setMessage('');
+    setError('');
+
+    if (filteredInvoices.length === 0) {
+      setError(t('buildingInvoices.exportEmpty'));
+      return;
+    }
+
+    const rows = filteredInvoices.map((invoice) => ({
+      [t('buildingInvoices.columns.id')]: invoice.id,
+      [t('buildingInvoices.columns.invoiceNumber')]: formatInvoiceCode(invoice),
+      [t('buildingInvoices.columns.apartment')]: formatRoomLabel(invoice) || formatRoomCode(invoice),
+      [t('tables.common.headResident')]: invoice.residentHeadName || t('common.notProvided'),
+      [t('tables.common.month')]: formatDisplayMonth(invoice.month, t('common.notProvided')),
+      [t('tables.common.dueDate')]: formatDisplayDate(invoice.dueDate, t('common.notProvided')),
+      [t('tables.common.status')]: formatEnumLabel(t, 'invoiceStatus', invoice.status),
+      [t('tables.common.totalAmount')]: invoice.totalAmount || 0
+    }));
+
+    exportRowsToExcel({
+      rows,
+      fileName: buildExportFileName(building),
+      sheetName: t('buildingInvoices.export.sheetName')
+    });
+  };
+
   const getSinglePayload = () => ({
     roomId: Number(form.roomId),
     invoiceDate: form.invoiceDate,
@@ -355,6 +487,7 @@ export default function BuildingInvoiceWorkspace({ role = 'admin' }) {
         : await invoiceApi.generateStaffBuildingInvoice(building.id, getSinglePayload());
       setSelectedInvoice(response.data);
       setSinglePreview(null);
+      setComposerOpen(false);
       setForm(createInitialForm());
       setMessage(t('buildingInvoices.generated'));
       await loadData();
@@ -392,6 +525,7 @@ export default function BuildingInvoiceWorkspace({ role = 'admin' }) {
         ? await invoiceApi.generateBuildingBulkInvoices(building.id, getBulkPayload())
         : await invoiceApi.generateStaffBuildingBulkInvoices(building.id, getBulkPayload());
       setBulkPreview(null);
+      setComposerOpen(false);
       setMessage(t('buildingInvoices.bulkGenerated', { count: response.data.length }));
       await loadData();
     } catch (apiError) {
@@ -460,131 +594,297 @@ export default function BuildingInvoiceWorkspace({ role = 'admin' }) {
   });
 
   const renderActions = (invoice) => (
-    <div className="table-action-group">
+    <div className="table-action-group icon-table-actions">
       <button
-        className="secondary-button compact-button"
+        aria-label={t('common.view')}
+        className="icon-action-button"
+        data-tooltip={loadingDetailId === invoice.id ? t('buildingInvoices.actions.loadingDetail') : t('common.view')}
         type="button"
         disabled={loadingDetailId === invoice.id}
         onClick={() => handleView(invoice)}
       >
-        {t('common.view')}
+        <EyeIcon />
       </button>
       {isAdmin && canDeleteInvoice(invoice) && (
         <button
-          className="danger-button compact-button"
+          aria-label={t('common.delete')}
+          className="icon-action-button icon-action-danger"
+          data-tooltip={t('common.delete')}
           type="button"
           disabled={processing}
           onClick={() => handleDelete(invoice)}
         >
-          {t('common.delete')}
+          <TrashIcon />
         </button>
       )}
     </div>
   );
 
   return (
-    <div className="building-workspace">
-      <PageHeader eyebrow={t('buildingInvoices.eyebrow')} title={t('buildingInvoices.title')} />
-      <p className="page-support-text">{t('buildingInvoices.description')}</p>
+    <div className="building-workspace invoice-modern-page">
+      <section className="invoice-page-hero">
+        <div>
+          <h1>{t('buildingInvoices.managementTitle')}</h1>
+          <p>{t('buildingInvoices.managementSummary', { count: invoices.length })}</p>
+        </div>
+        <div className="invoice-hero-actions">
+          <button className="invoice-hero-button invoice-hero-button-primary" type="button" onClick={() => handleOpenComposer('single')}>
+            <PlusIcon />
+            {t('buildingInvoices.actions.createSingle')}
+          </button>
+          <button className="invoice-hero-button invoice-hero-button-accent" type="button" onClick={() => handleOpenComposer('bulk')}>
+            <PlusIcon />
+            {t('buildingInvoices.actions.createBulk')}
+          </button>
+          <button className="invoice-hero-button invoice-hero-button-success" type="button" onClick={handleExport}>
+            <DownloadIcon />
+            {t('buildingInvoices.actions.exportExcel')}
+          </button>
+        </div>
+      </section>
 
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
 
-      {loading ? (
-        <div className="empty-state">{t('buildingInvoices.loading')}</div>
-      ) : (
-        <section className="invoice-management-workspace">
-          <div className="invoice-command-panel">
-            <div className="segmented-control">
-              <button className={mode === 'single' ? 'active' : ''} type="button" onClick={() => setMode('single')}>
-                {t('buildingInvoices.singleRoom')}
-              </button>
-              <button className={mode === 'bulk' ? 'active' : ''} type="button" onClick={() => setMode('bulk')}>
-                {t('buildingInvoices.bulk')}
-              </button>
+      {composerOpen && (
+        <section className="invoice-composer-panel">
+          <div className="invoice-composer-header">
+            <div>
+              <span className="section-eyebrow">
+                {mode === 'single' ? t('buildingInvoices.singleRoom') : t('buildingInvoices.bulk')}
+              </span>
+              <h2>{mode === 'single' ? t('buildingInvoices.actions.createSingle') : t('buildingInvoices.actions.createBulk')}</h2>
+            </div>
+            <button className="secondary-button inline-button" type="button" onClick={handleCloseComposer}>
+              {t('common.close')}
+            </button>
+          </div>
+
+          <div className="invoice-composer-grid">
+            <div className="invoice-command-panel">
+              <div className="segmented-control">
+                <button className={mode === 'single' ? 'active' : ''} type="button" onClick={() => setMode('single')}>
+                  {t('buildingInvoices.singleRoom')}
+                </button>
+                <button className={mode === 'bulk' ? 'active' : ''} type="button" onClick={() => setMode('bulk')}>
+                  {t('buildingInvoices.bulk')}
+                </button>
+              </div>
+
+              <form className="panel-form" onSubmit={handlePreviewSingle}>
+                <div className="form-grid">
+                  <label htmlFor="invoiceDate">{t('buildingInvoices.invoiceDate')}</label>
+                  <input
+                    id="invoiceDate"
+                    name="invoiceDate"
+                    type="date"
+                    lang="en-GB"
+                    value={form.invoiceDate}
+                    onChange={handleFormChange}
+                    required
+                  />
+
+                  <label htmlFor="dueDate">{t('tables.common.dueDate')}</label>
+                  <input
+                    id="dueDate"
+                    name="dueDate"
+                    type="date"
+                    lang="en-GB"
+                    value={form.dueDate}
+                    onChange={handleFormChange}
+                    required
+                  />
+
+                  {mode === 'single' && (
+                    <>
+                      <label htmlFor="roomId">{t('tables.common.room')}</label>
+                      <select id="roomId" name="roomId" value={form.roomId} onChange={handleFormChange} required>
+                        <option value="">{t('forms.utilityReading.selectRoom')}</option>
+                        {availableRooms.map((room) => (
+                          <option key={room.id} value={room.id}>
+                            {formatRoomLabel(room)}
+                          </option>
+                        ))}
+                      </select>
+                      <button type="submit" disabled={processing || !form.roomId}>
+                        {processing ? t('buildingInvoices.previewing') : t('buildingInvoices.preview')}
+                      </button>
+                    </>
+                  )}
+                </div>
+              </form>
+
+              {mode === 'bulk' && (
+                <button className="primary-action-button" type="button" disabled={processing} onClick={handlePreviewBulk}>
+                  {processing ? t('buildingInvoices.previewing') : t('buildingInvoices.previewBulk')}
+                </button>
+              )}
+
+              {mode === 'single' ? (
+                <button
+                  className="primary-action-button"
+                  type="button"
+                  disabled={processing || !singlePreview}
+                  onClick={handleGenerateSingle}
+                >
+                  {processing ? t('forms.invoice.generating') : t('forms.invoice.generate')}
+                </button>
+              ) : (
+                <button
+                  className="primary-action-button"
+                  type="button"
+                  disabled={processing || !bulkPreview || bulkPreview.eligibleCount === 0}
+                  onClick={handleGenerateBulk}
+                >
+                  {processing ? t('forms.invoice.generating') : t('buildingInvoices.generateBulk')}
+                </button>
+              )}
             </div>
 
-            <form className="panel-form" onSubmit={handlePreviewSingle}>
-              <div className="form-grid">
-                <label htmlFor="invoiceDate">{t('buildingInvoices.invoiceDate')}</label>
-                <input
-                  id="invoiceDate"
-                  name="invoiceDate"
-                  type="date"
-                  lang="en-GB"
-                  value={form.invoiceDate}
-                  onChange={handleFormChange}
-                  required
-                />
-
-                <label htmlFor="dueDate">{t('tables.common.dueDate')}</label>
-                <input
-                  id="dueDate"
-                  name="dueDate"
-                  type="date"
-                  lang="en-GB"
-                  value={form.dueDate}
-                  onChange={handleFormChange}
-                  required
-                />
-
-                {mode === 'single' && (
-                  <>
-                    <label htmlFor="roomId">{t('tables.common.room')}</label>
-                    <select id="roomId" name="roomId" value={form.roomId} onChange={handleFormChange} required>
-                      <option value="">{t('forms.utilityReading.selectRoom')}</option>
-                      {availableRooms.map((room) => (
-                        <option key={room.id} value={room.id}>
-                          {formatRoomLabel(room)}
-                        </option>
-                      ))}
-                    </select>
-                    <button type="submit" disabled={processing || !form.roomId}>
-                      {processing ? t('buildingInvoices.previewing') : t('buildingInvoices.preview')}
-                    </button>
-                  </>
-                )}
-              </div>
-            </form>
-
-            {mode === 'bulk' && (
-              <button className="primary-action-button" type="button" disabled={processing} onClick={handlePreviewBulk}>
-                {processing ? t('buildingInvoices.previewing') : t('buildingInvoices.previewBulk')}
-              </button>
-            )}
-
-            {mode === 'single' ? (
-              <button
-                className="primary-action-button"
-                type="button"
-                disabled={processing || !singlePreview}
-                onClick={handleGenerateSingle}
-              >
-                {processing ? t('forms.invoice.generating') : t('forms.invoice.generate')}
-              </button>
-            ) : (
-              <button
-                className="primary-action-button"
-                type="button"
-                disabled={processing || !bulkPreview || bulkPreview.eligibleCount === 0}
-                onClick={handleGenerateBulk}
-              >
-                {processing ? t('forms.invoice.generating') : t('buildingInvoices.generateBulk')}
-              </button>
-            )}
-          </div>
-
-          <div className="invoice-preview-column">
-            {mode === 'single' ? <PreviewPanel preview={singlePreview} /> : <BulkPreviewPanel preview={bulkPreview} />}
-          </div>
-
-          <div className="invoice-list-column">
-            <PageHeader eyebrow={t('buildingInvoices.invoiceRecords')} title={t('buildingInvoices.createdInvoices')} />
-            <InvoiceTable invoices={invoices} renderActions={renderActions} />
-            <InvoiceDetail invoice={selectedInvoice} />
+            <div className="invoice-preview-column">
+              {mode === 'single' ? <PreviewPanel preview={singlePreview} /> : <BulkPreviewPanel preview={bulkPreview} />}
+            </div>
           </div>
         </section>
       )}
+
+      {loading ? (
+        <div className="empty-state">{t('buildingInvoices.loading')}</div>
+      ) : (
+        <section className="invoice-record-section">
+          <div className="invoice-filter-panel">
+            <div className="invoice-status-filter">
+              <label htmlFor="invoiceStatusFilter">{t('buildingInvoices.filters.statusLabel')}</label>
+              <select
+                id="invoiceStatusFilter"
+                value={statusFilter}
+                onChange={(event) => setStatusFilter(event.target.value)}
+              >
+                {INVOICE_STATUS_FILTERS.map((status) => (
+                  <option key={status} value={status}>
+                    {status === 'ALL'
+                      ? t('buildingInvoices.filters.allStatuses')
+                      : formatEnumLabel(t, 'invoiceStatus', status)}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="invoice-search-tools">
+              <div className="invoice-search-field">
+                <SearchIcon />
+                <input
+                  aria-label={t('buildingInvoices.filters.searchAria')}
+                  value={search}
+                  onChange={(event) => setSearch(event.target.value)}
+                  placeholder={t('buildingInvoices.filters.searchPlaceholder')}
+                />
+              </div>
+              <button
+                className="secondary-button inline-button invoice-sort-button"
+                type="button"
+                onClick={() => setSortDirection((current) => (current === 'desc' ? 'asc' : 'desc'))}
+              >
+                {sortDirection === 'desc' ? <ArrowDownIcon /> : <ArrowUpIcon />}
+                {sortDirection === 'desc' ? t('buildingInvoices.filters.newest') : t('buildingInvoices.filters.oldest')}
+              </button>
+              <button
+                aria-label={t('buildingInvoices.actions.refresh')}
+                className="secondary-button inline-button invoice-refresh-button"
+                type="button"
+                disabled={refreshing}
+                onClick={handleRefresh}
+              >
+                <RefreshIcon />
+              </button>
+              <button className="secondary-button inline-button" type="button" onClick={handleClearInvoiceFilters}>
+                {t('common.clear')}
+              </button>
+            </div>
+          </div>
+
+          <InvoiceTable invoices={filteredInvoices} renderActions={renderActions} />
+          {selectedInvoice && <InvoiceDetail invoice={selectedInvoice} />}
+        </section>
+      )}
     </div>
+  );
+}
+
+function PlusIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24">
+      <path d="M12 5v14" />
+      <path d="M5 12h14" />
+    </svg>
+  );
+}
+
+function DownloadIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24">
+      <path d="M12 3v12" />
+      <path d="m7 10 5 5 5-5" />
+      <path d="M5 21h14" />
+    </svg>
+  );
+}
+
+function SearchIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24">
+      <path d="m21 21-4.4-4.4" />
+      <path d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" />
+    </svg>
+  );
+}
+
+function ArrowDownIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24">
+      <path d="M12 5v14" />
+      <path d="m7 14 5 5 5-5" />
+    </svg>
+  );
+}
+
+function ArrowUpIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24">
+      <path d="M12 19V5" />
+      <path d="m7 10 5-5 5 5" />
+    </svg>
+  );
+}
+
+function RefreshIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24">
+      <path d="M21 12a9 9 0 0 1-15.2 6.5" />
+      <path d="M3 12A9 9 0 0 1 18.2 5.5" />
+      <path d="M18 2v4h-4" />
+      <path d="M6 22v-4h4" />
+    </svg>
+  );
+}
+
+function EyeIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24">
+      <path d="M2.5 12s3.4-6 9.5-6 9.5 6 9.5 6-3.4 6-9.5 6-9.5-6-9.5-6Z" />
+      <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+    </svg>
+  );
+}
+
+function TrashIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24">
+      <path d="M4 7h16" />
+      <path d="M10 11v6" />
+      <path d="M14 11v6" />
+      <path d="M6 7l1 14h10l1-14" />
+      <path d="M9 7V4h6v3" />
+    </svg>
   );
 }

@@ -17,6 +17,11 @@
   margin: 0 auto;
 }
 
+.content-section:not(.narrow-section) {
+  max-width: none;
+  margin-inline: 0;
+}
+
 .content-section > *,
 .building-workspace-content > *,
 .building-workspace > *,

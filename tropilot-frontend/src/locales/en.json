@@ -187,7 +187,7 @@
     "operations": "Operations",
     "informationAndFeedback": "Information and feedback",
     "users": "Staff",
-    "residents": "Tenants",
+    "residents": "Users",
     "pendingMembers": "Pending members",
     "contracts": "Contracts",
     "tasks": "Tasks",
@@ -213,9 +213,12 @@
   "userManagement": {
     "eyebrow": "System accounts",
     "title": "Staff management",
+    "summary": "Manage staff accounts in the system ({{count}} accounts)",
     "filters": {
       "searchAria": "Search staff",
-      "searchPlaceholder": "Search by name, email, or phone number"
+      "searchPlaceholder": "Search...",
+      "roleLabel": "Role:",
+      "allRoles": "All roles"
     },
     "columns": {
       "name": "Staff name",
@@ -246,8 +249,9 @@
     "passwordChanged": "Password changed"
   },
   "residentDirectory": {
-    "eyebrow": "Resident management",
+    "eyebrow": "User list",
     "title": "Resident directory",
+    "summary": "Manage Head Residents and household members assigned to rooms ({{count}} Head Residents)",
     "filters": {
       "searchAria": "Search residents",
       "searchPlaceholder": "Search by head resident, member, email, phone, or room",
@@ -261,7 +265,7 @@
       "household": "Room / Head resident"
     },
     "actions": {
-      "create": "Create head resident account",
+      "create": "Add user",
       "exportExcel": "Export Excel"
     },
     "recordTypes": {
@@ -288,9 +292,11 @@
     "columns": {
       "id": "ID",
       "name": "User name",
+      "phone": "Phone",
       "email": "Gmail",
       "room": "Room",
       "status": "Status",
+      "moveInDate": "Move-in date",
       "temporaryPassword": "Temporary password",
       "actions": "Actions"
     },
@@ -325,6 +331,11 @@
   "pendingMemberReview": {
     "eyebrow": "Resident management",
     "title": "Pending room members",
+    "summary": "Review room members submitted by Head Residents ({{count}} records)",
+    "filters": {
+      "searchAria": "Search pending members",
+      "searchPlaceholder": "Search by name, email, phone, Head Resident, or room"
+    },
     "columns": {
       "id": "ID",
       "name": "Member name",
@@ -666,6 +677,7 @@
   "buildingUsers": {
     "eyebrow": "Building users",
     "title": "Users in this building",
+    "summary": "Track Head Residents and household members in {{building}} ({{count}} Head Residents)",
     "loading": "Loading building users...",
     "loadError": "Building users could not be loaded",
     "empty": "No users found in this building.",
@@ -779,6 +791,8 @@
     "eyebrow": "Building invoices",
     "title": "Invoices in this building",
     "description": "Preview invoices before creating them, then generate one room invoice or all eligible room invoices in this building.",
+    "managementTitle": "Invoice management",
+    "managementSummary": "Manage apartment fee invoices ({{count}} invoices)",
     "loading": "Loading invoices...",
     "loadError": "Building invoices could not be loaded",
     "generated": "Invoice generated successfully.",
@@ -794,6 +808,30 @@
     "newInvoice": "New invoice",
     "invoiceRecords": "Invoice records",
     "createdInvoices": "Created invoices",
+    "exportEmpty": "No invoices to export.",
+    "actions": {
+      "createSingle": "Create invoice",
+      "createBulk": "Create batch",
+      "exportExcel": "Export Excel",
+      "refresh": "Refresh",
+      "loadingDetail": "Loading..."
+    },
+    "filters": {
+      "statusLabel": "Status:",
+      "allStatuses": "All",
+      "searchAria": "Search invoices",
+      "searchPlaceholder": "Search...",
+      "newest": "Newest",
+      "oldest": "Oldest"
+    },
+    "columns": {
+      "id": "ID",
+      "invoiceNumber": "Invoice number",
+      "apartment": "Apartment"
+    },
+    "export": {
+      "sheetName": "Invoices"
+    },
     "singleRoom": "One room",
     "bulk": "Whole building",
     "invoiceDate": "Invoice date",

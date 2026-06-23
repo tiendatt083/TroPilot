@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useOutletContext } from 'react-router-dom';
+import { useOutletContext } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import * as buildingApi from '../../features/buildings/api.js';
 import * as roomApi from '../../features/rooms/api.js';
 import * as adminUserApi from '../../features/users/api.js';
+import AdminAccountDirectoryTable from '../../components/AdminAccountDirectoryTable.jsx';
 import { addMonthsToDateInput, formatDateInputValue, formatDisplayDate } from '../../utils/dateFormat.js';
 import { exportRowsToExcel } from '../../utils/excelExport.js';
 import { formatRoomCode, formatRoomLabel } from '../../utils/roomDisplay.js';
@@ -96,10 +97,6 @@ function createRoomOptions(households) {
   });
 
   return Array.from(rooms.values()).sort((firstRoom, secondRoom) => firstRoom.label.localeCompare(secondRoom.label));
-}
-
-function statusClass(residentHead) {
-  return `status-pill status-${String(residentHead.status || '').toLowerCase()}`;
 }
 
 function getAvailableResidentHeads(users) {
@@ -323,9 +320,15 @@ export default function AdminBuildingUserPage() {
   const hasRooms = assignmentOptions.rooms.length > 0;
 
   return (
-    <div className="building-workspace">
-      <div className="page-title-row compact-title-row">
-        <span className="page-eyebrow">{t('buildingUsers.eyebrow')}</span>
+    <div className="building-workspace modern-user-page building-user-modern-page">
+      <div className="account-page-hero">
+        <div>
+          <h1>{t('buildingUsers.title')}</h1>
+          <p>{t('buildingUsers.summary', {
+            count: households.length,
+            building: building.name || building.buildingCode || building.code || t('common.noBuilding')
+          })}</p>
+        </div>
         <div className="page-action-row">
           <button className="secondary-button inline-button" type="button" onClick={handleExport}>
             {t('buildingUsers.actions.exportExcel')}
@@ -339,94 +342,58 @@ export default function AdminBuildingUserPage() {
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
 
-      <form className="user-filter-row building-user-filter-row" onSubmit={handleSearch}>
-        <input
-          aria-label={t('buildingUsers.filters.searchAria')}
-          name="search"
-          value={filters.search}
-          onChange={handleFilterChange}
-          placeholder={t('buildingUsers.filters.searchPlaceholder')}
-        />
-        <select
-          aria-label={t('buildingUsers.filters.roomAria')}
-          name="roomId"
-          value={filters.roomId}
-          onChange={handleFilterChange}
-        >
-          <option value="">{t('buildingUsers.filters.allRooms')}</option>
-          {roomOptions.map((room) => (
-            <option key={room.id} value={room.id}>
-              {room.label}
-            </option>
-          ))}
-        </select>
-        <button type="submit">{t('common.filter')}</button>
-        <button
-          className="secondary-button inline-button compact-clear-filter"
-          type="button"
-          onClick={handleClearFilters}
-        >
-          {t('common.clear')}
-        </button>
+      <form className="account-control-panel building-user-control-panel" onSubmit={handleSearch}>
+        <div className="account-search-control">
+          <input
+            aria-label={t('buildingUsers.filters.searchAria')}
+            name="search"
+            value={filters.search}
+            onChange={handleFilterChange}
+            placeholder={t('buildingUsers.filters.searchPlaceholder')}
+          />
+          <select
+            aria-label={t('buildingUsers.filters.roomAria')}
+            name="roomId"
+            value={filters.roomId}
+            onChange={handleFilterChange}
+          >
+            <option value="">{t('buildingUsers.filters.allRooms')}</option>
+            {roomOptions.map((room) => (
+              <option key={room.id} value={room.id}>
+                {room.label}
+              </option>
+            ))}
+          </select>
+          <button type="submit">{t('common.filter')}</button>
+          <button
+            className="secondary-button inline-button compact-clear-filter"
+            type="button"
+            onClick={handleClearFilters}
+          >
+            {t('common.clear')}
+          </button>
+        </div>
       </form>
 
       {loading ? (
         <div className="empty-state">{t('buildingUsers.loading')}</div>
       ) : (
-        <div className="table-wrap">
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>{t('buildingUsers.columns.user')}</th>
-                <th>{t('buildingUsers.columns.phone')}</th>
-                <th>{t('buildingUsers.columns.room')}</th>
-                <th>{t('buildingUsers.columns.moveInDate')}</th>
-                <th>{t('buildingUsers.columns.status')}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredHouseholds.map((residentHead) => (
-                <tr key={residentHead.id}>
-                  <td>
-                    <strong>{residentHead.fullName}</strong>
-                    <span className="table-subtext">{residentHead.email || t('common.notProvided')}</span>
-                    {residentHead.members.length > 0 && (
-                      <div className="account-inline-members">
-                        <span className="account-inline-members-label">
-                          {t('accountDirectory.inlineMembers')}
-                        </span>
-                        <div className="account-inline-member-list">
-                          {residentHead.members.map((member) => (
-                            <span className="account-inline-member" key={member.id}>
-                              {member.fullName}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </td>
-                  <td>{residentHead.phone || t('common.notProvided')}</td>
-                  <td>
-                    <Link
-                      className="secondary-link compact-link"
-                      to={`/admin/buildings/${building.id}/rooms/${residentHead.roomId}`}
-                    >
-                      {formatRoomCode(residentHead)}
-                    </Link>
-                    <span className="table-subtext">{residentHead.roomName || t('common.notProvided')}</span>
-                  </td>
-                  <td>{formatDisplayDate(residentHead.moveInDate, t('common.notSet'))}</td>
-                  <td>
-                    <span className={statusClass(residentHead)}>{formatStatus(residentHead.status, t)}</span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          {filteredHouseholds.length === 0 && (
-            <div className="empty-state flat-empty-state">{t('buildingUsers.empty')}</div>
+        <AdminAccountDirectoryTable
+          accounts={filteredHouseholds}
+          allowDelete={false}
+          emptyMessage={t('buildingUsers.empty')}
+          getRoomUrl={(residentHead) => (
+            residentHead.roomId ? `/admin/buildings/${building.id}/rooms/${residentHead.roomId}` : ''
           )}
-        </div>
+          nameColumnLabel={t('buildingUsers.columns.user')}
+          showMembersInline
+          showMoveInDate
+          showRole
+          showRoom
+          showStatus={false}
+          showTemporaryPassword={false}
+          useIconActions
+        />
       )}
 
       {assignmentOpen && (

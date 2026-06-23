@@ -5,7 +5,6 @@ import * as buildingApi from '../../features/buildings/api.js';
 import * as memberApi from '../../features/residents/api.js';
 import * as adminUserApi from '../../features/users/api.js';
 import AdminAccountDirectoryTable from '../../components/AdminAccountDirectoryTable.jsx';
-import PageHeader from '../../components/PageHeader.jsx';
 import { formatDisplayDate } from '../../utils/dateFormat.js';
 import { exportRowsToExcel } from '../../utils/excelExport.js';
 
@@ -186,12 +185,12 @@ export default function AdminResidentListPage() {
   };
 
   return (
-    <section className="content-section account-directory-page">
-      <div className="page-title-row">
-        <PageHeader
-          eyebrow={t('residentDirectory.eyebrow')}
-          title={t('residentDirectory.title')}
-        />
+    <section className="content-section account-directory-page modern-user-page">
+      <div className="account-page-hero">
+        <div>
+          <h1>{t('residentDirectory.eyebrow')}</h1>
+          <p>{t('residentDirectory.summary', { count: residents.length })}</p>
+        </div>
         <div className="page-action-row">
           <button className="secondary-button inline-button" type="button" onClick={handleExport}>
             {t('residentDirectory.actions.exportExcel')}
@@ -208,34 +207,36 @@ export default function AdminResidentListPage() {
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
 
-      <div className="user-filter-row">
-        <input
-          aria-label={t('residentDirectory.filters.searchAria')}
-          name="search"
-          value={filters.search}
-          onChange={handleFilterChange}
-          placeholder={t('residentDirectory.filters.searchPlaceholder')}
-        />
-        <select
-          aria-label={t('residentDirectory.filters.buildingAria')}
-          name="buildingId"
-          value={filters.buildingId}
-          onChange={handleFilterChange}
-        >
-          <option value="">{t('residentDirectory.filters.allBuildings')}</option>
-          {buildings.map((building) => (
-            <option key={building.id} value={building.id}>
-              {building.buildingCode} - {building.name}
-            </option>
-          ))}
-        </select>
-        <button
-          className="secondary-button inline-button"
-          type="button"
-          onClick={() => setFilters(emptyFilters)}
-        >
-          {t('common.clear')}
-        </button>
+      <div className="account-control-panel resident-directory-control-panel">
+        <div className="account-search-control">
+          <input
+            aria-label={t('residentDirectory.filters.searchAria')}
+            name="search"
+            value={filters.search}
+            onChange={handleFilterChange}
+            placeholder={t('residentDirectory.filters.searchPlaceholder')}
+          />
+          <select
+            aria-label={t('residentDirectory.filters.buildingAria')}
+            name="buildingId"
+            value={filters.buildingId}
+            onChange={handleFilterChange}
+          >
+            <option value="">{t('residentDirectory.filters.allBuildings')}</option>
+            {buildings.map((building) => (
+              <option key={building.id} value={building.id}>
+                {building.buildingCode} - {building.name}
+              </option>
+            ))}
+          </select>
+          <button
+            className="secondary-button inline-button"
+            type="button"
+            onClick={() => setFilters(emptyFilters)}
+          >
+            {t('common.clear')}
+          </button>
+        </div>
       </div>
 
       {loading ? (
@@ -245,9 +246,13 @@ export default function AdminResidentListPage() {
           accounts={filteredResidents}
           deletingId={deletingId}
           emptyMessage={t('residentDirectory.messages.empty')}
+          nameColumnLabel={t('residentDirectory.columns.fullName')}
           onDelete={handleDelete}
           showMembersInline
           showRoom
+          showRole
+          showStatus={false}
+          useIconActions
         />
       )}
     </section>

@@ -187,7 +187,7 @@
     "operations": "Vận hành",
     "informationAndFeedback": "Thông tin và phản hồi",
     "users": "Nhân viên",
-    "residents": "Khách thuê",
+    "residents": "Người dùng",
     "pendingMembers": "Thành viên chờ duyệt",
     "contracts": "Hợp đồng",
     "tasks": "Công việc",
@@ -213,9 +213,12 @@
   "userManagement": {
     "eyebrow": "Tài khoản hệ thống",
     "title": "Quản lý nhân viên",
+    "summary": "Quản lý tài khoản nhân viên trong hệ thống ({{count}} tài khoản)",
     "filters": {
       "searchAria": "Tìm kiếm nhân viên",
-      "searchPlaceholder": "Tìm theo tên, email hoặc số điện thoại"
+      "searchPlaceholder": "Tìm kiếm...",
+      "roleLabel": "Vai trò:",
+      "allRoles": "Tất cả vai trò"
     },
     "columns": {
       "name": "Tên nhân viên",
@@ -246,8 +249,9 @@
     "passwordChanged": "Đã đổi mật khẩu"
   },
   "residentDirectory": {
-    "eyebrow": "Quản lý cư dân",
+    "eyebrow": "Danh sách người dùng",
     "title": "Danh sách cư dân",
+    "summary": "Quản lý chủ hộ và thành viên đang thuộc các phòng trong hệ thống ({{count}} chủ hộ)",
     "filters": {
       "searchAria": "Tìm kiếm cư dân",
       "searchPlaceholder": "Tìm theo chủ hộ, thành viên, email, số điện thoại hoặc phòng",
@@ -261,7 +265,7 @@
       "household": "Căn hộ / Chủ hộ"
     },
     "actions": {
-      "create": "Tạo tài khoản chủ hộ",
+      "create": "Thêm người dùng",
       "exportExcel": "Tải Excel"
     },
     "recordTypes": {
@@ -288,9 +292,11 @@
     "columns": {
       "id": "ID",
       "name": "Tên người dùng",
+      "phone": "Số điện thoại",
       "email": "Gmail",
       "room": "Phòng",
       "status": "Trạng thái",
+      "moveInDate": "Ngày chuyển vào",
       "temporaryPassword": "Mật khẩu tạm thời",
       "actions": "Thao tác"
     },
@@ -325,6 +331,11 @@
   "pendingMemberReview": {
     "eyebrow": "Quản lý cư dân",
     "title": "Thành viên chờ duyệt",
+    "summary": "Duyệt các thành viên phòng do chủ hộ gửi lên ({{count}} hồ sơ)",
+    "filters": {
+      "searchAria": "Tìm kiếm thành viên chờ duyệt",
+      "searchPlaceholder": "Tìm theo tên, email, số điện thoại, chủ hộ hoặc phòng"
+    },
     "columns": {
       "id": "ID",
       "name": "Tên thành viên",
@@ -666,6 +677,7 @@
   "buildingUsers": {
     "eyebrow": "Người dùng của tòa nhà",
     "title": "Người dùng trong tòa nhà này",
+    "summary": "Theo dõi chủ hộ và thành viên đang ở trong {{building}} ({{count}} chủ hộ)",
     "loading": "Đang tải người dùng của tòa nhà...",
     "loadError": "Không thể tải người dùng của tòa nhà",
     "empty": "Không tìm thấy người dùng trong tòa nhà này.",
@@ -779,6 +791,8 @@
     "eyebrow": "Hóa đơn của tòa nhà",
     "title": "Hóa đơn trong tòa nhà này",
     "description": "Xem trước hóa đơn trước khi tạo, sau đó tạo hóa đơn cho một phòng hoặc toàn bộ phòng đủ điều kiện trong tòa nhà này.",
+    "managementTitle": "Quản lý hóa đơn",
+    "managementSummary": "Quản lý hóa đơn thu phí căn hộ ({{count}} hóa đơn)",
     "loading": "Đang tải hóa đơn...",
     "loadError": "Không thể tải hóa đơn của tòa nhà",
     "generated": "Đã tạo hóa đơn thành công.",
@@ -794,6 +808,30 @@
     "newInvoice": "Hóa đơn mới",
     "invoiceRecords": "Danh sách hóa đơn",
     "createdInvoices": "Hóa đơn đã tạo",
+    "exportEmpty": "Không có hóa đơn để xuất.",
+    "actions": {
+      "createSingle": "Tạo hóa đơn",
+      "createBulk": "Tạo hàng loạt",
+      "exportExcel": "Xuất Excel",
+      "refresh": "Tải lại",
+      "loadingDetail": "Đang tải..."
+    },
+    "filters": {
+      "statusLabel": "Trạng thái:",
+      "allStatuses": "Tất cả",
+      "searchAria": "Tìm kiếm hóa đơn",
+      "searchPlaceholder": "Tìm kiếm...",
+      "newest": "Mới nhất",
+      "oldest": "Cũ nhất"
+    },
+    "columns": {
+      "id": "ID",
+      "invoiceNumber": "Số hóa đơn",
+      "apartment": "Căn hộ"
+    },
+    "export": {
+      "sheetName": "Hoa don"
+    },
     "singleRoom": "Một phòng",
     "bulk": "Cả tòa nhà",
     "invoiceDate": "Ngày lập hóa đơn",
