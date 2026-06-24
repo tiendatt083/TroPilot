@@ -121,7 +121,7 @@
   "contact": {
     "title": "Liên hệ",
     "eyebrow": "Hỗ trợ hệ thống",
-    "description": "Sử dụng các thông tin dưới đây để liên hệ với đơn vị quản lý. Thông tin liên hệ này áp dụng chung cho tất cả tòa nhà.",
+    "description": "Sử dụng các thông tin dưới đây để liên hệ với đơn vị quản lý. Thông tin liên hệ này áp dụng chung cho toàn bộ khu trọ.",
     "summaryTitle": "Thông tin đơn vị quản lý",
     "editTitle": "Chỉnh sửa thông tin liên hệ",
       "phoneListTitle": "Số điện thoại",
@@ -175,7 +175,7 @@
     "admin": "Điều hướng Admin",
     "staff": "Điều hướng nhân viên",
     "resident": "Điều hướng chủ hộ",
-    "buildingWorkspace": "Điều hướng quản lý tòa nhà",
+    "buildingWorkspace": "Điều hướng quản lý khu trọ",
     "collapseSidebar": "Thu gọn thanh điều hướng",
     "expandSidebar": "Mở rộng thanh điều hướng",
     "dashboard": "Trang chủ",
@@ -1659,6 +1659,7 @@
       "caption": "Tòa nhà",
       "empty": "Không tìm thấy tòa nhà.",
       "manage": "Quản lý",
+      "viewDetails": "Xem chi tiết",
       "details": "Chi tiết"
     },
     "rooms": {

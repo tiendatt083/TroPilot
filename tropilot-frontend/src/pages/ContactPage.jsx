@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as contactApi from '../api/contactApi.js';
-import PageHeader from '../components/PageHeader.jsx';
+import LineIcon from '../components/common/LineIcon.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 
 const createEmptyPhone = () => ({
@@ -14,8 +14,7 @@ const createEmptyForm = () => ({
   officeAddress: '',
   workingStartTime: '',
   workingEndTime: '',
-  phones: [createEmptyPhone()],
-  currentPassword: ''
+  phones: [createEmptyPhone()]
 });
 
 function contactToForm(contact) {
@@ -29,8 +28,7 @@ function contactToForm(contact) {
           displayName: phone.displayName || '',
           phoneNumber: phone.phoneNumber || ''
         }))
-      : [createEmptyPhone()],
-    currentPassword: ''
+      : [createEmptyPhone()]
   };
 }
 
@@ -129,8 +127,7 @@ export default function ContactPage() {
         phones: form.phones.map((phone) => ({
           displayName: phone.displayName.trim(),
           phoneNumber: phone.phoneNumber.trim()
-        })),
-        currentPassword: form.currentPassword
+        }))
       });
 
       setContact(response.data);
@@ -145,32 +142,40 @@ export default function ContactPage() {
 
   return (
     <section className="content-section contact-page">
-      <PageHeader eyebrow={t('contact.eyebrow')} title={t('contact.title')} />
-      <p className="page-support-text">{t('contact.description')}</p>
+      <div className="contact-shell">
+        <header className="contact-hero">
+          <div className="contact-hero-copy">
+            <span className="page-eyebrow">{t('contact.eyebrow')}</span>
+            <h1>{t('contact.title')}</h1>
+            <p>{t('contact.description')}</p>
+          </div>
+          <ContactHeroIllustration />
+        </header>
 
-      {message && <div className="alert success-alert">{message}</div>}
-      {error && <div className="alert error-alert">{error}</div>}
+        {message && <div className="alert success-alert">{message}</div>}
+        {error && <div className="alert error-alert">{error}</div>}
 
-      {loading ? (
-        <div className="empty-state">{t('contact.messages.loading')}</div>
-      ) : (
-        <div className="contact-layout">
-          {isAdmin ? (
-            <ContactEditor
-              form={form}
-              saving={saving}
-              t={t}
-              onAddPhone={addPhone}
-              onFieldChange={handleFieldChange}
-              onPhoneChange={handlePhoneChange}
-              onRemovePhone={removePhone}
-              onSubmit={handleSubmit}
-            />
-          ) : (
-            <ContactSummary contact={contact} t={t} />
-          )}
-        </div>
-      )}
+        {loading ? (
+          <div className="empty-state contact-loading-state">{t('contact.messages.loading')}</div>
+        ) : (
+          <div className="contact-layout">
+            {isAdmin ? (
+              <ContactEditor
+                form={form}
+                saving={saving}
+                t={t}
+                onAddPhone={addPhone}
+                onFieldChange={handleFieldChange}
+                onPhoneChange={handlePhoneChange}
+                onRemovePhone={removePhone}
+                onSubmit={handleSubmit}
+              />
+            ) : (
+              <ContactSummary contact={contact} t={t} />
+            )}
+          </div>
+        )}
+      </div>
     </section>
   );
 }
@@ -178,7 +183,7 @@ export default function ContactPage() {
 function ContactSummary({ contact, t }) {
   if (!contact?.configured) {
     return (
-      <section className="settings-panel contact-summary-panel">
+      <section className="settings-panel contact-summary-panel contact-card">
         <div className="empty-state compact-empty-state">
           {t('contact.messages.notConfigured')}
         </div>
@@ -187,22 +192,26 @@ function ContactSummary({ contact, t }) {
   }
 
   return (
-    <section className="settings-panel contact-summary-panel">
-      <div className="contact-section-heading">
-        <span className="section-eyebrow">{t('contact.sections.details')}</span>
-        <h2>{t('contact.summaryTitle')}</h2>
-      </div>
+    <section className="settings-panel contact-summary-panel contact-card">
+      <ContactSectionHeading
+        eyebrow={t('contact.sections.details')}
+        icon="user"
+        title={t('contact.summaryTitle')}
+      />
 
       <dl className="contact-detail-list">
         <ContactDetail
+          icon="mail"
           label={t('contact.fields.email')}
           value={<a href={`mailto:${contact.email}`}>{contact.email}</a>}
         />
         <ContactDetail
+          icon="mapPin"
           label={t('contact.fields.officeAddress')}
           value={contact.officeAddress}
         />
         <ContactDetail
+          icon="clock"
           label={t('contact.fields.workingHours')}
           value={
             contact.workingStartTime && contact.workingEndTime
@@ -215,11 +224,12 @@ function ContactSummary({ contact, t }) {
         />
       </dl>
 
-      <div className="contact-phone-section">
-        <div>
-          <span className="section-eyebrow">{t('contact.sections.phones')}</span>
-          <h3>{t('contact.phoneListTitle')}</h3>
-        </div>
+      <section className="contact-phone-section">
+        <ContactSectionHeading
+          eyebrow={t('contact.sections.phones')}
+          icon="phone"
+          title={t('contact.phoneListTitle')}
+        />
         <div className="contact-phone-list">
           {contact.phones.map((phone, index) => (
             <a
@@ -227,20 +237,24 @@ function ContactSummary({ contact, t }) {
               href={phoneHref(phone.phoneNumber)}
               key={`${phone.displayName}-${phone.phoneNumber}-${index}`}
             >
+              <LineIcon className="contact-card-icon" name="phone" />
               <span>{phone.displayName}</span>
               <strong>{phone.phoneNumber}</strong>
             </a>
           ))}
         </div>
-      </div>
+      </section>
     </section>
   );
 }
 
-function ContactDetail({ label, value }) {
+function ContactDetail({ icon, label, value }) {
   return (
     <div>
-      <dt>{label}</dt>
+      <dt>
+        <LineIcon className="contact-detail-icon" name={icon} />
+        <span>{label}</span>
+      </dt>
       <dd>{value}</dd>
     </div>
   );
@@ -258,148 +272,202 @@ function ContactEditor({
 }) {
   return (
     <form className="panel-form contact-editor" onSubmit={onSubmit}>
-      <div className="contact-section-heading">
-        <span className="section-eyebrow">{t('contact.sections.edit')}</span>
-        <h2>{t('contact.editTitle')}</h2>
-      </div>
+      <section className="contact-card">
+        <ContactSectionHeading
+          eyebrow={t('contact.sections.edit')}
+          icon="user"
+          title={t('contact.editTitle')}
+        />
 
-      <div className="form-grid">
-        <div>
-          <label htmlFor="contactEmail">{t('contact.fields.email')}</label>
-          <input
-            id="contactEmail"
-            maxLength={160}
-            name="email"
-            required
-            type="email"
-            value={form.email}
-            onChange={onFieldChange}
-          />
-        </div>
+        <div className="form-grid contact-general-grid">
+          <div className="contact-field contact-email-field">
+            <label htmlFor="contactEmail">{t('contact.fields.email')}</label>
+            <ContactFieldControl icon="mail">
+              <input
+                id="contactEmail"
+                maxLength={160}
+                name="email"
+                required
+                type="email"
+                value={form.email}
+                onChange={onFieldChange}
+              />
+            </ContactFieldControl>
+          </div>
 
-        <div className="form-grid-wide contact-working-hours">
-          <div>
+          <div className="contact-field">
             <label htmlFor="contactWorkingStartTime">
               {t('contact.fields.workingStartTime')}
             </label>
-            <input
-              id="contactWorkingStartTime"
-              name="workingStartTime"
-              required
-              type="time"
-              value={form.workingStartTime}
-              onChange={onFieldChange}
-            />
+            <ContactFieldControl icon="clock">
+              <input
+                id="contactWorkingStartTime"
+                name="workingStartTime"
+                required
+                type="time"
+                value={form.workingStartTime}
+                onChange={onFieldChange}
+              />
+            </ContactFieldControl>
           </div>
 
-          <div>
+          <div className="contact-field">
             <label htmlFor="contactWorkingEndTime">
               {t('contact.fields.workingEndTime')}
             </label>
-            <input
-              id="contactWorkingEndTime"
-              name="workingEndTime"
-              min={form.workingStartTime}
-              required
-              type="time"
-              value={form.workingEndTime}
-              onChange={onFieldChange}
-            />
+            <ContactFieldControl icon="clock">
+              <input
+                id="contactWorkingEndTime"
+                name="workingEndTime"
+                min={form.workingStartTime}
+                required
+                type="time"
+                value={form.workingEndTime}
+                onChange={onFieldChange}
+              />
+            </ContactFieldControl>
+          </div>
+
+          <div className="form-grid-wide contact-field">
+            <label htmlFor="contactOfficeAddress">{t('contact.fields.officeAddress')}</label>
+            <ContactFieldControl icon="mapPin">
+              <input
+                id="contactOfficeAddress"
+                maxLength={255}
+                name="officeAddress"
+                required
+                value={form.officeAddress}
+                onChange={onFieldChange}
+              />
+            </ContactFieldControl>
           </div>
         </div>
+      </section>
 
-        <div className="form-grid-wide">
-          <label htmlFor="contactOfficeAddress">{t('contact.fields.officeAddress')}</label>
-          <input
-            id="contactOfficeAddress"
-            maxLength={255}
-            name="officeAddress"
-            required
-            value={form.officeAddress}
-            onChange={onFieldChange}
-          />
-        </div>
-      </div>
-
-      <div className="contact-phone-editor">
+      <section className="contact-card contact-phone-editor">
         <div className="contact-phone-editor-header">
-          <div>
-            <span className="section-eyebrow">{t('contact.sections.phones')}</span>
-            <h3>{t('contact.phoneEditorTitle')}</h3>
-          </div>
+          <ContactSectionHeading
+            eyebrow={t('contact.sections.phones')}
+            icon="phone"
+            title={t('contact.phoneEditorTitle')}
+          />
           <button
-            className="secondary-button compact-button"
+            className="secondary-button compact-button contact-add-phone-button"
             disabled={form.phones.length >= 20}
             type="button"
             onClick={onAddPhone}
           >
+            <LineIcon className="contact-button-icon" name="plus" />
             {t('contact.actions.addPhone')}
           </button>
         </div>
 
-        <div className="contact-phone-editor-list">
-          {form.phones.map((phone, index) => (
-            <div className="contact-phone-editor-row" key={index}>
-              <div>
-                <label htmlFor={`contactPhoneName-${index}`}>
-                  {t('contact.fields.phoneName')}
-                </label>
-                <input
-                  id={`contactPhoneName-${index}`}
-                  maxLength={100}
-                  required
-                  value={phone.displayName}
-                  onChange={(event) => onPhoneChange(index, 'displayName', event.target.value)}
-                />
+        <div className="contact-phone-table">
+          <div className="contact-phone-table-head" aria-hidden="true">
+            <span>{t('contact.fields.phoneName')}</span>
+            <span>{t('contact.fields.phoneNumber')}</span>
+            <span />
+          </div>
+          <div className="contact-phone-editor-list">
+            {form.phones.map((phone, index) => (
+              <div className="contact-phone-editor-row" key={index}>
+                <div>
+                  <label className="visually-hidden" htmlFor={`contactPhoneName-${index}`}>
+                    {t('contact.fields.phoneName')}
+                  </label>
+                  <ContactFieldControl icon="user">
+                    <input
+                      id={`contactPhoneName-${index}`}
+                      maxLength={100}
+                      required
+                      value={phone.displayName}
+                      onChange={(event) => onPhoneChange(index, 'displayName', event.target.value)}
+                    />
+                  </ContactFieldControl>
+                </div>
+                <div>
+                  <label className="visually-hidden" htmlFor={`contactPhoneNumber-${index}`}>
+                    {t('contact.fields.phoneNumber')}
+                  </label>
+                  <ContactFieldControl icon="phone">
+                    <input
+                      id={`contactPhoneNumber-${index}`}
+                      inputMode="tel"
+                      maxLength={30}
+                      required
+                      value={phone.phoneNumber}
+                      onChange={(event) => onPhoneChange(index, 'phoneNumber', event.target.value)}
+                    />
+                  </ContactFieldControl>
+                </div>
+                <button
+                  aria-label={t('contact.actions.removePhoneNamed', {
+                    name: phone.displayName || index + 1
+                  })}
+                  className="icon-action-button icon-action-danger contact-remove-phone-button"
+                  disabled={form.phones.length === 1}
+                  title={t('contact.actions.removePhone')}
+                  type="button"
+                  onClick={() => onRemovePhone(index)}
+                >
+                  <LineIcon name="trash" />
+                </button>
               </div>
-              <div>
-                <label htmlFor={`contactPhoneNumber-${index}`}>
-                  {t('contact.fields.phoneNumber')}
-                </label>
-                <input
-                  id={`contactPhoneNumber-${index}`}
-                  inputMode="tel"
-                  maxLength={30}
-                  required
-                  value={phone.phoneNumber}
-                  onChange={(event) => onPhoneChange(index, 'phoneNumber', event.target.value)}
-                />
-              </div>
-              <button
-                aria-label={t('contact.actions.removePhoneNamed', {
-                  name: phone.displayName || index + 1
-                })}
-                className="danger-button compact-button"
-                disabled={form.phones.length === 1}
-                type="button"
-                onClick={() => onRemovePhone(index)}
-              >
-                {t('contact.actions.removePhone')}
-              </button>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
+      </section>
 
-      <div>
-        <label htmlFor="contactCurrentPassword">
-          {t('contact.fields.currentPassword')}
-        </label>
-        <input
-          id="contactCurrentPassword"
-          autoComplete="current-password"
-          name="currentPassword"
-          required
-          type="password"
-          value={form.currentPassword}
-          onChange={onFieldChange}
-        />
-        <span className="field-help">{t('contact.passwordHelp')}</span>
+      <div className="contact-submit-row">
+        <button className="contact-save-button" disabled={saving} type="submit">
+          <LineIcon className="contact-button-icon" name="save" />
+          {saving ? t('contact.actions.saving') : t('contact.actions.save')}
+        </button>
       </div>
-
-      <button disabled={saving} type="submit">
-        {saving ? t('contact.actions.saving') : t('contact.actions.save')}
-      </button>
     </form>
+  );
+}
+
+function ContactSectionHeading({ eyebrow, icon, title }) {
+  return (
+    <div className="contact-section-heading">
+      <span className="contact-section-icon">
+        <LineIcon name={icon} />
+      </span>
+      <div>
+        {eyebrow && <span className="section-eyebrow">{eyebrow}</span>}
+        <h2>{title}</h2>
+      </div>
+    </div>
+  );
+}
+
+function ContactFieldControl({ children, icon }) {
+  return (
+    <div className="contact-field-control">
+      <LineIcon className="contact-field-icon" name={icon} />
+      {children}
+    </div>
+  );
+}
+
+function ContactHeroIllustration() {
+  return (
+    <div className="contact-hero-art" aria-hidden="true">
+      <svg viewBox="0 0 220 150" role="img">
+        <circle cx="118" cy="72" r="64" />
+        <path d="M66 66h88v58H66z" className="hero-envelope" />
+        <path d="m66 67 44 35 44-35" className="hero-envelope-line" />
+        <path d="M81 37h62l18 18v40H81z" className="hero-paper" />
+        <path d="M143 37v19h18" className="hero-paper-line" />
+        <path d="M96 57h34" className="hero-paper-line" />
+        <path d="M96 74h46" className="hero-paper-line" />
+        <path d="M172 34h28a10 10 0 0 1 10 10v12a10 10 0 0 1-10 10h-12l-12 11v-11h-4a10 10 0 0 1-10-10V44a10 10 0 0 1 10-10Z" className="hero-bubble" />
+        <path d="M177 50h4M187 50h4M197 50h4" className="hero-bubble-dots" />
+        <path d="M32 128c12-17 28-16 38 0" className="hero-plant" />
+        <path d="M34 128c-4-17 4-28 19-33 3 16-3 27-19 33Z" className="hero-leaf" />
+        <path d="M178 128c9-20 24-25 39-14-8 16-20 22-39 14Z" className="hero-leaf" />
+      </svg>
+    </div>
   );
 }

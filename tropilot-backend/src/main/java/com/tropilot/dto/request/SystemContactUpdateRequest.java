@@ -35,7 +35,4 @@ public class SystemContactUpdateRequest {
     @NotEmpty(message = "At least one phone number is required")
     @Size(max = 20, message = "No more than 20 phone numbers are allowed")
     private List<ContactPhoneRequest> phones;
-
-    @NotBlank(message = "Current password is required")
-    private String currentPassword;
 }

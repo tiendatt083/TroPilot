@@ -1659,6 +1659,7 @@
       "caption": "Buildings",
       "empty": "No buildings found.",
       "manage": "Manage",
+      "viewDetails": "View details",
       "details": "Details"
     },
     "rooms": {

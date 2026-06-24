@@ -13,7 +13,6 @@ import com.tropilot.security.CurrentUserProvider;
 import com.tropilot.service.ActivityLogService;
 import com.tropilot.service.SystemContactService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,7 +34,6 @@ public class SystemContactServiceImpl implements SystemContactService {
 
     private final SystemContactRepository systemContactRepository;
     private final CurrentUserProvider currentUserProvider;
-    private final PasswordEncoder passwordEncoder;
     private final ActivityLogService activityLogService;
 
     @Override
@@ -50,10 +48,6 @@ public class SystemContactServiceImpl implements SystemContactService {
     @Transactional
     public SystemContactResponse updateContact(SystemContactUpdateRequest request) {
         User currentUser = currentUserProvider.getCurrentUser();
-
-        if (!passwordEncoder.matches(request.getCurrentPassword(), currentUser.getPassword())) {
-            throw new BadRequestException("Current password is incorrect");
-        }
 
         validateWorkingHours(request.getWorkingStartTime(), request.getWorkingEndTime());
 

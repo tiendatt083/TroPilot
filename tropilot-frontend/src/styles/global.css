@@ -57,6 +57,28 @@ html[data-theme="dark"] .equipment-history-item {
     inset 0 1px 0 rgba(255, 255, 255, 0.035);
 }
 
+html[data-theme="dark"] .contact-editor {
+  background: transparent;
+  box-shadow: none;
+}
+
+html[data-theme="dark"] .contact-hero,
+html[data-theme="dark"] .contact-card,
+html[data-theme="dark"] .contact-phone-table,
+html[data-theme="dark"] .contact-phone-card,
+html[data-theme="dark"] .contact-detail-list > div {
+  background: var(--color-surface);
+}
+
+html[data-theme="dark"] .contact-phone-table-head {
+  background: var(--color-table-header);
+}
+
+html[data-theme="dark"] .hero-paper,
+html[data-theme="dark"] .hero-bubble {
+  fill: var(--color-surface-raised);
+}
+
 html[data-theme="dark"] .secondary-button,
 html[data-theme="dark"] .secondary-link {
   color: var(--color-text);
@@ -928,5 +950,17 @@ html[data-theme="dark"] input[type="month"]::-webkit-calendar-picker-indicator {
 
   .notification-page-buttons .compact-button {
     flex: 1 1 44px;
+  }
+}
+
+@media (max-width: 720px) {
+  .contact-remove-phone-button.icon-action-button {
+    width: 2.25rem;
+    min-width: 2.25rem;
+    max-width: 2.25rem;
+    height: 2.25rem;
+    min-height: 2.25rem;
+    justify-self: end;
+    padding: 0;
   }
 }

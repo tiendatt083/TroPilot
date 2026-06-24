@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useOutletContext, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import * as contractApi from '../../features/contracts/api.js';
@@ -12,9 +12,10 @@ import * as memberApi from '../../features/residents/api.js';
 import * as vehicleApi from '../../features/residents/vehicleApi.js';
 import * as roomApi from '../../features/rooms/api.js';
 import * as expenseApi from '../../features/payments/expenseApi.js';
-import PageHeader from '../../components/PageHeader.jsx';
+import LineIcon from '../../components/common/LineIcon.jsx';
+import { formatDisplayDate, formatDisplayMonth } from '../../utils/dateFormat.js';
 
-const emptyBuildingOperations = {
+const EMPTY_BUILDING_OPERATIONS = {
   rooms: [],
   contracts: [],
   invoices: [],
@@ -30,13 +31,54 @@ const emptyBuildingOperations = {
   notificationCount: 0
 };
 
+const INVOICE_STATUS_LABELS = {
+  UNPAID: 'Chưa thanh toán',
+  PENDING_CONFIRMATION: 'Chờ xác nhận',
+  PAID: 'Đã thanh toán',
+  OVERDUE: 'Quá hạn',
+  REJECTED: 'Bị từ chối'
+};
+
+const FEEDBACK_STATUS_LABELS = {
+  PENDING: 'Chờ xử lý',
+  IN_PROGRESS: 'Đang xử lý',
+  RESOLVED: 'Đã giải quyết',
+  REJECTED: 'Đã đóng'
+};
+
+const MAINTENANCE_STATUS_LABELS = {
+  PENDING: 'Chờ xử lý',
+  ASSIGNED: 'Đã phân công',
+  IN_PROGRESS: 'Đang xử lý',
+  COMPLETED: 'Hoàn thành',
+  REJECTED: 'Từ chối'
+};
+
 function toNumber(value) {
   const numberValue = Number(value ?? 0);
   return Number.isFinite(numberValue) ? numberValue : 0;
 }
 
-function formatNumber(value, locale) {
+function formatNumber(value, locale = 'vi-VN') {
   return toNumber(value).toLocaleString(locale, { maximumFractionDigits: 2 });
+}
+
+function formatCurrency(value, locale = 'vi-VN') {
+  return `${formatNumber(value, locale)} đ`;
+}
+
+function formatCompactCurrency(value) {
+  const amount = toNumber(value);
+
+  if (Math.abs(amount) >= 1_000_000_000) {
+    return `${(amount / 1_000_000_000).toLocaleString('vi-VN', { maximumFractionDigits: 1 })} tỷ`;
+  }
+
+  if (Math.abs(amount) >= 1_000_000) {
+    return `${(amount / 1_000_000).toLocaleString('vi-VN', { maximumFractionDigits: 1 })} tr`;
+  }
+
+  return formatCurrency(amount);
 }
 
 function sumAmounts(items, amountKey) {
@@ -45,90 +87,180 @@ function sumAmounts(items, amountKey) {
 
 function getPercent(value, total) {
   const totalValue = toNumber(total);
-  return totalValue > 0 ? Math.min(100, Math.round((toNumber(value) / totalValue) * 100)) : 0;
+
+  if (totalValue <= 0) {
+    return 0;
+  }
+
+  return Math.round((toNumber(value) / totalValue) * 100);
 }
 
-function getDonutStyle(segments) {
+function getDateTime(value) {
+  if (!value) {
+    return 0;
+  }
+
+  const time = new Date(value).getTime();
+  return Number.isFinite(time) ? time : 0;
+}
+
+function sortRecent(items, dateFields = ['createdAt', 'updatedAt']) {
+  return [...items].sort((left, right) => {
+    const leftTime = Math.max(...dateFields.map((field) => getDateTime(left[field])));
+    const rightTime = Math.max(...dateFields.map((field) => getDateTime(right[field])));
+    return rightTime - leftTime;
+  });
+}
+
+function getMonthKey(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  return `${year}-${month}`;
+}
+
+function getLastMonthKeys(count = 6) {
+  const current = new Date();
+
+  return Array.from({ length: count }, (_, index) => {
+    const date = new Date(current.getFullYear(), current.getMonth() - (count - index - 1), 1);
+    return getMonthKey(date);
+  });
+}
+
+function getInvoiceMonth(invoice) {
+  if (invoice.month) {
+    return String(invoice.month).slice(0, 7);
+  }
+
+  if (invoice.invoiceDate) {
+    return String(invoice.invoiceDate).slice(0, 7);
+  }
+
+  return '';
+}
+
+function getInvoiceCode(invoice) {
+  const rawMonth = getInvoiceMonth(invoice);
+  const month = rawMonth ? formatDisplayMonth(rawMonth) : 'HD';
+  return `HD-${month}-${String(invoice.id || '').padStart(3, '0')}`;
+}
+
+function getRoomLabel(record) {
+  return record.roomCode || record.roomName || 'Chưa có phòng';
+}
+
+function getMaintenanceCost(record) {
+  return record.cost ?? record.totalCost ?? record.expenseAmount ?? record.amount ?? 0;
+}
+
+function getMaintenanceFinishedDate(record) {
+  if (record.status !== 'COMPLETED') {
+    return '';
+  }
+
+  return record.completedAt || record.finishedAt || record.updatedAt;
+}
+
+function getStatusClass(prefix, status) {
+  return `status-pill ${prefix}-${String(status || '').toLowerCase().replaceAll('_', '-')}`;
+}
+
+function createDonutStyle(segments) {
   const total = segments.reduce((sum, segment) => sum + toNumber(segment.value), 0);
+
+  if (total <= 0) {
+    return { background: 'conic-gradient(#d7e0e5 0deg 360deg)' };
+  }
+
   let cursor = 0;
   const stops = segments.map((segment) => {
     const start = cursor;
-    cursor += total > 0 ? (toNumber(segment.value) / total) * 360 : 0;
+    const size = (toNumber(segment.value) / total) * 360;
+    cursor += size;
     return `${segment.color} ${start}deg ${cursor}deg`;
   });
 
-  return {
-    background: total > 0
-      ? `conic-gradient(${stops.join(', ')})`
-      : 'conic-gradient(var(--color-border) 0deg 360deg)'
-  };
+  return { background: `conic-gradient(${stops.join(', ')})` };
 }
 
-function MetricCard({ label, value, helper, tone = 'primary' }) {
+function buildMonthlyRevenue(invoices) {
+  const monthKeys = getLastMonthKeys(6);
+  const rows = monthKeys.map((month) => ({ month, paid: 0, unpaid: 0 }));
+
+  invoices.forEach((invoice) => {
+    const row = rows.find((item) => item.month === getInvoiceMonth(invoice));
+
+    if (!row) {
+      return;
+    }
+
+    const amount = toNumber(invoice.totalAmount);
+
+    if (invoice.status === 'PAID') {
+      row.paid += amount;
+      return;
+    }
+
+    row.unpaid += amount;
+  });
+
+  return rows;
+}
+
+function KpiCard({ helper, icon, label, tone, value }) {
   return (
-    <article className={`home-metric-card home-metric-${tone}`}>
-      <span>{label}</span>
+    <article className={`ops-kpi-card ops-kpi-${tone}`}>
+      <span className="ops-kpi-icon">
+        <LineIcon name={icon} />
+      </span>
       <strong>{value}</strong>
-      <small>{helper}</small>
+      <h3>{label}</h3>
+      <p>{helper}</p>
     </article>
   );
 }
 
-function DonutPanel({ title, subtitle, totalLabel, totalValue, segments, locale }) {
+function PanelTitle({ icon, title, action }) {
   return (
-    <section className="home-analytics-card">
-      <div className="home-panel-title">
-        <div>
-          <h2>{title}</h2>
-          <p>{subtitle}</p>
-        </div>
+    <div className="ops-panel-title">
+      <div>
+        <LineIcon name={icon} />
+        <h2>{title}</h2>
       </div>
-      <div className="home-donut-layout">
-        <div className="home-donut" style={getDonutStyle(segments)}>
-          <div>
-            <strong>{totalValue}</strong>
-            <span>{totalLabel}</span>
-          </div>
-        </div>
-        <div className="home-chart-legend">
-          {segments.map((segment) => (
-            <div key={segment.label}>
-              <i style={{ backgroundColor: segment.color }} aria-hidden="true" />
-              <span>{segment.label}</span>
-              <strong>{formatNumber(segment.value, locale)}</strong>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
+      {action}
+    </div>
   );
 }
 
-function BarPanel({ title, subtitle, rows, locale }) {
-  const maxValue = Math.max(...rows.map((row) => toNumber(row.value)), 1);
+function MonthlyRevenueChart({ rows }) {
+  const maxValue = Math.max(
+    ...rows.flatMap((row) => [row.paid, row.unpaid]),
+    1
+  );
 
   return (
-    <section className="home-analytics-card">
-      <div className="home-panel-title">
-        <div>
-          <h2>{title}</h2>
-          <p>{subtitle}</p>
-        </div>
+    <section className="ops-panel">
+      <PanelTitle icon="barChart" title="Doanh thu theo tháng" />
+      <div className="ops-chart-legend">
+        <span><i className="ops-legend-paid" />Đã thu</span>
+        <span><i className="ops-legend-unpaid" />Chưa thu</span>
       </div>
-      <div className="home-bar-list">
+      <div className="ops-revenue-chart">
         {rows.map((row) => (
-          <div className="home-bar-row" key={row.label}>
-            <div>
-              <span>{row.label}</span>
-              <strong>{formatNumber(row.value, locale)}</strong>
-            </div>
-            <div className="home-bar-track">
-              <i
-                className={`home-bar-fill home-bar-${row.tone}`}
-                style={{ width: `${Math.max(4, getPercent(row.value, maxValue))}%` }}
-                aria-hidden="true"
+          <div className="ops-revenue-month" key={row.month}>
+            <div className="ops-revenue-bars">
+              <span
+                className="ops-revenue-bar ops-revenue-paid"
+                style={{ height: `${Math.max(3, getPercent(row.paid, maxValue))}%` }}
+                title={`Đã thu ${formatCompactCurrency(row.paid)}`}
+              />
+              <span
+                className="ops-revenue-bar ops-revenue-unpaid"
+                style={{ height: `${Math.max(3, getPercent(row.unpaid, maxValue))}%` }}
+                title={`Chưa thu ${formatCompactCurrency(row.unpaid)}`}
               />
             </div>
+            <span>{formatDisplayMonth(row.month)}</span>
           </div>
         ))}
       </div>
@@ -136,34 +268,81 @@ function BarPanel({ title, subtitle, rows, locale }) {
   );
 }
 
-function OperationsTable({ title, rows, t }) {
+function DonutPanel({ center, icon, segments, title }) {
   return (
-    <section className="home-table-card">
-      <div className="home-panel-title">
-        <h2>{title}</h2>
+    <section className="ops-panel ops-donut-panel">
+      <PanelTitle icon={icon} title={title} />
+      <div className="ops-donut-layout">
+        <div className="ops-donut" style={createDonutStyle(segments)}>
+          <div>{center}</div>
+        </div>
+        <div className="ops-donut-legend">
+          {segments.map((segment) => (
+            <span key={segment.label}>
+              <i style={{ backgroundColor: segment.color }} />
+              {segment.label}
+              <strong>{formatNumber(segment.value)}</strong>
+            </span>
+          ))}
+        </div>
       </div>
-      <div className="table-wrapper">
-        <table>
+    </section>
+  );
+}
+
+function SummaryTable({ rows }) {
+  return (
+    <section className="ops-panel">
+      <PanelTitle icon="activity" title="Tổng hợp vận hành" />
+      <div className="ops-table-scroll">
+        <table className="ops-data-table">
           <thead>
             <tr>
-              <th>{t('buildingOverview.table.group')}</th>
-              <th>{t('buildingOverview.table.primary')}</th>
-              <th>{t('buildingOverview.table.secondary')}</th>
-              <th>{t('buildingOverview.table.followUp')}</th>
+              <th>Nhóm</th>
+              <th>Chỉ số chính</th>
+              <th>Số lượng</th>
+              <th>Theo dõi</th>
             </tr>
           </thead>
           <tbody>
             {rows.map((row) => (
-              <tr key={row.name}>
-                <td><strong>{row.name}</strong></td>
-                {row.metrics.map((metric) => (
-                  <td key={metric.label}>
-                    <span className="home-table-label">{metric.label}</span>
-                    <strong>{metric.value}</strong>
-                  </td>
-                ))}
+              <tr key={row.group}>
+                <td><strong>{row.group}</strong></td>
+                <td>{row.primary}</td>
+                <td>{row.secondary}</td>
+                <td>{row.followUp}</td>
               </tr>
             ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
+}
+
+function RecentTable({ columns, emptyText, icon, rows, title }) {
+  return (
+    <section className="ops-panel ops-recent-panel">
+      <PanelTitle icon={icon} title={title} />
+      <div className="ops-table-scroll">
+        <table className="ops-data-table">
+          <thead>
+            <tr>
+              {columns.map((column) => <th key={column.key}>{column.label}</th>)}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.length ? rows.map((row) => (
+              <tr key={row.id}>
+                {columns.map((column) => (
+                  <td key={column.key}>{column.render(row)}</td>
+                ))}
+              </tr>
+            )) : (
+              <tr>
+                <td colSpan={columns.length}>{emptyText}</td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
@@ -175,7 +354,7 @@ export default function AdminBuildingDetailPage() {
   const { id } = useParams();
   const { building } = useOutletContext();
   const { t, i18n } = useTranslation();
-  const [operations, setOperations] = useState(emptyBuildingOperations);
+  const [operations, setOperations] = useState(EMPTY_BUILDING_OPERATIONS);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const locale = i18n.language === 'vi' ? 'vi-VN' : 'en-US';
@@ -256,209 +435,341 @@ export default function AdminBuildingDetailPage() {
     };
   }, [id, t]);
 
+  const {
+    activeVehicles,
+    approvedMembers,
+    attentionSegments,
+    emptyRooms,
+    financeRows,
+    kpis,
+    maintenanceRooms,
+    monthlyRevenue,
+    occupiedRooms,
+    openMaintenanceRequests,
+    openTasks,
+    outstandingAmount,
+    paidInvoiceAmount,
+    paymentSegments,
+    paymentTotal,
+    pendingMembers,
+    recentFeedbacks,
+    recentInvoices,
+    recentMaintenance,
+    roomSegments,
+    summaryRows,
+    totalOccupants,
+    totalReceiptAmount,
+    trackedItems,
+    unpaidInvoiceRecords,
+    unpaidInvoices,
+    unresolvedFeedbacks,
+    validReceipts
+  } = useMemo(() => {
+    const occupied = operations.rooms.filter((room) => room.status === 'OCCUPIED').length;
+    const empty = operations.rooms.filter((room) => room.status === 'EMPTY').length;
+    const maintenance = operations.rooms.filter((room) => room.status === 'MAINTENANCE').length;
+    const vehicles = operations.vehicles.filter((vehicle) => vehicle.status === 'ACTIVE').length;
+    const approved = operations.members.filter((member) => member.status === 'APPROVED').length;
+    const pending = operations.members.filter((member) => member.status === 'PENDING').length;
+    const occupants = operations.contracts.length + approved;
+    const unpaidRecords = operations.invoices.filter((invoice) => invoice.status !== 'PAID');
+    const unpaidCount = unpaidRecords.length;
+    const receipts = operations.receipts.filter((receipt) => receipt.status === 'VALID');
+    const openMaintenance = operations.maintenanceRequests.filter((request) =>
+      ['PENDING', 'ASSIGNED', 'IN_PROGRESS'].includes(request.status)
+    ).length;
+    const tasksOpen = operations.tasks.filter((task) => ['NEW', 'IN_PROGRESS', 'OVERDUE'].includes(task.status)).length;
+    const feedbacksOpen = operations.feedbacks.filter((feedback) =>
+      ['PENDING', 'IN_PROGRESS'].includes(feedback.status)
+    ).length;
+    const expenses = operations.expenses.filter((expense) => expense.status === 'VALID');
+    const invoiceAmount = sumAmounts(operations.invoices, 'totalAmount');
+    const paidAmount = operations.invoices
+      .filter((invoice) => invoice.status === 'PAID')
+      .reduce((sum, invoice) => sum + toNumber(invoice.totalAmount), 0);
+    const receiptAmount = sumAmounts(receipts, 'amount');
+    const expenseAmount = sumAmounts(expenses, 'amount');
+    const debtAmount = sumAmounts(unpaidRecords, 'totalAmount');
+    const occupancyPercent = getPercent(occupied, operations.rooms.length);
+    const attentionCount = pending
+      + operations.pendingPayments.length
+      + openMaintenance
+      + tasksOpen
+      + feedbacksOpen
+      + operations.invoiceComplaints.length;
+    const paymentPaid = paidAmount || receiptAmount;
+    const paymentUnpaid = debtAmount;
+    const paymentTotalValue = paymentPaid + paymentUnpaid;
+
+    return {
+      activeVehicles: vehicles,
+      approvedMembers: approved,
+      emptyRooms: empty,
+      maintenanceRooms: maintenance,
+      monthlyRevenue: buildMonthlyRevenue(operations.invoices),
+      occupiedRooms: occupied,
+      openMaintenanceRequests: openMaintenance,
+      openTasks: tasksOpen,
+      outstandingAmount: debtAmount,
+      paidInvoiceAmount: paymentPaid,
+      paymentTotal: paymentTotalValue,
+      pendingMembers: pending,
+      recentFeedbacks: sortRecent(operations.feedbacks).slice(0, 5),
+      recentInvoices: sortRecent(operations.invoices, ['createdAt', 'invoiceDate', 'dueDate']).slice(0, 5),
+      recentMaintenance: sortRecent(operations.maintenanceRequests).slice(0, 5),
+      totalOccupants: occupants,
+      totalReceiptAmount: receiptAmount,
+      trackedItems: attentionCount,
+      unpaidInvoiceRecords: unpaidRecords,
+      unpaidInvoices: unpaidCount,
+      unresolvedFeedbacks: feedbacksOpen,
+      validReceipts: receipts,
+      roomSegments: [
+        { label: 'Đang thuê', value: occupied, color: '#10b981' },
+        { label: 'Trống', value: empty, color: '#3b82f6' },
+        { label: 'Bảo trì', value: maintenance, color: '#f59e0b' }
+      ],
+      attentionSegments: [
+        { label: 'Thành viên chờ duyệt', value: pending, color: '#f59e0b' },
+        { label: 'Thanh toán chờ duyệt', value: operations.pendingPayments.length, color: '#ef4444' },
+        { label: 'Bảo trì đang mở', value: openMaintenance, color: '#10b981' },
+        { label: 'Công việc đang mở', value: tasksOpen, color: '#6b7280' },
+        { label: 'Phản hồi chờ xử lý', value: feedbacksOpen, color: '#3b82f6' }
+      ],
+      paymentSegments: [
+        { label: 'Đã thanh toán', value: paymentPaid, color: '#10b981' },
+        { label: 'Chưa thanh toán', value: paymentUnpaid, color: '#ef4444' }
+      ],
+      financeRows: [
+        { label: 'Tổng hóa đơn', value: invoiceAmount, tone: 'primary' },
+        { label: 'Đã thu', value: receiptAmount, tone: 'success' },
+        { label: 'Chi phí', value: expenseAmount, tone: 'danger' },
+        { label: 'Công nợ', value: debtAmount, tone: 'warning' }
+      ],
+      kpis: [
+        {
+          icon: 'dashboard',
+          tone: 'primary',
+          value: formatNumber(operations.rooms.length, locale),
+          label: 'Tổng phòng',
+          helper: 'Số phòng trong tòa'
+        },
+        {
+          icon: 'home',
+          tone: 'success',
+          value: formatNumber(occupied, locale),
+          label: 'Phòng đang thuê',
+          helper: `${occupancyPercent}% tỷ lệ thuê`
+        },
+        {
+          icon: 'building',
+          tone: 'cyan',
+          value: formatNumber(empty, locale),
+          label: 'Phòng trống',
+          helper: 'Có thể cho thuê'
+        },
+        {
+          icon: 'users',
+          tone: 'violet',
+          value: formatNumber(occupants, locale),
+          label: 'Người thuê',
+          helper: 'Hồ sơ đang ở'
+        },
+        {
+          icon: 'fileText',
+          tone: 'danger',
+          value: formatNumber(unpaidCount, locale),
+          label: 'HĐ chưa thanh toán',
+          helper: formatCurrency(debtAmount, locale)
+        },
+        {
+          icon: 'wallet',
+          tone: 'success',
+          value: formatCompactCurrency(receiptAmount),
+          label: 'Đã thu',
+          helper: `${formatNumber(receipts.length, locale)} biên lai hợp lệ`
+        },
+        {
+          icon: 'feedback',
+          tone: 'warning',
+          value: formatNumber(feedbacksOpen, locale),
+          label: 'Phản hồi chờ xử lý',
+          helper: 'Cần phản hồi'
+        },
+        {
+          icon: 'tool',
+          tone: attentionCount > 0 ? 'primary' : 'success',
+          value: formatNumber(openMaintenance + tasksOpen, locale),
+          label: 'Việc đang mở',
+          helper: 'Bảo trì và công việc'
+        }
+      ],
+      summaryRows: [
+        {
+          group: 'Thuê phòng',
+          primary: `${formatNumber(operations.contracts.length, locale)} hợp đồng`,
+          secondary: `${formatNumber(approved, locale)} người thuê`,
+          followUp: `${formatNumber(pending, locale)} chờ duyệt`
+        },
+        {
+          group: 'Thanh toán',
+          primary: `${formatNumber(operations.invoices.length, locale)} hóa đơn`,
+          secondary: `${formatNumber(operations.pendingPayments.length, locale)} chờ duyệt`,
+          followUp: `${formatNumber(receipts.length, locale)} biên lai`
+        },
+        {
+          group: 'Vận hành',
+          primary: `${formatNumber(openMaintenance, locale)} bảo trì`,
+          secondary: `${formatNumber(tasksOpen, locale)} công việc`,
+          followUp: `${formatNumber(vehicles, locale)} xe`
+        },
+        {
+          group: 'Liên hệ',
+          primary: `${formatNumber(feedbacksOpen, locale)} phản hồi`,
+          secondary: `${formatNumber(operations.invoiceComplaints.length, locale)} khiếu nại`,
+          followUp: `${formatNumber(operations.notificationCount, locale)} thông báo`
+        }
+      ]
+    };
+  }, [locale, operations]);
+
   if (loading) {
-    return <div className="empty-state">{t('buildingOverview.loading')}</div>;
+    return <div className="empty-state">Đang tải tổng quan tòa nhà...</div>;
   }
 
-  const occupiedRooms = operations.rooms.filter((room) => room.status === 'OCCUPIED').length;
-  const emptyRooms = operations.rooms.filter((room) => room.status === 'EMPTY').length;
-  const maintenanceRooms = operations.rooms.filter((room) => room.status === 'MAINTENANCE').length;
-  const activeVehicles = operations.vehicles.filter((vehicle) => vehicle.status === 'ACTIVE').length;
-  const approvedMembers = operations.members.filter((member) => member.status === 'APPROVED').length;
-  const pendingMembers = operations.members.filter((member) => member.status === 'PENDING').length;
-  const totalOccupants = operations.contracts.length + approvedMembers;
-  const unpaidInvoiceRecords = operations.invoices.filter((invoice) => invoice.status !== 'PAID');
-  const unpaidInvoices = unpaidInvoiceRecords.length;
-  const validReceipts = operations.receipts.filter((receipt) => receipt.status === 'VALID');
-  const openMaintenanceRequests = operations.maintenanceRequests.filter((request) =>
-    ['PENDING', 'ASSIGNED', 'IN_PROGRESS'].includes(request.status)
-  ).length;
-  const openTasks = operations.tasks.filter((task) => ['NEW', 'IN_PROGRESS', 'OVERDUE'].includes(task.status)).length;
-  const unresolvedFeedbacks = operations.feedbacks.filter((feedback) =>
-    ['PENDING', 'IN_PROGRESS'].includes(feedback.status)
-  ).length;
-  const validExpenses = operations.expenses.filter((expense) => expense.status === 'VALID');
-  const totalInvoiceAmount = sumAmounts(operations.invoices, 'totalAmount');
-  const totalReceiptAmount = sumAmounts(validReceipts, 'amount');
-  const totalExpenseAmount = sumAmounts(validExpenses, 'amount');
-  const outstandingAmount = sumAmounts(unpaidInvoiceRecords, 'totalAmount');
-  const occupancyPercent = getPercent(occupiedRooms, operations.rooms.length);
-  const trackedItems = pendingMembers
-    + operations.pendingPayments.length
-    + openMaintenanceRequests
-    + openTasks
-    + unresolvedFeedbacks
-    + operations.invoiceComplaints.length;
-
-  const quickMetrics = [
-    {
-      label: t('buildingOverview.metrics.totalRooms'),
-      value: formatNumber(operations.rooms.length, locale),
-      helper: t('buildingOverview.helpers.roomOccupancy', { percent: occupancyPercent }),
-      tone: 'primary'
-    },
-    {
-      label: t('buildingOverview.metrics.occupiedRooms'),
-      value: formatNumber(occupiedRooms, locale),
-      helper: t('buildingOverview.helpers.activeContracts', { count: operations.contracts.length }),
-      tone: 'info'
-    },
-    {
-      label: t('buildingOverview.metrics.totalOccupants'),
-      value: formatNumber(totalOccupants, locale),
-      helper: t('buildingOverview.helpers.occupants'),
-      tone: 'success'
-    },
-    {
-      label: t('buildingOverview.metrics.unpaidInvoices'),
-      value: formatNumber(unpaidInvoices, locale),
-      helper: t('buildingOverview.helpers.outstandingAmount', { amount: formatNumber(outstandingAmount, locale) }),
-      tone: 'warning'
-    },
-    {
-      label: t('buildingOverview.metrics.activeVehicles'),
-      value: formatNumber(activeVehicles, locale),
-      helper: t('buildingOverview.helpers.activeVehicles'),
-      tone: 'cyan'
-    },
-    {
-      label: t('buildingOverview.metrics.trackedItems'),
-      value: formatNumber(trackedItems, locale),
-      helper: t('buildingOverview.helpers.trackedItems'),
-      tone: trackedItems > 0 ? 'danger' : 'success'
-    }
-  ];
-
-  const roomSegments = [
-    { label: t('buildingOverview.metrics.occupiedRooms'), value: occupiedRooms, color: 'var(--color-success)' },
-    { label: t('buildingOverview.metrics.emptyRooms'), value: emptyRooms, color: 'var(--color-info)' },
-    { label: t('buildingOverview.metrics.maintenanceRooms'), value: maintenanceRooms, color: 'var(--color-warning)' }
-  ];
-
-  const attentionSegments = [
-    { label: t('buildingOverview.metrics.pendingMembers'), value: pendingMembers, color: 'var(--color-warning)' },
-    { label: t('buildingOverview.metrics.pendingPayments'), value: operations.pendingPayments.length, color: 'var(--color-danger)' },
-    { label: t('buildingOverview.metrics.openMaintenance'), value: openMaintenanceRequests, color: 'var(--color-primary)' },
-    { label: t('buildingOverview.metrics.openTasks'), value: openTasks, color: 'var(--color-text-muted)' }
-  ];
-
-  const financeRows = [
-    { label: t('buildingOverview.metrics.totalInvoiceAmount'), value: totalInvoiceAmount, tone: 'primary' },
-    { label: t('buildingOverview.metrics.totalIncome'), value: totalReceiptAmount, tone: 'success' },
-    { label: t('buildingOverview.metrics.totalExpense'), value: totalExpenseAmount, tone: 'danger' },
-    { label: t('buildingOverview.metrics.outstandingAmount'), value: outstandingAmount, tone: 'warning' }
-  ];
-
-  const summaryRows = [
-    {
-      name: t('buildingOverview.groups.rental'),
-      metrics: [
-        { label: t('buildingOverview.metrics.activeContracts'), value: formatNumber(operations.contracts.length, locale) },
-        { label: t('buildingOverview.metrics.approvedMembers'), value: formatNumber(approvedMembers, locale) },
-        { label: t('buildingOverview.metrics.pendingMembers'), value: formatNumber(pendingMembers, locale) }
-      ]
-    },
-    {
-      name: t('buildingOverview.groups.billing'),
-      metrics: [
-        { label: t('buildingOverview.metrics.invoices'), value: formatNumber(operations.invoices.length, locale) },
-        { label: t('buildingOverview.metrics.pendingPayments'), value: formatNumber(operations.pendingPayments.length, locale) },
-        { label: t('buildingOverview.metrics.receipts'), value: formatNumber(validReceipts.length, locale) }
-      ]
-    },
-    {
-      name: t('buildingOverview.groups.operations'),
-      metrics: [
-        { label: t('buildingOverview.metrics.openMaintenance'), value: formatNumber(openMaintenanceRequests, locale) },
-        { label: t('buildingOverview.metrics.openTasks'), value: formatNumber(openTasks, locale) },
-        { label: t('buildingOverview.metrics.activeVehicles'), value: formatNumber(activeVehicles, locale) }
-      ]
-    },
-    {
-      name: t('buildingOverview.groups.communication'),
-      metrics: [
-        { label: t('buildingOverview.metrics.unresolvedFeedbacks'), value: formatNumber(unresolvedFeedbacks, locale) },
-        { label: t('buildingOverview.metrics.invoiceComplaints'), value: formatNumber(operations.invoiceComplaints.length, locale) },
-        { label: t('buildingOverview.metrics.notifications'), value: formatNumber(operations.notificationCount, locale) }
-      ]
-    }
-  ];
-
   return (
-    <div className="building-workspace admin-home-page building-overview-page">
+    <div className="admin-ops-dashboard building-ops-dashboard">
       {error && <div className="alert error-alert">{error}</div>}
 
-      <div className="admin-home-hero building-overview-hero">
+      <section className="ops-welcome-card building-ops-hero-card">
         <div>
-          <PageHeader eyebrow={t('buildingOverview.eyebrow')} title={t('buildingOverview.title')} />
-          <p>{t('buildingOverview.description', { name: building.name })}</p>
-          <p className="building-overview-description">
-            {building.description || t('buildingOverview.noDescription')}
-          </p>
+          <span className="ops-hero-eyebrow">Tổng quan tòa nhà</span>
+          <h2>{building.name}</h2>
+          <p>{building.description || 'Theo dõi phòng, người thuê, hóa đơn, phản hồi và bảo trì của tòa nhà này.'}</p>
         </div>
-        <div className="admin-home-date-card building-overview-facts">
-          <div className="building-overview-fact">
-            <span>{t('buildingOverview.fields.code')}</span>
-            <strong>{building.buildingCode}</strong>
-          </div>
-          <div className="building-overview-fact">
-            <span>{t('buildingOverview.fields.floors')}</span>
-            <strong>{formatNumber(building.floors, locale)}</strong>
-          </div>
-          <div className="building-overview-fact building-overview-fact-wide">
-            <span>{t('buildingOverview.fields.address')}</span>
-            <strong>{building.address}</strong>
-          </div>
-          <small>{t('buildingOverview.occupancySummary', { percent: occupancyPercent })}</small>
+        <div className="ops-building-facts">
+          <span>
+            <LineIcon name="mapPin" />
+            {building.address || 'Chưa có địa chỉ'}
+          </span>
+          <span>
+            <LineIcon name="activity" />
+            {getPercent(occupiedRooms, operations.rooms.length)}% đang thuê
+          </span>
         </div>
-      </div>
+      </section>
 
-      <div className="admin-home-workspace">
-        <section className="admin-home-overview-card">
-          <div className="home-panel-title">
+      <div className="ops-dashboard-workspace">
+        <section className="ops-overview-panel">
+          <div className="ops-overview-title">
             <div>
-              <span>{t('buildingOverview.sections.snapshotLabel')}</span>
-              <h2>{t('buildingOverview.sections.snapshotTitle')}</h2>
+              <span>Tổng quan</span>
+              <h2>Vận hành hôm nay</h2>
             </div>
-            <strong>{t('buildingOverview.sections.trackingCount', { count: formatNumber(trackedItems, locale) })}</strong>
+            <strong>{formatNumber(trackedItems, locale)} mục cần theo dõi</strong>
           </div>
-          <div className="admin-home-metrics">
-            {quickMetrics.map((metric) => (
-              <MetricCard key={metric.label} {...metric} />
+          <div className="ops-kpi-grid">
+            {kpis.map((metric) => (
+              <KpiCard key={metric.label} {...metric} />
             ))}
           </div>
         </section>
 
-        <div className="admin-home-chart-grid">
+        <div className="ops-chart-grid">
+          <MonthlyRevenueChart rows={monthlyRevenue} />
           <DonutPanel
-            title={t('buildingOverview.sections.roomStatusTitle')}
-            subtitle={t('buildingOverview.sections.roomStatusDescription')}
-            totalLabel={t('buildingOverview.metrics.rooms')}
-            totalValue={formatNumber(operations.rooms.length, locale)}
-            segments={roomSegments}
-            locale={locale}
-          />
-          <DonutPanel
-            title={t('buildingOverview.sections.attentionTitle')}
-            subtitle={t('buildingOverview.sections.attentionDescription')}
-            totalLabel={t('buildingOverview.metrics.trackedItems')}
-            totalValue={formatNumber(trackedItems, locale)}
-            segments={attentionSegments}
-            locale={locale}
+            center={`${getPercent(paidInvoiceAmount, paymentTotal)}%`}
+            icon="chartPulse"
+            segments={paymentSegments}
+            title="Tỷ lệ thanh toán"
           />
         </div>
 
-        <div className="admin-home-chart-grid">
-          <BarPanel
-            title={t('buildingOverview.sections.financeTitle')}
-            subtitle={t('buildingOverview.sections.financeDescription')}
-            rows={financeRows}
-            locale={locale}
+        <div className="ops-chart-grid">
+          <DonutPanel
+            center={formatNumber(operations.rooms.length, locale)}
+            icon="building"
+            segments={roomSegments}
+            title="Tình trạng phòng"
           />
-          <OperationsTable
-            title={t('buildingOverview.sections.summaryTitle')}
-            rows={summaryRows}
-            t={t}
+          <DonutPanel
+            center={formatNumber(trackedItems, locale)}
+            icon="activity"
+            segments={attentionSegments}
+            title="Phân bố việc cần xử lý"
+          />
+        </div>
+
+        <div className="ops-chart-grid">
+          <section className="ops-panel">
+            <PanelTitle icon="wallet" title="Tài chính tòa nhà" />
+            <div className="ops-finance-list">
+              {financeRows.map((row) => (
+                <div className={`ops-finance-row ops-finance-${row.tone}`} key={row.label}>
+                  <span>{row.label}</span>
+                  <strong>{formatCurrency(row.value, locale)}</strong>
+                </div>
+              ))}
+            </div>
+          </section>
+          <SummaryTable rows={summaryRows} />
+        </div>
+
+        <div className="ops-recent-grid">
+          <RecentTable
+            columns={[
+              { key: 'title', label: 'Tiêu đề', render: (row) => <strong>{row.title || row.content || 'Không có tiêu đề'}</strong> },
+              { key: 'room', label: 'Phòng', render: (row) => getRoomLabel(row) },
+              {
+                key: 'status',
+                label: 'Trạng thái',
+                render: (row) => (
+                  <span className={getStatusClass('feedback-status', row.status)}>
+                    {FEEDBACK_STATUS_LABELS[row.status] || row.status}
+                  </span>
+                )
+              }
+            ]}
+            emptyText="Chưa có phản hồi gần đây."
+            icon="feedback"
+            rows={recentFeedbacks}
+            title="Phản hồi gần đây"
+          />
+          <RecentTable
+            columns={[
+              { key: 'code', label: 'Mã HĐ', render: (row) => <strong>{getInvoiceCode(row)}</strong> },
+              { key: 'amount', label: 'Tổng tiền', render: (row) => formatCurrency(row.totalAmount, locale) },
+              { key: 'dueDate', label: 'Hạn', render: (row) => formatDisplayDate(row.dueDate, 'Chưa đặt') },
+              {
+                key: 'status',
+                label: 'Trạng thái',
+                render: (row) => (
+                  <span className={getStatusClass('invoice-status', row.status)}>
+                    {INVOICE_STATUS_LABELS[row.status] || row.status}
+                  </span>
+                )
+              }
+            ]}
+            emptyText="Chưa có hóa đơn gần đây."
+            icon="fileText"
+            rows={recentInvoices}
+            title="Hóa đơn gần đây"
+          />
+        </div>
+
+        <div className="ops-recent-grid ops-recent-grid-single">
+          <RecentTable
+            columns={[
+              { key: 'title', label: 'Mô tả', render: (row) => <strong>{row.title || row.content || 'Không có mô tả'}</strong> },
+              { key: 'equipment', label: 'Thiết bị', render: (row) => row.equipmentName || row.equipmentCode || 'Không gắn thiết bị' },
+              { key: 'startDate', label: 'Ngày bắt đầu', render: (row) => formatDisplayDate(row.createdAt, 'Chưa đặt') },
+              { key: 'finishDate', label: 'Ngày hoàn thành', render: (row) => formatDisplayDate(getMaintenanceFinishedDate(row), MAINTENANCE_STATUS_LABELS[row.status] || 'Đang theo dõi') },
+              { key: 'cost', label: 'Chi phí', render: (row) => formatCurrency(getMaintenanceCost(row), locale) }
+            ]}
+            emptyText="Chưa có lịch bảo trì gần đây."
+            icon="tool"
+            rows={recentMaintenance}
+            title="Lịch bảo trì gần đây"
           />
         </div>
       </div>
