@@ -90,6 +90,7 @@ public class TaskEmailServiceImpl implements TaskEmailService {
                 clean(task.getTitle()),
                 clean(task.getContent()),
                 task.getTaskType() == null ? "N/A" : task.getTaskType().name(),
+                task.getPriority() == null ? "N/A" : task.getPriority().name(),
                 deadline == null ? "Chua cung cap" : deadline.format(DATE_TIME_FORMATTER),
                 buildingLabel,
                 roomLabel,
@@ -126,6 +127,7 @@ public class TaskEmailServiceImpl implements TaskEmailService {
                 Tieu de: %s
                 Noi dung: %s
                 Loai cong viec: %s
+                Muc uu tien: %s
                 Han xu ly: %s
                 Toa nha: %s
                 Phong: %s
@@ -139,6 +141,7 @@ public class TaskEmailServiceImpl implements TaskEmailService {
                 fallback(email.title()),
                 fallback(email.content()),
                 email.taskType(),
+                email.priority(),
                 email.deadline(),
                 email.buildingLabel(),
                 email.roomLabel(),
@@ -172,6 +175,7 @@ public class TaskEmailServiceImpl implements TaskEmailService {
             String title,
             String content,
             String taskType,
+            String priority,
             String deadline,
             String buildingLabel,
             String roomLabel,

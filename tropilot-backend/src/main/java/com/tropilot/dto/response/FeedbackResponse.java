@@ -2,6 +2,7 @@ package com.tropilot.dto.response;
 
 import com.tropilot.enums.FeedbackStatus;
 import com.tropilot.enums.FeedbackType;
+import com.tropilot.enums.TaskStatus;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -34,6 +35,11 @@ public class FeedbackResponse {
     private Long repliedById;
     private String repliedByName;
     private String repliedByRole;
+    private Long assignedTaskId;
+    private TaskStatus assignedTaskStatus;
+    private Long assignedStaffId;
+    private String assignedStaffName;
+    private LocalDateTime assignedTaskUpdatedAt;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

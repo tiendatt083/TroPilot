@@ -21,6 +21,7 @@ public class HeadResidentAssignmentResponse {
     private String roomCode;
     private String roomName;
     private RoomStatus roomStatus;
+    private BigDecimal roomPrice;
     private Long buildingId;
     private String buildingCode;
     private String buildingName;

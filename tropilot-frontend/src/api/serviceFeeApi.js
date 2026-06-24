@@ -34,3 +34,8 @@ export async function getStaffBuildingServiceFees(buildingId) {
   const response = await apiClient.get(`/api/staff/buildings/${buildingId}/service-fees`);
   return response.data;
 }
+
+export async function getResidentBuildingServiceFees() {
+  const response = await apiClient.get('/api/resident/service-fees/current-building');
+  return response.data;
+}

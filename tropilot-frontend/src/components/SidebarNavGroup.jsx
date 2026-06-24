@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import LineIcon from './common/LineIcon.jsx';
+import SidebarNavLink from './SidebarNavLink.jsx';
 
 function matchesPath(pathname, targetPath) {
   return pathname === targetPath || pathname.startsWith(`${targetPath}/`);
@@ -43,14 +44,7 @@ export default function SidebarNavGroup({ icon, labelKey, items }) {
       {open && (
         <div className="sidebar-nav-group-links">
           {visibleItems.map((item) => (
-            <NavLink
-              className={item.icon ? 'has-sidebar-icon' : undefined}
-              key={item.to}
-              to={item.to}
-            >
-              {item.icon && <LineIcon className="sidebar-link-icon" name={item.icon} />}
-              <span className="sidebar-nav-label">{t(item.labelKey)}</span>
-            </NavLink>
+            <SidebarNavLink item={item} key={item.to} />
           ))}
         </div>
       )}

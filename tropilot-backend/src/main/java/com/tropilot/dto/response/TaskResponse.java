@@ -3,6 +3,7 @@ package com.tropilot.dto.response;
 import com.tropilot.enums.TaskPriority;
 import com.tropilot.enums.TaskStatus;
 import com.tropilot.enums.TaskType;
+import com.tropilot.enums.FeedbackStatus;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -22,6 +23,9 @@ public class TaskResponse {
     private Long buildingId;
     private String buildingCode;
     private String buildingName;
+    private Long feedbackId;
+    private String feedbackTitle;
+    private FeedbackStatus feedbackStatus;
     private Long assignedToId;
     private String assignedToName;
     private String assignedToEmail;

@@ -201,6 +201,7 @@
     "equipment": "Thiết bị",
     "serviceFees": "Phí dịch vụ",
     "utilityReadings": "Chỉ số điện nước",
+    "buildingCosts": "Chi phí tòa nhà",
     "members": "Thành viên",
     "contract": "Hợp đồng",
     "profile": "Thông tin cá nhân",
@@ -1330,6 +1331,7 @@
   "feedbackManagement": {
     "adminEyebrow": "Admin",
     "feedbacksTitle": "Phản hồi",
+    "feedbacksOverviewDescription": "Theo dõi phản hồi theo tòa và phòng. Chọn một dòng để mở trang phản hồi của tòa và xử lý chi tiết.",
     "complaintsTitle": "Khiếu nại hóa đơn",
     "feedbacksLoading": "Đang tải phản hồi...",
     "complaintsLoading": "Đang tải khiếu nại hóa đơn...",
@@ -1339,13 +1341,26 @@
     "feedbackReplyError": "Không thể gửi phản hồi",
     "feedbackStatusUpdated": "Đã cập nhật trạng thái phản hồi thành công.",
     "feedbackStatusError": "Không thể cập nhật trạng thái phản hồi",
+    "feedbackAssigned": "Đã phân công nhân viên xử lý phản hồi.",
+    "feedbackAssignError": "Không thể phân công nhân viên xử lý phản hồi",
+    "assignMissingInfo": "Vui lòng chọn nhân viên và hạn xử lý.",
     "complaintReplied": "Đã phản hồi khiếu nại hóa đơn thành công.",
     "complaintReplyError": "Không thể phản hồi khiếu nại hóa đơn",
     "complaintStatusUpdated": "Đã cập nhật trạng thái khiếu nại hóa đơn thành công.",
     "complaintStatusError": "Không thể cập nhật trạng thái khiếu nại hóa đơn",
+    "status": "Trạng thái",
+    "statusTitle": "Cập nhật trạng thái",
+    "statusDescription": "Điều chỉnh trạng thái xử lý của phản hồi này.",
     "saveStatus": "Lưu trạng thái",
+    "replyTitle": "Phản hồi người thuê",
     "replyContent": "Nội dung phản hồi",
-    "reply": "Phản hồi"
+    "reply": "Phản hồi",
+    "assignTitle": "Phân công nhân viên",
+    "selectStaff": "Chọn nhân viên",
+    "assign": "Phân công",
+    "assigning": "Đang phân công...",
+    "assignedTask": "Công việc đã giao",
+    "openBuildingFeedbacks": "Xem trong tòa"
   },
   "vehicles": {
     "title": "Xe",
@@ -1412,6 +1427,9 @@
       "type": "Loại phản hồi",
       "subject": "Tiêu đề",
       "content": "Nội dung",
+      "historyTitle": "Phản hồi đã gửi",
+      "loading": "Đang tải phản hồi đã gửi...",
+      "loadError": "Không thể tải phản hồi đã gửi",
       "submitting": "Đang gửi...",
       "submit": "Gửi phản hồi",
       "submitted": "Đã gửi phản hồi thành công.",
@@ -1444,6 +1462,36 @@
       "title": "Chỉ số điện nước",
       "loading": "Đang tải chỉ số điện nước...",
       "loadError": "Không thể tải chỉ số điện nước"
+    },
+    "buildingCosts": {
+      "title": "Chi phí tòa nhà",
+      "description": "Xem giá phòng, tiền điện nước và các khoản phí dịch vụ đang áp dụng cho phòng của bạn.",
+      "loading": "Đang tải chi phí tòa nhà...",
+      "loadError": "Không thể tải chi phí tòa nhà",
+      "overview": "Tổng quan chi phí",
+      "currentBuilding": "Tòa nhà hiện tại",
+      "roomSummary": "Phòng {{room}}",
+      "currencySuffix": "đ",
+      "perMonth": "mỗi tháng",
+      "notConfigured": "Chưa cấu hình",
+      "waitingForSetup": "Chưa có mức phí",
+      "fromLatestInvoice": "theo hóa đơn gần nhất",
+      "serviceCount": "{{count}} phí",
+      "activeFees": "đang áp dụng",
+      "feeListTitle": "Các khoản phí đang áp dụng",
+      "empty": "Chưa có khoản phí dịch vụ nào được cấu hình.",
+      "cards": {
+        "roomPrice": "Giá phòng",
+        "electricity": "Tiền điện",
+        "water": "Tiền nước",
+        "services": "Chi phí dịch vụ"
+      },
+      "calculationUnits": {
+        "FIXED": "mỗi phòng",
+        "BY_USAGE": "theo số sử dụng",
+        "BY_PERSON": "mỗi người",
+        "BY_QUANTITY": "theo số lượng"
+      }
     }
   },
   "roomManagement": {
@@ -1844,12 +1892,14 @@
     },
     "feedbackType": {
       "GENERAL": "Chung",
+      "MAINTENANCE": "Bảo trì / thiết bị",
       "INVOICE_COMPLAINT": "Khiếu nại hóa đơn",
       "CONTRACT_ERROR": "Lỗi hợp đồng",
       "OTHER": "Khác"
     },
     "feedbackStatus": {
       "PENDING": "Đang chờ",
+      "ASSIGNED": "Đã phân công",
       "IN_PROGRESS": "Đang xử lý",
       "RESOLVED": "Đã giải quyết",
       "REJECTED": "Bị từ chối"

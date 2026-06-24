@@ -1,3 +1,4 @@
+import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   formatFeedbackDateTime,
@@ -14,69 +15,127 @@ function formatNumber(value) {
     : value;
 }
 
-export default function FeedbackTable({ feedbacks, renderActions }) {
+const DEFAULT_COLUMNS = ['title', 'type', 'resident', 'room', 'invoice', 'status', 'reply', 'created'];
+
+export default function FeedbackTable({
+  feedbacks,
+  renderActions,
+  renderExpandedRow,
+  visibleColumns = DEFAULT_COLUMNS
+}) {
   const { t } = useTranslation();
   const hasActions = Boolean(renderActions);
+  const activeColumns = hasActions && !visibleColumns.includes('actions')
+    ? [...visibleColumns, 'actions']
+    : visibleColumns;
+
+  const columns = {
+    title: {
+      header: t('tables.feedbacks.title'),
+      cell: (feedback) => (
+        <>
+          <strong>{feedback.title}</strong>
+          <span className="table-subtext">{feedback.content}</span>
+        </>
+      )
+    },
+    type: {
+      header: t('tables.common.type'),
+      cell: (feedback) => formatEnumLabel(t, 'feedbackType', feedback.type)
+    },
+    resident: {
+      header: t('tables.common.resident'),
+      cell: (feedback) => (
+        <>
+          <strong>{feedback.residentHeadName}</strong>
+          <span className="table-subtext">{feedback.residentHeadEmail}</span>
+        </>
+      )
+    },
+    room: {
+      header: t('tables.common.room'),
+      cell: (feedback) => (
+        <>
+          <strong>{formatRoomLabel(feedback)}</strong>
+          <span className="table-subtext">{feedback.buildingCode}</span>
+        </>
+      )
+    },
+    invoice: {
+      header: t('tables.common.invoice'),
+      cell: (feedback) => feedback.invoiceId ? (
+        <>
+          <strong>#{feedback.invoiceId}</strong>
+          <span className="table-subtext">
+            {formatDisplayMonth(feedback.invoiceMonth)} - {formatNumber(feedback.invoiceTotalAmount)}
+          </span>
+        </>
+      ) : (
+        t('common.notLinked')
+      )
+    },
+    status: {
+      header: t('tables.common.status'),
+      cell: (feedback) => (
+        <span className={getFeedbackStatusClass(feedback.status)}>
+          {formatEnumLabel(t, 'feedbackStatus', feedback.status)}
+        </span>
+      )
+    },
+    reply: {
+      header: t('tables.common.reply'),
+      cell: (feedback) => (
+        <>
+          {feedback.reply || t('common.noReply')}
+          {feedback.repliedByName && (
+            <span className="table-subtext">{t('tables.feedbacks.by', { name: feedback.repliedByName })}</span>
+          )}
+        </>
+      )
+    },
+    created: {
+      header: t('tables.common.created'),
+      cell: (feedback) => formatFeedbackDateTime(feedback.createdAt)
+    },
+    actions: {
+      header: t('tables.common.actions'),
+      cell: (feedback) => renderActions(feedback)
+    }
+  };
 
   return (
     <div className="table-wrap">
-      <table className="data-table feedback-table">
+      <table className={`data-table feedback-table ${activeColumns.length <= 6 ? 'compact-feedback-table' : ''}`}>
         <thead>
           <tr>
-            <th>{t('tables.feedbacks.title')}</th>
-            <th>{t('tables.common.type')}</th>
-            <th>{t('tables.common.resident')}</th>
-            <th>{t('tables.common.room')}</th>
-            <th>{t('tables.common.invoice')}</th>
-            <th>{t('tables.common.status')}</th>
-            <th>{t('tables.common.reply')}</th>
-            <th>{t('tables.common.created')}</th>
-            {hasActions && <th>{t('tables.common.actions')}</th>}
+            {activeColumns.map((columnKey) => (
+              <th key={columnKey} className={`feedback-col-${columnKey}`}>
+                {columns[columnKey].header}
+              </th>
+            ))}
           </tr>
         </thead>
         <tbody>
-          {feedbacks.map((feedback) => (
-            <tr key={feedback.id}>
-              <td>
-                <strong>{feedback.title}</strong>
-                <span className="table-subtext">{feedback.content}</span>
-              </td>
-              <td>{formatEnumLabel(t, 'feedbackType', feedback.type)}</td>
-              <td>
-                <strong>{feedback.residentHeadName}</strong>
-                <span className="table-subtext">{feedback.residentHeadEmail}</span>
-              </td>
-              <td>
-                <strong>{formatRoomLabel(feedback)}</strong>
-                <span className="table-subtext">{feedback.buildingCode}</span>
-              </td>
-              <td>
-                {feedback.invoiceId ? (
-                  <>
-                    <strong>#{feedback.invoiceId}</strong>
-                    <span className="table-subtext">
-                      {formatDisplayMonth(feedback.invoiceMonth)} - {formatNumber(feedback.invoiceTotalAmount)}
-                    </span>
-                  </>
-                ) : (
-                  t('common.notLinked')
+          {feedbacks.map((feedback) => {
+            const expandedContent = renderExpandedRow?.(feedback);
+
+            return (
+              <Fragment key={feedback.id}>
+                <tr className={expandedContent ? 'feedback-expanded-parent-row' : undefined}>
+                  {activeColumns.map((columnKey) => (
+                    <td key={columnKey} className={`feedback-col-${columnKey}`}>
+                      {columns[columnKey].cell(feedback)}
+                    </td>
+                  ))}
+                </tr>
+                {expandedContent && (
+                  <tr className="feedback-expanded-row">
+                    <td colSpan={activeColumns.length}>{expandedContent}</td>
+                  </tr>
                 )}
-              </td>
-              <td>
-                <span className={getFeedbackStatusClass(feedback.status)}>
-                  {formatEnumLabel(t, 'feedbackStatus', feedback.status)}
-                </span>
-              </td>
-              <td>
-                {feedback.reply || t('common.noReply')}
-                {feedback.repliedByName && (
-                  <span className="table-subtext">{t('tables.feedbacks.by', { name: feedback.repliedByName })}</span>
-                )}
-              </td>
-              <td>{formatFeedbackDateTime(feedback.createdAt)}</td>
-              {hasActions && <td>{renderActions(feedback)}</td>}
-            </tr>
-          ))}
+              </Fragment>
+            );
+          })}
         </tbody>
       </table>
       {feedbacks.length === 0 && <div className="empty-state flat-empty-state">{t('tables.feedbacks.empty')}</div>}

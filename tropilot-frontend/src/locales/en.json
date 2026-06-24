@@ -201,6 +201,7 @@
     "equipment": "Equipment",
     "serviceFees": "Service fees",
     "utilityReadings": "Utility readings",
+    "buildingCosts": "Building costs",
     "members": "Members",
     "contract": "Contract",
     "profile": "Personal information",
@@ -1330,6 +1331,7 @@
   "feedbackManagement": {
     "adminEyebrow": "Administrator",
     "feedbacksTitle": "Feedbacks",
+    "feedbacksOverviewDescription": "Track feedback by building and room. Select a row to open the building feedback page and handle the details.",
     "complaintsTitle": "Invoice complaints",
     "feedbacksLoading": "Loading feedbacks...",
     "complaintsLoading": "Loading invoice complaints...",
@@ -1339,13 +1341,26 @@
     "feedbackReplyError": "Feedback could not be replied",
     "feedbackStatusUpdated": "Feedback status updated successfully.",
     "feedbackStatusError": "Feedback status could not be updated",
+    "feedbackAssigned": "Staff assigned to handle this feedback.",
+    "feedbackAssignError": "Staff could not be assigned to this feedback",
+    "assignMissingInfo": "Please select staff and a deadline.",
     "complaintReplied": "Invoice complaint replied successfully.",
     "complaintReplyError": "Invoice complaint could not be replied",
     "complaintStatusUpdated": "Invoice complaint status updated successfully.",
     "complaintStatusError": "Invoice complaint status could not be updated",
+    "status": "Status",
+    "statusTitle": "Update status",
+    "statusDescription": "Adjust the handling status for this feedback.",
     "saveStatus": "Save status",
+    "replyTitle": "Reply to resident",
     "replyContent": "Reply content",
-    "reply": "Reply"
+    "reply": "Reply",
+    "assignTitle": "Assign staff",
+    "selectStaff": "Select staff",
+    "assign": "Assign",
+    "assigning": "Assigning...",
+    "assignedTask": "Assigned task",
+    "openBuildingFeedbacks": "Open building"
   },
   "vehicles": {
     "title": "Vehicles",
@@ -1412,6 +1427,9 @@
       "type": "Feedback type",
       "subject": "Title",
       "content": "Content",
+      "historyTitle": "Submitted feedback",
+      "loading": "Loading submitted feedback...",
+      "loadError": "Submitted feedback could not be loaded",
       "submitting": "Submitting...",
       "submit": "Submit feedback",
       "submitted": "Feedback submitted successfully.",
@@ -1444,6 +1462,36 @@
       "title": "Utility readings",
       "loading": "Loading utility readings...",
       "loadError": "Utility readings could not be loaded"
+    },
+    "buildingCosts": {
+      "title": "Building costs",
+      "description": "View room rent, electricity, water, and service fees that apply to your room.",
+      "loading": "Loading building costs...",
+      "loadError": "Building costs could not be loaded",
+      "overview": "Cost overview",
+      "currentBuilding": "Current building",
+      "roomSummary": "Room {{room}}",
+      "currencySuffix": "VND",
+      "perMonth": "per month",
+      "notConfigured": "Not configured",
+      "waitingForSetup": "Waiting for setup",
+      "fromLatestInvoice": "from latest invoice",
+      "serviceCount": "{{count}} fees",
+      "activeFees": "active fees",
+      "feeListTitle": "Active fees",
+      "empty": "No service fees have been configured.",
+      "cards": {
+        "roomPrice": "Room rent",
+        "electricity": "Electricity",
+        "water": "Water",
+        "services": "Service fees"
+      },
+      "calculationUnits": {
+        "FIXED": "per room",
+        "BY_USAGE": "by usage",
+        "BY_PERSON": "per person",
+        "BY_QUANTITY": "by quantity"
+      }
     }
   },
   "roomManagement": {
@@ -1844,12 +1892,14 @@
     },
     "feedbackType": {
       "GENERAL": "General",
+      "MAINTENANCE": "Maintenance / equipment",
       "INVOICE_COMPLAINT": "Invoice complaint",
       "CONTRACT_ERROR": "Contract error",
       "OTHER": "Other"
     },
     "feedbackStatus": {
       "PENDING": "Pending",
+      "ASSIGNED": "Assigned",
       "IN_PROGRESS": "In progress",
       "RESOLVED": "Resolved",
       "REJECTED": "Rejected"

@@ -78,6 +78,15 @@
   box-shadow: inset 3px 0 0 rgba(36, 125, 131, 0.16);
 }
 
+.clickable-table-row {
+  cursor: pointer;
+}
+
+.clickable-table-row:focus-visible {
+  outline: 2px solid rgba(36, 125, 131, 0.42);
+  outline-offset: -2px;
+}
+
 .data-table tr:last-child td {
   border-bottom: 0;
 }
@@ -108,6 +117,28 @@
   font-weight: var(--font-weight-medium);
   line-height: 1.55;
   text-align: center;
+}
+
+.admin-feedback-overview-table {
+  min-width: 980px;
+}
+
+.admin-feedback-overview-row td {
+  vertical-align: top;
+}
+
+.admin-feedback-title-link {
+  display: grid;
+  gap: 0.18rem;
+  color: inherit;
+}
+
+.admin-feedback-title-link strong {
+  color: var(--color-text);
+}
+
+.admin-feedback-row-action {
+  white-space: nowrap;
 }
 
 .table-wrap-empty .data-table tbody {
@@ -714,6 +745,7 @@
 .room-status-occupied,
 .contract-status-uploaded,
 .invoice-status-pending-confirmation,
+.feedback-status-assigned,
 .feedback-status-in-progress,
 .task-status-new,
 .task-priority-medium,

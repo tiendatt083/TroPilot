@@ -24,52 +24,62 @@ public interface FeedbackRepository extends JpaRepository<Feedback, Long> {
             "room",
             "room.building",
             "invoice",
-            "repliedBy"
+            "repliedBy",
+            "tasks",
+            "tasks.assignedTo"
     })
     Optional<Feedback> findById(Long id);
 
     @Query("""
-            select feedback from Feedback feedback
+            select distinct feedback from Feedback feedback
             join fetch feedback.residentHead residentHead
             join fetch feedback.room room
             join fetch room.building building
             left join fetch feedback.invoice invoice
             left join fetch feedback.repliedBy repliedBy
+            left join fetch feedback.tasks taskEntity
+            left join fetch taskEntity.assignedTo assignedTo
             order by feedback.createdAt desc
             """)
     List<Feedback> findAllWithDetails();
 
     @Query("""
-            select feedback from Feedback feedback
+            select distinct feedback from Feedback feedback
             join fetch feedback.residentHead residentHead
             join fetch feedback.room room
             join fetch room.building building
             left join fetch feedback.invoice invoice
             left join fetch feedback.repliedBy repliedBy
+            left join fetch feedback.tasks taskEntity
+            left join fetch taskEntity.assignedTo assignedTo
             where building.id = :buildingId
             order by feedback.createdAt desc
             """)
     List<Feedback> findByBuildingIdWithDetails(@Param("buildingId") Long buildingId);
 
     @Query("""
-            select feedback from Feedback feedback
+            select distinct feedback from Feedback feedback
             join fetch feedback.residentHead residentHead
             join fetch feedback.room room
             join fetch room.building building
             left join fetch feedback.invoice invoice
             left join fetch feedback.repliedBy repliedBy
+            left join fetch feedback.tasks taskEntity
+            left join fetch taskEntity.assignedTo assignedTo
             where feedback.type = :type
             order by feedback.createdAt desc
             """)
     List<Feedback> findByTypeWithDetails(@Param("type") FeedbackType type);
 
     @Query("""
-            select feedback from Feedback feedback
+            select distinct feedback from Feedback feedback
             join fetch feedback.residentHead residentHead
             join fetch feedback.room room
             join fetch room.building building
             left join fetch feedback.invoice invoice
             left join fetch feedback.repliedBy repliedBy
+            left join fetch feedback.tasks taskEntity
+            left join fetch taskEntity.assignedTo assignedTo
             where building.id = :buildingId
               and feedback.type = :type
             order by feedback.createdAt desc
@@ -77,5 +87,23 @@ public interface FeedbackRepository extends JpaRepository<Feedback, Long> {
     List<Feedback> findByBuildingIdAndTypeWithDetails(
             @Param("buildingId") Long buildingId,
             @Param("type") FeedbackType type
+    );
+
+    @Query("""
+            select distinct feedback from Feedback feedback
+            join fetch feedback.residentHead residentHead
+            join fetch feedback.room room
+            join fetch room.building building
+            left join fetch feedback.invoice invoice
+            left join fetch feedback.repliedBy repliedBy
+            left join fetch feedback.tasks taskEntity
+            left join fetch taskEntity.assignedTo assignedTo
+            where residentHead.id = :residentHeadId
+              and room.id = :roomId
+            order by feedback.createdAt desc
+            """)
+    List<Feedback> findByResidentHeadIdAndRoomIdWithDetails(
+            @Param("residentHeadId") Long residentHeadId,
+            @Param("roomId") Long roomId
     );
 }

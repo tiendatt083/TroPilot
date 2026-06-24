@@ -14,6 +14,8 @@ public interface FeedbackService {
 
     FeedbackResponse createInvoiceComplaint(Long residentHeadId, Long invoiceId, InvoiceComplaintRequest request);
 
+    List<FeedbackResponse> getResidentFeedbacks(Long residentHeadId);
+
     List<FeedbackResponse> getFeedbacks(Long buildingId);
 
     List<FeedbackResponse> getInvoiceComplaints(Long buildingId);

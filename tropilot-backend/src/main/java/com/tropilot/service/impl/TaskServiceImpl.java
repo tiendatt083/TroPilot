@@ -8,9 +8,11 @@ import com.tropilot.dto.request.TaskRejectRequest;
 import com.tropilot.dto.request.TaskUpdateRequest;
 import com.tropilot.dto.response.TaskResponse;
 import com.tropilot.entity.Building;
+import com.tropilot.entity.Feedback;
 import com.tropilot.entity.Room;
 import com.tropilot.entity.Task;
 import com.tropilot.entity.User;
+import com.tropilot.enums.FeedbackStatus;
 import com.tropilot.enums.TaskPriority;
 import com.tropilot.enums.TaskStatus;
 import com.tropilot.enums.TaskType;
@@ -21,6 +23,7 @@ import com.tropilot.exception.ForbiddenException;
 import com.tropilot.exception.ResourceNotFoundException;
 import com.tropilot.repository.RoomRepository;
 import com.tropilot.repository.BuildingRepository;
+import com.tropilot.repository.FeedbackRepository;
 import com.tropilot.repository.TaskRepository;
 import com.tropilot.repository.UserRepository;
 import com.tropilot.service.ActivityLogService;
@@ -40,6 +43,7 @@ public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
     private final BuildingRepository buildingRepository;
+    private final FeedbackRepository feedbackRepository;
     private final UserRepository userRepository;
     private final RoomRepository roomRepository;
     private final TaskResultImageStorageService taskResultImageStorageService;
@@ -52,7 +56,8 @@ public class TaskServiceImpl implements TaskService {
     public TaskResponse createTask(TaskCreateRequest request, Long createdById, Long buildingId) {
         User createdBy = findUser(createdById);
         User assignedTo = findActiveStaff(request.getAssignedToId());
-        Room room = request.getRoomId() == null ? null : findRoom(request.getRoomId());
+        Feedback feedback = resolveFeedback(request.getFeedbackId(), buildingId);
+        Room room = resolveTaskRoom(request.getRoomId(), feedback);
         Building building = resolveTaskBuilding(room, buildingId, null);
 
         Task task = Task.builder()
@@ -61,6 +66,7 @@ public class TaskServiceImpl implements TaskService {
                 .taskType(parseTaskType(request.getTaskType()))
                 .building(building)
                 .room(room)
+                .feedback(feedback)
                 .assignedTo(assignedTo)
                 .deadline(request.getDeadline())
                 .priority(parseTaskPriority(request.getPriority()))
@@ -69,6 +75,7 @@ public class TaskServiceImpl implements TaskService {
                 .build();
 
         Task savedTask = taskRepository.save(task);
+        synchronizeFeedbackStatus(savedTask);
         activityLogService.record(
                 createdBy,
                 "TASK_CREATED",
@@ -106,7 +113,9 @@ public class TaskServiceImpl implements TaskService {
     public TaskResponse updateTask(Long id, TaskUpdateRequest request, Long buildingId) {
         Task task = findTask(id);
         User assignedTo = findActiveStaff(request.getAssignedToId());
-        Room room = request.getRoomId() == null ? null : findRoom(request.getRoomId());
+        Room room = request.getRoomId() == null
+                ? linkedFeedbackRoom(task)
+                : findRoom(request.getRoomId());
         validateTaskBelongsToBuilding(task, buildingId);
         Building building = resolveTaskBuilding(room, buildingId, task.getBuilding());
 
@@ -115,12 +124,16 @@ public class TaskServiceImpl implements TaskService {
         task.setTaskType(parseTaskType(request.getTaskType()));
         task.setBuilding(building);
         task.setRoom(room);
+        validateLinkedFeedbackRoom(task, room);
         task.setAssignedTo(assignedTo);
         task.setDeadline(request.getDeadline());
         task.setPriority(parseTaskPriority(request.getPriority()));
         task.setStatus(parseTaskStatus(request.getStatus()));
 
-        return taskMapper.toResponse(taskRepository.save(task));
+        Task savedTask = taskRepository.save(task);
+        synchronizeFeedbackStatus(savedTask);
+
+        return taskMapper.toResponse(savedTask);
     }
 
     @Override
@@ -148,7 +161,10 @@ public class TaskServiceImpl implements TaskService {
         }
 
         task.setStatus(TaskStatus.IN_PROGRESS);
-        return taskMapper.toResponse(taskRepository.save(task));
+        Task savedTask = taskRepository.save(task);
+        synchronizeFeedbackStatus(savedTask);
+
+        return taskMapper.toResponse(savedTask);
     }
 
     @Override
@@ -169,6 +185,7 @@ public class TaskServiceImpl implements TaskService {
         }
 
         Task savedTask = taskRepository.save(task);
+        synchronizeFeedbackStatus(savedTask);
         activityLogService.record(
                 savedTask.getAssignedTo(),
                 "TASK_COMPLETED",
@@ -192,7 +209,10 @@ public class TaskServiceImpl implements TaskService {
             task.setResultNote(request.getResultNote().trim());
         }
 
-        return taskMapper.toResponse(taskRepository.save(task));
+        Task savedTask = taskRepository.save(task);
+        synchronizeFeedbackStatus(savedTask);
+
+        return taskMapper.toResponse(savedTask);
     }
 
     private Task findAssignedTask(Long staffId, Long id) {
@@ -235,6 +255,41 @@ public class TaskServiceImpl implements TaskService {
         return fallbackBuilding;
     }
 
+    private Feedback resolveFeedback(Long feedbackId, Long buildingId) {
+        if (feedbackId == null) {
+            return null;
+        }
+
+        Feedback feedback = feedbackRepository.findById(feedbackId)
+                .orElseThrow(() -> new ResourceNotFoundException("Feedback not found"));
+        validateFeedbackBelongsToBuilding(feedback, buildingId);
+
+        if (feedback.getStatus() == FeedbackStatus.RESOLVED || feedback.getStatus() == FeedbackStatus.REJECTED) {
+            throw new BadRequestException("Resolved or rejected feedback cannot be assigned to staff");
+        }
+
+        return feedback;
+    }
+
+    private Room resolveTaskRoom(Long roomId, Feedback feedback) {
+        Room room = roomId == null ? null : findRoom(roomId);
+
+        if (feedback == null) {
+            return room;
+        }
+
+        Room feedbackRoom = feedback.getRoom();
+        if (room != null && !Objects.equals(room.getId(), feedbackRoom.getId())) {
+            throw new BadRequestException("Task room must match the feedback room");
+        }
+
+        return feedbackRoom;
+    }
+
+    private Room linkedFeedbackRoom(Task task) {
+        return task.getFeedback() == null ? null : task.getFeedback().getRoom();
+    }
+
     private void validateRoomBelongsToBuilding(Room room, Building building) {
         if (room == null || building == null) {
             return;
@@ -242,6 +297,29 @@ public class TaskServiceImpl implements TaskService {
 
         if (!Objects.equals(room.getBuilding().getId(), building.getId())) {
             throw new BadRequestException("Task room does not belong to the selected building");
+        }
+    }
+
+    private void validateLinkedFeedbackRoom(Task task, Room room) {
+        Feedback feedback = task.getFeedback();
+        if (feedback == null || room == null) {
+            return;
+        }
+
+        if (!Objects.equals(feedback.getRoom().getId(), room.getId())) {
+            throw new BadRequestException("Task room must match the linked feedback room");
+        }
+    }
+
+    private void validateFeedbackBelongsToBuilding(Feedback feedback, Long buildingId) {
+        if (buildingId == null) {
+            return;
+        }
+
+        validateBuildingExists(buildingId);
+
+        if (!Objects.equals(feedback.getRoom().getBuilding().getId(), buildingId)) {
+            throw new BadRequestException("Feedback does not belong to the selected building");
         }
     }
 
@@ -259,6 +337,25 @@ public class TaskServiceImpl implements TaskService {
 
         if (!Objects.equals(taskBuildingId, buildingId)) {
             throw new BadRequestException("Task does not belong to the selected building");
+        }
+    }
+
+    private void synchronizeFeedbackStatus(Task task) {
+        Feedback feedback = task.getFeedback();
+        if (feedback == null) {
+            return;
+        }
+
+        FeedbackStatus status = switch (task.getStatus()) {
+            case NEW -> FeedbackStatus.ASSIGNED;
+            case IN_PROGRESS, OVERDUE -> FeedbackStatus.IN_PROGRESS;
+            case COMPLETED -> FeedbackStatus.RESOLVED;
+            case REJECTED -> FeedbackStatus.REJECTED;
+        };
+
+        if (feedback.getStatus() != status) {
+            feedback.setStatus(status);
+            feedbackRepository.save(feedback);
         }
     }
 

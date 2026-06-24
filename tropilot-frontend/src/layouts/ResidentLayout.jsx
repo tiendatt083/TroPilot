@@ -1,36 +1,33 @@
 import { useEffect, useState } from 'react';
-import { NavLink, Outlet } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import * as residentApi from '../api/residentApi.js';
 import ChatWidget from '../components/ChatWidget.jsx';
 import SidebarBrand from '../components/SidebarBrand.jsx';
-import SidebarNavGroup from '../components/SidebarNavGroup.jsx';
+import SidebarNavLink from '../components/SidebarNavLink.jsx';
 
 const RESIDENT_PRIMARY_ITEMS = [
-  { to: '/resident/dashboard', labelKey: 'navigation.dashboard', requiresRoom: true }
+  { to: '/resident/dashboard', labelKey: 'navigation.dashboard', icon: 'home', requiresRoom: true }
 ];
 
 const RESIDENT_INFORMATION_ITEMS = [
-  { to: '/resident/notifications', labelKey: 'navigation.notifications', requiresRoom: true },
-  { to: '/resident/feedbacks', labelKey: 'navigation.feedbacks', requiresRoom: true },
-  { to: '/resident/contact', labelKey: 'navigation.contact' }
+  { to: '/resident/notifications', labelKey: 'navigation.notifications', icon: 'bell', requiresRoom: true },
+  { to: '/resident/feedbacks', labelKey: 'navigation.feedbacks', icon: 'feedback', requiresRoom: true },
+  { to: '/resident/contact', labelKey: 'navigation.contact', icon: 'contact' }
 ];
 
 const RESIDENT_ROOM_ITEMS = [
-  { to: '/resident/invoices', labelKey: 'navigation.invoices', requiresRoom: true },
-  { to: '/resident/members', labelKey: 'navigation.members', requiresRoom: true },
-  { to: '/resident/contract', labelKey: 'navigation.contract', requiresRoom: true },
-  { to: '/resident/vehicles', labelKey: 'navigation.vehicles', requiresRoom: true },
-  { to: '/resident/utility-readings', labelKey: 'navigation.utilityReadings', requiresRoom: true }
-];
-
-const RESIDENT_OPERATION_ITEMS = [
-  { to: '/resident/equipment', labelKey: 'navigation.equipment', requiresRoom: true }
+  { to: '/resident/invoices', labelKey: 'navigation.invoices', icon: 'fileText', requiresRoom: true },
+  { to: '/resident/members', labelKey: 'navigation.members', icon: 'users', requiresRoom: true },
+  { to: '/resident/contract', labelKey: 'navigation.contract', icon: 'lock', requiresRoom: true },
+  { to: '/resident/vehicles', labelKey: 'navigation.vehicles', icon: 'car', requiresRoom: true },
+  { to: '/resident/building-costs', labelKey: 'navigation.buildingCosts', icon: 'wallet', requiresRoom: true },
+  { to: '/resident/equipment', labelKey: 'navigation.equipment', icon: 'monitor', requiresRoom: true }
 ];
 
 const RESIDENT_ACCOUNT_ITEMS = [
-  { to: '/resident/profile', labelKey: 'navigation.profile' },
-  { to: '/resident/settings', labelKey: 'settings.title' }
+  { to: '/resident/profile', labelKey: 'navigation.profile', icon: 'user' },
+  { to: '/resident/settings', labelKey: 'settings.title', icon: 'settings' }
 ];
 
 export default function ResidentLayout() {
@@ -88,27 +85,16 @@ export default function ResidentLayout() {
         </div>
         <nav aria-label={t('navigation.resident')}>
           {filterVisibleItems(RESIDENT_PRIMARY_ITEMS).map((item) => (
-            <NavLink key={item.to} to={item.to}>
-              {t(item.labelKey)}
-            </NavLink>
+            <SidebarNavLink item={item} key={item.to} />
           ))}
-          <SidebarNavGroup
-            labelKey="navigation.informationAndFeedback"
-            items={filterVisibleItems(RESIDENT_INFORMATION_ITEMS)}
-          />
+          {filterVisibleItems(RESIDENT_INFORMATION_ITEMS).map((item) => (
+            <SidebarNavLink item={item} key={item.to} />
+          ))}
           {filterVisibleItems(RESIDENT_ROOM_ITEMS).map((item) => (
-            <NavLink key={item.to} to={item.to}>
-              {t(item.labelKey)}
-            </NavLink>
+            <SidebarNavLink item={item} key={item.to} />
           ))}
-          <SidebarNavGroup
-            labelKey="navigation.operations"
-            items={filterVisibleItems(RESIDENT_OPERATION_ITEMS)}
-          />
           {filterVisibleItems(RESIDENT_ACCOUNT_ITEMS).map((item) => (
-            <NavLink key={item.to} to={item.to}>
-              {t(item.labelKey)}
-            </NavLink>
+            <SidebarNavLink item={item} key={item.to} />
           ))}
         </nav>
       </aside>

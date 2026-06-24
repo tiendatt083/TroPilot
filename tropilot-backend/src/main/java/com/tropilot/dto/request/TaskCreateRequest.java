@@ -24,6 +24,8 @@ public class TaskCreateRequest {
     @Size(max = 40, message = "Task type must not exceed 40 characters")
     private String taskType;
 
+    private Long feedbackId;
+
     private Long roomId;
 
     @NotNull(message = "Assigned staff is required")

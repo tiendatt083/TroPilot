@@ -128,6 +128,7 @@ public class DashboardServiceImpl implements DashboardService {
                 .inProgressTasks(taskRepository.countByStatus(TaskStatus.IN_PROGRESS))
                 .unresolvedFeedbacks(feedbackRepository.countByStatusIn(List.of(
                         FeedbackStatus.PENDING,
+                        FeedbackStatus.ASSIGNED,
                         FeedbackStatus.IN_PROGRESS
                 )))
                 .build();

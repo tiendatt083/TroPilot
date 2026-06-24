@@ -27,6 +27,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
             "building",
             "room",
             "room.building",
+            "feedback",
             "assignedTo",
             "createdBy"
     })
@@ -37,6 +38,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
             left join fetch taskEntity.building taskBuilding
             left join fetch taskEntity.room room
             left join fetch room.building building
+            left join fetch taskEntity.feedback feedback
             join fetch taskEntity.assignedTo assignedTo
             join fetch taskEntity.createdBy createdBy
             order by taskEntity.createdAt desc
@@ -48,6 +50,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
             left join fetch taskEntity.building taskBuilding
             left join fetch taskEntity.room room
             left join fetch room.building building
+            left join fetch taskEntity.feedback feedback
             join fetch taskEntity.assignedTo assignedTo
             join fetch taskEntity.createdBy createdBy
             where taskBuilding.id = :buildingId or building.id = :buildingId
@@ -60,6 +63,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
             left join fetch taskEntity.building taskBuilding
             left join fetch taskEntity.room room
             left join fetch room.building building
+            left join fetch taskEntity.feedback feedback
             join fetch taskEntity.assignedTo assignedTo
             join fetch taskEntity.createdBy createdBy
             where assignedTo.id = :staffId

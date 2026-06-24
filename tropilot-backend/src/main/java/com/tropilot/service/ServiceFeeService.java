@@ -12,6 +12,8 @@ public interface ServiceFeeService {
 
     List<ServiceFeeResponse> getBuildingServiceFees(Long buildingId);
 
+    List<ServiceFeeResponse> getActiveBuildingServiceFees(Long buildingId);
+
     ServiceFeeResponse getBuildingServiceFee(Long buildingId, Long id);
 
     ServiceFeeResponse updateBuildingServiceFee(Long buildingId, Long id, ServiceFeeUpsertRequest request);

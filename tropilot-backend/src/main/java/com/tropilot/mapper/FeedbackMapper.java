@@ -5,8 +5,12 @@ import com.tropilot.entity.Building;
 import com.tropilot.entity.Feedback;
 import com.tropilot.entity.Invoice;
 import com.tropilot.entity.Room;
+import com.tropilot.entity.Task;
 import com.tropilot.entity.User;
 import org.springframework.stereotype.Component;
+
+import java.util.Comparator;
+import java.util.List;
 
 @Component
 public class FeedbackMapper {
@@ -17,6 +21,8 @@ public class FeedbackMapper {
         Building building = room.getBuilding();
         Invoice invoice = feedback.getInvoice();
         User repliedBy = feedback.getRepliedBy();
+        Task assignedTask = latestTask(feedback.getTasks());
+        User assignedStaff = assignedTask == null ? null : assignedTask.getAssignedTo();
 
         return FeedbackResponse.builder()
                 .id(feedback.getId())
@@ -40,8 +46,25 @@ public class FeedbackMapper {
                 .repliedById(repliedBy == null ? null : repliedBy.getId())
                 .repliedByName(repliedBy == null ? null : repliedBy.getFullName())
                 .repliedByRole(repliedBy == null ? null : repliedBy.getRole().name())
+                .assignedTaskId(assignedTask == null ? null : assignedTask.getId())
+                .assignedTaskStatus(assignedTask == null ? null : assignedTask.getStatus())
+                .assignedStaffId(assignedStaff == null ? null : assignedStaff.getId())
+                .assignedStaffName(assignedStaff == null ? null : assignedStaff.getFullName())
+                .assignedTaskUpdatedAt(assignedTask == null ? null : assignedTask.getUpdatedAt())
                 .createdAt(feedback.getCreatedAt())
                 .updatedAt(feedback.getUpdatedAt())
                 .build();
+    }
+
+    private Task latestTask(List<Task> tasks) {
+        if (tasks == null || tasks.isEmpty()) {
+            return null;
+        }
+
+        return tasks.stream()
+                .max(Comparator
+                        .comparing(Task::getCreatedAt, Comparator.nullsFirst(Comparator.naturalOrder()))
+                        .thenComparing(Task::getId, Comparator.nullsFirst(Comparator.naturalOrder())))
+                .orElse(null);
     }
 }

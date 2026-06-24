@@ -15,6 +15,11 @@ export async function createResidentFeedback(payload) {
   return response.data;
 }
 
+export async function getResidentFeedbacks() {
+  const response = await apiClient.get('/api/resident/feedbacks');
+  return response.data;
+}
+
 export async function createInvoiceComplaint(invoiceId, payload) {
   const response = await apiClient.post(`/api/resident/invoices/${invoiceId}/complaint`, payload);
   return response.data;

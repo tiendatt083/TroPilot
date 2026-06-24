@@ -2,12 +2,14 @@ import { formatDisplayDateTime } from './dateFormat.js';
 
 export const FEEDBACK_TYPE_OPTIONS = [
   { value: 'GENERAL', label: 'General' },
+  { value: 'MAINTENANCE', label: 'Maintenance' },
   { value: 'CONTRACT_ERROR', label: 'Contract error' },
   { value: 'OTHER', label: 'Other' }
 ];
 
 export const FEEDBACK_STATUS_OPTIONS = [
   { value: 'PENDING', label: 'Pending' },
+  { value: 'ASSIGNED', label: 'Assigned' },
   { value: 'IN_PROGRESS', label: 'In progress' },
   { value: 'RESOLVED', label: 'Resolved' },
   { value: 'REJECTED', label: 'Rejected' }

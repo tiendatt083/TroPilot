@@ -50,6 +50,17 @@ const ICONS = {
       <path d="M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1Z" />
     </>
   ),
+  car: (
+    <>
+      <path d="M6 16h12" />
+      <path d="M7 16l1-5a3 3 0 0 1 2.9-2h2.2A3 3 0 0 1 16 11l1 5" />
+      <path d="M5 16v3" />
+      <path d="M19 16v3" />
+      <path d="M7 19h.1" />
+      <path d="M17 19h.1" />
+      <path d="M4 14h16" />
+    </>
+  ),
   chartPulse: (
     <>
       <path d="M4 14h3l2-6 4 11 3-9 2 4h2" />

@@ -63,6 +63,17 @@ public class ServiceFeeServiceImpl implements ServiceFeeService {
 
     @Override
     @Transactional(readOnly = true)
+    public List<ServiceFeeResponse> getActiveBuildingServiceFees(Long buildingId) {
+        findBuilding(buildingId);
+
+        return serviceFeeRepository.findByBuilding_IdAndIsActiveTrueOrderByCreatedAtDesc(buildingId)
+                .stream()
+                .map(serviceFeeMapper::toResponse)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public ServiceFeeResponse getBuildingServiceFee(Long buildingId, Long id) {
         ServiceFee serviceFee = findBuildingServiceFee(buildingId, id);
         return serviceFeeMapper.toResponse(serviceFee);

@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as feedbackApi from '../../features/notifications/feedbackApi.js';
+import FeedbackTable from '../../components/FeedbackTable.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
 import { FEEDBACK_TYPE_OPTIONS } from '../../utils/feedbackOptions.js';
 
@@ -13,9 +14,36 @@ const emptyForm = {
 export default function ResidentFeedbackPage() {
   const { t } = useTranslation();
   const [form, setForm] = useState(emptyForm);
+  const [feedbacks, setFeedbacks] = useState([]);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+
+  const loadFeedbacks = async () => {
+    const response = await feedbackApi.getResidentFeedbacks();
+    setFeedbacks(response.data || []);
+  };
+
+  useEffect(() => {
+    let active = true;
+
+    loadFeedbacks()
+      .catch((apiError) => {
+        if (active) {
+          setError(apiError.response?.data?.message || t('resident.feedback.loadError'));
+        }
+      })
+      .finally(() => {
+        if (active) {
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -34,6 +62,7 @@ export default function ResidentFeedbackPage() {
     try {
       await feedbackApi.createResidentFeedback(form);
       setForm(emptyForm);
+      await loadFeedbacks();
       setMessage(t('resident.feedback.submitted'));
     } catch (apiError) {
       setError(apiError.response?.data?.message || t('resident.feedback.submitError'));
@@ -43,7 +72,7 @@ export default function ResidentFeedbackPage() {
   };
 
   return (
-    <section className="content-section narrow-section">
+    <section className="content-section resident-feedback-page">
       <PageHeader eyebrow={t('resident.eyebrow')} title={t('resident.feedback.title')} />
 
       {message && <div className="alert success-alert">{message}</div>}
@@ -69,6 +98,18 @@ export default function ResidentFeedbackPage() {
           {saving ? t('resident.feedback.submitting') : t('resident.feedback.submit')}
         </button>
       </form>
+
+      <section className="building-section">
+        <PageHeader eyebrow={t('resident.eyebrow')} title={t('resident.feedback.historyTitle')} />
+        {loading ? (
+          <div className="empty-state">{t('resident.feedback.loading')}</div>
+        ) : (
+          <FeedbackTable
+            feedbacks={feedbacks}
+            visibleColumns={['title', 'type', 'room', 'status', 'reply', 'created']}
+          />
+        )}
+      </section>
     </section>
   );
 }

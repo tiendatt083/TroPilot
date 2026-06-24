@@ -814,6 +814,229 @@
   color: var(--color-text-muted);
 }
 
+.resident-cost-page {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.resident-cost-page .page-header {
+  margin-bottom: 0;
+}
+
+.resident-cost-page .page-support-text {
+  margin: 0;
+}
+
+.resident-cost-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 280px);
+  gap: var(--space-4);
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-lg);
+  padding: clamp(1rem, 2vw, 1.45rem);
+  color: #ffffff;
+  background:
+    radial-gradient(circle at 88% 20%, rgba(45, 139, 144, 0.46), transparent 34%),
+    linear-gradient(135deg, #14223b, #244a69);
+  box-shadow: 0 18px 44px rgba(19, 34, 59, 0.18);
+}
+
+.resident-cost-hero span,
+.resident-cost-hero-price span,
+.resident-cost-hero-price small {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-strong);
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.resident-cost-hero h2 {
+  margin: var(--space-1) 0;
+  color: #ffffff;
+  font-size: clamp(1.35rem, 2.1vw, 1.9rem);
+  line-height: 1.12;
+}
+
+.resident-cost-hero p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.resident-cost-hero-price {
+  display: grid;
+  gap: var(--space-1);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  background: rgba(255, 255, 255, 0.09);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.resident-cost-hero-price strong {
+  color: #ffffff;
+  font-size: clamp(1.35rem, 2.2vw, 1.8rem);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.resident-cost-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: var(--space-3);
+}
+
+.resident-cost-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--space-3);
+  align-items: start;
+  min-height: 108px;
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-xs);
+}
+
+.resident-cost-card-icon,
+.resident-cost-row-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--radius-sm);
+  color: var(--color-primary);
+  background: var(--color-primary-soft);
+}
+
+.resident-cost-icon {
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.resident-cost-card span:not(.resident-cost-card-icon),
+.resident-cost-card small,
+.resident-cost-row-main span,
+.resident-cost-row-price span {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.45;
+}
+
+.resident-cost-card strong {
+  display: block;
+  margin: 0.18rem 0;
+  color: var(--color-text);
+  font-size: 1.06rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.25;
+}
+
+.resident-cost-card-room {
+  border-left: 3px solid var(--color-primary);
+}
+
+.resident-cost-card-electricity {
+  border-left: 3px solid #f59e0b;
+}
+
+.resident-cost-card-water {
+  border-left: 3px solid #14b8a6;
+}
+
+.resident-cost-card-service {
+  border-left: 3px solid #536a9f;
+}
+
+.resident-cost-card-electricity .resident-cost-card-icon,
+.resident-cost-row-icon-electricity {
+  color: #b45309;
+  background: rgba(245, 158, 11, 0.13);
+}
+
+.resident-cost-card-water .resident-cost-card-icon,
+.resident-cost-row-icon-water {
+  color: #0f766e;
+  background: rgba(20, 184, 166, 0.13);
+}
+
+.resident-cost-card-service .resident-cost-card-icon,
+.resident-cost-row-icon-service {
+  color: #536a9f;
+  background: rgba(83, 106, 159, 0.13);
+}
+
+.resident-cost-panel {
+  gap: var(--space-3);
+}
+
+.resident-cost-list {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.resident-cost-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-3);
+  align-items: center;
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  background: var(--color-surface);
+}
+
+.resident-cost-row-main {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.resident-cost-row-main strong {
+  display: block;
+  color: var(--color-text);
+  font-weight: var(--font-weight-strong);
+}
+
+.resident-cost-row-main span {
+  display: block;
+  margin-top: 0.15rem;
+}
+
+.resident-cost-row-price {
+  display: grid;
+  gap: 0.15rem;
+  justify-items: end;
+  text-align: right;
+}
+
+.resident-cost-row-price strong {
+  color: var(--color-text);
+  font-size: 1rem;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 720px) {
+  .resident-cost-hero,
+  .resident-cost-row {
+    grid-template-columns: 1fr;
+  }
+
+  .resident-cost-row-price {
+    justify-items: start;
+    text-align: left;
+  }
+}
+
 .contract-actions {
   justify-content: flex-start;
   margin-top: var(--space-4);

@@ -302,9 +302,13 @@ function ContactEditor({
             <ContactFieldControl icon="clock">
               <input
                 id="contactWorkingStartTime"
+                inputMode="numeric"
+                maxLength={5}
                 name="workingStartTime"
+                pattern="([01][0-9]|2[0-3]):[0-5][0-9]"
+                placeholder="08:00"
                 required
-                type="time"
+                type="text"
                 value={form.workingStartTime}
                 onChange={onFieldChange}
               />
@@ -318,10 +322,13 @@ function ContactEditor({
             <ContactFieldControl icon="clock">
               <input
                 id="contactWorkingEndTime"
+                inputMode="numeric"
+                maxLength={5}
                 name="workingEndTime"
-                min={form.workingStartTime}
+                pattern="([01][0-9]|2[0-3]):[0-5][0-9]"
+                placeholder="17:00"
                 required
-                type="time"
+                type="text"
                 value={form.workingEndTime}
                 onChange={onFieldChange}
               />

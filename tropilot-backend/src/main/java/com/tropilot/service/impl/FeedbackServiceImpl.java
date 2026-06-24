@@ -93,6 +93,18 @@ public class FeedbackServiceImpl implements FeedbackService {
 
     @Override
     @Transactional(readOnly = true)
+    public List<FeedbackResponse> getResidentFeedbacks(Long residentHeadId) {
+        RoomAssignment assignment = findActiveAssignment(residentHeadId);
+
+        return feedbackRepository
+                .findByResidentHeadIdAndRoomIdWithDetails(residentHeadId, assignment.getRoom().getId())
+                .stream()
+                .map(feedbackMapper::toResponse)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<FeedbackResponse> getFeedbacks(Long buildingId) {
         List<Feedback> feedbacks = buildingId == null
                 ? feedbackRepository.findAllWithDetails()

@@ -1,27 +1,28 @@
-import { NavLink, Outlet } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import ChatWidget from '../components/ChatWidget.jsx';
 import SidebarBrand from '../components/SidebarBrand.jsx';
 import SidebarNavGroup from '../components/SidebarNavGroup.jsx';
+import SidebarNavLink from '../components/SidebarNavLink.jsx';
 
 const STAFF_OPERATION_ITEMS = [
-  { to: '/staff/buildings', labelKey: 'navigation.buildings' },
-  { to: '/staff/tasks', labelKey: 'navigation.tasks' },
-  { to: '/staff/maintenance', labelKey: 'navigation.maintenance' }
+  { to: '/staff/buildings', labelKey: 'navigation.buildings', icon: 'building' },
+  { to: '/staff/tasks', labelKey: 'navigation.tasks', icon: 'fileText' },
+  { to: '/staff/maintenance', labelKey: 'navigation.maintenance', icon: 'tool' }
 ];
 
 const STAFF_INFORMATION_ITEMS = [
-  { to: '/staff/notifications', labelKey: 'navigation.notifications' },
-  { to: '/staff/contact', labelKey: 'navigation.contact' }
+  { to: '/staff/notifications', labelKey: 'navigation.notifications', icon: 'bell' },
+  { to: '/staff/contact', labelKey: 'navigation.contact', icon: 'contact' }
 ];
 
 const STAFF_PRIMARY_ITEMS = [
-  { to: '/staff/dashboard', labelKey: 'navigation.dashboard' }
+  { to: '/staff/dashboard', labelKey: 'navigation.dashboard', icon: 'home' }
 ];
 
 const STAFF_ACCOUNT_ITEMS = [
-  { to: '/staff/profile', labelKey: 'navigation.profile' },
-  { to: '/staff/settings', labelKey: 'settings.title' }
+  { to: '/staff/profile', labelKey: 'navigation.profile', icon: 'user' },
+  { to: '/staff/settings', labelKey: 'settings.title', icon: 'settings' }
 ];
 
 export default function StaffLayout() {
@@ -37,16 +38,12 @@ export default function StaffLayout() {
         </div>
         <nav aria-label={t('navigation.staff')}>
           {STAFF_PRIMARY_ITEMS.map((item) => (
-            <NavLink key={item.to} to={item.to}>
-              {t(item.labelKey)}
-            </NavLink>
+            <SidebarNavLink item={item} key={item.to} />
           ))}
-          <SidebarNavGroup labelKey="navigation.operations" items={STAFF_OPERATION_ITEMS} />
-          <SidebarNavGroup labelKey="navigation.informationAndFeedback" items={STAFF_INFORMATION_ITEMS} />
+          <SidebarNavGroup icon="activity" labelKey="navigation.operations" items={STAFF_OPERATION_ITEMS} />
+          <SidebarNavGroup icon="feedback" labelKey="navigation.informationAndFeedback" items={STAFF_INFORMATION_ITEMS} />
           {STAFF_ACCOUNT_ITEMS.map((item) => (
-            <NavLink key={item.to} to={item.to}>
-              {t(item.labelKey)}
-            </NavLink>
+            <SidebarNavLink item={item} key={item.to} />
           ))}
         </nav>
       </aside>

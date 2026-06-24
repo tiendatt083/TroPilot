@@ -11,6 +11,7 @@ import com.tropilot.enums.UserRole;
 import com.tropilot.enums.UserStatus;
 import com.tropilot.mapper.TaskMapper;
 import com.tropilot.repository.BuildingRepository;
+import com.tropilot.repository.FeedbackRepository;
 import com.tropilot.repository.RoomRepository;
 import com.tropilot.repository.TaskRepository;
 import com.tropilot.repository.UserRepository;
@@ -41,6 +42,9 @@ class TaskServiceImplTest {
 
     @Mock
     private BuildingRepository buildingRepository;
+
+    @Mock
+    private FeedbackRepository feedbackRepository;
 
     @Mock
     private UserRepository userRepository;

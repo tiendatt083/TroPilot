@@ -1,25 +1,25 @@
+import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as feedbackApi from '../../features/notifications/feedbackApi.js';
-import FeedbackTable from '../../components/FeedbackTable.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
-import { FEEDBACK_STATUS_OPTIONS } from '../../utils/feedbackOptions.js';
+import {
+  formatFeedbackDateTime,
+  getFeedbackStatusClass,
+} from '../../utils/feedbackOptions.js';
 import { formatEnumLabel } from '../../utils/i18nFormat.js';
+import { formatRoomLabel } from '../../utils/roomDisplay.js';
 
 export default function AdminFeedbackPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [feedbacks, setFeedbacks] = useState([]);
-  const [replyMap, setReplyMap] = useState({});
-  const [statusMap, setStatusMap] = useState({});
-  const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
-  const [processingId, setProcessingId] = useState(null);
 
   const loadFeedbacks = async () => {
     const response = await feedbackApi.getAdminFeedbacks();
     setFeedbacks(response.data);
-    setStatusMap(Object.fromEntries(response.data.map((feedback) => [feedback.id, feedback.status])));
   };
 
   useEffect(() => {
@@ -28,95 +28,82 @@ export default function AdminFeedbackPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  const updateFeedbackInList = (feedback) => {
-    setFeedbacks((current) => current.map((item) => (item.id === feedback.id ? feedback : item)));
-    setStatusMap((current) => ({ ...current, [feedback.id]: feedback.status }));
+  const openBuildingFeedbacks = (feedback) => {
+    navigate(feedback.buildingId ? `/admin/buildings/${feedback.buildingId}/feedbacks` : '/admin/buildings');
   };
 
-  const handleReply = async (feedback) => {
-    const reply = replyMap[feedback.id] || '';
-    setProcessingId(feedback.id);
-    setMessage('');
-    setError('');
-
-    try {
-      const response = await feedbackApi.replyAdminFeedback(feedback.id, { reply });
-      updateFeedbackInList(response.data);
-      setReplyMap((current) => ({ ...current, [feedback.id]: '' }));
-      setMessage(t('feedbackManagement.feedbackReplied'));
-    } catch (apiError) {
-      setError(apiError.response?.data?.message || t('feedbackManagement.feedbackReplyError'));
-    } finally {
-      setProcessingId(null);
+  const handleRowKeyDown = (event, feedback) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      openBuildingFeedbacks(feedback);
     }
   };
-
-  const handleStatus = async (feedback) => {
-    setProcessingId(feedback.id);
-    setMessage('');
-    setError('');
-
-    try {
-      const response = await feedbackApi.updateAdminFeedbackStatus(feedback.id, {
-        status: statusMap[feedback.id]
-      });
-      updateFeedbackInList(response.data);
-      setMessage(t('feedbackManagement.feedbackStatusUpdated'));
-    } catch (apiError) {
-      setError(apiError.response?.data?.message || t('feedbackManagement.feedbackStatusError'));
-    } finally {
-      setProcessingId(null);
-    }
-  };
-
-  const renderActions = (feedback) => (
-    <div className="feedback-action-panel">
-      <select
-        value={statusMap[feedback.id] || feedback.status}
-        onChange={(event) => setStatusMap((current) => ({ ...current, [feedback.id]: event.target.value }))}
-      >
-        {FEEDBACK_STATUS_OPTIONS.map((option) => (
-          <option key={option.value} value={option.value}>
-            {formatEnumLabel(t, 'feedbackStatus', option.value)}
-          </option>
-        ))}
-      </select>
-      <button
-        className="secondary-button compact-button"
-        type="button"
-        disabled={processingId === feedback.id}
-        onClick={() => handleStatus(feedback)}
-      >
-        {t('feedbackManagement.saveStatus')}
-      </button>
-      <textarea
-        rows="3"
-        value={replyMap[feedback.id] || ''}
-        onChange={(event) => setReplyMap((current) => ({ ...current, [feedback.id]: event.target.value }))}
-        placeholder={t('feedbackManagement.replyContent')}
-      />
-      <button
-        className="secondary-button compact-button"
-        type="button"
-        disabled={processingId === feedback.id}
-        onClick={() => handleReply(feedback)}
-      >
-        {t('feedbackManagement.reply')}
-      </button>
-    </div>
-  );
 
   return (
-    <section className="content-section">
+    <section className="content-section admin-feedback-overview-page">
       <PageHeader eyebrow={t('feedbackManagement.adminEyebrow')} title={t('feedbackManagement.feedbacksTitle')} />
+      <p className="page-support-text">{t('feedbackManagement.feedbacksOverviewDescription')}</p>
 
-      {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
 
       {loading ? (
         <div className="empty-state">{t('feedbackManagement.feedbacksLoading')}</div>
       ) : (
-        <FeedbackTable feedbacks={feedbacks} renderActions={renderActions} />
+        <div className="table-wrap">
+          <table className="data-table admin-feedback-overview-table">
+            <thead>
+              <tr>
+                <th>{t('tables.feedbacks.title')}</th>
+                <th>{t('tables.common.building')}</th>
+                <th>{t('tables.common.room')}</th>
+                <th>{t('tables.common.resident')}</th>
+                <th>{t('tables.common.status')}</th>
+                <th>{t('tables.common.created')}</th>
+                <th>{t('tables.common.actions')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {feedbacks.map((feedback) => (
+                  <tr
+                    className="clickable-table-row admin-feedback-overview-row"
+                    key={feedback.id}
+                    role="link"
+                    tabIndex={0}
+                    onClick={() => openBuildingFeedbacks(feedback)}
+                    onKeyDown={(event) => handleRowKeyDown(event, feedback)}
+                  >
+                    <td>
+                      <span className="admin-feedback-title-link">
+                        <strong>{feedback.title}</strong>
+                        <span className="table-subtext">{feedback.content}</span>
+                      </span>
+                    </td>
+                    <td>
+                      <strong>{feedback.buildingCode || t('common.noBuilding')}</strong>
+                      {feedback.buildingName && <span className="table-subtext">{feedback.buildingName}</span>}
+                    </td>
+                    <td>{formatRoomLabel(feedback)}</td>
+                    <td>
+                      <strong>{feedback.residentHeadName}</strong>
+                      <span className="table-subtext">{feedback.residentHeadEmail}</span>
+                    </td>
+                    <td>
+                      <span className={getFeedbackStatusClass(feedback.status)}>
+                        {formatEnumLabel(t, 'feedbackStatus', feedback.status)}
+                      </span>
+                    </td>
+                    <td>{formatFeedbackDateTime(feedback.createdAt)}</td>
+                    <td>
+                      <span className="secondary-link admin-feedback-row-action">
+                        {t('feedbackManagement.openBuildingFeedbacks')}
+                      </span>
+                    </td>
+                  </tr>
+              ))}
+            </tbody>
+          </table>
+          {feedbacks.length === 0 && <div className="empty-state flat-empty-state">{t('tables.feedbacks.empty')}</div>}
+        </div>
       )}
     </section>
   );

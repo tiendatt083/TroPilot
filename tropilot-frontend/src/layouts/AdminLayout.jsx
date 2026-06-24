@@ -1,11 +1,16 @@
 import { useEffect, useState } from 'react';
-import { NavLink, Outlet } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import AdminProfileDialog from '../components/AdminProfileDialog.jsx';
 import ChatWidget from '../components/ChatWidget.jsx';
-import LineIcon from '../components/common/LineIcon.jsx';
 import SidebarBrand from '../components/SidebarBrand.jsx';
 import SidebarNavGroup from '../components/SidebarNavGroup.jsx';
+import SidebarNavLink from '../components/SidebarNavLink.jsx';
+
+const ADMIN_PRIMARY_ITEMS = [
+  { to: '/admin/dashboard', labelKey: 'navigation.dashboard', icon: 'home' },
+  { to: '/admin/buildings', labelKey: 'navigation.buildings', icon: 'building' }
+];
 
 const ADMIN_ACCOUNT_ITEMS = [
   { to: '/admin/users', labelKey: 'navigation.users', icon: 'users' },
@@ -60,26 +65,14 @@ export default function AdminLayout() {
           <small>{t('sidebar.access.admin')}</small>
         </button>
         <nav aria-label={t('navigation.admin')}>
-          <NavLink className="has-sidebar-icon" to="/admin/dashboard">
-            <LineIcon className="sidebar-link-icon" name="home" />
-            <span className="sidebar-nav-label">{t('navigation.dashboard')}</span>
-          </NavLink>
+          <SidebarNavLink item={ADMIN_PRIMARY_ITEMS[0]} />
           <SidebarNavGroup icon="user" labelKey="navigation.accounts" items={ADMIN_ACCOUNT_ITEMS} />
-          <NavLink className="has-sidebar-icon" to="/admin/buildings">
-            <LineIcon className="sidebar-link-icon" name="building" />
-            <span className="sidebar-nav-label">{t('navigation.buildings')}</span>
-          </NavLink>
+          <SidebarNavLink item={ADMIN_PRIMARY_ITEMS[1]} />
           {ADMIN_INFORMATION_ITEMS.map((item) => (
-            <NavLink className="has-sidebar-icon" key={item.to} to={item.to}>
-              <LineIcon className="sidebar-link-icon" name={item.icon} />
-              <span className="sidebar-nav-label">{t(item.labelKey)}</span>
-            </NavLink>
+            <SidebarNavLink item={item} key={item.to} />
           ))}
           {ADMIN_NAV_ITEMS.map((item) => (
-            <NavLink className="has-sidebar-icon" key={item.to} to={item.to}>
-              <LineIcon className="sidebar-link-icon" name={item.icon} />
-              <span className="sidebar-nav-label">{t(item.labelKey)}</span>
-            </NavLink>
+            <SidebarNavLink item={item} key={item.to} />
           ))}
         </nav>
       </aside>
