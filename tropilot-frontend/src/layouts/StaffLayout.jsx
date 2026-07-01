@@ -21,6 +21,7 @@ const STAFF_PRIMARY_ITEMS = [
 ];
 
 const STAFF_ACCOUNT_ITEMS = [
+  { to: '/staff/activity-logs', labelKey: 'navigation.activityLogs', icon: 'activity' },
   { to: '/staff/profile', labelKey: 'navigation.profile', icon: 'user' },
   { to: '/staff/settings', labelKey: 'settings.title', icon: 'settings' }
 ];

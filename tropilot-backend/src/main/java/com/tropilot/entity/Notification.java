@@ -1,6 +1,8 @@
 package com.tropilot.entity;
 
 import com.tropilot.enums.NotificationTargetType;
+import com.tropilot.enums.NotificationEventType;
+import com.tropilot.enums.NotificationSource;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -53,6 +55,21 @@ public class Notification {
 
     private Long targetId;
 
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
+    @Column(nullable = false, length = 30)
+    private NotificationSource source = NotificationSource.MANUAL;
+
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
+    @Column(nullable = false, length = 50)
+    private NotificationEventType eventType = NotificationEventType.MANUAL;
+
+    @Column(length = 500)
+    private String actionPath;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "created_by_id", nullable = false)
     private User createdBy;
@@ -70,6 +87,12 @@ public class Notification {
 
     @PrePersist
     public void prePersist() {
+        if (source == null) {
+            source = NotificationSource.MANUAL;
+        }
+        if (eventType == null) {
+            eventType = NotificationEventType.MANUAL;
+        }
         if (createdAt == null) {
             createdAt = LocalDateTime.now();
         }

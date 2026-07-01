@@ -2,6 +2,7 @@ package com.tropilot.repository;
 
 import com.tropilot.entity.User;
 import com.tropilot.enums.UserRole;
+import com.tropilot.enums.UserStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -18,4 +19,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findAllByOrderByCreatedAtDesc();
 
     List<User> findAllByMustChangePasswordTrue();
+
+    List<User> findByRoleAndStatus(UserRole role, UserStatus status);
 }

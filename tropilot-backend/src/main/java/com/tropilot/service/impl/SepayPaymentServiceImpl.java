@@ -11,7 +11,6 @@ import com.tropilot.exception.BadRequestException;
 import com.tropilot.repository.InvoiceRepository;
 import com.tropilot.repository.ReceiptRepository;
 import com.tropilot.repository.SepayPaymentRepository;
-import com.tropilot.service.ActivityLogService;
 import com.tropilot.service.NotificationService;
 import com.tropilot.service.PaymentEmailService;
 import com.tropilot.service.ReceiptCreationService;
@@ -24,7 +23,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -34,15 +32,12 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class SepayPaymentServiceImpl implements SepayPaymentService {
 
-    private static final DateTimeFormatter MONTH_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM");
-
     private final SepayProperties sepayProperties;
     private final InvoiceRepository invoiceRepository;
     private final ReceiptRepository receiptRepository;
     private final SepayPaymentRepository sepayPaymentRepository;
     private final ReceiptCreationService receiptCreationService;
     private final NotificationService notificationService;
-    private final ActivityLogService activityLogService;
     private final PaymentEmailService paymentEmailService;
 
     @Override
@@ -112,20 +107,8 @@ public class SepayPaymentServiceImpl implements SepayPaymentService {
 
         if (!receiptRepository.existsByInvoice_IdAndStatus(invoice.getId(), ReceiptStatus.VALID)) {
             receiptRepository.save(receiptCreationService.createValidReceipt(invoice, invoice.getCreatedBy(), paidAt));
-            activityLogService.record(
-                    invoice.getCreatedBy(),
-                    "RECEIPT_CREATED",
-                    "System created receipt for SePay invoice " + invoice.getId()
-            );
         }
 
-        activityLogService.record(
-                invoice.getResidentHead(),
-                "SEPAY_PAYMENT_RECEIVED",
-                "Received SePay transfer for invoice " + invoice.getId()
-                        + ", room " + invoice.getRoom().getRoomCode()
-                        + ", month " + invoice.getMonth().format(MONTH_FORMATTER)
-        );
         notificationService.createInvoicePaidNotification(invoice.getCreatedBy(), invoice, payment);
         paymentEmailService.sendPaymentSuccessEmail(invoice, paidAt);
 

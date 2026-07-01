@@ -131,6 +131,7 @@ export default function BuildingUtilityReadingWorkspace({
               selectedMonth={selectedMonth}
               loading={saving}
               mode={editingReading ? 'edit' : 'create'}
+              onFetchReadings={utilityReadingApi.fetchUtilityReadingPreview}
               submitLabel={
                 editingReading ? t('buildingUtilityReadings.saveChanges') : t('buildingUtilityReadings.recordReading')
               }

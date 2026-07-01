@@ -63,6 +63,7 @@ export default function StaffUtilityReadingCreatePage() {
         rooms={occupiedRooms}
         readings={readings}
         loading={saving}
+        onFetchReadings={utilityReadingApi.fetchUtilityReadingPreview}
         submitLabel={t('utilityReadingManagement.record')}
         onSubmit={handleSubmit}
       />

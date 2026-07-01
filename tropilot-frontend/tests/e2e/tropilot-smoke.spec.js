@@ -12,7 +12,7 @@ test.describe('Tropilot smoke flow', () => {
     await loginAs(page, 'admin');
 
     await expect(page).toHaveURL(/\/admin\/dashboard$/);
-    await expect(page.getByRole('heading', { name: 'Home' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Tổng quan|Overview/ })).toBeVisible();
 
     await page.goto('/admin/buildings');
     await expect(page.getByRole('heading', { name: 'Building management' })).toBeVisible();
@@ -90,6 +90,7 @@ test.describe('Tropilot smoke flow', () => {
     await loginAs(page, 'admin');
     await page.goto('/admin/buildings/1/invoices');
 
+    await page.getByRole('button', { name: 'Create invoice' }).click();
     await page.locator('#roomId').selectOption('1');
     await page.getByRole('button', { name: 'Preview invoice' }).click();
 
@@ -102,12 +103,32 @@ test.describe('Tropilot smoke flow', () => {
     expect(getMockStateSnapshot(state).invoices).toHaveLength(1);
   });
 
+  test('admin can fetch simulated utility readings into the shared form', async ({ page }) => {
+    await mockTropilotApi(page);
+
+    await loginAs(page, 'admin');
+    await page.goto('/admin/buildings/1/utility-readings');
+
+    const fetchButton = page.getByRole('button', { name: 'Fetch readings' });
+    await expect(fetchButton).toBeDisabled();
+
+    await page.locator('#roomId').selectOption('1');
+    await expect(fetchButton).toBeEnabled();
+    await fetchButton.click();
+
+    await expect(page.locator('#newElectricity')).toHaveValue('437');
+    await expect(page.locator('#newWater')).toHaveValue('31');
+    await expect(page.getByText('+87 kWh')).toBeVisible();
+    await expect(page.getByText('+7 m3')).toBeVisible();
+    await expectNoVisibleAppError(page);
+  });
+
   test('mocked SePay webhook marks invoices as paid', async ({ page }) => {
     const state = await mockTropilotApi(page, { withInitialInvoice: true });
 
     await loginAs(page, 'admin');
     await page.goto('/admin/buildings/1/invoices');
-    await expect(page.getByText('Unpaid')).toBeVisible();
+    await expect(page.getByRole('table').getByText('Unpaid')).toBeVisible();
 
     await page.evaluate(() => {
       return fetch('http://localhost:8080/api/sepay/webhook', {
@@ -125,7 +146,23 @@ test.describe('Tropilot smoke flow', () => {
     expect(getMockStateSnapshot(state).webhookPaid).toBe(true);
 
     await page.reload();
-    await expect(page.getByText('Paid')).toBeVisible();
+    await expect(page.getByRole('table').getByText('Paid')).toBeVisible();
     await expectNoVisibleAppError(page);
   });
+
+  for (const role of ['admin', 'staff', 'resident']) {
+    test(`${role} can open personal notifications and activity logs`, async ({ page }) => {
+      await mockTropilotApi(page);
+      await loginAs(page, role);
+
+      await page.goto(`/${role}/notifications`);
+      await expect(page.getByRole('heading', { name: 'Notifications' })).toBeVisible();
+      await expect(page.getByText('Payment received')).toBeVisible();
+
+      await page.goto(`/${role}/activity-logs`);
+      await expect(page.getByRole('heading', { name: 'Activity logs' })).toBeVisible();
+      await expect(page.getByText('Updated profile information')).toBeVisible();
+      await expectNoVisibleAppError(page);
+    });
+  }
 });

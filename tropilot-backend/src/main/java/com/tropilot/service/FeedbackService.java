@@ -22,5 +22,10 @@ public interface FeedbackService {
 
     FeedbackResponse replyFeedback(Long id, Long repliedById, FeedbackReplyRequest request, Long buildingId);
 
-    FeedbackResponse updateFeedbackStatus(Long id, FeedbackStatusUpdateRequest request, Long buildingId);
+    FeedbackResponse updateFeedbackStatus(
+            Long id,
+            Long updatedById,
+            FeedbackStatusUpdateRequest request,
+            Long buildingId
+    );
 }

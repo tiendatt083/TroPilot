@@ -4,6 +4,7 @@ import ContactPage from '../pages/ContactPage.jsx';
 import ProfilePage from '../pages/ProfilePage.jsx';
 import Settings from '../pages/Settings.jsx';
 import StaffBuildingListPage from '../pages/staff/StaffBuildingListPage.jsx';
+import StaffActivityLogPage from '../pages/staff/StaffActivityLogPage.jsx';
 import StaffDashboardPage from '../pages/staff/StaffDashboardPage.jsx';
 import StaffExpenseCreatePage from '../pages/staff/StaffExpenseCreatePage.jsx';
 import StaffExpenseListPage from '../pages/staff/StaffExpenseListPage.jsx';
@@ -29,6 +30,7 @@ export const staffRoutes = (
       <Route path="contact" element={<ContactPage />} />
       <Route path="settings" element={<Settings />} />
       <Route path="notifications" element={<StaffNotificationPage />} />
+      <Route path="activity-logs" element={<StaffActivityLogPage />} />
       <Route path="invoices" element={<Navigate to="/staff/buildings" replace />} />
       <Route path="invoices/generate" element={<Navigate to="/staff/buildings" replace />} />
       <Route path="payments/pending" element={<StaffPendingPaymentsPage />} />

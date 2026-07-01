@@ -3,6 +3,7 @@ package com.tropilot.integration.gemini;
 import com.tropilot.config.GeminiProperties;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestClient;
@@ -15,6 +16,7 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.header;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 class GeminiChatClientTest {
@@ -97,6 +99,64 @@ class GeminiChatClientTest {
         );
 
         assertThat(reply).isEqualTo("There are 2 buildings.");
+        server.verify();
+    }
+
+    @Test
+    void generateReplyFallsBackWhenPrimaryModelIsUnavailable() {
+        GeminiProperties properties = new GeminiProperties();
+        properties.setEnabled(true);
+        properties.setApiKey("test-gemini-key");
+        properties.setModel("gemini-2.5-flash-lite");
+        properties.setFallbackModels(List.of("gemini-2.5-flash"));
+
+        RestClient.Builder builder = RestClient.builder().baseUrl(properties.getBaseUrl());
+        MockRestServiceServer server = MockRestServiceServer.bindTo(builder).build();
+        GeminiChatClient client = new GeminiChatClient(properties, builder.build());
+
+        server.expect(requestTo(properties.getBaseUrl()
+                        + "/v1beta/models/gemini-2.5-flash-lite:generateContent"))
+                .andExpect(method(HttpMethod.POST))
+                .andExpect(header("x-goog-api-key", "test-gemini-key"))
+                .andRespond(withStatus(HttpStatus.SERVICE_UNAVAILABLE)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body("""
+                                {
+                                  "error": {
+                                    "code": 503,
+                                    "message": "This model is currently experiencing high demand.",
+                                    "status": "UNAVAILABLE"
+                                  }
+                                }
+                                """));
+
+        server.expect(requestTo(properties.getBaseUrl()
+                        + "/v1beta/models/gemini-2.5-flash:generateContent"))
+                .andExpect(method(HttpMethod.POST))
+                .andExpect(header("x-goog-api-key", "test-gemini-key"))
+                .andRespond(withSuccess("""
+                        {
+                          "candidates": [
+                            {
+                              "content": {
+                                "parts": [
+                                  {
+                                    "text": "Fallback reply"
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                        """, MediaType.APPLICATION_JSON));
+
+        String reply = client.generateReply(
+                List.of(),
+                "How many buildings are there?",
+                "{\"summary\":{\"totalBuildings\":2}}"
+        );
+
+        assertThat(reply).isEqualTo("Fallback reply");
         server.verify();
     }
 }

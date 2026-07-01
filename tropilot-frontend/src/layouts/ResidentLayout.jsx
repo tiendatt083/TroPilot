@@ -26,6 +26,7 @@ const RESIDENT_ROOM_ITEMS = [
 ];
 
 const RESIDENT_ACCOUNT_ITEMS = [
+  { to: '/resident/activity-logs', labelKey: 'navigation.activityLogs', icon: 'activity' },
   { to: '/resident/profile', labelKey: 'navigation.profile', icon: 'user' },
   { to: '/resident/settings', labelKey: 'settings.title', icon: 'settings' }
 ];

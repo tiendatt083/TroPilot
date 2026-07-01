@@ -11,5 +11,7 @@ public interface ExpenseService {
 
     List<ExpenseResponse> getExpenses(Long buildingId);
 
-    ExpenseResponse cancelExpense(Long id, Long buildingId);
+    ExpenseResponse approveExpense(Long id, Long approvedById, Long buildingId);
+
+    ExpenseResponse cancelExpense(Long id, Long cancelledById, Long buildingId);
 }

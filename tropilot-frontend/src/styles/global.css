@@ -64,6 +64,7 @@ html[data-theme="dark"] .contact-editor {
 
 html[data-theme="dark"] .contact-hero,
 html[data-theme="dark"] .contact-card,
+html[data-theme="dark"] .contact-editor-surface,
 html[data-theme="dark"] .contact-phone-table,
 html[data-theme="dark"] .contact-phone-card,
 html[data-theme="dark"] .contact-detail-list > div {
@@ -940,12 +941,15 @@ html[data-theme="dark"] input[type="month"]::-webkit-calendar-picker-indicator {
   .content-section > .notification-pagination,
   .building-section .notification-pagination,
   .table-wrap + .notification-pagination {
-    align-items: stretch;
-    flex-direction: column;
+    align-items: center;
+    flex-direction: row;
+    flex-wrap: wrap;
   }
 
   .notification-page-buttons {
-    justify-content: stretch;
+    width: 100%;
+    flex-direction: row;
+    justify-content: center;
   }
 
   .notification-page-buttons .compact-button {

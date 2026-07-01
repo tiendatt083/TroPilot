@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext.jsx';
+import ModalCloseButton from './common/ModalCloseButton.jsx';
 
 const EMPTY_FORM = {
   fullName: '',
@@ -79,14 +80,7 @@ export default function AdminProfileDialog({ open, onClose }) {
             <span className="section-eyebrow">{t('profile.eyebrow')}</span>
             <h2 id="admin-profile-dialog-title">{t('profile.title')}</h2>
           </div>
-          <button
-            aria-label={t('common.close')}
-            className="account-modal-close"
-            type="button"
-            onClick={onClose}
-          >
-            ×
-          </button>
+          <ModalCloseButton label={t('common.close')} onClick={onClose} />
         </div>
 
         {message && <div className="alert success-alert">{message}</div>}
@@ -141,9 +135,6 @@ export default function AdminProfileDialog({ open, onClose }) {
           </div>
 
           <div className="admin-profile-actions">
-            <button className="secondary-button" type="button" onClick={onClose}>
-              {t('common.cancel')}
-            </button>
             <button disabled={saving} type="submit">
               {saving ? t('profile.actions.saving') : t('profile.actions.save')}
             </button>

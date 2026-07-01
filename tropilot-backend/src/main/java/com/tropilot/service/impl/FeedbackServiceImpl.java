@@ -12,6 +12,7 @@ import com.tropilot.entity.RoomAssignment;
 import com.tropilot.entity.User;
 import com.tropilot.enums.FeedbackStatus;
 import com.tropilot.enums.FeedbackType;
+import com.tropilot.enums.NotificationEventType;
 import com.tropilot.enums.RoomAssignmentStatus;
 import com.tropilot.exception.BadRequestException;
 import com.tropilot.exception.ForbiddenException;
@@ -22,6 +23,8 @@ import com.tropilot.repository.InvoiceRepository;
 import com.tropilot.repository.RoomAssignmentRepository;
 import com.tropilot.repository.UserRepository;
 import com.tropilot.service.FeedbackService;
+import com.tropilot.service.ActivityLogService;
+import com.tropilot.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,6 +43,8 @@ public class FeedbackServiceImpl implements FeedbackService {
     private final RoomAssignmentRepository roomAssignmentRepository;
     private final InvoiceRepository invoiceRepository;
     private final FeedbackMapper feedbackMapper;
+    private final ActivityLogService activityLogService;
+    private final NotificationService notificationService;
 
     @Override
     @Transactional
@@ -60,7 +65,16 @@ public class FeedbackServiceImpl implements FeedbackService {
                 .status(FeedbackStatus.PENDING)
                 .build();
 
-        return feedbackMapper.toResponse(feedbackRepository.save(feedback));
+        Feedback savedFeedback = feedbackRepository.save(feedback);
+        activityLogService.record(
+                assignment.getResidentHead(),
+                "FEEDBACK_CREATED",
+                "Created feedback " + savedFeedback.getTitle()
+                        + " for room " + assignment.getRoom().getRoomCode()
+        );
+        notifyAdminsAboutNewFeedback(savedFeedback);
+
+        return feedbackMapper.toResponse(savedFeedback);
     }
 
     @Override
@@ -88,7 +102,15 @@ public class FeedbackServiceImpl implements FeedbackService {
                 .status(FeedbackStatus.PENDING)
                 .build();
 
-        return feedbackMapper.toResponse(feedbackRepository.save(feedback));
+        Feedback savedFeedback = feedbackRepository.save(feedback);
+        activityLogService.record(
+                assignment.getResidentHead(),
+                "INVOICE_COMPLAINT_CREATED",
+                "Created invoice complaint for invoice " + invoice.getId()
+        );
+        notifyAdminsAboutNewFeedback(savedFeedback);
+
+        return feedbackMapper.toResponse(savedFeedback);
     }
 
     @Override
@@ -144,17 +166,84 @@ public class FeedbackServiceImpl implements FeedbackService {
         feedback.setReply(request.getReply().trim());
         feedback.setRepliedBy(repliedBy);
 
-        return feedbackMapper.toResponse(feedbackRepository.save(feedback));
+        Feedback savedFeedback = feedbackRepository.save(feedback);
+        activityLogService.record(
+                repliedBy,
+                "FEEDBACK_REPLIED",
+                "Replied to feedback " + savedFeedback.getTitle()
+        );
+        notifyResidentAboutFeedbackUpdate(
+                repliedBy,
+                savedFeedback,
+                "Phản hồi của bạn đã được trả lời",
+                "Quản lý đã trả lời phản hồi \"" + savedFeedback.getTitle() + "\"."
+        );
+
+        return feedbackMapper.toResponse(savedFeedback);
     }
 
     @Override
     @Transactional
-    public FeedbackResponse updateFeedbackStatus(Long id, FeedbackStatusUpdateRequest request, Long buildingId) {
+    public FeedbackResponse updateFeedbackStatus(
+            Long id,
+            Long updatedById,
+            FeedbackStatusUpdateRequest request,
+            Long buildingId
+    ) {
         Feedback feedback = findFeedback(id);
+        User updatedBy = findUser(updatedById);
         validateFeedbackBelongsToBuilding(feedback, buildingId);
-        feedback.setStatus(parseFeedbackStatus(request.getStatus()));
+        FeedbackStatus nextStatus = parseFeedbackStatus(request.getStatus());
+        feedback.setStatus(nextStatus);
 
-        return feedbackMapper.toResponse(feedbackRepository.save(feedback));
+        Feedback savedFeedback = feedbackRepository.save(feedback);
+        activityLogService.record(
+                updatedBy,
+                "FEEDBACK_STATUS_UPDATED",
+                "Updated feedback " + savedFeedback.getTitle() + " to " + nextStatus.name()
+        );
+        notifyResidentAboutFeedbackUpdate(
+                updatedBy,
+                savedFeedback,
+                "Trạng thái phản hồi đã thay đổi",
+                "Phản hồi \"" + savedFeedback.getTitle() + "\" đã chuyển sang trạng thái " + nextStatus.name() + "."
+        );
+
+        return feedbackMapper.toResponse(savedFeedback);
+    }
+
+    private void notifyAdminsAboutNewFeedback(Feedback feedback) {
+        String eventLabel = feedback.getType() == FeedbackType.INVOICE_COMPLAINT
+                ? "khiếu nại hóa đơn"
+                : "phản hồi";
+        notificationService.notifyAdmins(
+                feedback.getResidentHead(),
+                NotificationEventType.FEEDBACK_CREATED,
+                "Có " + eventLabel + " mới",
+                feedback.getResidentHead().getFullName()
+                        + " đã gửi " + eventLabel
+                        + " từ phòng " + feedback.getRoom().getRoomCode()
+                        + ": " + feedback.getTitle(),
+                "/admin/buildings/" + feedback.getRoom().getBuilding().getId() + "/feedbacks",
+                feedback.getRoom().getBuilding()
+        );
+    }
+
+    private void notifyResidentAboutFeedbackUpdate(
+            User actor,
+            Feedback feedback,
+            String title,
+            String content
+    ) {
+        notificationService.notifyUser(
+                actor,
+                feedback.getResidentHead(),
+                NotificationEventType.FEEDBACK_UPDATED,
+                title,
+                content,
+                "/resident/feedbacks",
+                feedback.getRoom().getBuilding()
+        );
     }
 
     private RoomAssignment findActiveAssignment(Long residentHeadId) {

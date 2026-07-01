@@ -21,7 +21,7 @@ public interface RoomMemberService {
 
     List<RoomMemberResponse> getRoomMembers(Long roomId);
 
-    RoomMemberResponse approveMember(Long memberId, Long buildingId);
+    RoomMemberResponse approveMember(Long memberId, Long approvedById, Long buildingId);
 
-    RoomMemberResponse rejectMember(Long memberId, Long buildingId);
+    RoomMemberResponse rejectMember(Long memberId, Long rejectedById, Long buildingId);
 }

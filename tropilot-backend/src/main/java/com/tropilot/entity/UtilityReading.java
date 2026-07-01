@@ -57,7 +57,7 @@ public class UtilityReading {
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal newElectricity;
 
-    @Column(nullable = false, length = 500)
+    @Column(length = 500)
     private String electricityImageUrl;
 
     @Column(nullable = false, precision = 12, scale = 2)
@@ -66,7 +66,7 @@ public class UtilityReading {
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal newWater;
 
-    @Column(nullable = false, length = 500)
+    @Column(length = 500)
     private String waterImageUrl;
 
     @Column(length = 1000)

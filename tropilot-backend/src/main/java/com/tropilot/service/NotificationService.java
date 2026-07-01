@@ -6,6 +6,8 @@ import com.tropilot.entity.Invoice;
 import com.tropilot.entity.RentalContract;
 import com.tropilot.entity.SepayPayment;
 import com.tropilot.entity.User;
+import com.tropilot.entity.Building;
+import com.tropilot.enums.NotificationEventType;
 
 import java.util.List;
 
@@ -15,11 +17,32 @@ public interface NotificationService {
 
     List<NotificationResponse> getAdminNotifications(Long buildingId);
 
+    List<NotificationResponse> getMyNotifications(Long userId);
+
     List<NotificationResponse> getResidentNotifications(Long userId);
 
     List<NotificationResponse> getStaffNotifications(Long userId);
 
     NotificationResponse markRead(Long userId, Long notificationId);
+
+    void notifyAdmins(
+            User actor,
+            NotificationEventType eventType,
+            String title,
+            String content,
+            String actionPath,
+            Building building
+    );
+
+    void notifyUser(
+            User actor,
+            User recipient,
+            NotificationEventType eventType,
+            String title,
+            String content,
+            String actionPath,
+            Building building
+    );
 
     void createContractUpdatedNotification(User createdBy, RentalContract contract);
 

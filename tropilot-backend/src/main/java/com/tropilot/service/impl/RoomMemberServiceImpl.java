@@ -6,8 +6,10 @@ import com.tropilot.dto.response.RoomMemberResponse;
 import com.tropilot.entity.Room;
 import com.tropilot.entity.RoomAssignment;
 import com.tropilot.entity.RoomMember;
+import com.tropilot.entity.User;
 import com.tropilot.enums.RoomAssignmentStatus;
 import com.tropilot.enums.RoomMemberStatus;
+import com.tropilot.enums.NotificationEventType;
 import com.tropilot.exception.BadRequestException;
 import com.tropilot.exception.ForbiddenException;
 import com.tropilot.exception.ResourceNotFoundException;
@@ -15,8 +17,10 @@ import com.tropilot.repository.RoomAssignmentRepository;
 import com.tropilot.repository.BuildingRepository;
 import com.tropilot.repository.RoomMemberRepository;
 import com.tropilot.repository.RoomRepository;
+import com.tropilot.repository.UserRepository;
 import com.tropilot.service.ActivityLogService;
 import com.tropilot.service.RoomMemberService;
+import com.tropilot.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +39,8 @@ public class RoomMemberServiceImpl implements RoomMemberService {
     private final RoomRepository roomRepository;
     private final RoomMemberMapper roomMemberMapper;
     private final ActivityLogService activityLogService;
+    private final NotificationService notificationService;
+    private final UserRepository userRepository;
 
     @Override
     @Transactional
@@ -60,6 +66,16 @@ public class RoomMemberServiceImpl implements RoomMemberService {
                 "ROOM_MEMBER_ADDED",
                 "Added room member request for " + savedMember.getFullName()
                         + " in room " + assignment.getRoom().getRoomCode()
+        );
+        notificationService.notifyAdmins(
+                assignment.getResidentHead(),
+                NotificationEventType.MEMBER_REQUESTED,
+                "Có yêu cầu thêm thành viên",
+                assignment.getResidentHead().getFullName()
+                        + " đề nghị thêm " + savedMember.getFullName()
+                        + " vào phòng " + assignment.getRoom().getRoomCode() + ".",
+                "/admin/members/pending",
+                assignment.getRoom().getBuilding()
         );
 
         return roomMemberMapper.toResponse(savedMember);
@@ -155,8 +171,9 @@ public class RoomMemberServiceImpl implements RoomMemberService {
 
     @Override
     @Transactional
-    public RoomMemberResponse approveMember(Long memberId, Long buildingId) {
+    public RoomMemberResponse approveMember(Long memberId, Long approvedById, Long buildingId) {
         RoomMember member = findMember(memberId);
+        User approvedBy = findUser(approvedById);
         validateMemberBelongsToBuilding(member, buildingId);
 
         if (member.getStatus() != RoomMemberStatus.PENDING) {
@@ -170,10 +187,20 @@ public class RoomMemberServiceImpl implements RoomMemberService {
         member.setMoveOutDate(null);
 
         RoomMember savedMember = roomMemberRepository.save(member);
-        activityLogService.recordCurrentUser(
+        activityLogService.record(
+                approvedBy,
                 "ROOM_MEMBER_APPROVED",
                 "Approved room member " + savedMember.getFullName()
                         + " in room " + savedMember.getRoom().getRoomCode()
+        );
+        notificationService.notifyUser(
+                approvedBy,
+                savedMember.getResidentHead(),
+                NotificationEventType.MEMBER_APPROVED,
+                "Yêu cầu thành viên đã được duyệt",
+                savedMember.getFullName() + " đã được thêm vào phòng.",
+                "/resident/members",
+                savedMember.getRoom().getBuilding()
         );
 
         return roomMemberMapper.toResponse(savedMember);
@@ -181,8 +208,9 @@ public class RoomMemberServiceImpl implements RoomMemberService {
 
     @Override
     @Transactional
-    public RoomMemberResponse rejectMember(Long memberId, Long buildingId) {
+    public RoomMemberResponse rejectMember(Long memberId, Long rejectedById, Long buildingId) {
         RoomMember member = findMember(memberId);
+        User rejectedBy = findUser(rejectedById);
         validateMemberBelongsToBuilding(member, buildingId);
 
         if (member.getStatus() != RoomMemberStatus.PENDING) {
@@ -192,10 +220,20 @@ public class RoomMemberServiceImpl implements RoomMemberService {
         member.setStatus(RoomMemberStatus.REJECTED);
 
         RoomMember savedMember = roomMemberRepository.save(member);
-        activityLogService.recordCurrentUser(
+        activityLogService.record(
+                rejectedBy,
                 "ROOM_MEMBER_REJECTED",
                 "Rejected room member " + savedMember.getFullName()
                         + " in room " + savedMember.getRoom().getRoomCode()
+        );
+        notificationService.notifyUser(
+                rejectedBy,
+                savedMember.getResidentHead(),
+                NotificationEventType.MEMBER_REJECTED,
+                "Yêu cầu thành viên bị từ chối",
+                "Yêu cầu thêm " + savedMember.getFullName() + " vào phòng không được duyệt.",
+                "/resident/members",
+                savedMember.getRoom().getBuilding()
         );
 
         return roomMemberMapper.toResponse(savedMember);
@@ -289,6 +327,11 @@ public class RoomMemberServiceImpl implements RoomMemberService {
         }
 
         return value.trim();
+    }
+
+    private User findUser(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
     private void closeOpenMembersIfRoomHasNoActiveHeadResident(Room room) {

@@ -2,9 +2,12 @@ package com.tropilot.controller;
 
 import com.tropilot.dto.response.ApiResponse;
 import com.tropilot.dto.response.ExpenseResponse;
+import com.tropilot.exception.UnauthorizedException;
+import com.tropilot.security.AuthenticatedUser;
 import com.tropilot.service.ExpenseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -29,9 +32,32 @@ public class AdminExpenseController {
 
     @PutMapping("/{id}/cancel")
     public ApiResponse<ExpenseResponse> cancelExpense(
+            @AuthenticationPrincipal AuthenticatedUser user,
             @PathVariable Long id,
             @RequestParam(required = false) Long buildingId
     ) {
-        return ApiResponse.success("Expense cancelled successfully", expenseService.cancelExpense(id, buildingId));
+        return ApiResponse.success(
+                "Expense cancelled successfully",
+                expenseService.cancelExpense(id, getUserId(user), buildingId)
+        );
+    }
+
+    @PutMapping("/{id}/approve")
+    public ApiResponse<ExpenseResponse> approveExpense(
+            @AuthenticationPrincipal AuthenticatedUser user,
+            @PathVariable Long id,
+            @RequestParam(required = false) Long buildingId
+    ) {
+        return ApiResponse.success(
+                "Expense approved successfully",
+                expenseService.approveExpense(id, getUserId(user), buildingId)
+        );
+    }
+
+    private Long getUserId(AuthenticatedUser user) {
+        if (user == null) {
+            throw new UnauthorizedException("Authentication is required");
+        }
+        return user.getId();
     }
 }

@@ -151,6 +151,32 @@ function createState(options = {}) {
     buildings: [building],
     rooms: [occupiedRoom],
     invoices: options.withInitialInvoice ? [createInvoice(occupiedRoom)] : [],
+    notifications: [
+      {
+        id: 1,
+        title: 'Payment received',
+        content: 'Payment for invoice 1 has been received successfully.',
+        source: 'SYSTEM',
+        eventType: 'PAYMENT_RECEIVED',
+        actionPath: null,
+        createdByName: 'System',
+        createdByRole: 'ADMIN',
+        createdAt: '2026-06-24T20:03:00',
+        read: false,
+        readAt: null
+      }
+    ],
+    activityLogs: [
+      {
+        id: 1,
+        userFullName: 'Current User',
+        userEmail: 'current@tropilot.test',
+        userRole: 'ADMIN',
+        action: 'PROFILE_UPDATED',
+        description: 'Updated profile information',
+        createdAt: '2026-06-24T20:00:00'
+      }
+    ],
     webhookPaid: false
   };
 }
@@ -280,6 +306,28 @@ async function handleApiRoute(route, state) {
     return fulfillJson(route, success(state.currentUser || USERS.admin));
   }
 
+  if (method === 'GET' && path === '/api/notifications/me') {
+    return fulfillJson(route, success(state.notifications));
+  }
+
+  const notificationReadMatch = path.match(/^\/api\/notifications\/(\d+)\/read$/);
+  if (method === 'PUT' && notificationReadMatch) {
+    const notification = state.notifications.find((item) => String(item.id) === notificationReadMatch[1]);
+    if (notification) {
+      notification.read = true;
+      notification.readAt = '2026-06-24T20:05:00';
+    }
+    return fulfillJson(route, success(notification));
+  }
+
+  if (method === 'GET' && path === '/api/activity-logs/me') {
+    return fulfillJson(route, success(state.activityLogs));
+  }
+
+  if (method === 'GET' && path === '/api/admin/notifications/sent') {
+    return fulfillJson(route, success([]));
+  }
+
   if (method === 'GET' && path === '/api/admin/dashboard') {
     return fulfillJson(route, success(getDashboardState(state)));
   }
@@ -349,6 +397,37 @@ async function handleApiRoute(route, state) {
 
   if (method === 'GET' && path === '/api/staff/rooms') {
     return fulfillJson(route, success(listRooms(state, request.url())));
+  }
+
+  if (method === 'GET' && ['/api/admin/utility-readings', '/api/staff/utility-readings'].includes(path)) {
+    return fulfillJson(route, success([]));
+  }
+
+  if (
+    method === 'GET'
+    && ['/api/admin/utility-readings/overview', '/api/staff/utility-readings/overview'].includes(path)
+  ) {
+    return fulfillJson(route, success({
+      month: getQuery(request.url()).get('month'),
+      totalRooms: state.rooms.length,
+      recordedRooms: 0,
+      pendingRooms: state.rooms.length,
+      emptyRooms: 0,
+      eligibleRooms: state.rooms
+    }));
+  }
+
+  if (method === 'POST' && path === '/api/staff/utility-readings/fetch') {
+    return fulfillJson(route, success({
+      source: 'MOCK',
+      recordedAt: getQuery(request.url()).get('readingDate'),
+      oldElectricity: 350,
+      newElectricity: 437,
+      electricityUsage: 87,
+      oldWater: 24,
+      newWater: 31,
+      waterUsage: 7
+    }));
   }
 
   if (method === 'POST' && path === '/api/admin/rooms') {

@@ -5,6 +5,7 @@ import * as buildingApi from '../../features/buildings/api.js';
 import * as roomApi from '../../features/rooms/api.js';
 import * as adminUserApi from '../../features/users/api.js';
 import AdminAccountDirectoryTable from '../../components/AdminAccountDirectoryTable.jsx';
+import ModalCloseButton from '../../components/common/ModalCloseButton.jsx';
 import { addMonthsToDateInput, formatDateInputValue, formatDisplayDate } from '../../utils/dateFormat.js';
 import { exportRowsToExcel } from '../../utils/excelExport.js';
 import { formatRoomCode, formatRoomLabel } from '../../utils/roomDisplay.js';
@@ -410,9 +411,7 @@ export default function AdminBuildingUserPage() {
                 <span className="section-eyebrow">{t('buildingUsers.assignment.eyebrow')}</span>
                 <h2 id="assign-head-resident-title">{t('buildingUsers.assignment.title')}</h2>
               </div>
-              <button className="account-modal-close" type="button" onClick={handleCloseAssignment}>
-                {t('common.close')}
-              </button>
+              <ModalCloseButton label={t('common.close')} onClick={handleCloseAssignment} />
             </div>
 
             <p className="assignment-dialog-description">{t('buildingUsers.assignment.description')}</p>

@@ -4,6 +4,7 @@ import ContactPage from '../pages/ContactPage.jsx';
 import ProfilePage from '../pages/ProfilePage.jsx';
 import Settings from '../pages/Settings.jsx';
 import ResidentContractPage from '../pages/resident/ResidentContractPage.jsx';
+import ResidentActivityLogPage from '../pages/resident/ResidentActivityLogPage.jsx';
 import ResidentBuildingCostPage from '../pages/resident/ResidentBuildingCostPage.jsx';
 import ResidentDashboardPage from '../pages/resident/ResidentDashboardPage.jsx';
 import ResidentEquipmentPage from '../pages/resident/ResidentEquipmentPage.jsx';
@@ -25,6 +26,7 @@ export const residentRoutes = (
       <Route path="profile" element={<ProfilePage />} />
       <Route path="contact" element={<ContactPage />} />
       <Route path="settings" element={<Settings />} />
+      <Route path="activity-logs" element={<ResidentActivityLogPage />} />
       <Route element={<ResidentRoomRoute />}>
         <Route path="dashboard" element={<ResidentDashboardPage />} />
         <Route path="notifications" element={<ResidentNotificationPage />} />

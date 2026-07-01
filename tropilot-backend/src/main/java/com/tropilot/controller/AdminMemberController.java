@@ -2,9 +2,12 @@ package com.tropilot.controller;
 
 import com.tropilot.dto.response.ApiResponse;
 import com.tropilot.dto.response.RoomMemberResponse;
+import com.tropilot.exception.UnauthorizedException;
+import com.tropilot.security.AuthenticatedUser;
 import com.tropilot.service.RoomMemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -39,17 +42,32 @@ public class AdminMemberController {
 
     @PutMapping("/members/{id}/approve")
     public ApiResponse<RoomMemberResponse> approveMember(
+            @AuthenticationPrincipal AuthenticatedUser user,
             @PathVariable Long id,
             @RequestParam(required = false) Long buildingId
     ) {
-        return ApiResponse.success("Room member approved successfully", roomMemberService.approveMember(id, buildingId));
+        return ApiResponse.success(
+                "Room member approved successfully",
+                roomMemberService.approveMember(id, getUserId(user), buildingId)
+        );
     }
 
     @PutMapping("/members/{id}/reject")
     public ApiResponse<RoomMemberResponse> rejectMember(
+            @AuthenticationPrincipal AuthenticatedUser user,
             @PathVariable Long id,
             @RequestParam(required = false) Long buildingId
     ) {
-        return ApiResponse.success("Room member rejected successfully", roomMemberService.rejectMember(id, buildingId));
+        return ApiResponse.success(
+                "Room member rejected successfully",
+                roomMemberService.rejectMember(id, getUserId(user), buildingId)
+        );
+    }
+
+    private Long getUserId(AuthenticatedUser user) {
+        if (user == null) {
+            throw new UnauthorizedException("Authentication is required");
+        }
+        return user.getId();
     }
 }

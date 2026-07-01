@@ -67,6 +67,11 @@ export async function cancelAdminExpense(id, filters) {
   return response.data;
 }
 
+export async function approveAdminExpense(id, filters) {
+  const response = await apiClient.put(`/api/admin/expenses/${id}/approve`, null, filterConfig(filters));
+  return response.data;
+}
+
 export async function getAdminCashFlow(month, filters) {
   const response = await apiClient.get('/api/admin/cashflow', queryConfig(month, filters));
   return response.data;

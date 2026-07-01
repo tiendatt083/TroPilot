@@ -39,6 +39,7 @@ export default function ResidentMemberPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [leavingId, setLeavingId] = useState(null);
+  const [showCreateForm, setShowCreateForm] = useState(false);
 
   const loadMembers = async () => {
     setError('');
@@ -64,6 +65,7 @@ export default function ResidentMemberPage() {
       await memberApi.createResidentMember(payload);
       setMessage(t('resident.members.submitted'));
       setReturnRequestDraft(null);
+      setShowCreateForm(false);
       await loadMembers();
     } catch (apiError) {
       setError(apiError.response?.data?.message || t('resident.members.submitError'));
@@ -90,18 +92,27 @@ export default function ResidentMemberPage() {
   };
 
   const handleEdit = (member) => {
+    setShowCreateForm(false);
     setReturnRequestDraft(null);
     setEditingMember(member);
   };
 
   const handleRequestAgain = (member) => {
+    setShowCreateForm(false);
     setEditingMember(null);
     setReturnRequestDraft(createReturnRequestDraft(member));
   };
 
   const handleCancelFormAction = () => {
+    setShowCreateForm(false);
     setEditingMember(null);
     setReturnRequestDraft(null);
+  };
+
+  const handleOpenCreateForm = () => {
+    setEditingMember(null);
+    setReturnRequestDraft(null);
+    setShowCreateForm(true);
   };
 
   const handleLeave = async (member) => {
@@ -127,6 +138,7 @@ export default function ResidentMemberPage() {
 
   const firstMember = members[0];
   const activeFormMember = editingMember || returnRequestDraft;
+  const showForm = showCreateForm || Boolean(activeFormMember);
   const isEditing = Boolean(editingMember);
   const formKey = editingMember?.id
     ? `edit-${editingMember.id}`
@@ -146,24 +158,32 @@ export default function ResidentMemberPage() {
 
       <section className="member-workspace">
         <div>
-          <PageHeader
-            eyebrow={isEditing ? t('resident.members.editEyebrow') : t('resident.members.newEyebrow')}
-            title={isEditing ? editingMember.fullName : t('resident.members.addTitle')}
-          />
-          <MemberForm
-            key={formKey}
-            initialValues={activeFormMember}
-            loading={saving}
-            submitLabel={
-              isEditing
-                ? t('resident.members.saveChanges')
-                : returnRequestDraft
-                  ? t('resident.members.submitAgain')
-                  : t('resident.members.submitApproval')
-            }
-            onSubmit={isEditing ? handleUpdate : handleCreate}
-            onCancel={activeFormMember ? handleCancelFormAction : undefined}
-          />
+          {showForm ? (
+            <>
+              <PageHeader
+                eyebrow={isEditing ? t('resident.members.editEyebrow') : t('resident.members.newEyebrow')}
+                title={isEditing ? editingMember.fullName : t('resident.members.addTitle')}
+              />
+              <MemberForm
+                key={formKey}
+                initialValues={activeFormMember}
+                loading={saving}
+                submitLabel={
+                  isEditing
+                    ? t('resident.members.saveChanges')
+                    : returnRequestDraft
+                      ? t('resident.members.submitAgain')
+                      : t('resident.members.submitApproval')
+                }
+                onSubmit={isEditing ? handleUpdate : handleCreate}
+                onCancel={handleCancelFormAction}
+              />
+            </>
+          ) : (
+            <button className="button-link" type="button" onClick={handleOpenCreateForm}>
+              {t('resident.members.addTitle')}
+            </button>
+          )}
         </div>
 
         <div>

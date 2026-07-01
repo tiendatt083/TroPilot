@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { formatDisplayDate } from '../utils/dateFormat.js';
+import ModalCloseButton from './common/ModalCloseButton.jsx';
 
 export default function AdminAccountDirectoryTable({
   accounts,
@@ -284,14 +285,7 @@ function AccountDetailModal({ account, onClose, showRoom, t }) {
             <span className="section-eyebrow">{t('accountDirectory.detail.eyebrow')}</span>
             <h2 id="account-detail-title">{account.fullName}</h2>
           </div>
-          <button
-            aria-label={t('accountDirectory.actions.close')}
-            className="account-modal-close"
-            type="button"
-            onClick={onClose}
-          >
-            ×
-          </button>
+          <ModalCloseButton label={t('accountDirectory.actions.close')} onClick={onClose} />
         </div>
 
         <dl className="account-detail-grid">

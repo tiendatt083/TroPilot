@@ -79,7 +79,7 @@ export default function AdminBuildingNotificationPage() {
     try {
       const [usersResponse, notificationsResponse] = await Promise.all([
         adminUserApi.getUsers(),
-        notificationApi.getAdminNotifications(buildingFilter)
+        notificationApi.getAdminSentNotifications(buildingFilter)
       ]);
       setUsers(usersResponse.data);
       setNotifications(notificationsResponse.data);

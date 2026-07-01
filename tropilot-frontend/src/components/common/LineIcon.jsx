@@ -42,6 +42,12 @@ const ICONS = {
       <path d="M12 7v5l3 2" />
     </>
   ),
+  close: (
+    <>
+      <path d="m6.5 6.5 11 11" />
+      <path d="m17.5 6.5-11 11" />
+    </>
+  ),
   calendar: (
     <>
       <path d="M6 3v4" />
@@ -144,6 +150,14 @@ const ICONS = {
     <>
       <path d="M12 5v14" />
       <path d="M5 12h14" />
+    </>
+  ),
+  refresh: (
+    <>
+      <path d="M20 7v5h-5" />
+      <path d="M4 17v-5h5" />
+      <path d="M6.1 8.5A7 7 0 0 1 18.6 7L20 9" />
+      <path d="M17.9 15.5A7 7 0 0 1 5.4 17L4 15" />
     </>
   ),
   save: (

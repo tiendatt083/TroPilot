@@ -49,6 +49,16 @@ public class AdminNotificationController {
         );
     }
 
+    @GetMapping("/sent")
+    public ApiResponse<List<NotificationResponse>> getSentNotifications(
+            @RequestParam(required = false) Long buildingId
+    ) {
+        return ApiResponse.success(
+                "Sent notifications loaded successfully",
+                notificationService.getAdminNotifications(buildingId)
+        );
+    }
+
     private Long getUserId(AuthenticatedUser user) {
         if (user == null) {
             throw new UnauthorizedException("Authentication is required");

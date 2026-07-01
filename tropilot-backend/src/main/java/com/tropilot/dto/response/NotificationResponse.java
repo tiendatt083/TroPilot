@@ -1,6 +1,8 @@
 package com.tropilot.dto.response;
 
 import com.tropilot.enums.NotificationTargetType;
+import com.tropilot.enums.NotificationEventType;
+import com.tropilot.enums.NotificationSource;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -16,6 +18,9 @@ public class NotificationResponse {
     private String content;
     private NotificationTargetType targetType;
     private Long targetId;
+    private NotificationSource source;
+    private NotificationEventType eventType;
+    private String actionPath;
     private List<Long> targetUserIds;
     private List<String> targetUserNames;
     private boolean allBuildings;

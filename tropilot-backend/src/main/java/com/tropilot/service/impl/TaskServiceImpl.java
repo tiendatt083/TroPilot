@@ -13,6 +13,7 @@ import com.tropilot.entity.Room;
 import com.tropilot.entity.Task;
 import com.tropilot.entity.User;
 import com.tropilot.enums.FeedbackStatus;
+import com.tropilot.enums.NotificationEventType;
 import com.tropilot.enums.TaskPriority;
 import com.tropilot.enums.TaskStatus;
 import com.tropilot.enums.TaskType;
@@ -29,6 +30,7 @@ import com.tropilot.repository.UserRepository;
 import com.tropilot.service.ActivityLogService;
 import com.tropilot.service.TaskEmailService;
 import com.tropilot.service.TaskService;
+import com.tropilot.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,6 +52,7 @@ public class TaskServiceImpl implements TaskService {
     private final TaskMapper taskMapper;
     private final ActivityLogService activityLogService;
     private final TaskEmailService taskEmailService;
+    private final NotificationService notificationService;
 
     @Override
     @Transactional
@@ -80,6 +83,15 @@ public class TaskServiceImpl implements TaskService {
                 createdBy,
                 "TASK_CREATED",
                 "Created task " + savedTask.getTitle() + " for " + assignedTo.getEmail()
+        );
+        notificationService.notifyUser(
+                createdBy,
+                assignedTo,
+                NotificationEventType.TASK_ASSIGNED,
+                "Bạn có công việc mới",
+                savedTask.getTitle() + " - hạn hoàn thành " + savedTask.getDeadline().toLocalDate(),
+                "/staff/tasks/" + savedTask.getId(),
+                savedTask.getBuilding()
         );
         taskEmailService.sendTaskAssignedEmail(savedTask);
 
@@ -163,6 +175,11 @@ public class TaskServiceImpl implements TaskService {
         task.setStatus(TaskStatus.IN_PROGRESS);
         Task savedTask = taskRepository.save(task);
         synchronizeFeedbackStatus(savedTask);
+        activityLogService.record(
+                savedTask.getAssignedTo(),
+                "TASK_STARTED",
+                "Started task " + savedTask.getTitle()
+        );
 
         return taskMapper.toResponse(savedTask);
     }
@@ -191,6 +208,18 @@ public class TaskServiceImpl implements TaskService {
                 "TASK_COMPLETED",
                 "Completed task " + savedTask.getTitle()
         );
+        notifyTaskCreator(
+                savedTask,
+                NotificationEventType.TASK_COMPLETED,
+                "Nhân viên đã hoàn thành công việc",
+                savedTask.getAssignedTo().getFullName()
+                        + " đã hoàn thành công việc \"" + savedTask.getTitle() + "\"."
+        );
+        notifyFeedbackResident(
+                savedTask,
+                "Yêu cầu của bạn đã được xử lý",
+                "Công việc liên quan đến phản hồi \"" + linkedFeedbackTitle(savedTask) + "\" đã hoàn thành."
+        );
 
         return taskMapper.toResponse(savedTask);
     }
@@ -211,8 +240,63 @@ public class TaskServiceImpl implements TaskService {
 
         Task savedTask = taskRepository.save(task);
         synchronizeFeedbackStatus(savedTask);
+        activityLogService.record(
+                savedTask.getAssignedTo(),
+                "TASK_REJECTED",
+                "Rejected task " + savedTask.getTitle()
+        );
+        notifyTaskCreator(
+                savedTask,
+                NotificationEventType.TASK_REJECTED,
+                "Nhân viên từ chối công việc",
+                savedTask.getAssignedTo().getFullName()
+                        + " đã từ chối công việc \"" + savedTask.getTitle() + "\"."
+        );
 
         return taskMapper.toResponse(savedTask);
+    }
+
+    private void notifyTaskCreator(
+            Task task,
+            NotificationEventType eventType,
+            String title,
+            String content
+    ) {
+        notificationService.notifyUser(
+                task.getAssignedTo(),
+                task.getCreatedBy(),
+                eventType,
+                title,
+                content,
+                adminTaskPath(task),
+                task.getBuilding()
+        );
+    }
+
+    private void notifyFeedbackResident(Task task, String title, String content) {
+        if (task.getFeedback() == null) {
+            return;
+        }
+
+        notificationService.notifyUser(
+                task.getAssignedTo(),
+                task.getFeedback().getResidentHead(),
+                NotificationEventType.FEEDBACK_UPDATED,
+                title,
+                content,
+                "/resident/feedbacks",
+                task.getFeedback().getRoom().getBuilding()
+        );
+    }
+
+    private String adminTaskPath(Task task) {
+        return task.getBuilding() == null
+                ? "/admin/tasks/" + task.getId()
+                : "/admin/buildings/" + task.getBuilding().getId() + "/tasks/" + task.getId();
+    }
+
+    private String linkedFeedbackTitle(Task task) {
+        return task.getFeedback() == null ? task.getTitle() : task.getFeedback().getTitle();
     }
 
     private Task findAssignedTask(Long staffId, Long id) {

@@ -105,6 +105,7 @@ export default function AdminUtilityReadingPage() {
               initialValues={editingReading}
               loading={saving}
               mode={editingReading ? 'edit' : 'create'}
+              onFetchReadings={utilityReadingApi.fetchUtilityReadingPreview}
               submitLabel={editingReading ? t('buildingManagement.saveChanges') : t('utilityReadingManagement.record')}
               onSubmit={editingReading ? handleUpdate : handleCreate}
               onCancel={editingReading ? () => setEditingReading(null) : undefined}

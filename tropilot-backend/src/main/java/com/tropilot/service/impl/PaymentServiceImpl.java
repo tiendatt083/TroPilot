@@ -11,6 +11,7 @@ import com.tropilot.entity.RoomAssignment;
 import com.tropilot.entity.User;
 import com.tropilot.enums.InvoiceStatus;
 import com.tropilot.enums.PaymentStatus;
+import com.tropilot.enums.NotificationEventType;
 import com.tropilot.enums.ReceiptStatus;
 import com.tropilot.enums.RoomAssignmentStatus;
 import com.tropilot.exception.BadRequestException;
@@ -25,6 +26,7 @@ import com.tropilot.repository.UserRepository;
 import com.tropilot.service.ActivityLogService;
 import com.tropilot.service.PaymentEmailService;
 import com.tropilot.service.PaymentService;
+import com.tropilot.service.NotificationService;
 import com.tropilot.service.ReceiptCreationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -49,6 +51,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final ReceiptCreationService receiptCreationService;
     private final ActivityLogService activityLogService;
     private final PaymentEmailService paymentEmailService;
+    private final NotificationService notificationService;
 
     @Override
     @Transactional
@@ -76,6 +79,16 @@ public class PaymentServiceImpl implements PaymentService {
                 assignment.getResidentHead(),
                 "PAYMENT_PROOF_UPLOADED",
                 "Uploaded payment proof for invoice " + invoice.getId()
+        );
+        notificationService.notifyAdmins(
+                assignment.getResidentHead(),
+                NotificationEventType.PAYMENT_SUBMITTED,
+                "Có thanh toán cần xác nhận",
+                assignment.getResidentHead().getFullName()
+                        + " đã gửi minh chứng thanh toán hóa đơn " + invoice.getId()
+                        + " của phòng " + invoice.getRoom().getRoomCode() + ".",
+                "/admin/buildings/" + invoice.getRoom().getBuilding().getId() + "/invoices",
+                invoice.getRoom().getBuilding()
         );
 
         return paymentMapper.toResponse(savedPayment);
@@ -137,13 +150,16 @@ public class PaymentServiceImpl implements PaymentService {
                 "PAYMENT_APPROVED",
                 "Approved payment for invoice " + invoice.getId()
         );
-        activityLogService.record(
-                confirmedBy,
-                "RECEIPT_CREATED",
-                "System created receipt for invoice " + invoice.getId()
-        );
-
         Payment savedPayment = paymentRepository.save(payment);
+        notificationService.notifyUser(
+                confirmedBy,
+                payment.getResidentHead(),
+                NotificationEventType.PAYMENT_RECEIVED,
+                "Thanh toán đã được xác nhận",
+                "Hóa đơn " + invoice.getId() + " đã được xác nhận thanh toán thành công.",
+                "/resident/invoices/" + invoice.getId(),
+                invoice.getRoom().getBuilding()
+        );
         paymentEmailService.sendPaymentSuccessEmail(invoice, now);
 
         return paymentMapper.toResponse(savedPayment);
@@ -178,7 +194,19 @@ public class PaymentServiceImpl implements PaymentService {
                 "Rejected payment for invoice " + invoice.getId()
         );
 
-        return paymentMapper.toResponse(paymentRepository.save(payment));
+        Payment savedPayment = paymentRepository.save(payment);
+        notificationService.notifyUser(
+                confirmedBy,
+                payment.getResidentHead(),
+                NotificationEventType.PAYMENT_REJECTED,
+                "Thanh toán chưa được chấp nhận",
+                "Minh chứng thanh toán hóa đơn " + invoice.getId()
+                        + " chưa được chấp nhận. Vui lòng kiểm tra và gửi lại.",
+                "/resident/invoices/" + invoice.getId(),
+                invoice.getRoom().getBuilding()
+        );
+
+        return paymentMapper.toResponse(savedPayment);
     }
 
     private void validateResidentInvoiceAccess(RoomAssignment assignment, Invoice invoice) {

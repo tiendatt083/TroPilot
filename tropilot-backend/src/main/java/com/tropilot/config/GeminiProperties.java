@@ -4,6 +4,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 @ConfigurationProperties(prefix = "app.gemini")
@@ -16,6 +19,8 @@ public class GeminiProperties {
     private String baseUrl = "https://generativelanguage.googleapis.com";
 
     private String model = "gemini-2.5-flash-lite";
+
+    private List<String> fallbackModels = new ArrayList<>();
 
     private int connectTimeoutSeconds = 10;
 

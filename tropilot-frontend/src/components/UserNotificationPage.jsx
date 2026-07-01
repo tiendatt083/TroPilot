@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as notificationApi from '../features/notifications/api.js';
-import NotificationTable from './NotificationTable.jsx';
+import NotificationInboxList from './NotificationInboxList.jsx';
 import NotificationPaginationControls from './NotificationPaginationControls.jsx';
 import PageHeader from './PageHeader.jsx';
 
 const HISTORY_PAGE_SIZE = 30;
 
-export default function UserNotificationPage({ getNotifications, eyebrow, eyebrowKey }) {
+export default function UserNotificationPage({ eyebrow, eyebrowKey }) {
   const { t } = useTranslation();
   const [notifications, setNotifications] = useState([]);
   const [notificationPage, setNotificationPage] = useState(0);
@@ -22,16 +22,16 @@ export default function UserNotificationPage({ getNotifications, eyebrow, eyebro
   }, [notificationPage, notifications]);
 
   useEffect(() => {
-    getNotifications()
+    notificationApi.getMyNotifications()
       .then((response) => {
         setNotifications(response.data);
         setNotificationPage(0);
       })
       .catch((apiError) => setError(apiError.response?.data?.message || t('resident.notifications.loadError')))
       .finally(() => setLoading(false));
-  }, [getNotifications]);
+  }, [t]);
 
-  const handleMarkRead = async (notification) => {
+  const handleMarkRead = async (notification, options = {}) => {
     setProcessingId(notification.id);
     setMessage('');
     setError('');
@@ -39,7 +39,9 @@ export default function UserNotificationPage({ getNotifications, eyebrow, eyebro
     try {
       const response = await notificationApi.markNotificationRead(notification.id);
       setNotifications((current) => current.map((item) => (item.id === notification.id ? response.data : item)));
-      setMessage(t('resident.notifications.markedRead'));
+      if (!options.silent) {
+        setMessage(t('resident.notifications.markedRead'));
+      }
     } catch (apiError) {
       setError(apiError.response?.data?.message || t('resident.notifications.markReadError'));
     } finally {
@@ -52,7 +54,7 @@ export default function UserNotificationPage({ getNotifications, eyebrow, eyebro
   };
 
   return (
-    <section className="content-section">
+    <section className="content-section notification-page-shell">
       <PageHeader eyebrow={eyebrowKey ? t(eyebrowKey) : eyebrow} title={t('navigation.notifications')} />
 
       {message && <div className="alert success-alert">{message}</div>}
@@ -62,10 +64,9 @@ export default function UserNotificationPage({ getNotifications, eyebrow, eyebro
         <div className="empty-state">{t('resident.notifications.loading')}</div>
       ) : (
         <>
-          <NotificationTable
+          <NotificationInboxList
             notifications={pagedNotifications}
             processingId={processingId}
-            showTarget={false}
             onMarkRead={handleMarkRead}
           />
           <NotificationPaginationControls

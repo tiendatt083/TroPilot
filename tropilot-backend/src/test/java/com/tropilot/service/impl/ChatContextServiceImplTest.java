@@ -2,55 +2,77 @@ package com.tropilot.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tropilot.dto.response.AdminDashboardResponse;
+import com.tropilot.dto.response.BuildingResponse;
+import com.tropilot.dto.response.CashFlowResponse;
+import com.tropilot.dto.response.HeadResidentAssignmentResponse;
+import com.tropilot.dto.response.InvoiceResponse;
+import com.tropilot.dto.response.RentalContractResponse;
+import com.tropilot.dto.response.ResidentDashboardResponse;
+import com.tropilot.dto.response.RoomResponse;
+import com.tropilot.dto.response.UtilityReadingOverviewResponse;
+import com.tropilot.dto.response.VehicleResponse;
 import com.tropilot.entity.User;
+import com.tropilot.enums.InvoiceStatus;
+import com.tropilot.enums.RoomStatus;
 import com.tropilot.enums.UserRole;
-import com.tropilot.service.BusinessRuleContextProvider;
-import com.tropilot.service.ChatRoleContextBuilder;
+import com.tropilot.enums.VehicleStatus;
+import com.tropilot.service.BuildingService;
+import com.tropilot.service.CashFlowService;
+import com.tropilot.service.DashboardService;
+import com.tropilot.service.InvoiceService;
+import com.tropilot.service.MaintenanceRequestService;
+import com.tropilot.service.NotificationService;
+import com.tropilot.service.PaymentService;
+import com.tropilot.service.RentalContractService;
+import com.tropilot.service.RoomMemberService;
+import com.tropilot.service.RoomService;
+import com.tropilot.service.TaskService;
+import com.tropilot.service.UtilityReadingService;
+import com.tropilot.service.VehicleService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ChatContextServiceImplTest {
 
-    private static final Set<String> COMMON_CONTEXT_FIELDS = Set.of(
-            "generatedAt",
-            "user",
-            "businessRules",
-            "summary",
-            "buildings",
-            "roomsNeedingAttention",
-            "invoicesNeedingAttention",
-            "expiringContracts",
-            "maintenanceRequests",
-            "tasks"
-    );
-
     @Mock
-    private ChatRoleContextBuilder adminBuilder;
-
+    private DashboardService dashboardService;
     @Mock
-    private ChatRoleContextBuilder staffBuilder;
-
+    private BuildingService buildingService;
     @Mock
-    private ChatRoleContextBuilder residentBuilder;
-
+    private RoomService roomService;
     @Mock
-    private BusinessRuleContextProvider businessRuleContextProvider;
+    private InvoiceService invoiceService;
+    @Mock
+    private RentalContractService rentalContractService;
+    @Mock
+    private UtilityReadingService utilityReadingService;
+    @Mock
+    private MaintenanceRequestService maintenanceRequestService;
+    @Mock
+    private TaskService taskService;
+    @Mock
+    private CashFlowService cashFlowService;
+    @Mock
+    private PaymentService paymentService;
+    @Mock
+    private RoomMemberService roomMemberService;
+    @Mock
+    private VehicleService vehicleService;
+    @Mock
+    private NotificationService notificationService;
 
     private ObjectMapper objectMapper;
     private ChatContextServiceImpl service;
@@ -58,162 +80,129 @@ class ChatContextServiceImplTest {
     @BeforeEach
     void setUp() {
         objectMapper = new ObjectMapper().findAndRegisterModules();
-        when(adminBuilder.getSupportedRole()).thenReturn(UserRole.ADMIN);
-        when(staffBuilder.getSupportedRole()).thenReturn(UserRole.STAFF);
-        when(residentBuilder.getSupportedRole()).thenReturn(UserRole.RESIDENT_HEAD);
-        lenient().when(businessRuleContextProvider.getBusinessRules()).thenReturn(
-                objectMapper.createObjectNode().put("version", "1.0")
-        );
         service = new ChatContextServiceImpl(
-                List.of(adminBuilder, staffBuilder, residentBuilder),
-                businessRuleContextProvider,
-                objectMapper
+                objectMapper,
+                dashboardService,
+                buildingService,
+                roomService,
+                invoiceService,
+                rentalContractService,
+                utilityReadingService,
+                maintenanceRequestService,
+                taskService,
+                cashFlowService,
+                paymentService,
+                roomMemberService,
+                vehicleService,
+                notificationService
         );
     }
 
     @Test
-    void buildContextUsesCommonSchemaAndOnlyTheAuthenticatedRoleBuilder() throws Exception {
-        User admin = user(1L, UserRole.ADMIN);
-        when(adminBuilder.build(admin)).thenReturn(Map.of(
-                "summary", Map.of("totalBuildings", 4),
-                "buildings", List.of(Map.of("buildingCode", "BD01"))
+    void buildContextUsesRuleJsonAndAdminBillingData() throws Exception {
+        String month = YearMonth.now().toString();
+        BuildingResponse building = BuildingResponse.builder()
+                .id(1L)
+                .buildingCode("GDP")
+                .name("GoldenPark")
+                .address("Demo address")
+                .build();
+        RoomResponse room = RoomResponse.builder()
+                .id(11L)
+                .buildingCode("GDP")
+                .buildingName("GoldenPark")
+                .roomCode("GDP-101")
+                .roomName("Room 101")
+                .status(RoomStatus.OCCUPIED)
+                .build();
+        InvoiceResponse invoice = InvoiceResponse.builder()
+                .id(21L)
+                .buildingCode("GDP")
+                .roomCode("GDP-101")
+                .residentHeadName("Resident")
+                .month(month)
+                .invoiceDate(LocalDate.now())
+                .dueDate(LocalDate.now().plusDays(5))
+                .totalAmount(BigDecimal.valueOf(2500000))
+                .status(InvoiceStatus.UNPAID)
+                .build();
+
+        when(dashboardService.getAdminDashboard()).thenReturn(AdminDashboardResponse.builder()
+                .totalBuildings(1)
+                .totalRooms(1)
+                .occupiedRooms(1)
+                .unpaidInvoices(1)
+                .unpaidAmount(BigDecimal.valueOf(2500000))
+                .build());
+        when(buildingService.getBuildings(null)).thenReturn(List.of(building));
+        when(roomService.getRooms(1L, null, null)).thenReturn(List.of(room));
+        when(invoiceService.getBuildingInvoices(1L)).thenReturn(List.of(invoice));
+        when(rentalContractService.getContracts(1L)).thenReturn(List.of());
+        when(utilityReadingService.getOverview(1L, month)).thenReturn(UtilityReadingOverviewResponse.builder()
+                .month(month)
+                .pendingRooms(0)
+                .eligibleRooms(List.of())
+                .build());
+        when(cashFlowService.getCashFlow(month, 1L)).thenReturn(CashFlowResponse.builder()
+                .month(month)
+                .unpaidAmount(BigDecimal.valueOf(2500000))
+                .build());
+
+        JsonNode context = objectMapper.readTree(service.buildContext(
+                user(1L, UserRole.ADMIN),
+                "Hoa don nao chua thanh toan?"
         ));
 
-        JsonNode context = objectMapper.readTree(service.buildContext(admin, "Give me the system overview"));
-
-        assertCommonSchema(context, "ADMIN", "GLOBAL_ADMIN");
-        assertThat(context.path("summary").path("totalBuildings").asLong()).isEqualTo(4);
-        assertThat(context.path("buildings").get(0).path("buildingCode").asText()).isEqualTo("BD01");
-        verify(adminBuilder).build(admin);
+        assertThat(context.path("businessRules").path("version").asText()).isNotBlank();
+        assertThat(context.path("matchedTopics").get(0).asText()).isEqualTo("BILLING");
+        assertThat(context.path("user").path("dataScope").asText()).isEqualTo("GLOBAL_ADMIN");
+        assertThat(context.path("data").path("summary").path("totalBuildings").asInt()).isEqualTo(1);
+        assertThat(context.path("data").path("buildings").get(0).path("unpaidInvoices").asInt()).isEqualTo(1);
+        assertThat(context.path("data").path("invoices").get(0).path("roomCode").asText()).isEqualTo("GDP-101");
+        assertThat(context.toString()).doesNotContain("invoiceId");
     }
 
     @Test
-    void buildContextRejectsUnsupportedBuilderFields() {
-        User staff = user(2L, UserRole.STAFF);
-        when(staffBuilder.build(staff)).thenReturn(Map.of("bankCredentials", "not-allowed"));
+    void buildContextKeepsResidentDataScopedToOwnRoom() throws Exception {
+        HeadResidentAssignmentResponse assignment = HeadResidentAssignmentResponse.builder()
+                .assigned(true)
+                .roomCode("GDP-101")
+                .roomName("Room 101")
+                .roomStatus(RoomStatus.OCCUPIED)
+                .buildingCode("GDP")
+                .buildingName("GoldenPark")
+                .build();
+        InvoiceResponse invoice = InvoiceResponse.builder()
+                .buildingCode("GDP")
+                .roomCode("GDP-101")
+                .month(YearMonth.now().toString())
+                .totalAmount(BigDecimal.valueOf(2500000))
+                .status(InvoiceStatus.UNPAID)
+                .build();
 
-        assertThatThrownBy(() -> service.buildContext(staff, "Show my tasks"))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessageContaining("Unsupported role chat context field");
-    }
+        when(dashboardService.getResidentDashboard(7L)).thenReturn(ResidentDashboardResponse.builder()
+                .currentRoom(assignment)
+                .latestInvoice(invoice)
+                .approvedMemberCount(1)
+                .unreadNotifications(0)
+                .recentMaintenanceRequests(List.of())
+                .build());
+        when(roomMemberService.getResidentMembers(7L)).thenReturn(List.of());
+        when(vehicleService.getResidentVehicles(7L)).thenReturn(List.of(VehicleResponse.builder()
+                .licensePlate("30A-12345")
+                .status(VehicleStatus.ACTIVE)
+                .build()));
+        when(invoiceService.getResidentInvoices(7L)).thenReturn(List.of(invoice));
 
-    @Test
-    void buildContextKeepsOnlyInvoiceDetailsForInvoiceQuestions() throws Exception {
-        User admin = user(1L, UserRole.ADMIN);
-        when(adminBuilder.build(admin)).thenReturn(contextWithAllDetails());
-
-        JsonNode context = objectMapper.readTree(service.buildContext(admin, "Hoa don nao chua thanh toan?"));
-
-        assertThat(context.path("summary").path("totalBuildings").asLong()).isEqualTo(4);
-        assertThat(context.path("buildings").size()).isEqualTo(1);
-        assertThat(context.path("invoicesNeedingAttention").size()).isEqualTo(1);
-        assertThat(context.path("roomsNeedingAttention").size()).isEqualTo(1);
-        assertThat(context.path("roomsNeedingAttention").get(0).path("roomCode").asText()).isEqualTo("BD01-P101");
-        assertThat(context.path("expiringContracts").size()).isZero();
-        assertThat(context.path("maintenanceRequests").size()).isZero();
-        assertThat(context.path("tasks").size()).isZero();
-    }
-
-    @Test
-    void buildContextKeepsOnlyUtilityRoomsForUtilityQuestions() throws Exception {
-        User admin = user(1L, UserRole.ADMIN);
-        when(adminBuilder.build(admin)).thenReturn(contextWithAllDetails());
-
-        JsonNode context = objectMapper.readTree(service.buildContext(admin, "Phong nao chua ghi chi so dien nuoc?"));
-
-        assertThat(context.path("roomsNeedingAttention").size()).isEqualTo(1);
-        assertThat(context.path("roomsNeedingAttention").get(0).path("roomCode").asText()).isEqualTo("BD01-P102");
-        assertThat(context.path("invoicesNeedingAttention").size()).isZero();
-        assertThat(context.path("expiringContracts").size()).isZero();
-        assertThat(context.path("maintenanceRequests").size()).isZero();
-        assertThat(context.path("tasks").size()).isZero();
-    }
-
-    @Test
-    void buildContextKeepsOverviewOnlyWhenQuestionTopicIsUnknown() throws Exception {
-        User admin = user(1L, UserRole.ADMIN);
-        when(adminBuilder.build(admin)).thenReturn(contextWithAllDetails());
-
-        JsonNode context = objectMapper.readTree(service.buildContext(admin, "Xin chao"));
-
-        assertThat(context.path("summary").path("totalBuildings").asLong()).isEqualTo(4);
-        assertThat(context.path("buildings").size()).isEqualTo(1);
-        assertThat(context.path("roomsNeedingAttention").size()).isZero();
-        assertThat(context.path("invoicesNeedingAttention").size()).isZero();
-        assertThat(context.path("expiringContracts").size()).isZero();
-        assertThat(context.path("maintenanceRequests").size()).isZero();
-        assertThat(context.path("tasks").size()).isZero();
-    }
-
-    @Test
-    void buildContextUsesRoleDataScopes() throws Exception {
-        User staff = user(2L, UserRole.STAFF);
-        User resident = user(3L, UserRole.RESIDENT_HEAD);
-        when(staffBuilder.build(staff)).thenReturn(Map.of("summary", Map.of("assignedTasks", 2)));
-        when(residentBuilder.build(resident)).thenReturn(Map.of(
-                "summary", Map.of("currentRoom", Map.of("assigned", true, "roomCode", "BD01-P101"))
+        JsonNode context = objectMapper.readTree(service.buildContext(
+                user(7L, UserRole.RESIDENT_HEAD),
+                "Hoa don phong toi the nao?"
         ));
 
-        JsonNode staffContext = objectMapper.readTree(service.buildContext(staff, "Show my tasks"));
-        JsonNode residentContext = objectMapper.readTree(service.buildContext(resident, "Show my invoice"));
-
-        assertThat(staffContext.path("user").path("dataScope").asText()).isEqualTo("STAFF_OPERATIONAL");
-        assertThat(residentContext.path("user").path("dataScope").asText()).isEqualTo("RESIDENT_OWN_ROOM_ONLY");
-    }
-
-    @Test
-    void buildContextRemovesSensitiveValuesFromAllowedFields() throws Exception {
-        User admin = user(1L, UserRole.ADMIN);
-        when(adminBuilder.build(admin)).thenReturn(Map.of(
-                "summary", Map.of(
-                        "totalBuildings", 4,
-                        "temporaryPassword", "Temp@123",
-                        "jwtToken", "raw.jwt.token"
-                ),
-                "buildings", List.of(Map.of(
-                        "buildingCode", "BD01",
-                        "webhookSecret", "sepay-secret",
-                        "geminiApiKey", "gemini-key"
-                )),
-                "invoicesNeedingAttention", List.of(Map.of(
-                        "roomCode", "BD01-P101",
-                        "authorizationHeader", "Bearer token"
-                ))
-        ));
-
-        String rawContext = service.buildContext(
-                admin,
-                "Show invoices and payments for all buildings"
-        );
-        JsonNode context = objectMapper.readTree(rawContext);
-
-        assertThat(context.path("summary").path("totalBuildings").asLong()).isEqualTo(4);
-        assertThat(context.path("buildings").get(0).path("buildingCode").asText()).isEqualTo("BD01");
-        assertThat(rawContext)
-                .doesNotContain("temporaryPassword")
-                .doesNotContain("Temp@123")
-                .doesNotContain("jwtToken")
-                .doesNotContain("raw.jwt.token")
-                .doesNotContain("webhookSecret")
-                .doesNotContain("sepay-secret")
-                .doesNotContain("geminiApiKey")
-                .doesNotContain("gemini-key")
-                .doesNotContain("authorizationHeader")
-                .doesNotContain("Bearer token");
-    }
-
-    @Test
-    void constructorRejectsDuplicateRoleBuilders() {
-        ChatRoleContextBuilder duplicateAdmin = org.mockito.Mockito.mock(ChatRoleContextBuilder.class);
-        when(duplicateAdmin.getSupportedRole()).thenReturn(UserRole.ADMIN);
-
-        assertThatThrownBy(() -> new ChatContextServiceImpl(
-                List.of(adminBuilder, duplicateAdmin),
-                businessRuleContextProvider,
-                objectMapper
-        ))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessageContaining("Multiple chat context builders");
+        assertThat(context.path("user").path("dataScope").asText()).isEqualTo("RESIDENT_OWN_ROOM_ONLY");
+        assertThat(context.path("data").path("currentRoom").path("roomCode").asText()).isEqualTo("GDP-101");
+        assertThat(context.path("data").path("invoices").get(0).path("roomCode").asText()).isEqualTo("GDP-101");
+        assertThat(context.toString()).doesNotContain("roomId").doesNotContain("buildingId");
     }
 
     private User user(Long id, UserRole role) {
@@ -221,42 +210,5 @@ class ChatContextServiceImplTest {
                 .id(id)
                 .role(role)
                 .build();
-    }
-
-    private Map<String, Object> contextWithAllDetails() {
-        return Map.of(
-                "summary", Map.of("totalBuildings", 4),
-                "buildings", List.of(Map.of("buildingCode", "BD01")),
-                "roomsNeedingAttention", List.of(
-                        Map.of(
-                                "roomCode", "BD01-P101",
-                                "reasons", List.of("MISSING_CURRENT_INVOICE")
-                        ),
-                        Map.of(
-                                "roomCode", "BD01-P102",
-                                "reasons", List.of("MISSING_UTILITY_READING")
-                        )
-                ),
-                "invoicesNeedingAttention", List.of(Map.of("roomCode", "BD01-P101")),
-                "expiringContracts", List.of(Map.of("roomCode", "BD01-P103")),
-                "maintenanceRequests", List.of(Map.of("title", "Fix camera")),
-                "tasks", List.of(Map.of("title", "Read meters"))
-        );
-    }
-
-    private void assertCommonSchema(JsonNode context, String role, String dataScope) {
-        Set<String> actualFields = StreamSupport.stream(
-                        ((Iterable<String>) context::fieldNames).spliterator(),
-                        false
-                )
-                .collect(Collectors.toSet());
-
-        assertThat(actualFields).isEqualTo(COMMON_CONTEXT_FIELDS);
-        assertThat(context.path("generatedAt").asText()).matches("\\d{2}/\\d{2}/\\d{4} \\d{2}:\\d{2}");
-        assertThat(context.path("user").path("role").asText()).isEqualTo(role);
-        assertThat(context.path("user").path("dataScope").asText()).isEqualTo(dataScope);
-        assertThat(context.path("businessRules").path("version").asText()).isEqualTo("1.0");
-        assertThat(context.path("summary").isObject()).isTrue();
-        assertThat(context.path("buildings").isArray()).isTrue();
     }
 }

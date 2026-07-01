@@ -13,6 +13,7 @@ export default function AdminBuildingExpensePage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [cancellingId, setCancellingId] = useState(null);
+  const [approvingId, setApprovingId] = useState(null);
 
   const buildingFilter = { buildingId: building.id };
 
@@ -52,15 +53,43 @@ export default function AdminBuildingExpensePage() {
     }
   };
 
+  const handleApprove = async (expense) => {
+    setApprovingId(expense.id);
+    setMessage('');
+    setError('');
+
+    try {
+      await expenseApi.approveAdminExpense(expense.id, buildingFilter);
+      setMessage(t('workspace.expenses.approved'));
+      await loadExpenses();
+    } catch (apiError) {
+      setError(apiError.response?.data?.message || t('workspace.expenses.approveError'));
+    } finally {
+      setApprovingId(null);
+    }
+  };
+
   const renderActions = (expense) => (
-    <button
-      className="secondary-button compact-button"
-      type="button"
-      disabled={expense.status === 'CANCELLED' || cancellingId === expense.id}
-      onClick={() => handleCancel(expense)}
-    >
-      {t('common.cancel')}
-    </button>
+    <div className="table-action-group">
+      {expense.status === 'PENDING' && (
+        <button
+          className="compact-button"
+          type="button"
+          disabled={approvingId === expense.id}
+          onClick={() => handleApprove(expense)}
+        >
+          {t('common.approve')}
+        </button>
+      )}
+      <button
+        className="secondary-button compact-button"
+        type="button"
+        disabled={expense.status === 'CANCELLED' || cancellingId === expense.id}
+        onClick={() => handleCancel(expense)}
+      >
+        {t('common.cancel')}
+      </button>
+    </div>
   );
 
   return (

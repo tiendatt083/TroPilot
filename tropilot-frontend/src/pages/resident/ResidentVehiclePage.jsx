@@ -20,6 +20,7 @@ export default function ResidentVehiclePage() {
   const [saving, setSaving] = useState(false);
   const [processingId, setProcessingId] = useState(null);
   const [formKey, setFormKey] = useState(0);
+  const [showRequestForm, setShowRequestForm] = useState(false);
 
   const approvedMembers = useMemo(
     () => members.filter((member) => member.status === 'APPROVED'),
@@ -54,6 +55,7 @@ export default function ResidentVehiclePage() {
       await vehicleApi.requestResidentVehicle(payload);
       setMessage(t('vehicles.submitted'));
       setFormKey((current) => current + 1);
+      setShowRequestForm(false);
       await loadData();
     } catch (apiError) {
       setError(apiError.response?.data?.message || t('vehicles.submitError'));
@@ -109,8 +111,22 @@ export default function ResidentVehiclePage() {
 
       <section className="vehicle-workspace">
         <div>
-          <PageHeader eyebrow={t('vehicles.requestEyebrow')} title={t('vehicles.requestTitle')} />
-          <VehicleForm key={formKey} approvedMembers={approvedMembers} loading={saving} onSubmit={handleRequestVehicle} />
+          {showRequestForm ? (
+            <>
+              <PageHeader eyebrow={t('vehicles.requestEyebrow')} title={t('vehicles.requestTitle')} />
+              <VehicleForm
+                key={formKey}
+                approvedMembers={approvedMembers}
+                loading={saving}
+                onCancel={() => setShowRequestForm(false)}
+                onSubmit={handleRequestVehicle}
+              />
+            </>
+          ) : (
+            <button className="button-link" type="button" onClick={() => setShowRequestForm(true)}>
+              {t('vehicles.requestTitle')}
+            </button>
+          )}
         </div>
 
         <div>

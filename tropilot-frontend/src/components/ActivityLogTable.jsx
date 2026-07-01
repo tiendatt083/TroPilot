@@ -192,7 +192,7 @@ function formatDescription(description, t) {
   return description;
 }
 
-export default function ActivityLogTable({ logs }) {
+export default function ActivityLogTable({ logs, showUser = true }) {
   const { i18n, t } = useTranslation();
   const isEnglish = i18n.resolvedLanguage?.startsWith('en') || i18n.language?.startsWith('en');
 
@@ -202,7 +202,7 @@ export default function ActivityLogTable({ logs }) {
         <thead>
           <tr>
             <th>{t('activityLogs.columns.time')}</th>
-            <th>{t('activityLogs.columns.user')}</th>
+            {showUser && <th>{t('activityLogs.columns.user')}</th>}
             <th>{t('activityLogs.columns.action')}</th>
             <th>{t('activityLogs.columns.description')}</th>
           </tr>
@@ -211,11 +211,13 @@ export default function ActivityLogTable({ logs }) {
           {logs.map((log) => (
             <tr key={log.id}>
               <td>{formatDateTime(log.createdAt, t)}</td>
-              <td>
-                <strong>{log.userFullName || t('activityLogs.notAvailable')}</strong>
-                <span className="table-subtext">{log.userEmail || t('activityLogs.notAvailable')}</span>
-                <span className="table-subtext">{formatRole(log.userRole, t)}</span>
-              </td>
+              {showUser && (
+                <td>
+                  <strong>{log.userFullName || t('activityLogs.notAvailable')}</strong>
+                  <span className="table-subtext">{log.userEmail || t('activityLogs.notAvailable')}</span>
+                  <span className="table-subtext">{formatRole(log.userRole, t)}</span>
+                </td>
+              )}
               <td>
                 <strong>{formatAction(log.action, t)}</strong>
                 {isEnglish && log.action && <span className="table-subtext">{log.action}</span>}

@@ -4,10 +4,13 @@ import com.tropilot.dto.request.NotificationCreateRequest;
 import com.tropilot.dto.response.NotificationResponse;
 import com.tropilot.entity.Building;
 import com.tropilot.entity.Notification;
+import com.tropilot.entity.NotificationTargetUser;
 import com.tropilot.entity.Room;
 import com.tropilot.entity.RoomAssignment;
 import com.tropilot.entity.User;
 import com.tropilot.enums.RoomAssignmentStatus;
+import com.tropilot.enums.NotificationEventType;
+import com.tropilot.enums.NotificationSource;
 import com.tropilot.enums.RoomStatus;
 import com.tropilot.enums.UserRole;
 import com.tropilot.enums.UserStatus;
@@ -140,5 +143,40 @@ class NotificationServiceImplTest {
         assertThat(notification.getTargetBuildings())
                 .extracting(targetBuilding -> targetBuilding.getBuilding().getId())
                 .containsExactly(building.getId());
+    }
+
+    @Test
+    void operationalNotificationTargetsActiveAdminsWithNavigationMetadata() {
+        User residentHead = BusinessRuleTestFixtures.residentHead();
+        User admin = BusinessRuleTestFixtures.admin();
+        Building building = BusinessRuleTestFixtures.building();
+
+        when(userRepository.findByRoleAndStatus(UserRole.ADMIN, UserStatus.ACTIVE))
+                .thenReturn(List.of(admin));
+        when(notificationRepository.save(any(Notification.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        service.notifyAdmins(
+                residentHead,
+                NotificationEventType.FEEDBACK_CREATED,
+                "New feedback",
+                "A resident submitted feedback",
+                "/admin/buildings/10/feedbacks",
+                building
+        );
+
+        ArgumentCaptor<Notification> captor = ArgumentCaptor.forClass(Notification.class);
+        verify(notificationRepository).save(captor.capture());
+
+        Notification notification = captor.getValue();
+        assertThat(notification.getSource()).isEqualTo(NotificationSource.SYSTEM);
+        assertThat(notification.getEventType()).isEqualTo(NotificationEventType.FEEDBACK_CREATED);
+        assertThat(notification.getActionPath()).isEqualTo("/admin/buildings/10/feedbacks");
+        assertThat(notification.getTargetUsers())
+                .extracting(NotificationTargetUser::getUser)
+                .containsExactly(admin);
+        assertThat(notification.getTargetBuildings())
+                .extracting(target -> target.getBuilding())
+                .containsExactly(building);
     }
 }

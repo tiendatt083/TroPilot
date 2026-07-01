@@ -20,6 +20,16 @@ export async function getAdminNotifications(filters) {
   return response.data;
 }
 
+export async function getAdminSentNotifications(filters) {
+  const response = await apiClient.get('/api/admin/notifications/sent', filterConfig(filters));
+  return response.data;
+}
+
+export async function getMyNotifications() {
+  const response = await apiClient.get('/api/notifications/me');
+  return response.data;
+}
+
 export async function getResidentNotifications() {
   const response = await apiClient.get('/api/resident/notifications');
   return response.data;

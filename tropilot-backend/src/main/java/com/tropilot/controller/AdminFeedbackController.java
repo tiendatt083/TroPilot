@@ -46,11 +46,15 @@ public class AdminFeedbackController {
 
     @PutMapping("/{id}/status")
     public ApiResponse<FeedbackResponse> updateStatus(
+            @AuthenticationPrincipal AuthenticatedUser user,
             @PathVariable Long id,
             @RequestParam(required = false) Long buildingId,
             @Valid @RequestBody FeedbackStatusUpdateRequest request
     ) {
-        return ApiResponse.success("Feedback status updated successfully", feedbackService.updateFeedbackStatus(id, request, buildingId));
+        return ApiResponse.success(
+                "Feedback status updated successfully",
+                feedbackService.updateFeedbackStatus(id, getUserId(user), request, buildingId)
+        );
     }
 
     private Long getUserId(AuthenticatedUser user) {

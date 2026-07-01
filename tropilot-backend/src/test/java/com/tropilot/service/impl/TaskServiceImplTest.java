@@ -17,6 +17,7 @@ import com.tropilot.repository.TaskRepository;
 import com.tropilot.repository.UserRepository;
 import com.tropilot.service.ActivityLogService;
 import com.tropilot.service.TaskEmailService;
+import com.tropilot.service.NotificationService;
 import com.tropilot.storage.TaskResultImageStorageService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -63,6 +64,9 @@ class TaskServiceImplTest {
 
     @Mock
     private TaskEmailService taskEmailService;
+
+    @Mock
+    private NotificationService notificationService;
 
     @InjectMocks
     private TaskServiceImpl service;

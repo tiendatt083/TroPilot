@@ -10,6 +10,7 @@ import {
 import { resolveFileUrl } from '../utils/fileUrl.js';
 import { formatNumber } from '../utils/numberFormat.js';
 import { formatRoomLabel } from '../utils/roomDisplay.js';
+import LineIcon from './common/LineIcon.jsx';
 
 const emptyForm = {
   roomId: '',
@@ -30,6 +31,7 @@ export default function UtilityReadingForm({
   loading,
   mode = 'create',
   submitLabel,
+  onFetchReadings,
   onSubmit,
   onCancel
 }) {
@@ -37,6 +39,9 @@ export default function UtilityReadingForm({
   const [form, setForm] = useState(emptyForm);
   const [electricityImage, setElectricityImage] = useState(null);
   const [waterImage, setWaterImage] = useState(null);
+  const [fetchingReadings, setFetchingReadings] = useState(false);
+  const [fetchedReadings, setFetchedReadings] = useState(null);
+  const [fetchError, setFetchError] = useState('');
 
   useEffect(() => {
     const readingDate = normalizeReadingDate(initialValues, selectedMonth);
@@ -55,10 +60,18 @@ export default function UtilityReadingForm({
     });
     setElectricityImage(null);
     setWaterImage(null);
+    setFetchedReadings(null);
+    setFetchError('');
   }, [initialValues, selectedMonth]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
+
+    if (name === 'roomId' || name === 'readingDate') {
+      setFetchedReadings(null);
+      setFetchError('');
+    }
+
     setForm((current) => ({
       ...current,
       [name]: value,
@@ -72,6 +85,37 @@ export default function UtilityReadingForm({
   );
 
   const editing = mode === 'edit';
+
+  const handleFetchReadings = async () => {
+    if (!onFetchReadings || !form.roomId || !form.readingDate) {
+      return;
+    }
+
+    setFetchingReadings(true);
+    setFetchError('');
+    setFetchedReadings(null);
+
+    try {
+      const response = await onFetchReadings({
+        roomId: form.roomId,
+        readingDate: form.readingDate
+      });
+      const readings = response.data;
+
+      setForm((current) => ({
+        ...current,
+        oldElectricity: readings.oldElectricity,
+        newElectricity: readings.newElectricity,
+        oldWater: readings.oldWater,
+        newWater: readings.newWater
+      }));
+      setFetchedReadings(readings);
+    } catch (apiError) {
+      setFetchError(apiError.response?.data?.message || t('forms.utilityReading.fetchError'));
+    } finally {
+      setFetchingReadings(false);
+    }
+  };
 
   useEffect(() => {
     if (editing) {
@@ -174,6 +218,47 @@ export default function UtilityReadingForm({
         </div>
       </div>
 
+      {!editing && onFetchReadings && (
+        <section className={`utility-reading-fetch-bar${fetchedReadings ? ' is-ready' : ''}`}>
+          <div className="utility-reading-fetch-heading">
+            <span className="utility-reading-fetch-icon" aria-hidden="true">
+              <LineIcon name="refresh" />
+            </span>
+            <div>
+              <strong>{t('forms.utilityReading.automaticReading')}</strong>
+              <span>{t('forms.utilityReading.mockSource')}</span>
+            </div>
+          </div>
+
+          {fetchedReadings && (
+            <div className="utility-reading-fetch-result" role="status">
+              <span>
+                {t('forms.utilityReading.electricityIncrease')}
+                <strong>+{formatNumber(fetchedReadings.electricityUsage)} kWh</strong>
+              </span>
+              <span>
+                {t('forms.utilityReading.waterIncrease')}
+                <strong>+{formatNumber(fetchedReadings.waterUsage)} m3</strong>
+              </span>
+            </div>
+          )}
+
+          <button
+            className="secondary-button utility-reading-fetch-button"
+            type="button"
+            onClick={handleFetchReadings}
+            disabled={loading || fetchingReadings || !form.roomId || !form.readingDate}
+          >
+            <LineIcon name="refresh" />
+            {fetchingReadings
+              ? t('forms.utilityReading.fetchingReadings')
+              : t('forms.utilityReading.fetchReadings')}
+          </button>
+
+          {fetchError && <p className="utility-reading-fetch-error" role="alert">{fetchError}</p>}
+        </section>
+      )}
+
       {form.roomId && <PreviousReadingEvidence previousReading={previousReading} t={t} />}
 
       <div className="utility-reading-form-sections">
@@ -264,10 +349,9 @@ function ElectricityReadingSubform({ form, t, editing, onChange, onImageChange }
             id="electricityImage"
             name="electricityImage"
             type="file"
-            accept=".jpg,.jpeg,.png,image/jpeg,image/png"
-            onChange={(event) => onImageChange(event.target.files?.[0] || null)}
-            required={!editing}
-          />
+              accept=".jpg,.jpeg,.png,image/jpeg,image/png"
+              onChange={(event) => onImageChange(event.target.files?.[0] || null)}
+            />
         </div>
       </div>
     </fieldset>
@@ -314,10 +398,9 @@ function WaterReadingSubform({ form, t, editing, onChange, onImageChange }) {
             id="waterImage"
             name="waterImage"
             type="file"
-            accept=".jpg,.jpeg,.png,image/jpeg,image/png"
-            onChange={(event) => onImageChange(event.target.files?.[0] || null)}
-            required={!editing}
-          />
+              accept=".jpg,.jpeg,.png,image/jpeg,image/png"
+              onChange={(event) => onImageChange(event.target.files?.[0] || null)}
+            />
         </div>
       </div>
     </fieldset>

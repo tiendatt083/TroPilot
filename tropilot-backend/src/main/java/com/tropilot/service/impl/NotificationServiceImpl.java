@@ -14,8 +14,11 @@ import com.tropilot.entity.RoomAssignment;
 import com.tropilot.entity.SepayPayment;
 import com.tropilot.entity.User;
 import com.tropilot.enums.NotificationTargetType;
+import com.tropilot.enums.NotificationEventType;
+import com.tropilot.enums.NotificationSource;
 import com.tropilot.enums.RoomAssignmentStatus;
 import com.tropilot.enums.UserRole;
+import com.tropilot.enums.UserStatus;
 import com.tropilot.exception.BadRequestException;
 import com.tropilot.exception.ForbiddenException;
 import com.tropilot.exception.ResourceNotFoundException;
@@ -71,6 +74,8 @@ public class NotificationServiceImpl implements NotificationService {
                 .content(request.getContent().trim())
                 .targetType(targetType)
                 .targetId(targetId)
+                .source(NotificationSource.MANUAL)
+                .eventType(NotificationEventType.MANUAL)
                 .createdBy(createdBy)
                 .build();
 
@@ -95,6 +100,7 @@ public class NotificationServiceImpl implements NotificationService {
 
         List<Notification> notifications = notificationRepository.findAllByOrderByCreatedAtDesc()
                 .stream()
+                .filter(notification -> notification.getSource() == NotificationSource.MANUAL)
                 .filter(notification -> buildingId == null || isNotificationLinkedToBuilding(notification, buildingId))
                 .toList();
 
@@ -105,29 +111,62 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<NotificationResponse> getResidentNotifications(Long userId) {
+    public List<NotificationResponse> getMyNotifications(Long userId) {
         User user = findUser(userId);
-        RoomAssignment activeAssignment = residentRoomAccessService.requireActiveAssignment(user.getId());
-        Long roomId = activeAssignment.getRoom().getId();
-        Long buildingId = activeAssignment.getRoom().getBuilding().getId();
 
-        return getVisibleNotifications(
-                user.getId(),
-                roomId,
-                buildingId
-        );
+        if (user.getRole() == UserRole.RESIDENT_HEAD) {
+            RoomAssignment activeAssignment = residentRoomAccessService.requireActiveAssignment(user.getId());
+            return getVisibleNotifications(
+                    user.getId(),
+                    activeAssignment.getRoom().getId(),
+                    activeAssignment.getRoom().getBuilding().getId()
+            );
+        }
+
+        return getVisibleNotifications(user.getId(), null, null);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<NotificationResponse> getResidentNotifications(Long userId) {
+        return getMyNotifications(userId);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<NotificationResponse> getStaffNotifications(Long userId) {
-        User user = findUser(userId);
+        return getMyNotifications(userId);
+    }
 
-        return getVisibleNotifications(
-                user.getId(),
-                null,
-                null
-        );
+    @Override
+    @Transactional
+    public void notifyAdmins(
+            User actor,
+            NotificationEventType eventType,
+            String title,
+            String content,
+            String actionPath,
+            Building building
+    ) {
+        List<User> admins = userRepository.findByRoleAndStatus(UserRole.ADMIN, UserStatus.ACTIVE);
+        saveOperationalNotification(actor, admins, eventType, title, content, actionPath, building);
+    }
+
+    @Override
+    @Transactional
+    public void notifyUser(
+            User actor,
+            User recipient,
+            NotificationEventType eventType,
+            String title,
+            String content,
+            String actionPath,
+            Building building
+    ) {
+        if (recipient == null) {
+            throw new BadRequestException("Notification recipient is required");
+        }
+        saveOperationalNotification(actor, List.of(recipient), eventType, title, content, actionPath, building);
     }
 
     @Override
@@ -168,6 +207,9 @@ public class NotificationServiceImpl implements NotificationService {
                 .content("The rental contract for room " + contract.getRoom().getRoomCode()
                         + " has been updated. Please review the latest contract file.")
                 .targetType(NotificationTargetType.SELECTED_USERS)
+                .source(NotificationSource.SYSTEM)
+                .eventType(NotificationEventType.CONTRACT_UPDATED)
+                .actionPath("/resident/contract")
                 .createdBy(createdBy)
                 .build();
 
@@ -202,6 +244,9 @@ public class NotificationServiceImpl implements NotificationService {
                         + " is ready. Transfer exactly " + payment.getAmount().toPlainString()
                         + " with payment code " + payment.getPaymentCode() + ".")
                 .targetType(NotificationTargetType.SELECTED_USERS)
+                .source(NotificationSource.SYSTEM)
+                .eventType(NotificationEventType.INVOICE_ISSUED)
+                .actionPath("/resident/invoices/" + invoice.getId())
                 .createdBy(createdBy)
                 .build();
 
@@ -230,25 +275,85 @@ public class NotificationServiceImpl implements NotificationService {
             throw new BadRequestException("SePay payment is required");
         }
 
+        String title = "Payment received";
+        String content = "Payment for invoice " + invoice.getId()
+                + " in room " + invoice.getRoom().getRoomCode()
+                + " has been received successfully.";
+        Building building = invoice.getRoom().getBuilding();
+
+        notifyUser(
+                createdBy,
+                invoice.getResidentHead(),
+                NotificationEventType.PAYMENT_RECEIVED,
+                title,
+                content,
+                "/resident/invoices/" + invoice.getId(),
+                building
+        );
+        notifyAdmins(
+                createdBy,
+                NotificationEventType.PAYMENT_RECEIVED,
+                title,
+                content,
+                "/admin/buildings/" + building.getId() + "/invoices",
+                building
+        );
+    }
+
+    private void saveOperationalNotification(
+            User actor,
+            List<User> recipients,
+            NotificationEventType eventType,
+            String title,
+            String content,
+            String actionPath,
+            Building building
+    ) {
+        if (actor == null) {
+            throw new BadRequestException("Notification actor is required");
+        }
+        if (recipients == null || recipients.isEmpty()) {
+            return;
+        }
+
         Notification notification = Notification.builder()
-                .title("Payment received")
-                .content("Payment for invoice " + invoice.getId()
-                        + " in room " + invoice.getRoom().getRoomCode()
-                        + " has been received successfully.")
+                .title(requireText(title, "Notification title is required"))
+                .content(requireText(content, "Notification content is required"))
                 .targetType(NotificationTargetType.SELECTED_USERS)
-                .createdBy(createdBy)
+                .source(NotificationSource.SYSTEM)
+                .eventType(Objects.requireNonNull(eventType, "Notification event type is required"))
+                .actionPath(normalizeOptionalText(actionPath))
+                .createdBy(actor)
                 .build();
 
-        notification.getTargetUsers().add(NotificationTargetUser.builder()
-                .notification(notification)
-                .user(invoice.getResidentHead())
-                .build());
-        notification.getTargetBuildings().add(NotificationTargetBuilding.builder()
-                .notification(notification)
-                .building(invoice.getRoom().getBuilding())
-                .build());
+        recipients.stream()
+                .filter(Objects::nonNull)
+                .collect(Collectors.toMap(User::getId, Function.identity(), (first, ignored) -> first))
+                .values()
+                .forEach(recipient -> notification.getTargetUsers().add(NotificationTargetUser.builder()
+                        .notification(notification)
+                        .user(recipient)
+                        .build()));
+
+        if (building != null) {
+            notification.getTargetBuildings().add(NotificationTargetBuilding.builder()
+                    .notification(notification)
+                    .building(building)
+                    .build());
+        }
 
         notificationRepository.save(notification);
+    }
+
+    private String requireText(String value, String message) {
+        if (value == null || value.isBlank()) {
+            throw new BadRequestException(message);
+        }
+        return value.trim();
+    }
+
+    private String normalizeOptionalText(String value) {
+        return value == null || value.isBlank() ? null : value.trim();
     }
 
     private List<NotificationResponse> getVisibleNotifications(
@@ -443,9 +548,11 @@ public class NotificationServiceImpl implements NotificationService {
         }
 
         boolean hasInvalidRole = selectedUsers.stream()
-                .anyMatch(user -> user.getRole() != UserRole.RESIDENT_HEAD && user.getRole() != UserRole.STAFF);
+                .anyMatch(user -> user.getRole() != UserRole.RESIDENT_HEAD
+                        && user.getRole() != UserRole.STAFF
+                        && user.getRole() != UserRole.ADMIN);
         if (hasInvalidRole) {
-            throw new BadRequestException("Only Staff and Head Residents can be selected as notification recipients");
+            throw new BadRequestException("Notification recipient role is invalid");
         }
 
         if (selectedBuildings.isEmpty()) {

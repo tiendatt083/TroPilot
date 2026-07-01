@@ -2,14 +2,17 @@ package com.tropilot.controller;
 
 import com.tropilot.dto.request.UtilityReadingCreateRequest;
 import com.tropilot.dto.response.ApiResponse;
+import com.tropilot.dto.response.UtilityReadingFetchResponse;
 import com.tropilot.dto.response.UtilityReadingOverviewResponse;
 import com.tropilot.dto.response.UtilityReadingResponse;
 import com.tropilot.exception.UnauthorizedException;
 import com.tropilot.security.AuthenticatedUser;
+import com.tropilot.service.UtilityReadingProvider;
 import com.tropilot.service.UtilityReadingService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -29,6 +33,7 @@ import java.util.List;
 public class StaffUtilityReadingController {
 
     private final UtilityReadingService utilityReadingService;
+    private final UtilityReadingProvider utilityReadingProvider;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<UtilityReadingResponse> createReading(
@@ -38,6 +43,17 @@ public class StaffUtilityReadingController {
         return ApiResponse.success(
                 "Utility reading created successfully",
                 utilityReadingService.createReading(request, getUserId(user))
+        );
+    }
+
+    @PostMapping("/fetch")
+    public ApiResponse<UtilityReadingFetchResponse> fetchReading(
+            @RequestParam Long roomId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate readingDate
+    ) {
+        return ApiResponse.success(
+                "Utility readings fetched successfully",
+                utilityReadingProvider.fetch(roomId, readingDate)
         );
     }
 

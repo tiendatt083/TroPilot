@@ -6,6 +6,8 @@ import com.tropilot.config.GeminiProperties;
 import com.tropilot.dto.request.ChatHistoryMessageRequest;
 import com.tropilot.exception.ServiceUnavailableException;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.ResourceAccessException;
@@ -13,11 +15,15 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientResponseException;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
 public class GeminiChatClient {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(GeminiChatClient.class);
 
     private static final int MAX_OUTPUT_TOKENS = 1500;
     private static final double TEMPERATURE = 0.3;
@@ -85,19 +91,97 @@ public class GeminiChatClient {
                 new GeminiGenerationConfig(TEMPERATURE, MAX_OUTPUT_TOKENS)
         );
 
-        try {
-            JsonNode response = geminiRestClient.post()
-                    .uri("/v1beta/models/{model}:generateContent", properties.getModel().trim())
-                    .header("x-goog-api-key", properties.getApiKey().trim())
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(request)
-                    .retrieve()
-                    .body(JsonNode.class);
+        List<String> models = resolveModels();
+        ServiceUnavailableException lastFailure = null;
 
-            return extractReply(response);
-        } catch (RestClientResponseException | ResourceAccessException exception) {
-            throw new ServiceUnavailableException("AI assistant is temporarily unavailable");
+        for (int index = 0; index < models.size(); index++) {
+            String model = models.get(index);
+            boolean hasFallback = index < models.size() - 1;
+
+            try {
+                JsonNode response = geminiRestClient.post()
+                        .uri("/v1beta/models/{model}:generateContent", model)
+                        .header("x-goog-api-key", properties.getApiKey().trim())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(request)
+                        .retrieve()
+                        .body(JsonNode.class);
+
+                return extractReply(response);
+            } catch (RestClientResponseException exception) {
+                lastFailure = new ServiceUnavailableException("AI assistant is temporarily unavailable");
+                logGeminiHttpFailure(model, exception, hasFallback);
+
+                if (!shouldTryFallback(exception, hasFallback)) {
+                    throw lastFailure;
+                }
+            } catch (ResourceAccessException exception) {
+                lastFailure = new ServiceUnavailableException("AI assistant is temporarily unavailable");
+                LOGGER.warn(
+                        "Gemini request failed for model {} because the service could not be reached. fallbackAvailable={}",
+                        model,
+                        hasFallback
+                );
+
+                if (!hasFallback) {
+                    throw lastFailure;
+                }
+            } catch (ServiceUnavailableException exception) {
+                lastFailure = exception;
+                LOGGER.warn(
+                        "Gemini returned an unusable response for model {}. fallbackAvailable={}",
+                        model,
+                        hasFallback
+                );
+
+                if (!hasFallback) {
+                    throw lastFailure;
+                }
+            }
         }
+
+        throw lastFailure == null
+                ? new ServiceUnavailableException("AI assistant is temporarily unavailable")
+                : lastFailure;
+    }
+
+    private List<String> resolveModels() {
+        Set<String> models = new LinkedHashSet<>();
+        addModel(models, properties.getModel());
+
+        if (properties.getFallbackModels() != null) {
+            properties.getFallbackModels().forEach(model -> addModel(models, model));
+        }
+
+        return List.copyOf(models);
+    }
+
+    private void addModel(Set<String> models, String model) {
+        if (model != null && !model.isBlank()) {
+            models.add(model.trim());
+        }
+    }
+
+    private void logGeminiHttpFailure(
+            String model,
+            RestClientResponseException exception,
+            boolean hasFallback
+    ) {
+        LOGGER.warn(
+                "Gemini request failed for model {} with status {}. fallbackAvailable={}",
+                model,
+                exception.getStatusCode().value(),
+                hasFallback
+        );
+    }
+
+    private boolean shouldTryFallback(RestClientResponseException exception, boolean hasFallback) {
+        if (!hasFallback) {
+            return false;
+        }
+
+        int statusCode = exception.getStatusCode().value();
+        return statusCode == 404 || statusCode == 429 || statusCode >= 500;
     }
 
     private List<GeminiContent> buildContents(List<ChatHistoryMessageRequest> history, String message) {

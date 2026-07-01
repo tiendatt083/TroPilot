@@ -26,6 +26,7 @@ import com.tropilot.service.UtilityReadingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -76,13 +77,13 @@ public class UtilityReadingServiceImpl implements UtilityReadingService {
                 .readingDate(readingDate)
                 .oldElectricity(request.getOldElectricity())
                 .newElectricity(request.getNewElectricity())
-                .electricityImageUrl(imageStorageService.store(
+                .electricityImageUrl(storeOptionalImage(
                         request.getElectricityImage(),
                         "Electricity evidence image"
                 ))
                 .oldWater(request.getOldWater())
                 .newWater(request.getNewWater())
-                .waterImageUrl(imageStorageService.store(request.getWaterImage(), "Water evidence image"))
+                .waterImageUrl(storeOptionalImage(request.getWaterImage(), "Water evidence image"))
                 .createdBy(createdBy)
                 .build();
 
@@ -318,5 +319,13 @@ public class UtilityReadingServiceImpl implements UtilityReadingService {
         if (newWater.compareTo(oldWater) < 0) {
             throw new BadRequestException("New water reading must be greater than or equal to old water reading");
         }
+    }
+
+    private String storeOptionalImage(MultipartFile image, String fieldLabel) {
+        if (image == null || image.isEmpty()) {
+            return null;
+        }
+
+        return imageStorageService.store(image, fieldLabel);
     }
 }

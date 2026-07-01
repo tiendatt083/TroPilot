@@ -14,7 +14,9 @@ import com.tropilot.repository.BuildingRepository;
 import com.tropilot.repository.RoomAssignmentRepository;
 import com.tropilot.repository.RoomMemberRepository;
 import com.tropilot.repository.RoomRepository;
+import com.tropilot.repository.UserRepository;
 import com.tropilot.service.ActivityLogService;
+import com.tropilot.service.NotificationService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -52,6 +54,12 @@ class RoomMemberServiceImplTest {
     @Mock
     private ActivityLogService activityLogService;
 
+    @Mock
+    private NotificationService notificationService;
+
+    @Mock
+    private UserRepository userRepository;
+
     @InjectMocks
     private RoomMemberServiceImpl service;
 
@@ -62,8 +70,10 @@ class RoomMemberServiceImplTest {
         User residentHead = BusinessRuleTestFixtures.residentHead();
         RoomAssignment assignment = BusinessRuleTestFixtures.activeAssignment(room, residentHead);
         RoomMember member = pendingMember(room, residentHead);
+        User admin = BusinessRuleTestFixtures.admin();
 
         when(roomMemberRepository.findByIdWithDetails(member.getId())).thenReturn(Optional.of(member));
+        when(userRepository.findById(admin.getId())).thenReturn(Optional.of(admin));
         when(buildingRepository.existsById(room.getBuilding().getId())).thenReturn(true);
         when(roomAssignmentRepository.findByRoomIdAndStatus(room.getId(), RoomAssignmentStatus.ACTIVE))
                 .thenReturn(Optional.of(assignment));
@@ -78,7 +88,7 @@ class RoomMemberServiceImplTest {
                 .status(RoomMemberStatus.APPROVED)
                 .build());
 
-        RoomMemberResponse response = service.approveMember(member.getId(), room.getBuilding().getId());
+        RoomMemberResponse response = service.approveMember(member.getId(), admin.getId(), room.getBuilding().getId());
 
         assertThat(response.getStatus()).isEqualTo(RoomMemberStatus.APPROVED);
         assertThat(member.getStatus()).isEqualTo(RoomMemberStatus.APPROVED);
@@ -93,8 +103,10 @@ class RoomMemberServiceImplTest {
         User residentHead = BusinessRuleTestFixtures.residentHead();
         RoomAssignment assignment = BusinessRuleTestFixtures.activeAssignment(room, residentHead);
         RoomMember member = pendingMember(room, residentHead);
+        User admin = BusinessRuleTestFixtures.admin();
 
         when(roomMemberRepository.findByIdWithDetails(member.getId())).thenReturn(Optional.of(member));
+        when(userRepository.findById(admin.getId())).thenReturn(Optional.of(admin));
         when(buildingRepository.existsById(room.getBuilding().getId())).thenReturn(true);
         when(roomAssignmentRepository.findByRoomIdAndStatus(room.getId(), RoomAssignmentStatus.ACTIVE))
                 .thenReturn(Optional.of(assignment));
@@ -104,7 +116,7 @@ class RoomMemberServiceImplTest {
                 RoomMemberStatus.APPROVED
         )).thenReturn(1L);
 
-        assertThatThrownBy(() -> service.approveMember(member.getId(), room.getBuilding().getId()))
+        assertThatThrownBy(() -> service.approveMember(member.getId(), admin.getId(), room.getBuilding().getId()))
                 .isInstanceOf(BadRequestException.class)
                 .hasMessageContaining("maximum occupants");
 

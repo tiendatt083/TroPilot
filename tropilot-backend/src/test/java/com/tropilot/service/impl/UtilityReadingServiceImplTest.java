@@ -147,6 +147,9 @@ class UtilityReadingServiceImplTest {
         assertThat(savedReading.getReadingDate()).isEqualTo(LocalDate.of(2026, 6, 3));
         assertThat(savedReading.getNewElectricity()).isEqualByComparingTo("120");
         assertThat(savedReading.getNewWater()).isEqualByComparingTo("12");
+        assertThat(savedReading.getElectricityImageUrl()).isNull();
+        assertThat(savedReading.getWaterImageUrl()).isNull();
+        verify(imageStorageService, never()).store(any(), any());
     }
 
     @Test

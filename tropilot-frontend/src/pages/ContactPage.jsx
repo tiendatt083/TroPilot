@@ -272,164 +272,166 @@ function ContactEditor({
 }) {
   return (
     <form className="panel-form contact-editor" onSubmit={onSubmit}>
-      <section className="contact-card">
-        <ContactSectionHeading
-          eyebrow={t('contact.sections.edit')}
-          icon="user"
-          title={t('contact.editTitle')}
-        />
-
-        <div className="form-grid contact-general-grid">
-          <div className="contact-field contact-email-field">
-            <label htmlFor="contactEmail">{t('contact.fields.email')}</label>
-            <ContactFieldControl icon="mail">
-              <input
-                id="contactEmail"
-                maxLength={160}
-                name="email"
-                required
-                type="email"
-                value={form.email}
-                onChange={onFieldChange}
-              />
-            </ContactFieldControl>
-          </div>
-
-          <div className="contact-field">
-            <label htmlFor="contactWorkingStartTime">
-              {t('contact.fields.workingStartTime')}
-            </label>
-            <ContactFieldControl icon="clock">
-              <input
-                id="contactWorkingStartTime"
-                inputMode="numeric"
-                maxLength={5}
-                name="workingStartTime"
-                pattern="([01][0-9]|2[0-3]):[0-5][0-9]"
-                placeholder="08:00"
-                required
-                type="text"
-                value={form.workingStartTime}
-                onChange={onFieldChange}
-              />
-            </ContactFieldControl>
-          </div>
-
-          <div className="contact-field">
-            <label htmlFor="contactWorkingEndTime">
-              {t('contact.fields.workingEndTime')}
-            </label>
-            <ContactFieldControl icon="clock">
-              <input
-                id="contactWorkingEndTime"
-                inputMode="numeric"
-                maxLength={5}
-                name="workingEndTime"
-                pattern="([01][0-9]|2[0-3]):[0-5][0-9]"
-                placeholder="17:00"
-                required
-                type="text"
-                value={form.workingEndTime}
-                onChange={onFieldChange}
-              />
-            </ContactFieldControl>
-          </div>
-
-          <div className="form-grid-wide contact-field">
-            <label htmlFor="contactOfficeAddress">{t('contact.fields.officeAddress')}</label>
-            <ContactFieldControl icon="mapPin">
-              <input
-                id="contactOfficeAddress"
-                maxLength={255}
-                name="officeAddress"
-                required
-                value={form.officeAddress}
-                onChange={onFieldChange}
-              />
-            </ContactFieldControl>
-          </div>
-        </div>
-      </section>
-
-      <section className="contact-card contact-phone-editor">
-        <div className="contact-phone-editor-header">
+      <div className="contact-editor-surface">
+        <section className="contact-editor-section contact-general-section">
           <ContactSectionHeading
-            eyebrow={t('contact.sections.phones')}
-            icon="phone"
-            title={t('contact.phoneEditorTitle')}
+            eyebrow={t('contact.sections.edit')}
+            icon="user"
+            title={t('contact.editTitle')}
           />
-          <button
-            className="secondary-button compact-button contact-add-phone-button"
-            disabled={form.phones.length >= 20}
-            type="button"
-            onClick={onAddPhone}
-          >
-            <LineIcon className="contact-button-icon" name="plus" />
-            {t('contact.actions.addPhone')}
+
+          <div className="form-grid contact-general-grid">
+            <div className="contact-field contact-email-field">
+              <label htmlFor="contactEmail">{t('contact.fields.email')}</label>
+              <ContactFieldControl icon="mail">
+                <input
+                  id="contactEmail"
+                  maxLength={160}
+                  name="email"
+                  required
+                  type="email"
+                  value={form.email}
+                  onChange={onFieldChange}
+                />
+              </ContactFieldControl>
+            </div>
+
+            <div className="contact-field">
+              <label htmlFor="contactWorkingStartTime">
+                {t('contact.fields.workingStartTime')}
+              </label>
+              <ContactFieldControl icon="clock">
+                <input
+                  id="contactWorkingStartTime"
+                  inputMode="numeric"
+                  maxLength={5}
+                  name="workingStartTime"
+                  pattern="([01][0-9]|2[0-3]):[0-5][0-9]"
+                  placeholder="08:00"
+                  required
+                  type="text"
+                  value={form.workingStartTime}
+                  onChange={onFieldChange}
+                />
+              </ContactFieldControl>
+            </div>
+
+            <div className="contact-field">
+              <label htmlFor="contactWorkingEndTime">
+                {t('contact.fields.workingEndTime')}
+              </label>
+              <ContactFieldControl icon="clock">
+                <input
+                  id="contactWorkingEndTime"
+                  inputMode="numeric"
+                  maxLength={5}
+                  name="workingEndTime"
+                  pattern="([01][0-9]|2[0-3]):[0-5][0-9]"
+                  placeholder="17:00"
+                  required
+                  type="text"
+                  value={form.workingEndTime}
+                  onChange={onFieldChange}
+                />
+              </ContactFieldControl>
+            </div>
+
+            <div className="form-grid-wide contact-field">
+              <label htmlFor="contactOfficeAddress">{t('contact.fields.officeAddress')}</label>
+              <ContactFieldControl icon="mapPin">
+                <input
+                  id="contactOfficeAddress"
+                  maxLength={255}
+                  name="officeAddress"
+                  required
+                  value={form.officeAddress}
+                  onChange={onFieldChange}
+                />
+              </ContactFieldControl>
+            </div>
+          </div>
+        </section>
+
+        <section className="contact-editor-section contact-phone-editor">
+          <div className="contact-phone-editor-header">
+            <ContactSectionHeading
+              eyebrow={t('contact.sections.phones')}
+              icon="phone"
+              title={t('contact.phoneEditorTitle')}
+            />
+            <button
+              className="secondary-button compact-button contact-add-phone-button"
+              disabled={form.phones.length >= 20}
+              type="button"
+              onClick={onAddPhone}
+            >
+              <LineIcon className="contact-button-icon" name="plus" />
+              {t('contact.actions.addPhone')}
+            </button>
+          </div>
+
+          <div className="contact-phone-table">
+            <div className="contact-phone-table-head" aria-hidden="true">
+              <span>{t('contact.fields.phoneName')}</span>
+              <span>{t('contact.fields.phoneNumber')}</span>
+              <span />
+            </div>
+            <div className="contact-phone-editor-list">
+              {form.phones.map((phone, index) => (
+                <div className="contact-phone-editor-row" key={index}>
+                  <div>
+                    <label className="visually-hidden" htmlFor={`contactPhoneName-${index}`}>
+                      {t('contact.fields.phoneName')}
+                    </label>
+                    <ContactFieldControl icon="user">
+                      <input
+                        id={`contactPhoneName-${index}`}
+                        maxLength={100}
+                        required
+                        value={phone.displayName}
+                        onChange={(event) => onPhoneChange(index, 'displayName', event.target.value)}
+                      />
+                    </ContactFieldControl>
+                  </div>
+                  <div>
+                    <label className="visually-hidden" htmlFor={`contactPhoneNumber-${index}`}>
+                      {t('contact.fields.phoneNumber')}
+                    </label>
+                    <ContactFieldControl icon="phone">
+                      <input
+                        id={`contactPhoneNumber-${index}`}
+                        inputMode="tel"
+                        maxLength={30}
+                        required
+                        value={phone.phoneNumber}
+                        onChange={(event) => onPhoneChange(index, 'phoneNumber', event.target.value)}
+                      />
+                    </ContactFieldControl>
+                  </div>
+                  <button
+                    aria-label={t('contact.actions.removePhoneNamed', {
+                      name: phone.displayName || index + 1
+                    })}
+                    className="icon-action-button icon-action-danger contact-remove-phone-button"
+                    disabled={form.phones.length === 1}
+                    title={t('contact.actions.removePhone')}
+                    type="button"
+                    onClick={() => onRemovePhone(index)}
+                  >
+                    <LineIcon name="trash" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <footer className="contact-submit-row">
+          <button className="contact-save-button" disabled={saving} type="submit">
+            <LineIcon className="contact-button-icon" name="save" />
+            {saving ? t('contact.actions.saving') : t('contact.actions.save')}
           </button>
-        </div>
-
-        <div className="contact-phone-table">
-          <div className="contact-phone-table-head" aria-hidden="true">
-            <span>{t('contact.fields.phoneName')}</span>
-            <span>{t('contact.fields.phoneNumber')}</span>
-            <span />
-          </div>
-          <div className="contact-phone-editor-list">
-            {form.phones.map((phone, index) => (
-              <div className="contact-phone-editor-row" key={index}>
-                <div>
-                  <label className="visually-hidden" htmlFor={`contactPhoneName-${index}`}>
-                    {t('contact.fields.phoneName')}
-                  </label>
-                  <ContactFieldControl icon="user">
-                    <input
-                      id={`contactPhoneName-${index}`}
-                      maxLength={100}
-                      required
-                      value={phone.displayName}
-                      onChange={(event) => onPhoneChange(index, 'displayName', event.target.value)}
-                    />
-                  </ContactFieldControl>
-                </div>
-                <div>
-                  <label className="visually-hidden" htmlFor={`contactPhoneNumber-${index}`}>
-                    {t('contact.fields.phoneNumber')}
-                  </label>
-                  <ContactFieldControl icon="phone">
-                    <input
-                      id={`contactPhoneNumber-${index}`}
-                      inputMode="tel"
-                      maxLength={30}
-                      required
-                      value={phone.phoneNumber}
-                      onChange={(event) => onPhoneChange(index, 'phoneNumber', event.target.value)}
-                    />
-                  </ContactFieldControl>
-                </div>
-                <button
-                  aria-label={t('contact.actions.removePhoneNamed', {
-                    name: phone.displayName || index + 1
-                  })}
-                  className="icon-action-button icon-action-danger contact-remove-phone-button"
-                  disabled={form.phones.length === 1}
-                  title={t('contact.actions.removePhone')}
-                  type="button"
-                  onClick={() => onRemovePhone(index)}
-                >
-                  <LineIcon name="trash" />
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <div className="contact-submit-row">
-        <button className="contact-save-button" disabled={saving} type="submit">
-          <LineIcon className="contact-button-icon" name="save" />
-          {saving ? t('contact.actions.saving') : t('contact.actions.save')}
-        </button>
+        </footer>
       </div>
     </form>
   );

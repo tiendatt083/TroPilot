@@ -6,14 +6,10 @@ const emptyForm = {
   ownerType: 'RESIDENT_HEAD',
   ownerName: '',
   vehicleType: 'MOTORBIKE',
-  licensePlate: '',
-  brand: '',
-  color: '',
-  startDate: '',
-  endDate: ''
+  licensePlate: ''
 };
 
-export default function VehicleForm({ approvedMembers, loading, onSubmit }) {
+export default function VehicleForm({ approvedMembers, loading, onCancel, onSubmit }) {
   const { t } = useTranslation();
   const [form, setForm] = useState(emptyForm);
 
@@ -39,11 +35,7 @@ export default function VehicleForm({ approvedMembers, loading, onSubmit }) {
       ownerType: form.ownerType,
       ownerName: form.ownerType === 'ROOM_MEMBER' ? form.ownerName : null,
       vehicleType: form.vehicleType,
-      licensePlate: form.licensePlate,
-      brand: form.brand || null,
-      color: form.color || null,
-      startDate: form.startDate || null,
-      endDate: form.endDate || null
+      licensePlate: form.licensePlate
     });
   };
 
@@ -103,31 +95,16 @@ export default function VehicleForm({ approvedMembers, loading, onSubmit }) {
         required
       />
 
-      <div className="form-grid">
-        <div>
-          <label htmlFor="brand">{t('vehicles.form.brand')}</label>
-          <input id="brand" name="brand" value={form.brand} onChange={handleChange} maxLength={80} />
-        </div>
-        <div>
-          <label htmlFor="color">{t('vehicles.form.color')}</label>
-          <input id="color" name="color" value={form.color} onChange={handleChange} maxLength={40} />
-        </div>
+      <div className="form-action-row">
+        <button type="submit" disabled={loading || (requiresMemberOwner && !hasApprovedMembers)}>
+          {loading ? t('vehicles.form.submitting') : t('vehicles.form.submit')}
+        </button>
+        {onCancel && (
+          <button className="secondary-button inline-button" type="button" disabled={loading} onClick={onCancel}>
+            {t('common.cancel')}
+          </button>
+        )}
       </div>
-
-      <div className="form-grid">
-        <div>
-          <label htmlFor="startDate">{t('vehicles.form.startDate')}</label>
-          <input id="startDate" name="startDate" type="date" lang="en-GB" value={form.startDate} onChange={handleChange} />
-        </div>
-        <div>
-          <label htmlFor="endDate">{t('vehicles.form.endDate')}</label>
-          <input id="endDate" name="endDate" type="date" lang="en-GB" value={form.endDate} onChange={handleChange} />
-        </div>
-      </div>
-
-      <button type="submit" disabled={loading || (requiresMemberOwner && !hasApprovedMembers)}>
-        {loading ? t('vehicles.form.submitting') : t('vehicles.form.submit')}
-      </button>
     </form>
   );
 }

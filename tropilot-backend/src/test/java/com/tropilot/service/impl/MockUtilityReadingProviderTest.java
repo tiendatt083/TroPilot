@@ -1,0 +1,88 @@
+package com.tropilot.service.impl;
+
+import com.tropilot.dto.response.UtilityReadingFetchResponse;
+import com.tropilot.entity.UtilityReading;
+import com.tropilot.exception.BadRequestException;
+import com.tropilot.repository.RoomRepository;
+import com.tropilot.repository.UtilityReadingRepository;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(MockitoExtension.class)
+class MockUtilityReadingProviderTest {
+
+    private static final Long ROOM_ID = 12L;
+    private static final LocalDate READING_DATE = LocalDate.of(2026, 7, 15);
+    private static final LocalDate READING_MONTH = LocalDate.of(2026, 7, 1);
+
+    @Mock
+    private RoomRepository roomRepository;
+
+    @Mock
+    private UtilityReadingRepository utilityReadingRepository;
+
+    @InjectMocks
+    private MockUtilityReadingProvider provider;
+
+    @Test
+    void fetchUsesPreviousReadingAndGeneratesValidUsage() {
+        UtilityReading previousReading = UtilityReading.builder()
+                .newElectricity(new BigDecimal("350"))
+                .newWater(new BigDecimal("24"))
+                .build();
+        when(roomRepository.existsById(ROOM_ID)).thenReturn(true);
+        when(utilityReadingRepository.existsByRoom_IdAndMonth(ROOM_ID, READING_MONTH)).thenReturn(false);
+        when(utilityReadingRepository.findFirstByRoom_IdAndMonthBeforeOrderByMonthDescCreatedAtDesc(
+                ROOM_ID,
+                READING_MONTH
+        )).thenReturn(Optional.of(previousReading));
+
+        UtilityReadingFetchResponse response = provider.fetch(ROOM_ID, READING_DATE);
+
+        assertThat(response.source()).isEqualTo("MOCK");
+        assertThat(response.recordedAt()).isEqualTo(READING_DATE);
+        assertThat(response.oldElectricity()).isEqualByComparingTo("350");
+        assertThat(response.electricityUsage()).isBetween(BigDecimal.ONE, new BigDecimal("150"));
+        assertThat(response.newElectricity())
+                .isEqualByComparingTo(response.oldElectricity().add(response.electricityUsage()));
+        assertThat(response.oldWater()).isEqualByComparingTo("24");
+        assertThat(response.waterUsage()).isBetween(BigDecimal.ONE, new BigDecimal("20"));
+        assertThat(response.newWater()).isEqualByComparingTo(response.oldWater().add(response.waterUsage()));
+    }
+
+    @Test
+    void fetchStartsAtZeroWhenThereIsNoPreviousReading() {
+        when(roomRepository.existsById(ROOM_ID)).thenReturn(true);
+        when(utilityReadingRepository.existsByRoom_IdAndMonth(ROOM_ID, READING_MONTH)).thenReturn(false);
+        when(utilityReadingRepository.findFirstByRoom_IdAndMonthBeforeOrderByMonthDescCreatedAtDesc(
+                ROOM_ID,
+                READING_MONTH
+        )).thenReturn(Optional.empty());
+
+        UtilityReadingFetchResponse response = provider.fetch(ROOM_ID, READING_DATE);
+
+        assertThat(response.oldElectricity()).isEqualByComparingTo(BigDecimal.ZERO);
+        assertThat(response.oldWater()).isEqualByComparingTo(BigDecimal.ZERO);
+    }
+
+    @Test
+    void fetchRejectsRoomWithReadingInTheSelectedMonth() {
+        when(roomRepository.existsById(ROOM_ID)).thenReturn(true);
+        when(utilityReadingRepository.existsByRoom_IdAndMonth(ROOM_ID, READING_MONTH)).thenReturn(true);
+
+        assertThatThrownBy(() -> provider.fetch(ROOM_ID, READING_DATE))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessageContaining("already exists");
+    }
+}
