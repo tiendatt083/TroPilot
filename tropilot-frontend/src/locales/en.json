@@ -913,6 +913,7 @@
   "activityLogs": {
     "title": "Activity logs",
     "eyebrow": "Admin",
+    "summary": "Review {{count}} recent actions performed by the current account.",
     "loading": "Loading activity logs...",
     "loadError": "Activity logs could not be loaded",
     "empty": "No activity logs found.",
@@ -1312,6 +1313,7 @@
   "notifications": {
     "adminEyebrow": "Administrator",
     "title": "Notifications",
+    "summary": "Review {{count}} created notifications and their recipient scope.",
     "inboxTitle": "Inbox",
     "sentTitle": "Sent",
     "systemSender": "System",
@@ -1697,6 +1699,7 @@
   "buildingManagement": {
     "adminTitle": "Building management",
     "staffTitle": "Buildings",
+    "summary": "Manage {{count}} buildings and open each building's operations workspace.",
     "createTitle": "Create building",
     "editTitle": "Edit building",
     "back": "Back to buildings",
@@ -2075,7 +2078,15 @@
       "markRead": "Mark read",
       "empty": "No notifications found.",
       "allBuildings": "All buildings",
-      "selectedBuildings": "Selected buildings"
+      "selectedBuildings": "Selected buildings",
+      "targetCompact": {
+        "all": "All",
+        "residentHeads": "Residents",
+        "staff": "Staff",
+        "selectedOne": "One user",
+        "selectedCount": "{{count}} users",
+        "target": "Target"
+      }
     },
     "feedbacks": {
       "title": "Feedback",

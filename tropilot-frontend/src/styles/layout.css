@@ -1,9 +1,10 @@
 /* Page structure, headers, panels, filters, and layout utilities. */
 
 .main-panel {
+  --main-panel-gutter: clamp(1.15rem, 1.8vw, 2rem);
   min-width: 0;
   max-height: 100dvh;
-  padding: clamp(1.15rem, 1.8vw, 2rem);
+  padding: var(--main-panel-gutter);
   overflow-x: hidden;
   overflow-y: auto;
   scrollbar-color: #b8c4cb transparent;
@@ -20,6 +21,11 @@
 .content-section:not(.narrow-section) {
   max-width: none;
   margin-inline: 0;
+}
+
+.management-page {
+  display: grid;
+  gap: var(--space-5);
 }
 
 .content-section > *,

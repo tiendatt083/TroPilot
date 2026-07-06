@@ -2,12 +2,12 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as activityLogApi from '../api/activityLogApi.js';
 import ActivityLogTable from './ActivityLogTable.jsx';
+import ManagementPageHero from './common/ManagementPageHero.jsx';
 import NotificationPaginationControls from './NotificationPaginationControls.jsx';
-import PageHeader from './PageHeader.jsx';
 
 const HISTORY_PAGE_SIZE = 30;
 
-export default function MyActivityLogPage({ eyebrowKey }) {
+export default function MyActivityLogPage() {
   const { t } = useTranslation();
   const [logs, setLogs] = useState([]);
   const [logPage, setLogPage] = useState(0);
@@ -69,8 +69,11 @@ export default function MyActivityLogPage({ eyebrowKey }) {
   };
 
   return (
-    <section className="content-section">
-      <PageHeader eyebrow={t(eyebrowKey)} title={t('activityLogs.title')} />
+    <section className="content-section management-page">
+      <ManagementPageHero
+        title={t('activityLogs.title')}
+        description={t('activityLogs.summary', { count: logs.length })}
+      />
 
       {error && <div className="alert error-alert">{error}</div>}
 

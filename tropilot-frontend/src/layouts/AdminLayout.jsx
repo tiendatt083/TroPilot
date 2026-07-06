@@ -6,6 +6,7 @@ import ChatWidget from '../components/ChatWidget.jsx';
 import SidebarBrand from '../components/SidebarBrand.jsx';
 import SidebarNavGroup from '../components/SidebarNavGroup.jsx';
 import SidebarNavLink from '../components/SidebarNavLink.jsx';
+import SidebarUserCard from '../components/SidebarUserCard.jsx';
 
 const ADMIN_PRIMARY_ITEMS = [
   { to: '/admin/dashboard', labelKey: 'navigation.dashboard', icon: 'home' },
@@ -53,16 +54,12 @@ export default function AdminLayout() {
         >
           <span aria-hidden="true">{sidebarCollapsed ? '›' : '‹'}</span>
         </button>
-        <button
-          aria-haspopup="dialog"
-          className="sidebar-user sidebar-user-button"
+        <SidebarUserCard
+          ariaHasPopup="dialog"
+          interactive
           title={t('profile.actions.open')}
-          type="button"
           onClick={() => setProfileDialogOpen(true)}
-        >
-          <span>TroPilot</span>
-          <small>{t('sidebar.access.admin')}</small>
-        </button>
+        />
         <nav aria-label={t('navigation.admin')}>
           <SidebarNavLink item={ADMIN_PRIMARY_ITEMS[0]} />
           <SidebarNavGroup icon="user" labelKey="navigation.accounts" items={ADMIN_ACCOUNT_ITEMS} />

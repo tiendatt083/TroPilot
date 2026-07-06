@@ -12,7 +12,7 @@ test.describe('Tropilot smoke flow', () => {
     await loginAs(page, 'admin');
 
     await expect(page).toHaveURL(/\/admin\/dashboard$/);
-    await expect(page.getByRole('heading', { name: /Tổng quan|Overview/ })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Vận hành hôm nay' })).toBeVisible();
 
     await page.goto('/admin/buildings');
     await expect(page.getByRole('heading', { name: 'Building management' })).toBeVisible();
@@ -108,13 +108,18 @@ test.describe('Tropilot smoke flow', () => {
 
     await loginAs(page, 'admin');
     await page.goto('/admin/buildings/1/utility-readings');
+    await page.getByRole('button', { name: 'Record reading' }).click();
 
-    const fetchButton = page.getByRole('button', { name: 'Fetch readings' });
-    await expect(fetchButton).toBeDisabled();
+    const fetchElectricityButton = page.getByRole('button', { name: 'Fetch electricity' });
+    const fetchWaterButton = page.getByRole('button', { name: 'Fetch water' });
+    await expect(fetchElectricityButton).toBeDisabled();
+    await expect(fetchWaterButton).toBeDisabled();
 
     await page.locator('#roomId').selectOption('1');
-    await expect(fetchButton).toBeEnabled();
-    await fetchButton.click();
+    await expect(fetchElectricityButton).toBeEnabled();
+    await expect(fetchWaterButton).toBeEnabled();
+    await fetchElectricityButton.click();
+    await fetchWaterButton.click();
 
     await expect(page.locator('#newElectricity')).toHaveValue('437');
     await expect(page.locator('#newWater')).toHaveValue('31');

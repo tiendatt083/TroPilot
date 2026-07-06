@@ -136,11 +136,6 @@ html[data-theme="dark"] .workspace-tabs {
     inset 0 1px 0 rgba(255, 255, 255, 0.035);
 }
 
-html[data-theme="dark"] .workspace-tab-group {
-  border-color: var(--color-border-soft);
-  background: rgba(255, 255, 255, 0.035);
-}
-
 html[data-theme="dark"] .workspace-tab-group-toggle:hover,
 html[data-theme="dark"] .workspace-tab-group-toggle.active-group {
   background: rgba(36, 168, 190, 0.14);
@@ -299,13 +294,12 @@ html[data-theme="dark"] input[type="month"]::-webkit-calendar-picker-indicator {
   .building-workspace-tabs {
     position: static;
     display: grid;
-    align-content: start;
     max-height: none;
     overflow: visible;
   }
 
   .building-workspace-tabs a {
-    width: 100%;
+    width: auto;
     flex: initial;
   }
 
@@ -606,27 +600,29 @@ html[data-theme="dark"] input[type="month"]::-webkit-calendar-picker-indicator {
   }
 
   .building-workspace-tabs {
-    display: flex;
+    position: static;
+    display: grid;
     max-width: 100%;
-    overflow-x: auto;
-    overflow-y: hidden;
-    align-content: initial;
+    overflow: visible;
     padding: var(--space-2);
     scrollbar-width: thin;
   }
 
+  .workspace-tab-main-row,
+  .workspace-tab-submenu {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: thin;
+  }
+
   .building-workspace-tabs a,
-  .workspace-tab-group {
+  .workspace-tab-group-toggle {
     min-width: max-content;
   }
 
-  .grouped-workspace-tabs {
-    flex-wrap: nowrap;
-  }
-
-  .workspace-tab-group-items {
-    display: flex;
-    flex-wrap: nowrap;
+  .workspace-tab-submenu {
+    padding-bottom: var(--space-1);
   }
 
   .admin-home-metrics,
@@ -737,8 +733,9 @@ html[data-theme="dark"] input[type="month"]::-webkit-calendar-picker-indicator {
   }
 
   .main-panel {
+    --main-panel-gutter: var(--space-3);
     max-height: none;
-    padding: var(--space-3);
+    padding: var(--main-panel-gutter);
     overflow: visible;
   }
 
@@ -876,7 +873,8 @@ html[data-theme="dark"] input[type="month"]::-webkit-calendar-picker-indicator {
 
 @media (max-width: 480px) {
   .main-panel {
-    padding: var(--space-2);
+    --main-panel-gutter: var(--space-2);
+    padding: var(--main-panel-gutter);
   }
 
   .sidebar,

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as contactApi from '../api/contactApi.js';
 import LineIcon from '../components/common/LineIcon.jsx';
+import ManagementPageHero from '../components/common/ManagementPageHero.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 
 const createEmptyPhone = () => ({
@@ -143,14 +144,21 @@ export default function ContactPage() {
   return (
     <section className={`content-section contact-page${isAdmin ? ' contact-page-admin' : ' contact-page-readable'}`}>
       <div className="contact-shell">
-        <header className="contact-hero">
-          <div className="contact-hero-copy">
-            <span className="page-eyebrow">{t('contact.eyebrow')}</span>
-            <h1>{t('contact.title')}</h1>
-            <p>{t('contact.description')}</p>
-          </div>
-          <ContactHeroIllustration />
-        </header>
+        {isAdmin ? (
+          <ManagementPageHero
+            title={t('contact.title')}
+            description={t('contact.description')}
+          />
+        ) : (
+          <header className="contact-hero">
+            <div className="contact-hero-copy">
+              <span className="page-eyebrow">{t('contact.eyebrow')}</span>
+              <h1>{t('contact.title')}</h1>
+              <p>{t('contact.description')}</p>
+            </div>
+            <ContactHeroIllustration />
+          </header>
+        )}
 
         {message && <div className="alert success-alert">{message}</div>}
         {error && <div className="alert error-alert">{error}</div>}

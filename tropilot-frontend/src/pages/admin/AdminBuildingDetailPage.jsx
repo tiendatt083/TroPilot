@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useOutletContext, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import * as contractApi from '../../features/contracts/api.js';
 import * as invoiceApi from '../../features/invoices/api.js';
@@ -352,7 +352,6 @@ function RecentTable({ columns, emptyText, icon, rows, title }) {
 
 export default function AdminBuildingDetailPage() {
   const { id } = useParams();
-  const { building } = useOutletContext();
   const { t, i18n } = useTranslation();
   const [operations, setOperations] = useState(EMPTY_BUILDING_OPERATIONS);
   const [error, setError] = useState('');
@@ -444,7 +443,6 @@ export default function AdminBuildingDetailPage() {
     kpis,
     maintenanceRooms,
     monthlyRevenue,
-    occupiedRooms,
     openMaintenanceRequests,
     openTasks,
     outstandingAmount,
@@ -507,7 +505,6 @@ export default function AdminBuildingDetailPage() {
       emptyRooms: empty,
       maintenanceRooms: maintenance,
       monthlyRevenue: buildMonthlyRevenue(operations.invoices),
-      occupiedRooms: occupied,
       openMaintenanceRequests: openMaintenance,
       openTasks: tasksOpen,
       outstandingAmount: debtAmount,
@@ -640,24 +637,6 @@ export default function AdminBuildingDetailPage() {
   return (
     <div className="admin-ops-dashboard building-ops-dashboard">
       {error && <div className="alert error-alert">{error}</div>}
-
-      <section className="ops-welcome-card building-ops-hero-card">
-        <div>
-          <span className="ops-hero-eyebrow">Tổng quan tòa nhà</span>
-          <h2>{building.name}</h2>
-          <p>{building.description || 'Theo dõi phòng, người thuê, hóa đơn, phản hồi và bảo trì của tòa nhà này.'}</p>
-        </div>
-        <div className="ops-building-facts">
-          <span>
-            <LineIcon name="mapPin" />
-            {building.address || 'Chưa có địa chỉ'}
-          </span>
-          <span>
-            <LineIcon name="activity" />
-            {getPercent(occupiedRooms, operations.rooms.length)}% đang thuê
-          </span>
-        </div>
-      </section>
 
       <div className="ops-dashboard-workspace">
         <section className="ops-overview-panel">

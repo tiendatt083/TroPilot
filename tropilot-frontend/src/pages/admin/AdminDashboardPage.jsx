@@ -9,6 +9,7 @@ import * as dashboardApi from '../../features/buildings/dashboardApi.js';
 import LineIcon from '../../components/common/LineIcon.jsx';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { formatDisplayDate, formatDisplayMonth } from '../../utils/dateFormat.js';
+import { getUserDisplayName } from '../../utils/userDisplay.js';
 
 const EMPTY_INSIGHTS = {
   buildings: [],
@@ -568,19 +569,13 @@ export default function AdminDashboardPage() {
   const recentFeedbacks = sortRecent(insights.feedbacks).slice(0, 5);
   const recentInvoices = sortRecent(insights.invoices, ['createdAt', 'invoiceDate', 'dueDate']).slice(0, 5);
   const recentMaintenance = sortRecent(insights.maintenanceRequests).slice(0, 5);
+  const greetingName = getUserDisplayName(user, 'admin');
 
   return (
     <section className="content-section dashboard-page admin-ops-dashboard">
-      <header className="ops-dashboard-topbar">
-        <div>
-          <span>Hệ thống quản lý phòng trọ</span>
-          <h1>Tổng quan</h1>
-        </div>
-      </header>
-
       <section className="ops-welcome-card">
         <div>
-          <h2>Xin chào, {user?.fullName || 'admin'}!</h2>
+          <h2>Xin chào, {greetingName}!</h2>
           <p>Chào mừng bạn đến với hệ thống quản lý phòng trọ Copilot.</p>
         </div>
         <div className="ops-welcome-actions">

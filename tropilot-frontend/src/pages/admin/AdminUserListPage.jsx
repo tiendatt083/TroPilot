@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import * as adminUserApi from '../../features/users/api.js';
 import AdminAccountDirectoryTable from '../../components/AdminAccountDirectoryTable.jsx';
 import AdminUserCreateDialog from '../../components/AdminUserCreateDialog.jsx';
+import ManagementPageHero from '../../components/common/ManagementPageHero.jsx';
 import { exportRowsToExcel } from '../../utils/excelExport.js';
 
 const MANAGED_ACCOUNT_ROLES = new Set(['ADMIN', 'STAFF']);
@@ -145,12 +146,11 @@ export default function AdminUserListPage() {
 
   return (
     <section className="content-section account-directory-page modern-user-page">
-      <div className="account-page-hero">
-        <div>
-          <h1>{t('userManagement.title')}</h1>
-          <p>{t('userManagement.summary', { count: accounts.length })}</p>
-        </div>
-        <div className="page-action-row">
+      <ManagementPageHero
+        title={t('userManagement.title')}
+        description={t('userManagement.summary', { count: accounts.length })}
+        actions={
+          <>
           <button
             className="secondary-button inline-button"
             type="button"
@@ -165,8 +165,9 @@ export default function AdminUserListPage() {
           >
             {t('userManagement.actions.create')}
           </button>
-        </div>
-      </div>
+          </>
+        }
+      />
 
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}

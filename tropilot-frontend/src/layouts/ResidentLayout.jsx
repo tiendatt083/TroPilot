@@ -5,6 +5,7 @@ import * as residentApi from '../api/residentApi.js';
 import ChatWidget from '../components/ChatWidget.jsx';
 import SidebarBrand from '../components/SidebarBrand.jsx';
 import SidebarNavLink from '../components/SidebarNavLink.jsx';
+import SidebarUserCard from '../components/SidebarUserCard.jsx';
 
 const RESIDENT_PRIMARY_ITEMS = [
   { to: '/resident/dashboard', labelKey: 'navigation.dashboard', icon: 'home', requiresRoom: true }
@@ -80,10 +81,7 @@ export default function ResidentLayout() {
     <div className="app-shell">
       <aside className="sidebar">
         <SidebarBrand />
-        <div className="sidebar-user">
-          <span>TroPilot</span>
-          <small>{t('sidebar.access.residentHead')}</small>
-        </div>
+        <SidebarUserCard />
         <nav aria-label={t('navigation.resident')}>
           {filterVisibleItems(RESIDENT_PRIMARY_ITEMS).map((item) => (
             <SidebarNavLink item={item} key={item.to} />

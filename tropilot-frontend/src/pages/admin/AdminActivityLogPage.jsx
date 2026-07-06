@@ -1,5 +1,5 @@
 import MyActivityLogPage from '../../components/MyActivityLogPage.jsx';
 
 export default function AdminActivityLogPage() {
-  return <MyActivityLogPage eyebrowKey="notifications.adminEyebrow" />;
+  return <MyActivityLogPage />;
 }

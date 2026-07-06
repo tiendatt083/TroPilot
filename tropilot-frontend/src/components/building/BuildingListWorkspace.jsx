@@ -7,6 +7,7 @@ import ConfirmDialog from '../common/ConfirmDialog.jsx';
 import DataTable from '../common/DataTable.jsx';
 import EmptyState from '../common/EmptyState.jsx';
 import FilterBar from '../common/FilterBar.jsx';
+import ManagementPageHero from '../common/ManagementPageHero.jsx';
 import PageHeader from '../common/PageHeader.jsx';
 
 export default function BuildingListWorkspace({
@@ -196,22 +197,31 @@ export default function BuildingListWorkspace({
       )
     }
   ];
+  const createAction = canManage && (
+    canUseDialogForm ? (
+      <button className="button-link" type="button" onClick={handleOpenCreate}>
+        {t('workspace.buildings.create')}
+      </button>
+    ) : createPath ? (
+      <Link className="button-link" to={createPath}>
+        {t('workspace.buildings.create')}
+      </Link>
+    ) : null
+  );
 
   return (
-    <section className="content-section">
-      <div className="page-title-row">
-        <PageHeader eyebrow={eyebrow} title={title} />
-        {canManage && createPath && !canUseDialogForm && (
-          <Link className="button-link" to={createPath}>
-            {t('workspace.buildings.create')}
-          </Link>
-        )}
-        {canUseDialogForm && (
-          <button className="button-link" type="button" onClick={handleOpenCreate}>
-            {t('workspace.buildings.create')}
-          </button>
-        )}
-      </div>
+    <section className={`content-section${canManage ? ' management-page' : ''}`}>
+      {canManage ? (
+        <ManagementPageHero
+          title={t('buildingManagement.adminTitle')}
+          description={t('buildingManagement.summary', { count: buildings.length })}
+          actions={createAction}
+        />
+      ) : (
+        <div className="page-title-row">
+          <PageHeader eyebrow={eyebrow} title={title} />
+        </div>
+      )}
 
       <FilterBar onSubmit={handleSearch}>
         <input

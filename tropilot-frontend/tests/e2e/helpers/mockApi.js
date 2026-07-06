@@ -455,6 +455,28 @@ async function handleApiRoute(route, state) {
     }));
   }
 
+  if (method === 'POST' && path === '/api/staff/utility-readings/fetch/electricity') {
+    return fulfillJson(route, success({
+      source: 'MOCK',
+      meterType: 'ELECTRICITY',
+      recordedAt: getQuery(request.url()).get('readingDate'),
+      oldReading: 350,
+      newReading: 437,
+      usage: 87
+    }));
+  }
+
+  if (method === 'POST' && path === '/api/staff/utility-readings/fetch/water') {
+    return fulfillJson(route, success({
+      source: 'MOCK',
+      meterType: 'WATER',
+      recordedAt: getQuery(request.url()).get('readingDate'),
+      oldReading: 24,
+      newReading: 31,
+      usage: 7
+    }));
+  }
+
   if (method === 'POST' && path === '/api/admin/rooms') {
     const body = await getPostBody(request);
     const building = state.buildings.find((item) => item.id === Number(body.buildingId)) || state.buildings[0];

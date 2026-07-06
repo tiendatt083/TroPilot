@@ -913,6 +913,7 @@
   "activityLogs": {
     "title": "Nhật ký hoạt động",
     "eyebrow": "Admin",
+    "summary": "Theo dõi {{count}} thao tác gần đây của tài khoản hiện tại.",
     "loading": "Đang tải nhật ký hoạt động...",
     "loadError": "Không thể tải nhật ký hoạt động",
     "empty": "Không tìm thấy nhật ký hoạt động.",
@@ -1312,6 +1313,7 @@
   "notifications": {
     "adminEyebrow": "Admin",
     "title": "Thông báo",
+    "summary": "Theo dõi {{count}} thông báo đã tạo và phạm vi người nhận.",
     "inboxTitle": "Hộp thư",
     "sentTitle": "Đã gửi",
     "systemSender": "Hệ thống",
@@ -1697,6 +1699,7 @@
   "buildingManagement": {
     "adminTitle": "Quản lý tòa nhà",
     "staffTitle": "Tòa nhà",
+    "summary": "Quản lý danh sách và vận hành {{count}} tòa nhà trong hệ thống.",
     "createTitle": "Tạo tòa nhà",
     "editTitle": "Sửa tòa nhà",
     "back": "Quay lại danh sách tòa nhà",
@@ -2075,7 +2078,15 @@
       "markRead": "Đánh dấu đã đọc",
       "empty": "Không tìm thấy thông báo.",
       "allBuildings": "Tất cả tòa nhà",
-      "selectedBuildings": "Các tòa nhà đã chọn"
+      "selectedBuildings": "Các tòa nhà đã chọn",
+      "targetCompact": {
+        "all": "Tất cả",
+        "residentHeads": "Chủ hộ",
+        "staff": "Nhân viên",
+        "selectedOne": "Cá nhân",
+        "selectedCount": "{{count}} người",
+        "target": "Đối tượng"
+      }
     },
     "feedbacks": {
       "title": "Phản hồi",

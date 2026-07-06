@@ -4,9 +4,9 @@ import * as buildingApi from '../../features/buildings/api.js';
 import * as notificationApi from '../../features/notifications/api.js';
 import * as adminUserApi from '../../features/users/api.js';
 import ActionDialog from '../../components/common/ActionDialog.jsx';
+import ManagementPageHero from '../../components/common/ManagementPageHero.jsx';
 import CheckboxList from '../../components/CheckboxList.jsx';
 import NotificationHistoryPanel from '../../components/NotificationHistoryPanel.jsx';
-import PageHeader from '../../components/PageHeader.jsx';
 import { formatEnumLabel } from '../../utils/i18nFormat.js';
 import { NOTIFICATION_TARGET_OPTIONS } from '../../utils/notificationOptions.js';
 
@@ -244,10 +244,10 @@ export default function AdminNotificationPage() {
   }
 
   return (
-    <section className="content-section building-workspace notification-page-shell">
-      <PageHeader
-        eyebrow={t('notifications.adminEyebrow')}
+    <section className="content-section management-page">
+      <ManagementPageHero
         title={t('notifications.title')}
+        description={t('notifications.summary', { count: notifications.length })}
         actions={
           !composerOpen && (
             <button className="button-link" type="button" onClick={handleOpenComposer}>

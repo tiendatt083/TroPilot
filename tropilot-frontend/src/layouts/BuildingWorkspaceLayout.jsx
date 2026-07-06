@@ -21,7 +21,7 @@ export default function BuildingWorkspaceLayout({
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState(false);
-  const [openGroups, setOpenGroups] = useState({});
+  const [openGroupId, setOpenGroupId] = useState(null);
   const buildingPath = `${basePath}/${id}`;
   const shellClasses = [
     'content-section',
@@ -91,18 +91,16 @@ export default function BuildingWorkspaceLayout({
       return;
     }
 
-    setOpenGroups((current) => ({
-      ...current,
-      [activeGroupId]: true
-    }));
-  }, [activeGroupId]);
+    const activeGroup = navigationGroups.find((group) => group.id === activeGroupId);
+    setOpenGroupId(activeGroup?.standalone ? null : activeGroupId);
+  }, [activeGroupId, navigationGroups]);
 
   const toggleGroup = (groupId) => {
-    setOpenGroups((current) => ({
-      ...current,
-      [groupId]: !current[groupId]
-    }));
+    setOpenGroupId((current) => (current === groupId ? null : groupId));
   };
+  const openGroup = navigationGroups.find(
+    (group) => !group.standalone && group.id === openGroupId
+  );
 
   if (loading) {
     return <div className="empty-state">{t('buildingWorkspace.loading')}</div>;
@@ -114,58 +112,57 @@ export default function BuildingWorkspaceLayout({
 
   return (
     <section className={shellClasses}>
-      <div className="page-title-row">
-        <PageHeader eyebrow={t(eyebrowKey)} title={`${building.buildingCode} - ${building.name}`} />
-        <div className="button-row">
-          <Link className="secondary-link" to={listPath}>
-            {t('buildingWorkspace.allBuildings')}
-          </Link>
-          {actions.showRoomsLink && (
-            <Link className="secondary-link" to={`${buildingPath}/rooms`}>
-              {t('buildingWorkspace.roomsInBuilding')}
+      <div className="building-workspace-sticky-header">
+        <div className="page-title-row">
+          <PageHeader eyebrow={t(eyebrowKey)} title={`${building.buildingCode} - ${building.name}`} />
+          <div className="button-row">
+            <Link className="secondary-link" to={listPath}>
+              {t('buildingWorkspace.allBuildings')}
             </Link>
-          )}
-          {actions.canCreateRoom && (
-            <Link className="button-link" to={`/admin/rooms/create?buildingId=${building.id}`}>
-              {t('buildingWorkspace.createRoom')}
-            </Link>
-          )}
-          {actions.canEditBuilding && (
-            <Link className="secondary-link" to={`${buildingPath}/edit`}>
-              {t('common.edit')}
-            </Link>
-          )}
-          {actions.canDeleteBuilding && (
-            <button className="secondary-button inline-button" type="button" disabled={deleting} onClick={handleDelete}>
-              {t('common.delete')}
-            </button>
-          )}
+            {actions.showRoomsLink && (
+              <Link className="secondary-link" to={`${buildingPath}/rooms`}>
+                {t('buildingWorkspace.roomsInBuilding')}
+              </Link>
+            )}
+            {actions.canCreateRoom && (
+              <Link className="button-link" to={`/admin/rooms/create?buildingId=${building.id}`}>
+                {t('buildingWorkspace.createRoom')}
+              </Link>
+            )}
+            {actions.canEditBuilding && (
+              <Link className="secondary-link" to={`${buildingPath}/edit`}>
+                {t('common.edit')}
+              </Link>
+            )}
+            {actions.canDeleteBuilding && (
+              <button className="secondary-button inline-button" type="button" disabled={deleting} onClick={handleDelete}>
+                {t('common.delete')}
+              </button>
+            )}
+          </div>
         </div>
-      </div>
 
-      {message && <div className="alert success-alert">{message}</div>}
-      {error && <div className="alert error-alert">{error}</div>}
-
-      <div className="building-workspace-body">
         <nav className="workspace-tabs building-workspace-tabs grouped-workspace-tabs" aria-label={t('navigation.buildingWorkspace')}>
-          {navigationGroups.map((group) => {
-            const groupIsActive = group.id === activeGroupId;
-            const groupIsOpen = group.standalone || openGroups[group.id] || groupIsActive;
+          <div className="workspace-tab-main-row">
+            {navigationGroups.map((group) => {
+              const groupIsActive = group.id === activeGroupId;
+              const groupIsOpen = group.id === openGroupId;
 
-            if (group.standalone) {
-              return group.items.map((tab) => (
-                <NavLink key={tab.path || 'overview'} end={tab.end} to={`${buildingPath}${tab.path}`}>
-                  {t(tab.labelKey)}
-                </NavLink>
-              ));
-            }
+              if (group.standalone) {
+                return group.items.map((tab) => (
+                  <NavLink key={tab.path || 'overview'} end={tab.end} to={`${buildingPath}${tab.path}`}>
+                    {t(tab.labelKey)}
+                  </NavLink>
+                ));
+              }
 
-            return (
-              <div className="workspace-tab-group" key={group.id}>
+              return (
                 <button
                   className={`workspace-tab-group-toggle${groupIsActive ? ' active-group' : ''}`}
+                  key={group.id}
                   type="button"
                   aria-expanded={groupIsOpen}
+                  aria-controls="building-workspace-submenu"
                   onClick={() => toggleGroup(group.id)}
                 >
                   <span>{t(group.labelKey)}</span>
@@ -173,20 +170,26 @@ export default function BuildingWorkspaceLayout({
                     ›
                   </span>
                 </button>
-                {groupIsOpen && (
-                  <div className="workspace-tab-group-items">
-                    {group.items.map((tab) => (
-                      <NavLink key={tab.path || 'overview'} end={tab.end} to={`${buildingPath}${tab.path}`}>
-                        {t(tab.labelKey)}
-                      </NavLink>
-                    ))}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </nav>
+              );
+            })}
+          </div>
 
+          {openGroup && (
+            <div className="workspace-tab-submenu" id="building-workspace-submenu">
+              {openGroup.items.map((tab) => (
+                <NavLink key={tab.path || 'overview'} end={tab.end} to={`${buildingPath}${tab.path}`}>
+                  {t(tab.labelKey)}
+                </NavLink>
+              ))}
+            </div>
+          )}
+        </nav>
+      </div>
+
+      {message && <div className="alert success-alert">{message}</div>}
+      {error && <div className="alert error-alert">{error}</div>}
+
+      <div className="building-workspace-body">
         <div className="building-workspace-content">
           <Outlet context={{ building }} />
         </div>

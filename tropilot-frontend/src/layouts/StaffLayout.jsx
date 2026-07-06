@@ -4,6 +4,7 @@ import ChatWidget from '../components/ChatWidget.jsx';
 import SidebarBrand from '../components/SidebarBrand.jsx';
 import SidebarNavGroup from '../components/SidebarNavGroup.jsx';
 import SidebarNavLink from '../components/SidebarNavLink.jsx';
+import SidebarUserCard from '../components/SidebarUserCard.jsx';
 
 const STAFF_OPERATION_ITEMS = [
   { to: '/staff/buildings', labelKey: 'navigation.buildings', icon: 'building' },
@@ -33,10 +34,7 @@ export default function StaffLayout() {
     <div className="app-shell">
       <aside className="sidebar">
         <SidebarBrand />
-        <div className="sidebar-user">
-          <span>TroPilot</span>
-          <small>{t('sidebar.access.staff')}</small>
-        </div>
+        <SidebarUserCard />
         <nav aria-label={t('navigation.staff')}>
           {STAFF_PRIMARY_ITEMS.map((item) => (
             <SidebarNavLink item={item} key={item.to} />

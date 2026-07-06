@@ -87,15 +87,33 @@
   margin-inline: 0;
 }
 
+.building-workspace-sticky-header {
+  position: sticky;
+  top: calc(var(--main-panel-gutter) * -1);
+  z-index: 30;
+  display: grid;
+  gap: var(--space-3);
+  margin-top: calc(var(--main-panel-gutter) * -1);
+  margin-inline: calc(var(--main-panel-gutter) * -1);
+  padding: var(--main-panel-gutter) var(--main-panel-gutter) var(--space-3);
+  border-bottom: 1px solid var(--color-border-soft);
+  background: var(--color-bg);
+}
+
+.building-workspace-sticky-header .page-title-row {
+  margin-bottom: 0;
+  padding-bottom: var(--space-3);
+}
+
 .building-workspace-body {
   display: grid;
-  grid-template-columns: minmax(224px, 232px) minmax(0, 1fr);
-  gap: var(--space-5);
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
   align-items: start;
 }
 
 .admin-building-workspace-shell .building-workspace-body {
-  grid-template-columns: minmax(210px, 224px) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-4);
 }
 
@@ -149,31 +167,33 @@
 
 .building-workspace-tabs {
   position: static;
+  z-index: 20;
   display: grid;
-  align-content: start;
   align-self: start;
+  gap: 0;
+  width: 100%;
   max-width: 100%;
   overflow: visible;
+  box-shadow: 0 10px 24px rgba(23, 32, 51, 0.08);
 }
 
-.building-workspace-tabs a {
-  width: 100%;
-  justify-content: flex-start;
+.workspace-tab-main-row {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.building-workspace-tabs a,
+.building-workspace-tabs .workspace-tab-group-toggle {
+  width: auto;
+  justify-content: center;
   min-height: 38px;
 }
 
 .grouped-workspace-tabs {
   gap: var(--space-2);
-}
-
-.workspace-tab-group {
-  display: grid;
-  gap: var(--space-1);
-  min-width: 0;
-  border: 1px solid var(--color-border-soft);
-  border-radius: var(--radius-sm);
-  padding: var(--space-2);
-  background: var(--color-surface-muted);
 }
 
 .workspace-tab-group-toggle {
@@ -235,15 +255,20 @@
   transform: rotate(-90deg);
 }
 
-.workspace-tab-group-items {
-  display: grid;
-  gap: var(--space-1);
+.workspace-tab-submenu {
+  display: flex;
   min-width: 0;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin-top: var(--space-2);
+  border-top: 1px solid var(--color-border-soft);
+  padding-top: var(--space-2);
 }
 
-.workspace-tab-group-items a {
+.workspace-tab-submenu a {
+  width: auto;
   min-height: 34px;
-  padding-left: var(--space-3);
+  padding: 0.4rem 0.66rem;
 }
 
 .building-workspace {
@@ -1246,16 +1271,26 @@
 }
 
 .contact-shell {
-  width: min(100%, 1120px);
-  margin-inline: auto;
+  width: 100%;
+  margin-inline: 0;
 }
 
 .contact-page-readable .contact-shell {
-  width: min(100%, 860px);
+  width: 100%;
+}
+
+.contact-page-admin .contact-shell {
+  width: 100%;
+  gap: var(--space-5);
+}
+
+.contact-page-admin .contact-layout {
+  width: 100%;
+  margin-inline: 0;
 }
 
 .contact-editor {
-  width: 100%;
+  width: auto;
 }
 
 .contact-hero {
@@ -1411,7 +1446,7 @@
 }
 
 .contact-summary-panel {
-  width: min(100%, 920px);
+  width: 100%;
 }
 
 .contact-layout.is-readable,
@@ -2372,43 +2407,12 @@
   stroke-width: 2;
 }
 
-.ops-dashboard-topbar,
 .ops-welcome-card,
 .ops-overview-panel,
 .ops-panel {
   min-width: 0;
   border: 1px solid var(--color-border-soft);
   box-shadow: var(--shadow-xs);
-}
-
-.ops-dashboard-topbar {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: var(--space-4);
-  align-items: center;
-  border-radius: var(--radius-lg);
-  padding: var(--space-3) var(--space-4);
-  background: var(--color-surface);
-}
-
-.ops-dashboard-topbar > div {
-  min-width: 0;
-}
-
-.ops-dashboard-topbar > div > span {
-  display: block;
-  color: var(--color-text-muted);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-strong);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.ops-dashboard-topbar h1 {
-  margin: 0;
-  color: var(--color-text);
-  font-size: clamp(1.35rem, 2vw, 1.75rem);
-  line-height: 1.1;
 }
 
 .ops-admin-pill {
@@ -2538,40 +2542,6 @@
 
 .building-ops-dashboard .ops-recent-grid-single {
   grid-template-columns: minmax(0, 1fr);
-}
-
-.building-ops-hero-card {
-  align-items: stretch;
-}
-
-.ops-building-facts {
-  display: flex;
-  flex: 0 1 380px;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-  align-content: center;
-  align-items: center;
-  justify-content: flex-end;
-}
-
-.ops-building-facts span {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  min-height: 34px;
-  max-width: 100%;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: var(--radius-sm);
-  padding: 0.42rem 0.62rem;
-  color: rgba(239, 246, 255, 0.92);
-  background: rgba(255, 255, 255, 0.08);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  line-height: 1.3;
-}
-
-.ops-building-facts svg {
-  color: #7be0d0;
 }
 
 .ops-overview-panel,
@@ -2990,7 +2960,6 @@
   --ops-finance-tone: #ef4444;
 }
 
-html[data-theme="dark"] .ops-dashboard-topbar,
 html[data-theme="dark"] .ops-overview-panel,
 html[data-theme="dark"] .ops-panel {
   background: var(--color-surface);
@@ -3064,37 +3033,11 @@ html[data-theme="dark"] .ops-revenue-chart {
   }
 }
 
-@media (max-width: 960px) {
-  .admin-building-workspace-shell .building-workspace-body {
-    grid-template-columns: 1fr;
-  }
-
-  .admin-building-workspace-shell .building-workspace-tabs {
-    display: flex;
-    max-width: 100%;
-    overflow-x: auto;
-    overflow-y: hidden;
-  }
-
-  .admin-building-workspace-shell .workspace-tab-group {
-    min-width: max-content;
-  }
-}
-
 @media (max-width: 820px) {
-  .ops-dashboard-topbar {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
   .ops-welcome-card,
   .ops-overview-title {
     align-items: flex-start;
     flex-direction: column;
-  }
-
-  .ops-building-facts {
-    width: 100%;
-    flex-basis: auto;
   }
 
   .ops-welcome-actions {
@@ -3127,7 +3070,6 @@ html[data-theme="dark"] .ops-revenue-chart {
     justify-content: center;
   }
 
-  .ops-dashboard-topbar,
   .ops-overview-panel,
   .ops-panel-title,
   .ops-donut-layout {
