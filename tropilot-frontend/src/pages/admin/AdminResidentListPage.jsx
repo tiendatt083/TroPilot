@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
 import * as buildingApi from '../../features/buildings/api.js';
 import * as memberApi from '../../features/residents/api.js';
 import * as adminUserApi from '../../features/users/api.js';
 import AdminAccountDirectoryTable from '../../components/AdminAccountDirectoryTable.jsx';
+import AdminUserCreateDialog from '../../components/AdminUserCreateDialog.jsx';
 import { formatDisplayDate } from '../../utils/dateFormat.js';
 import { exportRowsToExcel } from '../../utils/excelExport.js';
 
@@ -84,6 +84,10 @@ export default function AdminResidentListPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [createError, setCreateError] = useState('');
+  const [creating, setCreating] = useState(false);
+  const [createResetKey, setCreateResetKey] = useState(0);
 
   const loadResidents = useCallback(async () => {
     setLoading(true);
@@ -184,6 +188,39 @@ export default function AdminResidentListPage() {
     });
   };
 
+  const handleOpenCreateDialog = () => {
+    setCreateError('');
+    setCreateResetKey((current) => current + 1);
+    setCreateDialogOpen(true);
+  };
+
+  const handleCloseCreateDialog = () => {
+    if (creating) {
+      return;
+    }
+
+    setCreateDialogOpen(false);
+    setCreateError('');
+  };
+
+  const handleCreateResidentHead = async (form) => {
+    setCreateError('');
+    setMessage('');
+    setError('');
+    setCreating(true);
+
+    try {
+      await adminUserApi.createUser({ ...form, role: 'RESIDENT_HEAD' });
+      setCreateDialogOpen(false);
+      setMessage(t('userCreate.messages.residentHeadCreated'));
+      await loadResidents();
+    } catch (apiError) {
+      setCreateError(apiError.response?.data?.message || t('userCreate.messages.createError'));
+    } finally {
+      setCreating(false);
+    }
+  };
+
   return (
     <section className="content-section account-directory-page modern-user-page">
       <div className="account-page-hero">
@@ -195,12 +232,13 @@ export default function AdminResidentListPage() {
           <button className="secondary-button inline-button" type="button" onClick={handleExport}>
             {t('residentDirectory.actions.exportExcel')}
           </button>
-          <Link
+          <button
             className="button-link"
-            to="/admin/users/create?role=RESIDENT_HEAD&returnTo=/admin/residents"
+            type="button"
+            onClick={handleOpenCreateDialog}
           >
             {t('residentDirectory.actions.create')}
-          </Link>
+          </button>
         </div>
       </div>
 
@@ -255,6 +293,17 @@ export default function AdminResidentListPage() {
           useIconActions
         />
       )}
+
+      <AdminUserCreateDialog
+        error={createError}
+        initialRole="RESIDENT_HEAD"
+        loading={creating}
+        open={createDialogOpen}
+        resetKey={createResetKey}
+        roleLocked
+        onClose={handleCloseCreateDialog}
+        onSubmit={handleCreateResidentHead}
+      />
     </section>
   );
 }

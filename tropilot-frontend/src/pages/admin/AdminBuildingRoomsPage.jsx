@@ -8,6 +8,7 @@ export default function AdminBuildingRoomsPage() {
   return (
     <BuildingRoomsWorkspace
       getRooms={roomApi.getAdminRooms}
+      createRoom={roomApi.createAdminRoom}
       roomBasePath={`/admin/buildings/${building.id}/rooms`}
       createRoomPath="/admin/rooms/create"
       canManage

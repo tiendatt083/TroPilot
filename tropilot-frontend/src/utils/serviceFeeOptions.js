@@ -1,13 +1,15 @@
+import { localizedOption } from './interfaceTranslations.js';
+
 export const FEE_TYPE_OPTIONS = [
-  { value: 'ELECTRICITY', label: 'Electricity' },
-  { value: 'WATER', label: 'Water' },
-  { value: 'OTHER', label: 'Other' }
+  localizedOption('ELECTRICITY', 'Electricity'),
+  localizedOption('WATER', 'Water'),
+  localizedOption('OTHER', 'Other')
 ];
 
 export const CALCULATION_TYPE_OPTIONS = [
-  { value: 'FIXED', label: 'Per room' },
-  { value: 'BY_USAGE', label: 'By usage' },
-  { value: 'BY_PERSON', label: 'Per person' }
+  localizedOption('FIXED', 'Per room'),
+  localizedOption('BY_USAGE', 'By usage'),
+  localizedOption('BY_PERSON', 'Per person')
 ];
 
 export function getCalculationTypeOptionsForFeeType(feeType) {

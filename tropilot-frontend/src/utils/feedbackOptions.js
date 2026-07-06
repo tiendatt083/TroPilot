@@ -1,23 +1,24 @@
 import { formatDisplayDateTime } from './dateFormat.js';
+import { localizedOption, translateInterfaceText } from './interfaceTranslations.js';
 
 export const FEEDBACK_TYPE_OPTIONS = [
-  { value: 'GENERAL', label: 'General' },
-  { value: 'MAINTENANCE', label: 'Maintenance' },
-  { value: 'CONTRACT_ERROR', label: 'Contract error' },
-  { value: 'OTHER', label: 'Other' }
+  localizedOption('GENERAL', 'General'),
+  localizedOption('MAINTENANCE', 'Maintenance'),
+  localizedOption('CONTRACT_ERROR', 'Contract error'),
+  localizedOption('OTHER', 'Other')
 ];
 
 export const FEEDBACK_STATUS_OPTIONS = [
-  { value: 'PENDING', label: 'Pending' },
-  { value: 'ASSIGNED', label: 'Assigned' },
-  { value: 'IN_PROGRESS', label: 'In progress' },
-  { value: 'RESOLVED', label: 'Resolved' },
-  { value: 'REJECTED', label: 'Rejected' }
+  localizedOption('PENDING', 'Pending'),
+  localizedOption('ASSIGNED', 'Assigned'),
+  localizedOption('IN_PROGRESS', 'In progress'),
+  localizedOption('RESOLVED', 'Resolved'),
+  localizedOption('REJECTED', 'Rejected')
 ];
 
 export function getFeedbackTypeLabel(type) {
   if (type === 'INVOICE_COMPLAINT') {
-    return 'Invoice complaint';
+    return translateInterfaceText('Invoice complaint');
   }
 
   return FEEDBACK_TYPE_OPTIONS.find((option) => option.value === type)?.label || type;
@@ -33,8 +34,8 @@ export function getFeedbackStatusClass(status) {
 
 export function formatFeedbackDateTime(value) {
   if (!value) {
-    return 'Not provided';
+    return translateInterfaceText('Not provided');
   }
 
-  return formatDisplayDateTime(value, 'Not provided');
+  return formatDisplayDateTime(value, translateInterfaceText('Not provided'));
 }

@@ -55,12 +55,12 @@ public class ActivityLogServiceImpl implements ActivityLogService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ActivityLogResponse> getLogs(String action) {
-        String normalizedAction = normalizeOptionalAction(action);
+    public List<ActivityLogResponse> getLogs(String query) {
+        String normalizedQuery = normalizeOptionalQuery(query);
 
-        return (normalizedAction == null
+        return (normalizedQuery == null
                 ? activityLogRepository.findAllByOrderByCreatedAtDesc()
-                : activityLogRepository.findByActionContainingIgnoreCaseOrderByCreatedAtDesc(normalizedAction))
+                : activityLogRepository.searchByQuery(normalizedQuery))
                 .stream()
                 .map(activityLogMapper::toResponse)
                 .toList();
@@ -68,14 +68,14 @@ public class ActivityLogServiceImpl implements ActivityLogService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ActivityLogResponse> getMyLogs(Long userId, String action) {
-        String normalizedAction = normalizeOptionalAction(action);
+    public List<ActivityLogResponse> getMyLogs(Long userId, String query) {
+        String normalizedQuery = normalizeOptionalQuery(query);
 
-        return (normalizedAction == null
+        return (normalizedQuery == null
                 ? activityLogRepository.findByUser_IdOrderByCreatedAtDesc(userId)
-                : activityLogRepository.findByUser_IdAndActionContainingIgnoreCaseOrderByCreatedAtDesc(
+                : activityLogRepository.searchByUserIdAndQuery(
                         userId,
-                        normalizedAction
+                        normalizedQuery
                 ))
                 .stream()
                 .map(activityLogMapper::toResponse)
@@ -106,12 +106,12 @@ public class ActivityLogServiceImpl implements ActivityLogService {
         return action.trim().toUpperCase(Locale.ROOT);
     }
 
-    private String normalizeOptionalAction(String action) {
-        if (action == null || action.isBlank()) {
+    private String normalizeOptionalQuery(String query) {
+        if (query == null || query.isBlank()) {
             return null;
         }
 
-        return action.trim().toUpperCase(Locale.ROOT);
+        return query.trim();
     }
 
     private String normalizeDescription(String description) {

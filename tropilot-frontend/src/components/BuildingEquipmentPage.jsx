@@ -6,6 +6,7 @@ import * as roomApi from '../features/rooms/api.js';
 import EquipmentForm from './EquipmentForm.jsx';
 import EquipmentMaintenancePanel from './EquipmentMaintenancePanel.jsx';
 import EquipmentTable from './EquipmentTable.jsx';
+import ActionDialog from './common/ActionDialog.jsx';
 import PageHeader from './PageHeader.jsx';
 import { EQUIPMENT_CONDITIONS, EQUIPMENT_SCOPES } from '../utils/equipmentOptions.js';
 import { formatRoomLabel } from '../utils/roomDisplay.js';
@@ -288,7 +289,7 @@ export default function BuildingEquipmentPage({ role }) {
     <div className="building-workspace equipment-page">
       <div className="page-title-row compact-title-row">
         <span className="page-eyebrow">{t('equipment.eyebrow')}</span>
-        {canManage && !formOpen && (
+        {canManage && (
           <div className="page-action-row">
             <button className="button-link" type="button" onClick={handleOpenForm}>
               {t('equipment.actions.add')}
@@ -303,12 +304,15 @@ export default function BuildingEquipmentPage({ role }) {
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
 
-      {canManage && formOpen && (
-        <section className="building-section equipment-editor-section">
-          <PageHeader
-            eyebrow={editingEquipment ? t('equipment.form.editEyebrow') : t('equipment.form.addEyebrow')}
-            title={editingEquipment ? t('equipment.form.editTitle') : t('equipment.form.addTitle')}
-          />
+      {canManage && (
+        <ActionDialog
+          className="action-dialog-wide"
+          eyebrow={editingEquipment ? t('equipment.form.editEyebrow') : t('equipment.form.addEyebrow')}
+          labelledBy="equipment-form-dialog-title"
+          open={formOpen}
+          title={editingEquipment ? t('equipment.form.editTitle') : t('equipment.form.addTitle')}
+          onClose={handleCloseForm}
+        >
           <EquipmentForm
             equipment={editingEquipment}
             rooms={rooms}
@@ -318,7 +322,7 @@ export default function BuildingEquipmentPage({ role }) {
             onCancel={handleCloseForm}
             showCancel
           />
-        </section>
+        </ActionDialog>
       )}
 
       <section className="building-section">

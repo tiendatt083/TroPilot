@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import * as buildingApi from '../../features/buildings/api.js';
 import * as roomApi from '../../features/rooms/api.js';
 import useRoomRouteContext from '../../features/rooms/useRoomRouteContext.js';
 import PageHeader from '../../components/PageHeader.jsx';
 import RoomForm from '../../components/RoomForm.jsx';
+import { translateInterfaceText } from '../../utils/interfaceTranslations.js';
 
 export default function AdminRoomEditPage() {
+  useTranslation();
   const { roomBasePath, roomId } = useRoomRouteContext('admin');
   const navigate = useNavigate();
   const [room, setRoom] = useState(null);
@@ -27,7 +30,7 @@ export default function AdminRoomEditPage() {
       })
       .catch((apiError) => {
         if (active) {
-          setError(apiError.response?.data?.message || 'Room could not be loaded');
+          setError(translateInterfaceText(apiError.response?.data?.message || 'Room could not be loaded'));
         }
       })
       .finally(() => {
@@ -49,25 +52,25 @@ export default function AdminRoomEditPage() {
       const response = await roomApi.updateAdminRoom(roomId, payload);
       navigate(`${roomBasePath}/${response.data.id}`, {
         replace: true,
-        state: { message: 'Room updated successfully.' }
+        state: { message: translateInterfaceText('Room updated successfully.') }
       });
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Room could not be updated');
+      setError(translateInterfaceText(apiError.response?.data?.message || 'Room could not be updated'));
     } finally {
       setSaving(false);
     }
   };
 
   if (loading) {
-    return <div className="empty-state">Loading room...</div>;
+    return <div className="empty-state">{translateInterfaceText('Loading room...')}</div>;
   }
 
   return (
     <section className="content-section narrow-section">
       <div className="page-title-row">
-        <PageHeader eyebrow="Administrator" title="Edit room" />
+        <PageHeader eyebrow={translateInterfaceText('Administrator')} title={translateInterfaceText('Edit room')} />
         <Link className="secondary-link" to={`${roomBasePath}/${roomId}`}>
-          Back to details
+          {translateInterfaceText('Back to details')}
         </Link>
       </div>
 
@@ -78,7 +81,7 @@ export default function AdminRoomEditPage() {
           buildingOptions={buildings}
           initialValues={room}
           loading={saving}
-          submitLabel="Save changes"
+          submitLabel={translateInterfaceText('Save changes')}
           onSubmit={handleSubmit}
         />
       )}

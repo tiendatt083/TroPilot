@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
 import * as contractApi from '../../features/contracts/api.js';
+import ActionDialog from '../../components/common/ActionDialog.jsx';
 import ContractFileHistoryList from '../../components/ContractFileHistoryList.jsx';
 import ContractUploadForm from '../../components/ContractUploadForm.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
@@ -189,8 +190,21 @@ export default function AdminBuildingContractPage() {
             </div>
           </div>
 
-          {selectedContract && (
-            <div className="building-contract-detail-column">
+          <ActionDialog
+            className="action-dialog-wide"
+            eyebrow={selectedContract ? formatRoomCode(selectedContract) : t('contracts.adminEyebrow')}
+            labelledBy="building-contract-detail-dialog-title"
+            open={Boolean(selectedContract)}
+            title={t('contracts.title')}
+            onClose={() => {
+              if (!uploading) {
+                setSelectedContract(null);
+                setShowUploadForm(false);
+              }
+            }}
+          >
+            {selectedContract && (
+              <div className="building-contract-detail-column">
               <section className="detail-panel">
                 <div>
                   <span>{t('tables.common.room')}</span>
@@ -285,8 +299,9 @@ export default function AdminBuildingContractPage() {
               </section>
 
               <ContractFileHistoryList files={selectedContract.previousContractFiles} />
-            </div>
-          )}
+              </div>
+            )}
+          </ActionDialog>
         </section>
       )}
     </div>

@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import LineIcon from './common/LineIcon.jsx';
 import { formatDateTime } from '../utils/i18nFormat.js';
+import { translateInterfaceText } from '../utils/interfaceTranslations.js';
 
 const EVENT_ICONS = {
   FEEDBACK_CREATED: 'feedback',
@@ -26,13 +27,15 @@ const EVENT_ICONS = {
 export default function NotificationInboxList({
   notifications,
   onMarkRead,
-  processingId
+  processingId,
+  showReadState = true
 }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const canMarkRead = showReadState && typeof onMarkRead === 'function';
 
   const handleOpen = async (notification) => {
-    if (!notification.read) {
+    if (canMarkRead && !notification.read) {
       await onMarkRead(notification, { silent: true });
     }
     if (notification.actionPath) {
@@ -48,7 +51,7 @@ export default function NotificationInboxList({
     <div className="notification-inbox-list">
       {notifications.map((notification) => (
         <article
-          className={`notification-inbox-item${notification.read ? '' : ' is-unread'}`}
+          className={`notification-inbox-item${showReadState ? '' : ' no-read-state'}${showReadState && !notification.read ? ' is-unread' : ''}`}
           key={notification.id}
         >
           <span className="notification-event-icon">
@@ -63,12 +66,14 @@ export default function NotificationInboxList({
           >
             <span className="notification-inbox-topline">
               <span className="notification-inbox-heading">
-                <strong>{notification.title}</strong>
-                {!notification.read && <span className="notification-unread-dot" aria-label={t('enum.readStatus.UNREAD')} />}
+                <strong>{translateInterfaceText(notification.title)}</strong>
+                {showReadState && !notification.read && (
+                  <span className="notification-unread-dot" aria-label={t('enum.readStatus.UNREAD')} />
+                )}
               </span>
               <span className="notification-inbox-time">{formatDateTime(notification.createdAt, t)}</span>
             </span>
-            <span className="notification-inbox-message">{notification.content}</span>
+            <span className="notification-inbox-message">{translateInterfaceText(notification.content)}</span>
             <span className="notification-inbox-meta">
               <LineIcon name="user" />
               <span>
@@ -82,7 +87,7 @@ export default function NotificationInboxList({
             </span>
           </button>
 
-          {!notification.read && (
+          {canMarkRead && !notification.read && (
             <button
               className="notification-read-button"
               type="button"

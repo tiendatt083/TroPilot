@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import * as maintenanceApi from '../../features/maintenance/api.js';
 import * as taskApi from '../../features/maintenance/taskApi.js';
 import * as vehicleApi from '../../features/residents/vehicleApi.js';
 import * as roomApi from '../../features/rooms/api.js';
 import * as expenseApi from '../../features/payments/expenseApi.js';
 import PageHeader from '../../components/PageHeader.jsx';
+import { translateInterfaceText } from '../../utils/interfaceTranslations.js';
 import { formatNumber } from '../../utils/numberFormat.js';
 
 const emptySummary = {
@@ -28,6 +30,7 @@ function matchesBuilding(item, building) {
 }
 
 export default function StaffBuildingOverviewPage() {
+  useTranslation();
   const { building } = useOutletContext();
   const [summary, setSummary] = useState(emptySummary);
   const [error, setError] = useState('');
@@ -64,7 +67,7 @@ export default function StaffBuildingOverviewPage() {
         });
       } catch (apiError) {
         if (active) {
-          setError(apiError.response?.data?.message || 'Building summary could not be loaded');
+          setError(translateInterfaceText(apiError.response?.data?.message || 'Building summary could not be loaded'));
         }
       } finally {
         if (active) {
@@ -81,7 +84,7 @@ export default function StaffBuildingOverviewPage() {
   }, [building]);
 
   if (loading) {
-    return <div className="empty-state">Loading building summary...</div>;
+    return <div className="empty-state">{translateInterfaceText('Loading building summary...')}</div>;
   }
 
   const activeVehicles = summary.vehicles.filter((vehicle) => vehicle.status === 'ACTIVE').length;
@@ -96,43 +99,43 @@ export default function StaffBuildingOverviewPage() {
 
       <div className="detail-panel">
         <div>
-          <span>Building code</span>
+          <span>{translateInterfaceText('Building code')}</span>
           <strong>{building.buildingCode}</strong>
         </div>
         <div>
-          <span>Address</span>
+          <span>{translateInterfaceText('Address')}</span>
           <strong>{building.address}</strong>
         </div>
         <div>
-          <span>Floors</span>
+          <span>{translateInterfaceText('Floors')}</span>
           <strong>{building.floors}</strong>
         </div>
         <div className="detail-wide">
-          <span>Description</span>
-          <p>{building.description || 'No description provided.'}</p>
+          <span>{translateInterfaceText('Description')}</span>
+          <p>{building.description || translateInterfaceText('No description provided.')}</p>
         </div>
       </div>
 
-      <PageHeader eyebrow="Staff workspace" title="Building operations" />
+      <PageHeader eyebrow={translateInterfaceText('Staff workspace')} title={translateInterfaceText('Building operations')} />
       <div className="dashboard-grid building-summary-grid">
         <div className="dashboard-card">
-          <span>Total rooms</span>
+          <span>{translateInterfaceText('Total rooms')}</span>
           <strong>{formatNumber(summary.rooms.length)}</strong>
         </div>
         <div className="dashboard-card">
-          <span>Active vehicles</span>
+          <span>{translateInterfaceText('Active vehicles')}</span>
           <strong>{formatNumber(activeVehicles)}</strong>
         </div>
         <div className="dashboard-card">
-          <span>Open maintenance</span>
+          <span>{translateInterfaceText('Open maintenance')}</span>
           <strong>{formatNumber(openMaintenance)}</strong>
         </div>
         <div className="dashboard-card">
-          <span>Created expenses</span>
+          <span>{translateInterfaceText('Created expenses')}</span>
           <strong>{formatNumber(summary.expenses.length)}</strong>
         </div>
         <div className="dashboard-card">
-          <span>Open tasks</span>
+          <span>{translateInterfaceText('Open tasks')}</span>
           <strong>{formatNumber(openTasks)}</strong>
         </div>
       </div>

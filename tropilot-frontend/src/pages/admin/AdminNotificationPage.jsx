@@ -3,10 +3,9 @@ import { useTranslation } from 'react-i18next';
 import * as buildingApi from '../../features/buildings/api.js';
 import * as notificationApi from '../../features/notifications/api.js';
 import * as adminUserApi from '../../features/users/api.js';
+import ActionDialog from '../../components/common/ActionDialog.jsx';
 import CheckboxList from '../../components/CheckboxList.jsx';
-import NotificationPaginationControls from '../../components/NotificationPaginationControls.jsx';
-import NotificationInboxList from '../../components/NotificationInboxList.jsx';
-import NotificationTable from '../../components/NotificationTable.jsx';
+import NotificationHistoryPanel from '../../components/NotificationHistoryPanel.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
 import { formatEnumLabel } from '../../utils/i18nFormat.js';
 import { NOTIFICATION_TARGET_OPTIONS } from '../../utils/notificationOptions.js';
@@ -50,9 +49,7 @@ export default function AdminNotificationPage() {
   const { t } = useTranslation();
   const [form, setForm] = useState(emptyForm);
   const [notifications, setNotifications] = useState([]);
-  const [inboxNotifications, setInboxNotifications] = useState([]);
   const [notificationPage, setNotificationPage] = useState(0);
-  const [activeTab, setActiveTab] = useState('inbox');
   const [buildings, setBuildings] = useState([]);
   const [users, setUsers] = useState([]);
   const [message, setMessage] = useState('');
@@ -60,7 +57,6 @@ export default function AdminNotificationPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [composerOpen, setComposerOpen] = useState(false);
-  const [processingId, setProcessingId] = useState(null);
 
   const selectableUsers = useMemo(
     () => users.filter(isSelectableNotificationUser),
@@ -87,11 +83,6 @@ export default function AdminNotificationPage() {
     return notifications.slice(start, start + HISTORY_PAGE_SIZE);
   }, [notificationPage, notifications]);
 
-  const pagedInboxNotifications = useMemo(() => {
-    const start = notificationPage * HISTORY_PAGE_SIZE;
-    return inboxNotifications.slice(start, start + HISTORY_PAGE_SIZE);
-  }, [inboxNotifications, notificationPage]);
-
   const loadNotifications = async () => {
     try {
       const response = await notificationApi.getAdminSentNotifications();
@@ -106,14 +97,12 @@ export default function AdminNotificationPage() {
     Promise.all([
       adminUserApi.getUsers(),
       buildingApi.getAdminBuildings(),
-      notificationApi.getAdminSentNotifications(),
-      notificationApi.getMyNotifications()
+      notificationApi.getAdminSentNotifications()
     ])
-      .then(([usersResponse, buildingsResponse, notificationsResponse, inboxResponse]) => {
+      .then(([usersResponse, buildingsResponse, notificationsResponse]) => {
         setUsers(usersResponse.data);
         setBuildings(buildingsResponse.data);
         setNotifications(notificationsResponse.data);
-        setInboxNotifications(inboxResponse.data);
       })
       .catch((apiError) => setError(apiError.response?.data?.message || t('notifications.formLoadError')))
       .finally(() => setLoading(false));
@@ -190,32 +179,6 @@ export default function AdminNotificationPage() {
 
   const handleNotificationPageChange = (page) => {
     setNotificationPage(page);
-  };
-
-  const handleTabChange = (tab) => {
-    setActiveTab(tab);
-    setNotificationPage(0);
-    setMessage('');
-    setError('');
-  };
-
-  const handleMarkRead = async (notification, options = {}) => {
-    setProcessingId(notification.id);
-    setError('');
-
-    try {
-      const response = await notificationApi.markNotificationRead(notification.id);
-      setInboxNotifications((current) => current.map((item) => (
-        item.id === notification.id ? response.data : item
-      )));
-      if (!options.silent) {
-        setMessage(t('resident.notifications.markedRead'));
-      }
-    } catch (apiError) {
-      setError(apiError.response?.data?.message || t('resident.notifications.markReadError'));
-    } finally {
-      setProcessingId(null);
-    }
   };
 
   const handleOpenComposer = () => {
@@ -297,8 +260,14 @@ export default function AdminNotificationPage() {
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
 
-      {composerOpen && (
-        <div className="notification-composer-shell">
+      <ActionDialog
+        className="action-dialog-wide"
+        eyebrow={t('notifications.adminEyebrow')}
+        labelledBy="admin-notification-create-dialog-title"
+        open={composerOpen}
+        title={t('notifications.actions.create')}
+        onClose={handleCloseComposer}
+      >
           <form className="panel-form notification-composer-form" onSubmit={handleSubmit}>
             <div className="notification-field notification-field-full">
               <label htmlFor="title">{t('notifications.fields.title')}</label>
@@ -383,48 +352,15 @@ export default function AdminNotificationPage() {
               </button>
             </div>
           </form>
-        </div>
-      )}
+      </ActionDialog>
 
-      <section className="building-section notification-history-section">
-        <div className="notification-tabs" role="tablist" aria-label={t('notifications.title')}>
-          <button
-            className={activeTab === 'inbox' ? 'is-active' : ''}
-            type="button"
-            role="tab"
-            aria-selected={activeTab === 'inbox'}
-            onClick={() => handleTabChange('inbox')}
-          >
-            {t('notifications.inboxTitle')}
-            <span>{inboxNotifications.filter((item) => !item.read).length}</span>
-          </button>
-          <button
-            className={activeTab === 'sent' ? 'is-active' : ''}
-            type="button"
-            role="tab"
-            aria-selected={activeTab === 'sent'}
-            onClick={() => handleTabChange('sent')}
-          >
-            {t('notifications.sentTitle')}
-          </button>
-        </div>
-
-        {activeTab === 'inbox' ? (
-          <NotificationInboxList
-            notifications={pagedInboxNotifications}
-            processingId={processingId}
-            onMarkRead={handleMarkRead}
-          />
-        ) : (
-          <NotificationTable notifications={pagedNotifications} showReadStatus={false} />
-        )}
-        <NotificationPaginationControls
-          page={notificationPage}
-          pageSize={HISTORY_PAGE_SIZE}
-          totalItems={activeTab === 'inbox' ? inboxNotifications.length : notifications.length}
-          onPageChange={handleNotificationPageChange}
-        />
-      </section>
+      <NotificationHistoryPanel
+        notifications={pagedNotifications}
+        page={notificationPage}
+        pageSize={HISTORY_PAGE_SIZE}
+        totalItems={notifications.length}
+        onPageChange={handleNotificationPageChange}
+      />
     </section>
   );
 }

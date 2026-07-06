@@ -1,13 +1,15 @@
+import { translateInterfaceText } from './interfaceTranslations.js';
+
 export function getContractStatusLabel(status) {
   if (!status) {
-    return 'Not available';
+    return translateInterfaceText('Not available');
   }
 
-  return status
+  return translateInterfaceText(status
     .toLowerCase()
     .split('_')
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(' ');
+    .join(' '));
 }
 
 export function getContractStatusClass(status) {

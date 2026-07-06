@@ -166,6 +166,21 @@ function createState(options = {}) {
         readAt: null
       }
     ],
+    sentNotifications: [
+      {
+        id: 101,
+        title: 'Tenant payment notice',
+        content: 'Please complete this month rental and utility payment before the due date.',
+        source: 'MANUAL',
+        eventType: 'MANUAL',
+        actionPath: null,
+        createdByName: USERS.admin.fullName,
+        createdByRole: 'ADMIN',
+        createdAt: '2026-06-24T20:10:00',
+        read: true,
+        readAt: null
+      }
+    ],
     activityLogs: [
       {
         id: 1,
@@ -321,11 +336,21 @@ async function handleApiRoute(route, state) {
   }
 
   if (method === 'GET' && path === '/api/activity-logs/me') {
-    return fulfillJson(route, success(state.activityLogs));
+    const query = new URL(request.url()).searchParams.get('query')?.trim().toLowerCase();
+    const logs = query
+      ? state.activityLogs.filter((log) => [
+        log.action,
+        log.description,
+        log.userFullName,
+        log.userEmail,
+        log.userRole
+      ].filter(Boolean).some((value) => String(value).toLowerCase().includes(query)))
+      : state.activityLogs;
+    return fulfillJson(route, success(logs));
   }
 
   if (method === 'GET' && path === '/api/admin/notifications/sent') {
-    return fulfillJson(route, success([]));
+    return fulfillJson(route, success(state.sentNotifications));
   }
 
   if (method === 'GET' && path === '/api/admin/dashboard') {

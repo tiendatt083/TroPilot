@@ -1,28 +1,29 @@
 import { formatDisplayDateTime } from './dateFormat.js';
+import { localizedOption, translateInterfaceText } from './interfaceTranslations.js';
 
 export const TASK_TYPE_OPTIONS = [
-  { value: 'METER_READING', label: 'Meter reading' },
-  { value: 'INVOICE_CREATION', label: 'Invoice creation' },
-  { value: 'ROOM_CHECK', label: 'Room check' },
-  { value: 'MAINTENANCE', label: 'Maintenance' },
-  { value: 'VEHICLE_CHECK', label: 'Vehicle check' },
-  { value: 'FEEDBACK_HANDLING', label: 'Feedback handling' },
-  { value: 'OTHER', label: 'Other' }
+  localizedOption('METER_READING', 'Meter reading'),
+  localizedOption('INVOICE_CREATION', 'Invoice creation'),
+  localizedOption('ROOM_CHECK', 'Room check'),
+  localizedOption('MAINTENANCE', 'Maintenance'),
+  localizedOption('VEHICLE_CHECK', 'Vehicle check'),
+  localizedOption('FEEDBACK_HANDLING', 'Feedback handling'),
+  localizedOption('OTHER', 'Other')
 ];
 
 export const TASK_PRIORITY_OPTIONS = [
-  { value: 'LOW', label: 'Low' },
-  { value: 'MEDIUM', label: 'Medium' },
-  { value: 'HIGH', label: 'High' },
-  { value: 'URGENT', label: 'Urgent' }
+  localizedOption('LOW', 'Low'),
+  localizedOption('MEDIUM', 'Medium'),
+  localizedOption('HIGH', 'High'),
+  localizedOption('URGENT', 'Urgent')
 ];
 
 export const TASK_STATUS_OPTIONS = [
-  { value: 'NEW', label: 'New' },
-  { value: 'IN_PROGRESS', label: 'In progress' },
-  { value: 'COMPLETED', label: 'Completed' },
-  { value: 'REJECTED', label: 'Rejected' },
-  { value: 'OVERDUE', label: 'Overdue' }
+  localizedOption('NEW', 'New'),
+  localizedOption('IN_PROGRESS', 'In progress'),
+  localizedOption('COMPLETED', 'Completed'),
+  localizedOption('REJECTED', 'Rejected'),
+  localizedOption('OVERDUE', 'Overdue')
 ];
 
 export function getTaskTypeLabel(taskType) {
@@ -47,10 +48,10 @@ export function getTaskPriorityClass(priority) {
 
 export function formatTaskDateTime(value) {
   if (!value) {
-    return 'Not provided';
+    return translateInterfaceText('Not provided');
   }
 
-  return formatDisplayDateTime(value, 'Not provided');
+  return formatDisplayDateTime(value, translateInterfaceText('Not provided'));
 }
 
 export function toDateTimeInputValue(value) {

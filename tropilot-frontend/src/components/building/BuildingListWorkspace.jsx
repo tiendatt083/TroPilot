@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
+import BuildingForm from '../BuildingForm.jsx';
+import ActionDialog from '../common/ActionDialog.jsx';
 import ConfirmDialog from '../common/ConfirmDialog.jsx';
 import DataTable from '../common/DataTable.jsx';
 import EmptyState from '../common/EmptyState.jsx';
@@ -14,6 +16,8 @@ export default function BuildingListWorkspace({
   title,
   canManage = false,
   createPath,
+  createBuilding,
+  updateBuilding,
   deleteBuilding
 }) {
   const { t } = useTranslation();
@@ -23,8 +27,12 @@ export default function BuildingListWorkspace({
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
+  const [savingForm, setSavingForm] = useState(false);
+  const [formError, setFormError] = useState('');
+  const [activeForm, setActiveForm] = useState({ mode: '', building: null });
   const [deletingId, setDeletingId] = useState(null);
   const [pendingDelete, setPendingDelete] = useState(null);
+  const canUseDialogForm = canManage && createBuilding && updateBuilding;
 
   const loadBuildings = async (searchValue = appliedSearch) => {
     setLoading(true);
@@ -78,6 +86,58 @@ export default function BuildingListWorkspace({
     }
   };
 
+  const handleOpenCreate = () => {
+    setFormError('');
+    setActiveForm({ mode: 'create', building: null });
+  };
+
+  const handleOpenEdit = (building) => {
+    setFormError('');
+    setActiveForm({ mode: 'edit', building });
+  };
+
+  const handleCloseForm = () => {
+    if (savingForm) {
+      return;
+    }
+
+    setActiveForm({ mode: '', building: null });
+    setFormError('');
+  };
+
+  const handleSaveForm = async (payload) => {
+    if (!canUseDialogForm) {
+      return;
+    }
+
+    setSavingForm(true);
+    setFormError('');
+    setMessage('');
+    setError('');
+
+    try {
+      if (activeForm.mode === 'edit') {
+        await updateBuilding(activeForm.building.id, payload);
+        setMessage(t('workspace.buildings.updated'));
+      } else {
+        await createBuilding(payload);
+        setMessage(t('workspace.buildings.created'));
+      }
+
+      setActiveForm({ mode: '', building: null });
+      await loadBuildings(appliedSearch);
+    } catch (apiError) {
+      setFormError(
+        apiError.response?.data?.message
+          || (activeForm.mode === 'edit'
+            ? t('workspace.buildings.updateError')
+            : t('workspace.buildings.createError'))
+      );
+    } finally {
+      setSavingForm(false);
+    }
+  };
+
   const columns = [
     { key: 'buildingCode', header: t('tables.common.code') },
     { key: 'name', header: t('tables.common.name') },
@@ -100,7 +160,18 @@ export default function BuildingListWorkspace({
           </Link>
           {canManage && (
             <>
-              <Link
+              {canUseDialogForm ? (
+                <button
+                  aria-label={t('common.edit')}
+                  className="icon-action-button"
+                  data-tooltip={t('common.edit')}
+                  type="button"
+                  onClick={() => handleOpenEdit(building)}
+                >
+                  <EditIcon />
+                </button>
+              ) : (
+                <Link
                 aria-label={t('common.edit')}
                 className="icon-action-button"
                 data-tooltip={t('common.edit')}
@@ -108,6 +179,7 @@ export default function BuildingListWorkspace({
               >
                 <EditIcon />
               </Link>
+              )}
               <button
                 aria-label={t('common.delete')}
                 className="icon-action-button icon-action-danger"
@@ -129,10 +201,15 @@ export default function BuildingListWorkspace({
     <section className="content-section">
       <div className="page-title-row">
         <PageHeader eyebrow={eyebrow} title={title} />
-        {canManage && createPath && (
+        {canManage && createPath && !canUseDialogForm && (
           <Link className="button-link" to={createPath}>
             {t('workspace.buildings.create')}
           </Link>
+        )}
+        {canUseDialogForm && (
+          <button className="button-link" type="button" onClick={handleOpenCreate}>
+            {t('workspace.buildings.create')}
+          </button>
         )}
       </div>
 
@@ -172,6 +249,22 @@ export default function BuildingListWorkspace({
         onCancel={() => setPendingDelete(null)}
         onConfirm={handleDelete}
       />
+      <ActionDialog
+        className="action-dialog"
+        eyebrow={eyebrow}
+        labelledBy="building-form-dialog-title"
+        open={Boolean(activeForm.mode)}
+        title={activeForm.mode === 'edit' ? t('workspace.buildings.editTitle') : t('workspace.buildings.create')}
+        onClose={handleCloseForm}
+      >
+        {formError && <div className="alert error-alert">{formError}</div>}
+        <BuildingForm
+          initialValues={activeForm.building}
+          loading={savingForm}
+          submitLabel={activeForm.mode === 'edit' ? t('common.saveChanges') : t('workspace.buildings.create')}
+          onSubmit={handleSaveForm}
+        />
+      </ActionDialog>
     </section>
   );
 }

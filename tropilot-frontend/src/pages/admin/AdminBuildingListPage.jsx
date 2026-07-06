@@ -5,6 +5,8 @@ export default function AdminBuildingListPage() {
   return (
     <BuildingListWorkspace
       getBuildings={buildingApi.getAdminBuildings}
+      createBuilding={buildingApi.createAdminBuilding}
+      updateBuilding={buildingApi.updateAdminBuilding}
       deleteBuilding={buildingApi.deleteAdminBuilding}
       basePath="/admin/buildings"
       createPath="/admin/buildings/create"

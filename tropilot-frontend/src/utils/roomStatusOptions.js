@@ -1,8 +1,10 @@
+import { localizedOption } from './interfaceTranslations.js';
+
 export const ROOM_STATUS_OPTIONS = [
-  { value: 'EMPTY', label: 'Empty' },
-  { value: 'OCCUPIED', label: 'Occupied' },
-  { value: 'MAINTENANCE', label: 'Maintenance' },
-  { value: 'RESERVED', label: 'Reserved' }
+  localizedOption('EMPTY', 'Empty'),
+  localizedOption('OCCUPIED', 'Occupied'),
+  localizedOption('MAINTENANCE', 'Maintenance'),
+  localizedOption('RESERVED', 'Reserved')
 ];
 
 export function getRoomStatusLabel(status) {

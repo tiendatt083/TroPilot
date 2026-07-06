@@ -1,5 +1,6 @@
 package com.tropilot.service.impl;
 
+import com.tropilot.dto.response.UtilityMeterFetchResponse;
 import com.tropilot.dto.response.UtilityReadingFetchResponse;
 import com.tropilot.entity.UtilityReading;
 import com.tropilot.exception.BadRequestException;
@@ -57,8 +58,35 @@ class MockUtilityReadingProviderTest {
         assertThat(response.newElectricity())
                 .isEqualByComparingTo(response.oldElectricity().add(response.electricityUsage()));
         assertThat(response.oldWater()).isEqualByComparingTo("24");
-        assertThat(response.waterUsage()).isBetween(BigDecimal.ONE, new BigDecimal("20"));
+        assertThat(response.waterUsage()).isBetween(BigDecimal.ONE, new BigDecimal("150"));
         assertThat(response.newWater()).isEqualByComparingTo(response.oldWater().add(response.waterUsage()));
+    }
+
+    @Test
+    void fetchElectricityAndWaterReturnSeparateMeterPayloads() {
+        UtilityReading previousReading = UtilityReading.builder()
+                .newElectricity(new BigDecimal("350"))
+                .newWater(new BigDecimal("24"))
+                .build();
+        when(roomRepository.existsById(ROOM_ID)).thenReturn(true);
+        when(utilityReadingRepository.existsByRoom_IdAndMonth(ROOM_ID, READING_MONTH)).thenReturn(false);
+        when(utilityReadingRepository.findFirstByRoom_IdAndMonthBeforeOrderByMonthDescCreatedAtDesc(
+                ROOM_ID,
+                READING_MONTH
+        )).thenReturn(Optional.of(previousReading));
+
+        UtilityMeterFetchResponse electricity = provider.fetchElectricity(ROOM_ID, READING_DATE);
+        UtilityMeterFetchResponse water = provider.fetchWater(ROOM_ID, READING_DATE);
+
+        assertThat(electricity.meterType()).isEqualTo("ELECTRICITY");
+        assertThat(electricity.oldReading()).isEqualByComparingTo("350");
+        assertThat(electricity.usage()).isBetween(BigDecimal.ONE, new BigDecimal("150"));
+        assertThat(electricity.newReading()).isEqualByComparingTo(electricity.oldReading().add(electricity.usage()));
+
+        assertThat(water.meterType()).isEqualTo("WATER");
+        assertThat(water.oldReading()).isEqualByComparingTo("24");
+        assertThat(water.usage()).isBetween(BigDecimal.ONE, new BigDecimal("150"));
+        assertThat(water.newReading()).isEqualByComparingTo(water.oldReading().add(water.usage()));
     }
 
     @Test

@@ -1,26 +1,51 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import * as taskApi from '../../features/maintenance/taskApi.js';
+import * as roomApi from '../../features/rooms/api.js';
+import * as adminUserApi from '../../features/users/api.js';
+import ActionDialog from '../../components/common/ActionDialog.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
+import TaskForm from '../../components/TaskForm.jsx';
 import TaskTable from '../../components/TaskTable.jsx';
+
+function activeStaff(users) {
+  return users.filter((user) => user.role === 'STAFF' && user.status === 'ACTIVE');
+}
 
 export default function AdminTaskListPage() {
   const { t } = useTranslation();
   const location = useLocation();
   const [tasks, setTasks] = useState([]);
+  const [rooms, setRooms] = useState([]);
+  const [staffUsers, setStaffUsers] = useState([]);
   const [message, setMessage] = useState(location.state?.message || '');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [formOpen, setFormOpen] = useState(false);
+  const [formError, setFormError] = useState('');
+  const [formVersion, setFormVersion] = useState(0);
+
+  const loadData = async () => {
+    const [tasksResponse, usersResponse, roomsResponse] = await Promise.all([
+      taskApi.getAdminTasks(),
+      adminUserApi.getUsers(),
+      roomApi.getAdminRooms()
+    ]);
+
+    setTasks(tasksResponse.data);
+    setStaffUsers(activeStaff(usersResponse.data));
+    setRooms(roomsResponse.data);
+  };
 
   useEffect(() => {
     let active = true;
 
-    taskApi
-      .getAdminTasks()
-      .then((response) => {
+    loadData()
+      .then(() => {
         if (active) {
-          setTasks(response.data);
+          setError('');
         }
       })
       .catch((apiError) => {
@@ -39,13 +64,32 @@ export default function AdminTaskListPage() {
     };
   }, []);
 
+  const handleSubmit = async (payload) => {
+    setSaving(true);
+    setFormError('');
+    setMessage('');
+    setError('');
+
+    try {
+      await taskApi.createAdminTask(payload);
+      setMessage(t('taskManagement.created'));
+      setFormOpen(false);
+      setFormVersion((current) => current + 1);
+      await loadData();
+    } catch (apiError) {
+      setFormError(apiError.response?.data?.message || t('taskManagement.createError'));
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <section className="content-section">
       <div className="page-title-row">
         <PageHeader eyebrow={t('role.admin')} title={t('taskManagement.adminTitle')} />
-        <Link className="button-link" to="/admin/tasks/create">
+        <button className="button-link" type="button" onClick={() => setFormOpen(true)}>
           {t('taskManagement.create')}
-        </Link>
+        </button>
       </div>
 
       {message && <div className="alert success-alert">{message}</div>}
@@ -56,6 +100,31 @@ export default function AdminTaskListPage() {
       ) : (
         <TaskTable tasks={tasks} detailBasePath="/admin/tasks" />
       )}
+
+      <ActionDialog
+        className="action-dialog-wide"
+        eyebrow={t('role.admin')}
+        labelledBy="admin-task-create-dialog-title"
+        open={formOpen}
+        title={t('taskManagement.createTitle')}
+        onClose={() => {
+          if (!saving) {
+            setFormOpen(false);
+            setFormError('');
+          }
+        }}
+      >
+        {formError && <div className="alert error-alert">{formError}</div>}
+        <TaskForm
+          key={formVersion}
+          rooms={rooms}
+          staffUsers={staffUsers}
+          loading={saving}
+          submitLabel={t('taskManagement.create')}
+          roomPlaceholder={t('forms.task.noRoomLinked')}
+          onSubmit={handleSubmit}
+        />
+      </ActionDialog>
     </section>
   );
 }

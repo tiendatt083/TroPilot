@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import * as buildingApi from '../../features/buildings/api.js';
 import * as roomApi from '../../features/rooms/api.js';
 import * as adminUserApi from '../../features/users/api.js';
 import useRoomRouteContext from '../../features/rooms/useRoomRouteContext.js';
 import HeadResidentAssignmentForm from '../../components/HeadResidentAssignmentForm.jsx';
+import RoomForm from '../../components/RoomForm.jsx';
+import ActionDialog from '../../components/common/ActionDialog.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
 import { formatDateInputValue, formatDisplayDate } from '../../utils/dateFormat.js';
 import { formatEnumLabel } from '../../utils/i18nFormat.js';
@@ -53,6 +56,7 @@ export default function AdminRoomDetailPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const [room, setRoom] = useState(null);
+  const [buildings, setBuildings] = useState([]);
   const [headInfo, setHeadInfo] = useState(null);
   const [residentHeads, setResidentHeads] = useState([]);
   const [showAssignForm, setShowAssignForm] = useState(false);
@@ -60,19 +64,24 @@ export default function AdminRoomDetailPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [assigning, setAssigning] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [editError, setEditError] = useState('');
+  const [savingEdit, setSavingEdit] = useState(false);
   const [removingHead, setRemovingHead] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
   const loadRoomDetails = async () => {
-    const [roomResponse, headResponse, usersResponse] = await Promise.all([
+    const [roomResponse, headResponse, usersResponse, buildingsResponse] = await Promise.all([
       roomApi.getAdminRoom(roomId),
       roomApi.getHeadResidentAssignment(roomId),
-      adminUserApi.getUsers()
+      adminUserApi.getUsers(),
+      buildingApi.getAdminBuildings()
     ]);
 
     setRoom(roomResponse.data);
     setHeadInfo(headResponse.data);
     setResidentHeads(getActiveResidentHeads(usersResponse.data));
+    setBuildings(buildingsResponse.data);
   };
 
   useEffect(() => {
@@ -161,6 +170,33 @@ export default function AdminRoomDetailPage() {
     }
   };
 
+  const handleCloseEdit = () => {
+    if (savingEdit) {
+      return;
+    }
+
+    setEditOpen(false);
+    setEditError('');
+  };
+
+  const handleUpdateRoom = async (payload) => {
+    setSavingEdit(true);
+    setEditError('');
+    setMessage('');
+    setError('');
+
+    try {
+      await roomApi.updateAdminRoom(room.id, payload);
+      setMessage(t('roomManagement.updated'));
+      setEditOpen(false);
+      await refreshRoomDetails();
+    } catch (apiError) {
+      setEditError(apiError.response?.data?.message || t('roomManagement.updateError'));
+    } finally {
+      setSavingEdit(false);
+    }
+  };
+
   if (loading) {
     return <div className="empty-state">{t('roomManagement.loadingOne')}</div>;
   }
@@ -180,9 +216,9 @@ export default function AdminRoomDetailPage() {
           <Link className="secondary-link" to={roomBasePath}>
             {t('roomManagement.back')}
           </Link>
-          <Link className="button-link" to={`${roomBasePath}/${room.id}/edit`}>
+          <button className="button-link" type="button" onClick={() => setEditOpen(true)}>
             {t('common.edit')}
-          </Link>
+          </button>
           <Link className="secondary-link" to={`${roomBasePath}/${room.id}/members`}>
             {t('roomManagement.members')}
           </Link>
@@ -315,6 +351,24 @@ export default function AdminRoomDetailPage() {
           />
         )}
       </section>
+
+      <ActionDialog
+        className="action-dialog-wide"
+        eyebrow={formatRoomCode(room)}
+        labelledBy="room-edit-dialog-title"
+        open={editOpen}
+        title={t('roomManagement.editTitle')}
+        onClose={handleCloseEdit}
+      >
+        {editError && <div className="alert error-alert">{editError}</div>}
+        <RoomForm
+          buildingOptions={buildings}
+          initialValues={room}
+          loading={savingEdit}
+          submitLabel={t('roomManagement.saveChanges')}
+          onSubmit={handleUpdateRoom}
+        />
+      </ActionDialog>
     </section>
   );
 }

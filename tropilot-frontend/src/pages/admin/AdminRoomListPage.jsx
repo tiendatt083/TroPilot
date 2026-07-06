@@ -4,6 +4,8 @@ import { Link, useSearchParams } from 'react-router-dom';
 import * as buildingApi from '../../features/buildings/api.js';
 import * as roomApi from '../../features/rooms/api.js';
 import PageHeader from '../../components/PageHeader.jsx';
+import RoomForm from '../../components/RoomForm.jsx';
+import ActionDialog from '../../components/common/ActionDialog.jsx';
 import { formatRoomCode } from '../../utils/roomDisplay.js';
 import { ROOM_STATUS_OPTIONS } from '../../utils/roomStatusOptions.js';
 import { formatEnumLabel } from '../../utils/i18nFormat.js';
@@ -62,6 +64,9 @@ export default function AdminRoomListPage() {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
+  const [savingForm, setSavingForm] = useState(false);
+  const [formError, setFormError] = useState('');
+  const [activeForm, setActiveForm] = useState({ mode: '', room: null });
   const [deletingId, setDeletingId] = useState(null);
 
   const loadRooms = async (filterValues = appliedFilters) => {
@@ -133,13 +138,59 @@ export default function AdminRoomListPage() {
     }
   };
 
+  const handleOpenCreate = () => {
+    setFormError('');
+    setActiveForm({ mode: 'create', room: null });
+  };
+
+  const handleOpenEdit = (room) => {
+    setFormError('');
+    setActiveForm({ mode: 'edit', room });
+  };
+
+  const handleCloseForm = () => {
+    if (savingForm) {
+      return;
+    }
+
+    setActiveForm({ mode: '', room: null });
+    setFormError('');
+  };
+
+  const handleSaveRoom = async (payload) => {
+    setSavingForm(true);
+    setFormError('');
+    setMessage('');
+    setError('');
+
+    try {
+      if (activeForm.mode === 'edit') {
+        await roomApi.updateAdminRoom(activeForm.room.id, payload);
+        setMessage(t('roomManagement.updated'));
+      } else {
+        await roomApi.createAdminRoom(payload);
+        setMessage(t('roomManagement.created'));
+      }
+
+      setActiveForm({ mode: '', room: null });
+      await loadRooms(appliedFilters);
+    } catch (apiError) {
+      setFormError(
+        apiError.response?.data?.message
+          || (activeForm.mode === 'edit' ? t('roomManagement.updateError') : t('roomManagement.createError'))
+      );
+    } finally {
+      setSavingForm(false);
+    }
+  };
+
   return (
     <section className="content-section">
       <div className="page-title-row">
         <PageHeader eyebrow={t('role.admin')} title={t('roomManagement.adminTitle')} />
-        <Link className="button-link" to="/admin/rooms/create">
+        <button className="button-link" type="button" onClick={handleOpenCreate}>
           {t('roomManagement.create')}
-        </Link>
+        </button>
       </div>
 
       <form className="filter-row" onSubmit={handleSearch}>
@@ -217,9 +268,9 @@ export default function AdminRoomListPage() {
                       <Link className="secondary-link compact-link" to={`/admin/rooms/${room.id}`}>
                         {t('common.view')}
                       </Link>
-                      <Link className="secondary-link compact-link" to={`/admin/rooms/${room.id}/edit`}>
+                      <button className="secondary-button compact-button" type="button" onClick={() => handleOpenEdit(room)}>
                         {t('common.edit')}
-                      </Link>
+                      </button>
                       <button
                         className="secondary-button compact-button"
                         type="button"
@@ -237,6 +288,24 @@ export default function AdminRoomListPage() {
           {rooms.length === 0 && <div className="empty-state flat-empty-state">{t('roomManagement.empty')}</div>}
         </div>
       )}
+
+      <ActionDialog
+        className="action-dialog-wide"
+        eyebrow={t('role.admin')}
+        labelledBy="room-form-dialog-title"
+        open={Boolean(activeForm.mode)}
+        title={activeForm.mode === 'edit' ? t('roomManagement.editTitle') : t('roomManagement.createTitle')}
+        onClose={handleCloseForm}
+      >
+        {formError && <div className="alert error-alert">{formError}</div>}
+        <RoomForm
+          buildingOptions={buildings}
+          initialValues={activeForm.mode === 'edit' ? activeForm.room : undefined}
+          loading={savingForm}
+          submitLabel={activeForm.mode === 'edit' ? t('roomManagement.saveChanges') : t('roomManagement.create')}
+          onSubmit={handleSaveRoom}
+        />
+      </ActionDialog>
     </section>
   );
 }

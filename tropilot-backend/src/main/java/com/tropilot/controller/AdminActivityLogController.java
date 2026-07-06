@@ -26,6 +26,7 @@ public class AdminActivityLogController {
     @GetMapping
     public ApiResponse<List<ActivityLogResponse>> getLogs(
             @AuthenticationPrincipal AuthenticatedUser user,
+            @RequestParam(required = false) String query,
             @RequestParam(required = false) String action
     ) {
         if (user == null) {
@@ -33,7 +34,11 @@ public class AdminActivityLogController {
         }
         return ApiResponse.success(
                 "Activity logs loaded successfully",
-                activityLogService.getMyLogs(user.getId(), action)
+                activityLogService.getMyLogs(user.getId(), resolveQuery(query, action))
         );
+    }
+
+    private String resolveQuery(String query, String legacyAction) {
+        return query == null || query.isBlank() ? legacyAction : query;
     }
 }

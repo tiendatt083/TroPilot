@@ -1,8 +1,10 @@
+import { localizedOption } from './interfaceTranslations.js';
+
 export const MEMBER_STATUS_OPTIONS = [
-  { value: 'PENDING', label: 'Pending' },
-  { value: 'APPROVED', label: 'Approved' },
-  { value: 'REJECTED', label: 'Rejected' },
-  { value: 'LEFT', label: 'Left' }
+  localizedOption('PENDING', 'Pending'),
+  localizedOption('APPROVED', 'Approved'),
+  localizedOption('REJECTED', 'Rejected'),
+  localizedOption('LEFT', 'Left')
 ];
 
 export function getMemberStatusLabel(status) {

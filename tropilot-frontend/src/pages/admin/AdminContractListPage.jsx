@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
 import * as contractApi from '../../features/contracts/api.js';
+import ActionDialog from '../../components/common/ActionDialog.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
 import { getContractStatusClass } from '../../utils/contractStatusOptions.js';
 import { formatDisplayDate } from '../../utils/dateFormat.js';
+import { resolveFileUrl } from '../../utils/fileUrl.js';
 import { formatEnumLabel } from '../../utils/i18nFormat.js';
-import { formatRoomCode } from '../../utils/roomDisplay.js';
+import { formatRoomCode, formatRoomLabel } from '../../utils/roomDisplay.js';
 
 function formatNumber(value) {
   const numberValue = Number(value);
@@ -18,6 +19,7 @@ function formatNumber(value) {
 export default function AdminContractListPage() {
   const { t } = useTranslation();
   const [contracts, setContracts] = useState([]);
+  const [selectedContract, setSelectedContract] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
 
@@ -83,9 +85,13 @@ export default function AdminContractListPage() {
                     </span>
                   </td>
                   <td>
-                    <Link className="secondary-link compact-link" to={`/admin/contracts/${contract.id}`}>
+                    <button
+                      className="secondary-button compact-button"
+                      type="button"
+                      onClick={() => setSelectedContract(contract)}
+                    >
                       {t('common.view')}
-                    </Link>
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -96,6 +102,62 @@ export default function AdminContractListPage() {
           )}
         </div>
       )}
+
+      <ActionDialog
+        className="action-dialog-wide"
+        eyebrow={selectedContract ? formatRoomCode(selectedContract) : t('contracts.adminEyebrow')}
+        labelledBy="contract-detail-dialog-title"
+        open={Boolean(selectedContract)}
+        title={t('contracts.title')}
+        onClose={() => setSelectedContract(null)}
+      >
+        {selectedContract && (
+          <>
+            <div className="detail-panel">
+              <div>
+                <span>{t('tables.common.room')}</span>
+                <strong>{formatRoomLabel(selectedContract)}</strong>
+              </div>
+              <div>
+                <span>{t('tables.common.building')}</span>
+                <strong>
+                  {selectedContract.buildingCode} - {selectedContract.buildingName}
+                </strong>
+              </div>
+              <div>
+                <span>{t('tables.common.headResident')}</span>
+                <strong>{selectedContract.residentHeadName}</strong>
+              </div>
+              <div>
+                <span>{t('contracts.period')}</span>
+                <strong>
+                  {formatDisplayDate(selectedContract.startDate)} {t('common.to')}{' '}
+                  {formatDisplayDate(selectedContract.endDate)}
+                </strong>
+              </div>
+              <div>
+                <span>{t('tables.common.depositAmount')}</span>
+                <strong>{formatNumber(selectedContract.depositAmount)}</strong>
+              </div>
+              <div>
+                <span>{t('contracts.status')}</span>
+                <strong>
+                  <span className={getContractStatusClass(selectedContract.contractStatus)}>
+                    {formatEnumLabel(t, 'contractStatus', selectedContract.contractStatus)}
+                  </span>
+                </strong>
+              </div>
+            </div>
+            {selectedContract.contractFileUrl && (
+              <div className="admin-profile-actions">
+                <a className="button-link" href={resolveFileUrl(selectedContract.contractFileUrl)} target="_blank" rel="noreferrer">
+                  {t('contracts.openFile')}
+                </a>
+              </div>
+            )}
+          </>
+        )}
+      </ActionDialog>
     </section>
   );
 }

@@ -12,6 +12,7 @@ export default function AdminProfileDialog({ open, onClose }) {
   const { t } = useTranslation();
   const { user, updateProfile } = useAuth();
   const [form, setForm] = useState(EMPTY_FORM);
+  const [editing, setEditing] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
@@ -25,6 +26,7 @@ export default function AdminProfileDialog({ open, onClose }) {
       fullName: user?.fullName || '',
       phone: user?.phone || ''
     });
+    setEditing(false);
     setMessage('');
     setError('');
 
@@ -59,11 +61,22 @@ export default function AdminProfileDialog({ open, onClose }) {
         phone: form.phone.trim()
       });
       setMessage(t('profile.messages.updated'));
+      setEditing(false);
     } catch (apiError) {
       setError(apiError.response?.data?.message || t('profile.messages.updateError'));
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleEdit = () => {
+    setForm({
+      fullName: user?.fullName || '',
+      phone: user?.phone || ''
+    });
+    setMessage('');
+    setError('');
+    setEditing(true);
   };
 
   return (
@@ -86,8 +99,36 @@ export default function AdminProfileDialog({ open, onClose }) {
         {message && <div className="alert success-alert">{message}</div>}
         {error && <div className="alert error-alert">{error}</div>}
 
-        <form className="admin-profile-form" onSubmit={handleSubmit}>
-          <div className="form-grid">
+        {!editing ? (
+          <div className="admin-profile-view">
+            <div className="admin-profile-summary-grid">
+              <div>
+                <span>{t('profile.fields.fullName')}</span>
+                <strong>{user?.fullName || t('common.notAvailable')}</strong>
+              </div>
+              <div>
+                <span>{t('profile.fields.email')}</span>
+                <strong>{user?.email || t('common.notAvailable')}</strong>
+              </div>
+              <div>
+                <span>{t('profile.fields.phone')}</span>
+                <strong>{user?.phone || t('common.notProvided')}</strong>
+              </div>
+              <div>
+                <span>{t('profile.fields.role')}</span>
+                <strong>{t('role.admin')}</strong>
+              </div>
+            </div>
+
+            <div className="admin-profile-actions">
+              <button type="button" onClick={handleEdit}>
+                {t('common.edit')}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <form className="admin-profile-form" onSubmit={handleSubmit}>
+            <div className="form-grid">
             <div>
               <label htmlFor="adminProfileFullName">{t('profile.fields.fullName')}</label>
               <input
@@ -140,6 +181,7 @@ export default function AdminProfileDialog({ open, onClose }) {
             </button>
           </div>
         </form>
+        )}
       </section>
     </div>
   );

@@ -11,7 +11,7 @@ export default function MyActivityLogPage({ eyebrowKey }) {
   const { t } = useTranslation();
   const [logs, setLogs] = useState([]);
   const [logPage, setLogPage] = useState(0);
-  const [action, setAction] = useState('');
+  const [query, setQuery] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
 
@@ -20,11 +20,11 @@ export default function MyActivityLogPage({ eyebrowKey }) {
     return logs.slice(start, start + HISTORY_PAGE_SIZE);
   }, [logPage, logs]);
 
-  const loadLogs = async (targetAction = action) => {
+  const loadLogs = async (targetQuery = query) => {
     setError('');
 
     try {
-      const response = await activityLogApi.getMyActivityLogs(targetAction.trim());
+      const response = await activityLogApi.getMyActivityLogs(targetQuery.trim());
       setLogs(response.data);
       setLogPage(0);
     } catch (apiError) {
@@ -64,7 +64,7 @@ export default function MyActivityLogPage({ eyebrowKey }) {
   };
 
   const handleClear = () => {
-    setAction('');
+    setQuery('');
     loadLogs('');
   };
 
@@ -78,10 +78,10 @@ export default function MyActivityLogPage({ eyebrowKey }) {
         <input
           aria-label={t('activityLogs.filterAriaLabel')}
           placeholder={t('activityLogs.filterPlaceholder')}
-          value={action}
-          onChange={(event) => setAction(event.target.value)}
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
         />
-        <button className="inline-button" type="submit">{t('common.filter')}</button>
+        <button className="inline-button" type="submit">{t('common.search')}</button>
         <button className="secondary-button inline-button" type="button" onClick={handleClear}>
           {t('common.clear')}
         </button>

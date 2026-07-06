@@ -1,13 +1,15 @@
+import { localizedOption, translateInterfaceText } from './interfaceTranslations.js';
+
 export const VEHICLE_OWNER_TYPE_OPTIONS = [
-  { value: 'RESIDENT_HEAD', label: 'Head Resident' },
-  { value: 'ROOM_MEMBER', label: 'Room Member' }
+  localizedOption('RESIDENT_HEAD', 'Head Resident'),
+  localizedOption('ROOM_MEMBER', 'Room Member')
 ];
 
 export const VEHICLE_TYPE_OPTIONS = [
-  { value: 'MOTORBIKE', label: 'Motorbike' },
-  { value: 'CAR', label: 'Car' },
-  { value: 'BICYCLE', label: 'Bicycle' },
-  { value: 'ELECTRIC_BIKE', label: 'Electric bike' }
+  localizedOption('MOTORBIKE', 'Motorbike'),
+  localizedOption('CAR', 'Car'),
+  localizedOption('BICYCLE', 'Bicycle'),
+  localizedOption('ELECTRIC_BIKE', 'Electric bike')
 ];
 
 export function getVehicleOwnerTypeLabel(ownerType) {
@@ -20,10 +22,10 @@ export function getVehicleTypeLabel(vehicleType) {
 
 export function getVehicleStatusLabel(status) {
   if (!status) {
-    return 'Not available';
+    return translateInterfaceText('Not available');
   }
 
-  return status.charAt(0) + status.slice(1).toLowerCase();
+  return translateInterfaceText(status.charAt(0) + status.slice(1).toLowerCase());
 }
 
 export function getVehicleStatusClass(status) {

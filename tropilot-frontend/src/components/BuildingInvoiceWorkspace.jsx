@@ -10,6 +10,7 @@ import { formatEnumLabel } from '../utils/i18nFormat.js';
 import { exportRowsToExcel } from '../utils/excelExport.js';
 import { isOccupiedRoom } from '../utils/roomEligibility.js';
 import { formatRoomCode, formatRoomLabel } from '../utils/roomDisplay.js';
+import ActionDialog from './common/ActionDialog.jsx';
 import InvoiceDetail from './InvoiceDetail.jsx';
 import InvoiceTable, { formatInvoiceCode } from './InvoiceTable.jsx';
 
@@ -646,7 +647,14 @@ export default function BuildingInvoiceWorkspace({ role = 'admin' }) {
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
 
-      {composerOpen && (
+      <ActionDialog
+        className="action-dialog-wide invoice-action-dialog"
+        eyebrow={mode === 'single' ? t('buildingInvoices.singleRoom') : t('buildingInvoices.bulk')}
+        labelledBy="invoice-composer-dialog-title"
+        open={composerOpen}
+        title={mode === 'single' ? t('buildingInvoices.actions.createSingle') : t('buildingInvoices.actions.createBulk')}
+        onClose={handleCloseComposer}
+      >
         <section className="invoice-composer-panel">
           <div className="invoice-composer-header">
             <div>
@@ -655,9 +663,6 @@ export default function BuildingInvoiceWorkspace({ role = 'admin' }) {
               </span>
               <h2>{mode === 'single' ? t('buildingInvoices.actions.createSingle') : t('buildingInvoices.actions.createBulk')}</h2>
             </div>
-            <button className="secondary-button inline-button" type="button" onClick={handleCloseComposer}>
-              {t('common.close')}
-            </button>
           </div>
 
           <div className="invoice-composer-grid">
@@ -746,7 +751,7 @@ export default function BuildingInvoiceWorkspace({ role = 'admin' }) {
             </div>
           </div>
         </section>
-      )}
+      </ActionDialog>
 
       {loading ? (
         <div className="empty-state">{t('buildingInvoices.loading')}</div>
@@ -804,9 +809,19 @@ export default function BuildingInvoiceWorkspace({ role = 'admin' }) {
           </div>
 
           <InvoiceTable invoices={filteredInvoices} renderActions={renderActions} />
-          {selectedInvoice && <InvoiceDetail invoice={selectedInvoice} />}
         </section>
       )}
+
+      <ActionDialog
+        className="action-dialog-wide invoice-action-dialog"
+        eyebrow={selectedInvoice ? formatInvoiceCode(selectedInvoice) : t('buildingInvoices.managementTitle')}
+        labelledBy="invoice-detail-dialog-title"
+        open={Boolean(selectedInvoice)}
+        title={t('tables.common.invoice')}
+        onClose={() => setSelectedInvoice(null)}
+      >
+        {selectedInvoice && <InvoiceDetail invoice={selectedInvoice} />}
+      </ActionDialog>
     </div>
   );
 }

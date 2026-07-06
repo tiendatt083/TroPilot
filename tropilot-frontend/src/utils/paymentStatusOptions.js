@@ -1,12 +1,14 @@
+import { localizedOption } from './interfaceTranslations.js';
+
 export const PAYMENT_STATUS_OPTIONS = [
-  { value: 'PENDING', label: 'Pending' },
-  { value: 'APPROVED', label: 'Approved' },
-  { value: 'REJECTED', label: 'Rejected' }
+  localizedOption('PENDING', 'Pending'),
+  localizedOption('APPROVED', 'Approved'),
+  localizedOption('REJECTED', 'Rejected')
 ];
 
 export const RECEIPT_STATUS_OPTIONS = [
-  { value: 'VALID', label: 'Valid' },
-  { value: 'CANCELLED', label: 'Cancelled' }
+  localizedOption('VALID', 'Valid'),
+  localizedOption('CANCELLED', 'Cancelled')
 ];
 
 export function getPaymentStatusLabel(status) {

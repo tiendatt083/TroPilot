@@ -32,6 +32,8 @@ export default function UtilityReadingForm({
   mode = 'create',
   submitLabel,
   onFetchReadings,
+  onFetchElectricityReading,
+  onFetchWaterReading,
   onSubmit,
   onCancel
 }) {
@@ -39,8 +41,8 @@ export default function UtilityReadingForm({
   const [form, setForm] = useState(emptyForm);
   const [electricityImage, setElectricityImage] = useState(null);
   const [waterImage, setWaterImage] = useState(null);
-  const [fetchingReadings, setFetchingReadings] = useState(false);
-  const [fetchedReadings, setFetchedReadings] = useState(null);
+  const [fetchingMeter, setFetchingMeter] = useState('');
+  const [fetchedReadings, setFetchedReadings] = useState({ electricity: null, water: null });
   const [fetchError, setFetchError] = useState('');
 
   useEffect(() => {
@@ -60,7 +62,7 @@ export default function UtilityReadingForm({
     });
     setElectricityImage(null);
     setWaterImage(null);
-    setFetchedReadings(null);
+    setFetchedReadings({ electricity: null, water: null });
     setFetchError('');
   }, [initialValues, selectedMonth]);
 
@@ -68,7 +70,7 @@ export default function UtilityReadingForm({
     const { name, value } = event.target;
 
     if (name === 'roomId' || name === 'readingDate') {
-      setFetchedReadings(null);
+      setFetchedReadings({ electricity: null, water: null });
       setFetchError('');
     }
 
@@ -86,34 +88,51 @@ export default function UtilityReadingForm({
 
   const editing = mode === 'edit';
 
-  const handleFetchReadings = async () => {
-    if (!onFetchReadings || !form.roomId || !form.readingDate) {
+  const handleFetchMeter = async (meterType) => {
+    const fetcher = meterType === 'electricity'
+      ? (onFetchElectricityReading || onFetchReadings)
+      : (onFetchWaterReading || onFetchReadings);
+
+    if (!fetcher || !form.roomId || !form.readingDate) {
       return;
     }
 
-    setFetchingReadings(true);
+    setFetchingMeter(meterType);
     setFetchError('');
-    setFetchedReadings(null);
 
     try {
-      const response = await onFetchReadings({
+      const response = await fetcher({
         roomId: form.roomId,
         readingDate: form.readingDate
       });
-      const readings = response.data;
+      const reading = response.data;
+      const normalizedReading = normalizeFetchedMeter(reading, meterType);
 
       setForm((current) => ({
         ...current,
-        oldElectricity: readings.oldElectricity,
-        newElectricity: readings.newElectricity,
-        oldWater: readings.oldWater,
-        newWater: readings.newWater
+        ...(meterType === 'electricity'
+          ? {
+              oldElectricity: normalizedReading.oldReading,
+              newElectricity: normalizedReading.newReading
+            }
+          : {
+              oldWater: normalizedReading.oldReading,
+              newWater: normalizedReading.newReading
+            })
       }));
-      setFetchedReadings(readings);
+      setFetchedReadings((current) => ({
+        ...current,
+        [meterType]: normalizedReading
+      }));
     } catch (apiError) {
-      setFetchError(apiError.response?.data?.message || t('forms.utilityReading.fetchError'));
+      setFetchError(
+        apiError.response?.data?.message
+          || t(meterType === 'electricity'
+            ? 'forms.utilityReading.electricityFetchError'
+            : 'forms.utilityReading.waterFetchError')
+      );
     } finally {
-      setFetchingReadings(false);
+      setFetchingMeter('');
     }
   };
 
@@ -218,8 +237,8 @@ export default function UtilityReadingForm({
         </div>
       </div>
 
-      {!editing && onFetchReadings && (
-        <section className={`utility-reading-fetch-bar${fetchedReadings ? ' is-ready' : ''}`}>
+      {!editing && (onFetchReadings || onFetchElectricityReading || onFetchWaterReading) && (
+        <section className={`utility-reading-fetch-bar${hasFetchedAny(fetchedReadings) ? ' is-ready' : ''}`}>
           <div className="utility-reading-fetch-heading">
             <span className="utility-reading-fetch-icon" aria-hidden="true">
               <LineIcon name="refresh" />
@@ -230,30 +249,47 @@ export default function UtilityReadingForm({
             </div>
           </div>
 
-          {fetchedReadings && (
+          {hasFetchedAny(fetchedReadings) && (
             <div className="utility-reading-fetch-result" role="status">
-              <span>
-                {t('forms.utilityReading.electricityIncrease')}
-                <strong>+{formatNumber(fetchedReadings.electricityUsage)} kWh</strong>
-              </span>
-              <span>
-                {t('forms.utilityReading.waterIncrease')}
-                <strong>+{formatNumber(fetchedReadings.waterUsage)} m3</strong>
-              </span>
+              {fetchedReadings.electricity && (
+                <span>
+                  {t('forms.utilityReading.electricityIncrease')}
+                  <strong>+{formatNumber(fetchedReadings.electricity.usage)} kWh</strong>
+                </span>
+              )}
+              {fetchedReadings.water && (
+                <span>
+                  {t('forms.utilityReading.waterIncrease')}
+                  <strong>+{formatNumber(fetchedReadings.water.usage)} m3</strong>
+                </span>
+              )}
             </div>
           )}
 
-          <button
-            className="secondary-button utility-reading-fetch-button"
-            type="button"
-            onClick={handleFetchReadings}
-            disabled={loading || fetchingReadings || !form.roomId || !form.readingDate}
-          >
-            <LineIcon name="refresh" />
-            {fetchingReadings
-              ? t('forms.utilityReading.fetchingReadings')
-              : t('forms.utilityReading.fetchReadings')}
-          </button>
+          <div className="utility-reading-fetch-actions">
+            <button
+              className="secondary-button utility-reading-fetch-button"
+              type="button"
+              onClick={() => handleFetchMeter('electricity')}
+              disabled={loading || Boolean(fetchingMeter) || !form.roomId || !form.readingDate}
+            >
+              <LineIcon name="refresh" />
+              {fetchingMeter === 'electricity'
+                ? t('forms.utilityReading.fetchingReadings')
+                : t('forms.utilityReading.fetchElectricity', 'Lấy chỉ số điện')}
+            </button>
+            <button
+              className="secondary-button utility-reading-fetch-button"
+              type="button"
+              onClick={() => handleFetchMeter('water')}
+              disabled={loading || Boolean(fetchingMeter) || !form.roomId || !form.readingDate}
+            >
+              <LineIcon name="refresh" />
+              {fetchingMeter === 'water'
+                ? t('forms.utilityReading.fetchingReadings')
+                : t('forms.utilityReading.fetchWater', 'Lấy chỉ số nước')}
+            </button>
+          </div>
 
           {fetchError && <p className="utility-reading-fetch-error" role="alert">{fetchError}</p>}
         </section>
@@ -482,6 +518,34 @@ function findPreviousReading(readings, roomId, readingDate, currentReadingId) {
 
 function getReadingSortValue(reading) {
   return reading.readingDate || (reading.month ? `${reading.month}-01` : '');
+}
+
+function hasFetchedAny(readings) {
+  return Boolean(readings.electricity || readings.water);
+}
+
+function normalizeFetchedMeter(reading, meterType) {
+  if (reading.oldReading !== undefined && reading.newReading !== undefined) {
+    return {
+      oldReading: reading.oldReading,
+      newReading: reading.newReading,
+      usage: reading.usage
+    };
+  }
+
+  if (meterType === 'electricity') {
+    return {
+      oldReading: reading.oldElectricity,
+      newReading: reading.newElectricity,
+      usage: reading.electricityUsage
+    };
+  }
+
+  return {
+    oldReading: reading.oldWater,
+    newReading: reading.newWater,
+    usage: reading.waterUsage
+  };
 }
 
 function normalizeReadingDate(values, selectedMonth) {

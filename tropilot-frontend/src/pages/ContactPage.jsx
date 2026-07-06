@@ -141,7 +141,7 @@ export default function ContactPage() {
   };
 
   return (
-    <section className="content-section contact-page">
+    <section className={`content-section contact-page${isAdmin ? ' contact-page-admin' : ' contact-page-readable'}`}>
       <div className="contact-shell">
         <header className="contact-hero">
           <div className="contact-hero-copy">
@@ -158,7 +158,7 @@ export default function ContactPage() {
         {loading ? (
           <div className="empty-state contact-loading-state">{t('contact.messages.loading')}</div>
         ) : (
-          <div className="contact-layout">
+          <div className={`contact-layout${isAdmin ? ' is-editable' : ' is-readable'}`}>
             {isAdmin ? (
               <ContactEditor
                 form={form}

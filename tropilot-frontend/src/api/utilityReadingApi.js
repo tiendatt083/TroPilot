@@ -51,6 +51,26 @@ export async function fetchUtilityReadingPreview({ roomId, readingDate }) {
   return response.data;
 }
 
+export async function fetchElectricityReadingPreview({ roomId, readingDate }) {
+  const response = await apiClient.post('/api/staff/utility-readings/fetch/electricity', null, {
+    params: {
+      roomId,
+      readingDate
+    }
+  });
+  return response.data;
+}
+
+export async function fetchWaterReadingPreview({ roomId, readingDate }) {
+  const response = await apiClient.post('/api/staff/utility-readings/fetch/water', null, {
+    params: {
+      roomId,
+      readingDate
+    }
+  });
+  return response.data;
+}
+
 export async function getStaffUtilityReadings(filters) {
   const response = await apiClient.get('/api/staff/utility-readings', filterConfig(filters));
   return response.data;

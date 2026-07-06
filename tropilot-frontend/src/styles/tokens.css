@@ -54,6 +54,7 @@
   --font-size-sm: 0.86rem;
   --font-size-md: 0.95rem;
   --font-size-lg: 1.08rem;
+  --font-family-app: "Segoe UI", sans-serif;
   --font-weight-regular: 400;
   --font-weight-medium: 600;
   --font-weight-strong: 700;
@@ -64,15 +65,7 @@
   --sidebar-width: 248px;
   color: var(--color-text);
   background: var(--color-bg);
-  font-family:
-    Satoshi,
-    Geist,
-    "Segoe UI",
-    ui-sans-serif,
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    sans-serif;
+  font-family: var(--font-family-app);
   font-synthesis: none;
   line-height: 1.5;
   text-rendering: optimizeLegibility;

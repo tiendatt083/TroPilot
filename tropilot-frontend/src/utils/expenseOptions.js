@@ -1,16 +1,18 @@
+import { localizedOption } from './interfaceTranslations.js';
+
 export const EXPENSE_TYPE_OPTIONS = [
-  { value: 'REPAIR', label: 'Repair' },
-  { value: 'REPLACEMENT', label: 'Replacement' },
-  { value: 'CLEANING', label: 'Cleaning' },
-  { value: 'MAINTENANCE', label: 'Maintenance' },
-  { value: 'OPERATION', label: 'Operation' },
-  { value: 'OTHER', label: 'Other' }
+  localizedOption('REPAIR', 'Repair'),
+  localizedOption('REPLACEMENT', 'Replacement'),
+  localizedOption('CLEANING', 'Cleaning'),
+  localizedOption('MAINTENANCE', 'Maintenance'),
+  localizedOption('OPERATION', 'Operation'),
+  localizedOption('OTHER', 'Other')
 ];
 
 export const EXPENSE_STATUS_OPTIONS = [
-  { value: 'VALID', label: 'Valid' },
-  { value: 'PENDING', label: 'Pending' },
-  { value: 'CANCELLED', label: 'Cancelled' }
+  localizedOption('VALID', 'Valid'),
+  localizedOption('PENDING', 'Pending'),
+  localizedOption('CANCELLED', 'Cancelled')
 ];
 
 export function getExpenseTypeLabel(expenseType) {

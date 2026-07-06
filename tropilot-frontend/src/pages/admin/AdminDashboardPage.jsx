@@ -572,9 +572,6 @@ export default function AdminDashboardPage() {
   return (
     <section className="content-section dashboard-page admin-ops-dashboard">
       <header className="ops-dashboard-topbar">
-        <span className="ops-menu-mark" aria-hidden="true">
-          <LineIcon name="menu" />
-        </span>
         <div>
           <span>Hệ thống quản lý phòng trọ</span>
           <h1>Tổng quan</h1>
@@ -584,7 +581,7 @@ export default function AdminDashboardPage() {
       <section className="ops-welcome-card">
         <div>
           <h2>Xin chào, {user?.fullName || 'admin'}!</h2>
-          <p>Chào mừng bạn đến với hệ thống quản lý phòng trọ Hưng Thịnh.</p>
+          <p>Chào mừng bạn đến với hệ thống quản lý phòng trọ Copilot.</p>
         </div>
         <div className="ops-welcome-actions">
           <span>

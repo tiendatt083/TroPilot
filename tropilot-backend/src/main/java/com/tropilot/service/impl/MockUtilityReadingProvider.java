@@ -1,6 +1,7 @@
 package com.tropilot.service.impl;
 
 import com.tropilot.dto.response.UtilityReadingFetchResponse;
+import com.tropilot.dto.response.UtilityMeterFetchResponse;
 import com.tropilot.entity.UtilityReading;
 import com.tropilot.exception.BadRequestException;
 import com.tropilot.exception.ResourceNotFoundException;
@@ -19,25 +20,14 @@ import java.util.concurrent.ThreadLocalRandom;
 public class MockUtilityReadingProvider implements UtilityReadingProvider {
 
     private static final int MAX_ELECTRICITY_USAGE = 150;
-    private static final int MAX_WATER_USAGE = 20;
+    private static final int MAX_WATER_USAGE = 150;
 
     private final RoomRepository roomRepository;
     private final UtilityReadingRepository utilityReadingRepository;
 
     @Override
     public UtilityReadingFetchResponse fetch(Long roomId, LocalDate readingDate) {
-        if (!roomRepository.existsById(roomId)) {
-            throw new ResourceNotFoundException("Room not found");
-        }
-
-        LocalDate readingMonth = readingDate.withDayOfMonth(1);
-        if (utilityReadingRepository.existsByRoom_IdAndMonth(roomId, readingMonth)) {
-            throw new BadRequestException("Utility reading already exists for this room and month");
-        }
-
-        UtilityReading previousReading = utilityReadingRepository
-                .findFirstByRoom_IdAndMonthBeforeOrderByMonthDescCreatedAtDesc(roomId, readingMonth)
-                .orElse(null);
+        UtilityReading previousReading = findPreviousReading(roomId, readingDate);
         BigDecimal oldElectricity = previousReading == null
                 ? BigDecimal.ZERO
                 : previousReading.getNewElectricity();
@@ -57,6 +47,57 @@ public class MockUtilityReadingProvider implements UtilityReadingProvider {
                 oldWater.add(waterUsage),
                 waterUsage
         );
+    }
+
+    @Override
+    public UtilityMeterFetchResponse fetchElectricity(Long roomId, LocalDate readingDate) {
+        UtilityReading previousReading = findPreviousReading(roomId, readingDate);
+        BigDecimal oldReading = previousReading == null
+                ? BigDecimal.ZERO
+                : previousReading.getNewElectricity();
+        BigDecimal usage = randomUsage(MAX_ELECTRICITY_USAGE);
+
+        return new UtilityMeterFetchResponse(
+                "MOCK",
+                "ELECTRICITY",
+                readingDate,
+                oldReading,
+                oldReading.add(usage),
+                usage
+        );
+    }
+
+    @Override
+    public UtilityMeterFetchResponse fetchWater(Long roomId, LocalDate readingDate) {
+        UtilityReading previousReading = findPreviousReading(roomId, readingDate);
+        BigDecimal oldReading = previousReading == null
+                ? BigDecimal.ZERO
+                : previousReading.getNewWater();
+        BigDecimal usage = randomUsage(MAX_WATER_USAGE);
+
+        return new UtilityMeterFetchResponse(
+                "MOCK",
+                "WATER",
+                readingDate,
+                oldReading,
+                oldReading.add(usage),
+                usage
+        );
+    }
+
+    private UtilityReading findPreviousReading(Long roomId, LocalDate readingDate) {
+        if (!roomRepository.existsById(roomId)) {
+            throw new ResourceNotFoundException("Room not found");
+        }
+
+        LocalDate readingMonth = readingDate.withDayOfMonth(1);
+        if (utilityReadingRepository.existsByRoom_IdAndMonth(roomId, readingMonth)) {
+            throw new BadRequestException("Utility reading already exists for this room and month");
+        }
+
+        return utilityReadingRepository
+                .findFirstByRoom_IdAndMonthBeforeOrderByMonthDescCreatedAtDesc(roomId, readingMonth)
+                .orElse(null);
     }
 
     private BigDecimal randomUsage(int maximum) {

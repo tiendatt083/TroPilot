@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useOutletContext } from 'react-router-dom';
+import RoomForm from '../RoomForm.jsx';
+import ActionDialog from '../common/ActionDialog.jsx';
 import PageHeader from '../PageHeader.jsx';
 import { formatNumber } from '../../utils/numberFormat.js';
 import { formatRoomCode } from '../../utils/roomDisplay.js';
@@ -20,15 +22,21 @@ export default function BuildingRoomsWorkspace({
   getRooms,
   roomBasePath,
   canManage = false,
-  createRoomPath
+  createRoomPath,
+  createRoom
 }) {
   const { t } = useTranslation();
   const { building } = useOutletContext();
   const [rooms, setRooms] = useState([]);
   const [filters, setFilters] = useState(emptyFilters);
   const [appliedFilters, setAppliedFilters] = useState(emptyFilters);
+  const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
+  const [savingForm, setSavingForm] = useState(false);
+  const [formError, setFormError] = useState('');
+  const [formOpen, setFormOpen] = useState(false);
+  const canUseDialogForm = canManage && createRoom;
 
   const loadRooms = async (filterValues = appliedFilters) => {
     setLoading(true);
@@ -65,14 +73,46 @@ export default function BuildingRoomsWorkspace({
     loadRooms(emptyFilters);
   };
 
+  const handleCloseForm = () => {
+    if (savingForm) {
+      return;
+    }
+
+    setFormOpen(false);
+    setFormError('');
+  };
+
+  const handleCreateRoom = async (payload) => {
+    setSavingForm(true);
+    setFormError('');
+    setMessage('');
+    setError('');
+
+    try {
+      await createRoom(payload);
+      setMessage(t('roomManagement.created'));
+      setFormOpen(false);
+      await loadRooms(appliedFilters);
+    } catch (apiError) {
+      setFormError(apiError.response?.data?.message || t('roomManagement.createError'));
+    } finally {
+      setSavingForm(false);
+    }
+  };
+
   return (
     <div className="building-workspace">
       <div className="building-section-header">
         <PageHeader eyebrow={t('workspace.rooms.eyebrow')} title={t('workspace.rooms.title')} />
-        {canManage && createRoomPath && (
+        {canManage && createRoomPath && !canUseDialogForm && (
           <Link className="button-link" to={`${createRoomPath}?buildingId=${building.id}`}>
             {t('workspace.rooms.create')}
           </Link>
+        )}
+        {canUseDialogForm && (
+          <button className="button-link" type="button" onClick={() => setFormOpen(true)}>
+            {t('workspace.rooms.create')}
+          </button>
         )}
       </div>
 
@@ -103,6 +143,7 @@ export default function BuildingRoomsWorkspace({
         </button>
       </form>
 
+      {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
 
       {loading ? (
@@ -150,6 +191,24 @@ export default function BuildingRoomsWorkspace({
           )}
         </div>
       )}
+
+      <ActionDialog
+        className="action-dialog-wide"
+        eyebrow={t('workspace.rooms.eyebrow')}
+        labelledBy="building-room-create-dialog-title"
+        open={formOpen}
+        title={t('workspace.rooms.create')}
+        onClose={handleCloseForm}
+      >
+        {formError && <div className="alert error-alert">{formError}</div>}
+        <RoomForm
+          buildingOptions={[building]}
+          initialValues={{ buildingId: building.id }}
+          loading={savingForm}
+          submitLabel={t('workspace.rooms.create')}
+          onSubmit={handleCreateRoom}
+        />
+      </ActionDialog>
     </div>
   );
 }

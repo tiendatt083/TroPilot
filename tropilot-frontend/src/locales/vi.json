@@ -23,6 +23,7 @@
     "notBillable": "Không tính phí",
     "optional": "Không bắt buộc",
     "saving": "Đang lưu...",
+    "saveChanges": "Lưu thay đổi",
     "search": "Tìm kiếm",
     "signOut": "Đăng xuất",
     "details": "Chi tiết",
@@ -235,7 +236,7 @@
     },
     "actions": {
       "create": "Thêm nhân viên",
-      "exportExcel": "Tải Excel"
+      "exportExcel": "Xuất"
     },
     "messages": {
       "loading": "Đang tải danh sách nhân viên...",
@@ -267,7 +268,7 @@
     },
     "actions": {
       "create": "Thêm người dùng",
-      "exportExcel": "Tải Excel"
+      "exportExcel": "Xuất"
     },
     "recordTypes": {
       "headResident": "Chủ hộ",
@@ -314,7 +315,7 @@
       "deleted": "Đã xóa tài khoản của {{name}}.",
       "deleteError": "Không thể xóa tài khoản"
     },
-    "inlineMembers": "Thành viên trong hộ:",
+    "inlineMembers": "Thành viên:",
     "noAssignedRoom": "Chưa gán phòng",
     "detail": {
       "eyebrow": "Chi tiết tài khoản",
@@ -363,6 +364,8 @@
   "userCreate": {
     "eyebrow": "Quản trị viên",
     "title": "Tạo tài khoản",
+    "staffTitle": "Thêm nhân viên",
+    "residentHeadTitle": "Thêm người dùng",
     "backToUsers": "Quay lại người dùng",
     "backToResidents": "Quay lại cư dân",
     "fields": {
@@ -377,10 +380,16 @@
     },
     "actions": {
       "creating": "Đang tạo tài khoản...",
-      "create": "Tạo tài khoản"
+      "create": "Tạo tài khoản",
+      "savingStaff": "Đang lưu nhân viên...",
+      "saveStaff": "Lưu nhân viên",
+      "savingResidentHead": "Đang lưu người dùng...",
+      "saveResidentHead": "Lưu người dùng"
     },
     "messages": {
-      "createError": "Không thể tạo tài khoản"
+      "createError": "Không thể tạo tài khoản",
+      "staffCreated": "Đã thêm nhân viên mới.",
+      "residentHeadCreated": "Đã thêm người dùng mới."
     }
   },
   "buildingWorkspace": {
@@ -685,7 +694,7 @@
     "loadError": "Không thể tải người dùng của tòa nhà",
     "empty": "Không tìm thấy người dùng trong tòa nhà này.",
     "actions": {
-      "exportExcel": "Tải Excel"
+      "exportExcel": "Xuất"
     },
     "messages": {
       "exportEmpty": "Không có người dùng để xuất."
@@ -815,7 +824,7 @@
     "actions": {
       "createSingle": "Tạo hóa đơn",
       "createBulk": "Tạo hàng loạt",
-      "exportExcel": "Xuất Excel",
+      "exportExcel": "Xuất",
       "refresh": "Tải lại",
       "loadingDetail": "Đang tải..."
     },
@@ -908,8 +917,8 @@
     "loadError": "Không thể tải nhật ký hoạt động",
     "empty": "Không tìm thấy nhật ký hoạt động.",
     "notAvailable": "Không có dữ liệu",
-    "filterPlaceholder": "Lọc theo thao tác",
-    "filterAriaLabel": "Bộ lọc thao tác",
+    "filterPlaceholder": "Tìm kiếm theo thao tác, mô tả hoặc người dùng",
+    "filterAriaLabel": "Tìm kiếm nhật ký hoạt động",
     "pagination": {
       "summary": "Hiển thị {{from}}-{{to}} / {{total}} nhật ký",
       "previous": "Trước",
@@ -1064,13 +1073,19 @@
       "loading": "Đang tải bảng điều khiển...",
       "loadError": "Không thể tải bảng điều khiển nhân viên",
       "heroDescription": "Hàng đợi công việc hằng ngày cho chỉ số, thanh toán, bảo trì và nhiệm vụ được giao.",
+      "todayFocus": "Cần xử lý hôm nay",
+      "attentionCount": "{{count}} mục",
       "sections": {
+        "priorityTitle": "Việc cần xử lý",
+        "priorityDescription": "Các nhóm việc quan trọng được gom lại để xử lý nhanh.",
         "taskTitle": "Khối lượng công việc",
         "taskDescription": "Công việc được giao và mục quá hạn cần xử lý ngay.",
         "operationsTitle": "Hàng đợi vận hành",
         "operationsDescription": "Các nghiệp vụ tòa nhà cần nhân viên xử lý.",
         "expenseTitle": "Hoạt động chi phí",
-        "expenseDescription": "Chi phí được tạo từ công việc vận hành hợp lệ."
+        "expenseDescription": "Chi phí được tạo từ công việc vận hành hợp lệ.",
+        "quickActionTitle": "Truy cập nhanh",
+        "quickActionDescription": "Mở nhanh các trang nhân viên thường dùng."
       },
       "metrics": {
         "assignedTasks": "Công việc được giao",
@@ -1081,6 +1096,17 @@
         "createdExpenses": "Chi phí đã tạo",
         "utilityReadingsDue": "Chỉ số tiện ích cần ghi",
         "paymentChecks": "Thanh toán cần kiểm tra"
+      },
+      "quick": {
+        "tasks": "Công việc",
+        "utilityReadings": "Chỉ số điện nước",
+        "payments": "Thanh toán",
+        "maintenance": "Bảo trì",
+        "expenses": "Chi phí",
+        "taskHelper": "Xem danh sách công việc",
+        "utilityHelper": "Ghi điện nước theo phòng",
+        "paymentHelper": "Kiểm tra xác nhận thanh toán",
+        "maintenanceHelper": "Theo dõi yêu cầu bảo trì"
       }
     },
     "resident": {
@@ -1708,6 +1734,11 @@
       "deleteConfirm": "Xóa tòa nhà {{code}}?",
       "deleteTitle": "Xóa tòa nhà",
       "create": "Tạo tòa nhà",
+      "created": "Đã tạo tòa nhà thành công.",
+      "createError": "Không thể tạo tòa nhà",
+      "editTitle": "Sửa tòa nhà",
+      "updated": "Đã cập nhật tòa nhà thành công.",
+      "updateError": "Không thể cập nhật tòa nhà",
       "searchAria": "Tìm kiếm tòa nhà",
       "searchPlaceholder": "Tìm theo mã hoặc tên",
       "caption": "Tòa nhà",
@@ -1830,7 +1861,7 @@
       "rejectError": "Không thể từ chối thành viên phòng",
       "occupants": "Người đang ở",
       "occupantCount": "{{total}} / {{max}}",
-      "exportExcel": "Tải Excel",
+      "exportExcel": "Xuất",
       "exportEmpty": "Không có thành viên phòng để xuất.",
       "export": {
         "sheetName": "Thanh vien phong"
@@ -2189,8 +2220,12 @@
         "automaticReading": "Đồng bộ chỉ số",
         "mockSource": "Nguồn dữ liệu mô phỏng",
         "fetchReadings": "Lấy chỉ số",
+        "fetchElectricity": "Lấy chỉ số điện",
+        "fetchWater": "Lấy chỉ số nước",
         "fetchingReadings": "Đang lấy...",
         "fetchError": "Không thể lấy chỉ số tự động",
+        "electricityFetchError": "Không thể lấy chỉ số điện tự động",
+        "waterFetchError": "Không thể lấy chỉ số nước tự động",
         "electricityIncrease": "Điện",
         "waterIncrease": "Nước",
         "allowedImageTypes": "Loại ảnh cho phép: jpg, jpeg, png. Dung lượng tối đa: 10 MB.",

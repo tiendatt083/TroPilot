@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
 import * as adminUserApi from '../../features/users/api.js';
 import AdminAccountDirectoryTable from '../../components/AdminAccountDirectoryTable.jsx';
+import AdminUserCreateDialog from '../../components/AdminUserCreateDialog.jsx';
 import { exportRowsToExcel } from '../../utils/excelExport.js';
 
 const MANAGED_ACCOUNT_ROLES = new Set(['ADMIN', 'STAFF']);
@@ -30,6 +30,10 @@ export default function AdminUserListPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [createError, setCreateError] = useState('');
+  const [creating, setCreating] = useState(false);
+  const [createResetKey, setCreateResetKey] = useState(0);
 
   const loadAccounts = useCallback(async () => {
     setLoading(true);
@@ -106,6 +110,39 @@ export default function AdminUserListPage() {
     });
   };
 
+  const handleOpenCreateDialog = () => {
+    setCreateError('');
+    setCreateResetKey((current) => current + 1);
+    setCreateDialogOpen(true);
+  };
+
+  const handleCloseCreateDialog = () => {
+    if (creating) {
+      return;
+    }
+
+    setCreateDialogOpen(false);
+    setCreateError('');
+  };
+
+  const handleCreateStaff = async (form) => {
+    setCreateError('');
+    setMessage('');
+    setError('');
+    setCreating(true);
+
+    try {
+      await adminUserApi.createUser({ ...form, role: 'STAFF' });
+      setCreateDialogOpen(false);
+      setMessage(t('userCreate.messages.staffCreated'));
+      await loadAccounts();
+    } catch (apiError) {
+      setCreateError(apiError.response?.data?.message || t('userCreate.messages.createError'));
+    } finally {
+      setCreating(false);
+    }
+  };
+
   return (
     <section className="content-section account-directory-page modern-user-page">
       <div className="account-page-hero">
@@ -121,12 +158,13 @@ export default function AdminUserListPage() {
           >
             {t('userManagement.actions.exportExcel')}
           </button>
-          <Link
+          <button
             className="button-link"
-            to="/admin/users/create?role=STAFF&returnTo=/admin/users"
+            type="button"
+            onClick={handleOpenCreateDialog}
           >
             {t('userManagement.actions.create')}
-          </Link>
+          </button>
         </div>
       </div>
 
@@ -184,6 +222,15 @@ export default function AdminUserListPage() {
           onDelete={handleDelete}
         />
       )}
+
+      <AdminUserCreateDialog
+        error={createError}
+        loading={creating}
+        open={createDialogOpen}
+        resetKey={createResetKey}
+        onClose={handleCloseCreateDialog}
+        onSubmit={handleCreateStaff}
+      />
     </section>
   );
 }

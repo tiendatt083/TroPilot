@@ -1,11 +1,12 @@
 import { formatDisplayDateTime } from './dateFormat.js';
+import { localizedOption, translateInterfaceText } from './interfaceTranslations.js';
 
 export const MAINTENANCE_STATUS_OPTIONS = [
-  { value: 'PENDING', label: 'Pending' },
-  { value: 'ASSIGNED', label: 'Assigned' },
-  { value: 'IN_PROGRESS', label: 'In progress' },
-  { value: 'COMPLETED', label: 'Completed' },
-  { value: 'REJECTED', label: 'Rejected' }
+  localizedOption('PENDING', 'Pending'),
+  localizedOption('ASSIGNED', 'Assigned'),
+  localizedOption('IN_PROGRESS', 'In progress'),
+  localizedOption('COMPLETED', 'Completed'),
+  localizedOption('REJECTED', 'Rejected')
 ];
 
 export function getMaintenanceStatusLabel(status) {
@@ -18,8 +19,8 @@ export function getMaintenanceStatusClass(status) {
 
 export function formatMaintenanceDateTime(value) {
   if (!value) {
-    return 'Not provided';
+    return translateInterfaceText('Not provided');
   }
 
-  return formatDisplayDateTime(value, 'Not provided');
+  return formatDisplayDateTime(value, translateInterfaceText('Not provided'));
 }

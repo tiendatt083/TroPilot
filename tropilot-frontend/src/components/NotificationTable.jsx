@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { formatDateTime, formatEnumLabel } from '../utils/i18nFormat.js';
+import { translateInterfaceText } from '../utils/interfaceTranslations.js';
 
 function getBuildingLabel(notification, t) {
   if (notification.allBuildings) {
@@ -37,8 +38,8 @@ export default function NotificationTable({
           {notifications.map((notification) => (
             <tr key={notification.id}>
               <td className="notification-message-cell">
-                <strong className="notification-title-text">{notification.title}</strong>
-                <span className="table-subtext notification-content-text">{notification.content}</span>
+                <strong className="notification-title-text">{translateInterfaceText(notification.title)}</strong>
+                <span className="table-subtext notification-content-text">{translateInterfaceText(notification.content)}</span>
               </td>
               {showTarget && (
                 <td className="notification-target-cell">
@@ -53,7 +54,7 @@ export default function NotificationTable({
               )}
               <td className="notification-author-cell">
                 <strong>{notification.createdByName}</strong>
-                <span className="table-subtext notification-meta-line">{notification.createdByRole}</span>
+                <span className="table-subtext notification-meta-line">{translateInterfaceText(notification.createdByRole)}</span>
               </td>
               <td className="notification-date-cell">{formatDateTime(notification.createdAt, t)}</td>
               {showReadStatus && (

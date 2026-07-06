@@ -1,10 +1,11 @@
 import { formatDisplayDateTime } from './dateFormat.js';
+import { localizedOption, translateInterfaceText } from './interfaceTranslations.js';
 
 export const NOTIFICATION_TARGET_OPTIONS = [
-  { value: 'ALL_RESIDENT_HEADS', label: 'All Head Residents' },
-  { value: 'ALL', label: 'All users' },
-  { value: 'STAFF', label: 'All Staff' },
-  { value: 'SELECTED_USERS', label: 'Selected users' }
+  localizedOption('ALL_RESIDENT_HEADS', 'All Head Residents'),
+  localizedOption('ALL', 'All users'),
+  localizedOption('STAFF', 'All Staff'),
+  localizedOption('SELECTED_USERS', 'Selected users')
 ];
 
 const legacyNotificationTargetLabels = {
@@ -14,7 +15,7 @@ const legacyNotificationTargetLabels = {
 };
 
 export function getNotificationTargetLabel(targetType) {
-  return (
+  return translateInterfaceText(
     NOTIFICATION_TARGET_OPTIONS.find((option) => option.value === targetType)?.label ||
     legacyNotificationTargetLabels[targetType] ||
     targetType
@@ -23,16 +24,18 @@ export function getNotificationTargetLabel(targetType) {
 
 export function getNotificationBuildingLabel(notification) {
   if (notification.allBuildings) {
-    return 'All buildings';
+    return translateInterfaceText('All buildings');
   }
 
-  return notification.buildingNames?.length ? notification.buildingNames.join(', ') : 'Selected buildings';
+  return notification.buildingNames?.length
+    ? notification.buildingNames.join(', ')
+    : translateInterfaceText('Selected buildings');
 }
 
 export function formatNotificationDateTime(value) {
   if (!value) {
-    return 'Not provided';
+    return translateInterfaceText('Not provided');
   }
 
-  return formatDisplayDateTime(value, 'Not provided');
+  return formatDisplayDateTime(value, translateInterfaceText('Not provided'));
 }

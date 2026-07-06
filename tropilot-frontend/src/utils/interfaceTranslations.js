@@ -1,3 +1,5 @@
+import i18n from '../i18n.js';
+
 export const EN_TO_VI_TRANSLATIONS = {
   'Activity logs': 'Nhật ký hoạt động',
   'Active': 'Hoạt động',
@@ -75,6 +77,8 @@ export const EN_TO_VI_TRANSLATIONS = {
   'Building room members': 'Thành viên phòng của tòa nhà',
   'Building room members could not be loaded': 'Không thể tải thành viên phòng của tòa nhà',
   'Building rooms': 'Phòng trong tòa nhà',
+  'Building summary could not be loaded': 'Không thể tải tổng quan tòa nhà',
+  'Building operations': 'Vận hành tòa nhà',
   'Building task': 'Công việc của tòa nhà',
   'Building tasks': 'Công việc của tòa nhà',
   'Building tasks could not be loaded': 'Không thể tải công việc của tòa nhà',
@@ -182,9 +186,11 @@ export const EN_TO_VI_TRANSLATIONS = {
   'Expense': 'Chi phí',
   'Expense content': 'Nội dung chi phí',
   'Expense cancelled successfully.': 'Đã hủy chi phí thành công.',
+  'Expense created successfully.': 'Đã tạo chi phí thành công.',
   'Expense could not be cancelled': 'Không thể hủy chi phí',
   'Expense does not belong to the selected building': 'Chi phí không thuộc tòa nhà đã chọn',
   'Expense proof': 'Bằng chứng chi phí',
+  'Expense entry': 'Nhập chi phí',
   'Expense type': 'Loại chi phí',
   'Expenses': 'Chi phí',
   'Expenses in this building': 'Chi phí trong tòa nhà này',
@@ -204,7 +210,7 @@ export const EN_TO_VI_TRANSLATIONS = {
   'File': 'Tệp',
   'Filter': 'Lọc',
   'Filter by building': 'Lọc theo tòa nhà',
-  'Filter by action': 'Lọc theo thao tác',
+  'Search by action, description, or user': 'Tìm kiếm theo thao tác, mô tả hoặc người dùng',
   'Fixed': 'Cố định',
   'Fixed service fee': 'Phí dịch vụ cố định',
   'Floor': 'Tầng',
@@ -255,6 +261,7 @@ export const EN_TO_VI_TRANSLATIONS = {
   'Leave': 'Rời đi',
   'License plate': 'Biển số xe',
   'Loading buildings...': 'Đang tải tòa nhà...',
+  'Loading building summary...': 'Đang tải tổng quan tòa nhà...',
   'Loading building workspace...': 'Đang tải không gian quản lý tòa nhà...',
   'Loading contracts...': 'Đang tải hợp đồng...',
   'Loading dashboard...': 'Đang tải bảng điều khiển...',
@@ -315,6 +322,7 @@ export const EN_TO_VI_TRANSLATIONS = {
   'New': 'Mới',
   'New building': 'Tòa nhà mới',
   'New invoice': 'Hóa đơn mới',
+  'New invoice issued': 'Đã tạo hóa đơn mới',
   'New member': 'Thành viên mới',
   'New password': 'Mật khẩu mới',
   'New request': 'Yêu cầu mới',
@@ -368,8 +376,10 @@ export const EN_TO_VI_TRANSLATIONS = {
   'Open': 'Đang mở',
   'Open contract': 'Mở hợp đồng',
   'Open maintenance requests': 'Yêu cầu bảo trì đang mở',
+  'Open maintenance': 'Bảo trì đang mở',
   'Open tasks': 'Công việc đang mở',
   'Operation': 'Vận hành',
+  'Outgoing money': 'Khoản chi',
   'One building': 'Một tòa nhà',
   'One room': 'Một phòng',
   'One room in this building': 'Một phòng trong tòa nhà này',
@@ -755,6 +765,7 @@ export const EN_TO_VI_TRANSLATIONS = {
   'Password change failed': 'Đổi mật khẩu thất bại',
   'Password could not be reset': 'Không thể đặt lại mật khẩu',
   'Payment proof approved': 'Đã duyệt bằng chứng thanh toán',
+  'Payment received': 'Đã nhận thanh toán',
   'Payment proof can only be uploaded when the invoice is unpaid or rejected.': 'Chỉ có thể tải bằng chứng thanh toán khi hóa đơn chưa thanh toán hoặc bị từ chối.',
   'Payment proof could not be uploaded': 'Không thể tải bằng chứng thanh toán',
   'Payment proof rejected': 'Đã từ chối bằng chứng thanh toán',
@@ -763,6 +774,8 @@ export const EN_TO_VI_TRANSLATIONS = {
   'Pending payments could not be loaded': 'Không thể tải thanh toán chờ duyệt',
   'Pending vehicles': 'Xe chờ duyệt',
   'Pending vehicles could not be loaded': 'Không thể tải xe chờ duyệt',
+  'Per person': 'Theo người',
+  'Per room': 'Theo phòng',
   'Phone number': 'Số điện thoại',
   'Proof image': 'Ảnh bằng chứng',
   'Previous electricity image': 'Ảnh điện kỳ trước',
@@ -828,6 +841,7 @@ export const EN_TO_VI_TRANSLATIONS = {
   'Service fee updated successfully.': 'Đã cập nhật phí dịch vụ thành công.',
   'Service fees could not be loaded': 'Không thể tải phí dịch vụ',
   'Staff email': 'Email nhân viên',
+  'Staff workspace': 'Không gian nhân viên',
   'Staff tasks': 'Công việc nhân viên',
   'Task completed successfully.': 'Đã hoàn thành công việc thành công.',
   'Task could not be completed': 'Không thể hoàn thành công việc',
@@ -894,3 +908,62 @@ export const VI_TO_EN_TRANSLATIONS = Object.fromEntries(
     .filter(([english]) => english !== 'Property Administrator')
     .map(([english, vietnamese]) => [vietnamese, english])
 );
+
+function currentLanguageIsEnglish() {
+  return (i18n.resolvedLanguage || i18n.language || '').startsWith('en');
+}
+
+function translateParameterizedText(value) {
+  if (currentLanguageIsEnglish()) {
+    return value;
+  }
+
+  const invoiceIssuedMatch = value.match(
+    /^Invoice (.+) for room (.+) is ready\. Transfer exactly (.+) with payment code (.+)\.$/i
+  );
+  if (invoiceIssuedMatch) {
+    return `Hóa đơn ${invoiceIssuedMatch[1]} của phòng ${invoiceIssuedMatch[2]} đã sẵn sàng. Vui lòng chuyển đúng ${invoiceIssuedMatch[3]} với mã thanh toán ${invoiceIssuedMatch[4]}.`;
+  }
+
+  const paymentReceivedMatch = value.match(
+    /^Payment for invoice (.+) in room (.+) has been received successfully\.$/i
+  );
+  if (paymentReceivedMatch) {
+    return `Đã nhận thanh toán cho hóa đơn ${paymentReceivedMatch[1]} của phòng ${paymentReceivedMatch[2]}.`;
+  }
+
+  return value;
+}
+
+export function translateInterfaceText(value) {
+  if (typeof value !== 'string' || value.trim() === '') {
+    return value;
+  }
+
+  const trimmed = value.trim();
+  const exactTranslation = currentLanguageIsEnglish()
+    ? VI_TO_EN_TRANSLATIONS[trimmed]
+    : EN_TO_VI_TRANSLATIONS[trimmed];
+
+  return exactTranslation || translateParameterizedText(trimmed);
+}
+
+export function localizeOption(option) {
+  return {
+    ...option,
+    label: translateInterfaceText(option.label)
+  };
+}
+
+export function localizeOptions(options) {
+  return options.map(localizeOption);
+}
+
+export function localizedOption(value, label) {
+  return {
+    value,
+    get label() {
+      return translateInterfaceText(label);
+    }
+  };
+}

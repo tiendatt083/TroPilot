@@ -3,9 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
 import * as notificationApi from '../../features/notifications/api.js';
 import * as adminUserApi from '../../features/users/api.js';
+import ActionDialog from '../../components/common/ActionDialog.jsx';
 import CheckboxList from '../../components/CheckboxList.jsx';
-import NotificationPaginationControls from '../../components/NotificationPaginationControls.jsx';
-import NotificationTable from '../../components/NotificationTable.jsx';
+import NotificationHistoryPanel from '../../components/NotificationHistoryPanel.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
 import { formatEnumLabel } from '../../utils/i18nFormat.js';
 import { NOTIFICATION_TARGET_OPTIONS } from '../../utils/notificationOptions.js';
@@ -192,8 +192,14 @@ export default function AdminBuildingNotificationPage() {
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
 
-      {composerOpen && (
-        <div className="notification-composer-shell">
+      <ActionDialog
+        className="action-dialog-wide"
+        eyebrow={t('workspace.notifications.eyebrow')}
+        labelledBy="building-notification-create-dialog-title"
+        open={composerOpen}
+        title={t('notifications.actions.create')}
+        onClose={handleCloseComposer}
+      >
           <form className="panel-form notification-composer-form" onSubmit={handleSubmit}>
             <div className="notification-field notification-field-full">
               <label htmlFor="title">{t('notifications.fields.title')}</label>
@@ -250,18 +256,15 @@ export default function AdminBuildingNotificationPage() {
               </button>
             </div>
           </form>
-        </div>
-      )}
+      </ActionDialog>
 
-      <section className="building-section notification-history-section">
-        <NotificationTable notifications={pagedNotifications} showReadStatus={false} />
-        <NotificationPaginationControls
-          page={notificationPage}
-          pageSize={HISTORY_PAGE_SIZE}
-          totalItems={notifications.length}
-          onPageChange={handleNotificationPageChange}
-        />
-      </section>
+      <NotificationHistoryPanel
+        notifications={pagedNotifications}
+        page={notificationPage}
+        pageSize={HISTORY_PAGE_SIZE}
+        totalItems={notifications.length}
+        onPageChange={handleNotificationPageChange}
+      />
     </div>
   );
 }

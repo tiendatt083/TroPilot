@@ -150,7 +150,22 @@ test.describe('Tropilot smoke flow', () => {
     await expectNoVisibleAppError(page);
   });
 
-  for (const role of ['admin', 'staff', 'resident']) {
+  test('admin can open created notifications and activity logs', async ({ page }) => {
+    await mockTropilotApi(page);
+    await loginAs(page, 'admin');
+
+    await page.goto('/admin/notifications');
+    await expect(page.getByRole('heading', { name: 'Notifications' })).toBeVisible();
+    await expect(page.getByText('Tenant payment notice')).toBeVisible();
+    await expect(page.getByRole('tab')).toHaveCount(0);
+
+    await page.goto('/admin/activity-logs');
+    await expect(page.getByRole('heading', { name: 'Activity logs' })).toBeVisible();
+    await expect(page.getByText('Updated profile information')).toBeVisible();
+    await expectNoVisibleAppError(page);
+  });
+
+  for (const role of ['staff', 'resident']) {
     test(`${role} can open personal notifications and activity logs`, async ({ page }) => {
       await mockTropilotApi(page);
       await loginAs(page, role);

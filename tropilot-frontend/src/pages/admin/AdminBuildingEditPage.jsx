@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import * as buildingApi from '../../features/buildings/api.js';
 import { BuildingForm } from '../../features/buildings/components/index.js';
 import PageHeader from '../../components/PageHeader.jsx';
+import { translateInterfaceText } from '../../utils/interfaceTranslations.js';
 
 export default function AdminBuildingEditPage() {
+  useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const [building, setBuilding] = useState(null);
@@ -24,7 +27,7 @@ export default function AdminBuildingEditPage() {
       })
       .catch((apiError) => {
         if (active) {
-          setError(apiError.response?.data?.message || 'Building could not be loaded');
+          setError(translateInterfaceText(apiError.response?.data?.message || 'Building could not be loaded'));
         }
       })
       .finally(() => {
@@ -46,25 +49,25 @@ export default function AdminBuildingEditPage() {
       const response = await buildingApi.updateAdminBuilding(id, payload);
       navigate(`/admin/buildings/${response.data.id}`, {
         replace: true,
-        state: { message: 'Building updated successfully.' }
+        state: { message: translateInterfaceText('Building updated successfully.') }
       });
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Building could not be updated');
+      setError(translateInterfaceText(apiError.response?.data?.message || 'Building could not be updated'));
     } finally {
       setSaving(false);
     }
   };
 
   if (loading) {
-    return <div className="empty-state">Loading building...</div>;
+    return <div className="empty-state">{translateInterfaceText('Loading building...')}</div>;
   }
 
   return (
     <section className="content-section narrow-section">
       <div className="page-title-row">
-        <PageHeader eyebrow="Administrator" title="Edit building" />
+        <PageHeader eyebrow={translateInterfaceText('Administrator')} title={translateInterfaceText('Edit building')} />
         <Link className="secondary-link" to={`/admin/buildings/${id}`}>
-          Back to details
+          {translateInterfaceText('Back to details')}
         </Link>
       </div>
 
@@ -74,7 +77,7 @@ export default function AdminBuildingEditPage() {
         <BuildingForm
           initialValues={building}
           loading={saving}
-          submitLabel="Save changes"
+          submitLabel={translateInterfaceText('Save changes')}
           onSubmit={handleSubmit}
         />
       )}

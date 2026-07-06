@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
 import * as serviceFeeApi from '../../features/invoices/serviceFeeApi.js';
+import ActionDialog from '../../components/common/ActionDialog.jsx';
 import { formatEnumLabel } from '../../utils/i18nFormat.js';
 import { isServiceFeeActive } from '../../utils/serviceFeeOptions.js';
 
@@ -58,6 +59,7 @@ export default function AdminBuildingServiceFeePage() {
   const [additionalForm, setAdditionalForm] = useState(emptyAdditionalForm);
   const [editingUtilityKey, setEditingUtilityKey] = useState(null);
   const [editingAdditionalFee, setEditingAdditionalFee] = useState(null);
+  const [serviceFormOpen, setServiceFormOpen] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
@@ -222,6 +224,7 @@ export default function AdminBuildingServiceFeePage() {
       setEditingUtilityKey(null);
       setEditingAdditionalFee(null);
       setAdditionalForm(emptyAdditionalForm);
+      setServiceFormOpen(false);
       setMessage(t('buildingServiceFees.saved'));
       await loadServiceFees();
     } catch (apiError) {
@@ -235,6 +238,7 @@ export default function AdminBuildingServiceFeePage() {
     const feeForm = utilityForm[config.key] || emptyUtilityForm[config.key];
     setEditingAdditionalFee(null);
     setEditingUtilityKey(config.key);
+    setServiceFormOpen(true);
     setAdditionalForm({
       name: t(`buildingServiceFees.utility.${config.key}Title`),
       unitPrice: feeForm.unitPrice ?? '',
@@ -247,6 +251,7 @@ export default function AdminBuildingServiceFeePage() {
   const handleEditAdditional = (serviceFee) => {
     setEditingUtilityKey(null);
     setEditingAdditionalFee(serviceFee);
+    setServiceFormOpen(true);
     setAdditionalForm({
       name: serviceFee.name,
       unitPrice: serviceFee.unitPrice ?? '',
@@ -260,6 +265,14 @@ export default function AdminBuildingServiceFeePage() {
     setEditingUtilityKey(null);
     setEditingAdditionalFee(null);
     setAdditionalForm(emptyAdditionalForm);
+    setServiceFormOpen(false);
+  };
+
+  const handleOpenAdditionalForm = () => {
+    setEditingUtilityKey(null);
+    setEditingAdditionalFee(null);
+    setAdditionalForm(emptyAdditionalForm);
+    setServiceFormOpen(true);
   };
 
   const handleToggle = async (serviceFee) => {
@@ -304,7 +317,14 @@ export default function AdminBuildingServiceFeePage() {
 
   return (
     <div className="building-workspace">
-      <span className="page-eyebrow">{t('buildingServiceFees.eyebrow')}</span>
+      <div className="building-section-header">
+        <span className="page-eyebrow">{t('buildingServiceFees.eyebrow')}</span>
+        {!loading && (
+          <button className="button-link" type="button" onClick={handleOpenAdditionalForm}>
+            {t('buildingServiceFees.create')}
+          </button>
+        )}
+      </div>
 
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
@@ -312,65 +332,9 @@ export default function AdminBuildingServiceFeePage() {
       {loading ? (
         <div className="empty-state">{t('buildingServiceFees.loading')}</div>
       ) : (
-        <form className="building-service-fee-page" onSubmit={handleSaveServiceFees}>
-          <section className="settings-card additional-service-card">
-            <div className="additional-service-layout">
-              <div className="panel-form additional-service-form">
-                <label htmlFor="additionalServiceName">{t('buildingServiceFees.additional.name')}</label>
-                <input
-                  id="additionalServiceName"
-                  name="name"
-                  value={additionalForm.name}
-                  onChange={handleAdditionalChange}
-                  maxLength={120}
-                  disabled={Boolean(editingUtilityConfig)}
-                  required={!editingUtilityConfig && hasServiceDraft}
-                />
-
-                <label htmlFor="additionalServiceUnitPrice">{t('buildingServiceFees.additional.unitPrice')}</label>
-                <input
-                  id="additionalServiceUnitPrice"
-                  name="unitPrice"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={additionalForm.unitPrice}
-                  onChange={handleAdditionalChange}
-                  required={hasServiceDraft}
-                />
-
-                <label htmlFor="additionalServiceCalculationType">
-                  {t('buildingServiceFees.calculationMethod')}
-                </label>
-                <select
-                  id="additionalServiceCalculationType"
-                  name="calculationType"
-                  value={additionalForm.calculationType}
-                  onChange={handleAdditionalChange}
-                  required
-                >
-                  {formCalculationTypes.map((calculationType) => (
-                    <option key={calculationType} value={calculationType}>
-                      {t(`buildingServiceFees.methods.${calculationType}`)}
-                    </option>
-                  ))}
-                </select>
-
-                <button type="submit" disabled={savingServiceFees || !hasServiceDraft}>
-                  {savingServiceFees ? t('common.saving') : t('buildingServiceFees.save')}
-                </button>
-                {(editingUtilityConfig || editingAdditionalFee) && (
-                  <button
-                    className="secondary-button"
-                    type="button"
-                    disabled={savingServiceFees}
-                    onClick={handleCancelServiceEdit}
-                  >
-                    {t('buildingServiceFees.cancelEdit')}
-                  </button>
-                )}
-              </div>
-
+        <section className="building-service-fee-page">
+          <div className="settings-card additional-service-card">
+            <div className="additional-service-layout additional-service-list-only">
               <div className="table-wrap additional-service-table-wrap">
                 <table className="data-table additional-service-table">
                   <thead>
@@ -460,9 +424,74 @@ export default function AdminBuildingServiceFeePage() {
                 )}
               </div>
             </div>
-          </section>
-        </form>
+          </div>
+        </section>
       )}
+
+      <ActionDialog
+        className="action-dialog"
+        eyebrow={t('buildingServiceFees.eyebrow')}
+        labelledBy="service-fee-dialog-title"
+        open={serviceFormOpen}
+        title={editingUtilityConfig || editingAdditionalFee ? t('common.edit') : t('buildingServiceFees.create')}
+        onClose={handleCancelServiceEdit}
+      >
+        <form className="panel-form additional-service-form" onSubmit={handleSaveServiceFees}>
+                <label htmlFor="additionalServiceName">{t('buildingServiceFees.additional.name')}</label>
+                <input
+                  id="additionalServiceName"
+                  name="name"
+                  value={additionalForm.name}
+                  onChange={handleAdditionalChange}
+                  maxLength={120}
+                  disabled={Boolean(editingUtilityConfig)}
+                  required={!editingUtilityConfig && hasServiceDraft}
+                />
+
+                <label htmlFor="additionalServiceUnitPrice">{t('buildingServiceFees.additional.unitPrice')}</label>
+                <input
+                  id="additionalServiceUnitPrice"
+                  name="unitPrice"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={additionalForm.unitPrice}
+                  onChange={handleAdditionalChange}
+                  required={hasServiceDraft}
+                />
+
+                <label htmlFor="additionalServiceCalculationType">
+                  {t('buildingServiceFees.calculationMethod')}
+                </label>
+                <select
+                  id="additionalServiceCalculationType"
+                  name="calculationType"
+                  value={additionalForm.calculationType}
+                  onChange={handleAdditionalChange}
+                  required
+                >
+                  {formCalculationTypes.map((calculationType) => (
+                    <option key={calculationType} value={calculationType}>
+                      {t(`buildingServiceFees.methods.${calculationType}`)}
+                    </option>
+                  ))}
+                </select>
+
+                <button type="submit" disabled={savingServiceFees || !hasServiceDraft}>
+                  {savingServiceFees ? t('common.saving') : t('buildingServiceFees.save')}
+                </button>
+                {(editingUtilityConfig || editingAdditionalFee) && (
+                  <button
+                    className="secondary-button"
+                    type="button"
+                    disabled={savingServiceFees}
+                    onClick={handleCancelServiceEdit}
+                  >
+                    {t('buildingServiceFees.cancelEdit')}
+                  </button>
+                )}
+        </form>
+      </ActionDialog>
     </div>
   );
 }

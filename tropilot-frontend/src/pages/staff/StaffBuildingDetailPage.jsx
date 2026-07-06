@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import * as buildingApi from '../../features/buildings/api.js';
 import PageHeader from '../../components/PageHeader.jsx';
+import { translateInterfaceText } from '../../utils/interfaceTranslations.js';
 
 export default function StaffBuildingDetailPage() {
+  useTranslation();
   const { id } = useParams();
   const [building, setBuilding] = useState(null);
   const [error, setError] = useState('');
@@ -21,7 +24,7 @@ export default function StaffBuildingDetailPage() {
       })
       .catch((apiError) => {
         if (active) {
-          setError(apiError.response?.data?.message || 'Building could not be loaded');
+          setError(translateInterfaceText(apiError.response?.data?.message || 'Building could not be loaded'));
         }
       })
       .finally(() => {
@@ -36,11 +39,11 @@ export default function StaffBuildingDetailPage() {
   }, [id]);
 
   if (loading) {
-    return <div className="empty-state">Loading building...</div>;
+    return <div className="empty-state">{translateInterfaceText('Loading building...')}</div>;
   }
 
   if (!building) {
-    return <div className="empty-state">{error || 'Building not found.'}</div>;
+    return <div className="empty-state">{error || translateInterfaceText('Building not found.')}</div>;
   }
 
   return (
@@ -48,7 +51,7 @@ export default function StaffBuildingDetailPage() {
       <div className="page-title-row">
         <PageHeader eyebrow={building.buildingCode} title={building.name} />
         <Link className="secondary-link" to="/staff/buildings">
-          Back to buildings
+          {translateInterfaceText('Back to buildings')}
         </Link>
       </div>
 
@@ -56,20 +59,20 @@ export default function StaffBuildingDetailPage() {
 
       <div className="detail-panel">
         <div>
-          <span>Building code</span>
+          <span>{translateInterfaceText('Building code')}</span>
           <strong>{building.buildingCode}</strong>
         </div>
         <div>
-          <span>Address</span>
+          <span>{translateInterfaceText('Address')}</span>
           <strong>{building.address}</strong>
         </div>
         <div>
-          <span>Floors</span>
+          <span>{translateInterfaceText('Floors')}</span>
           <strong>{building.floors}</strong>
         </div>
         <div className="detail-wide">
-          <span>Description</span>
-          <p>{building.description || 'No description provided.'}</p>
+          <span>{translateInterfaceText('Description')}</span>
+          <p>{building.description || translateInterfaceText('No description provided.')}</p>
         </div>
       </div>
     </section>

@@ -2,6 +2,7 @@ package com.tropilot.controller;
 
 import com.tropilot.dto.request.UtilityReadingCreateRequest;
 import com.tropilot.dto.response.ApiResponse;
+import com.tropilot.dto.response.UtilityMeterFetchResponse;
 import com.tropilot.dto.response.UtilityReadingFetchResponse;
 import com.tropilot.dto.response.UtilityReadingOverviewResponse;
 import com.tropilot.dto.response.UtilityReadingResponse;
@@ -54,6 +55,28 @@ public class StaffUtilityReadingController {
         return ApiResponse.success(
                 "Utility readings fetched successfully",
                 utilityReadingProvider.fetch(roomId, readingDate)
+        );
+    }
+
+    @PostMapping("/fetch/electricity")
+    public ApiResponse<UtilityMeterFetchResponse> fetchElectricityReading(
+            @RequestParam Long roomId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate readingDate
+    ) {
+        return ApiResponse.success(
+                "Electricity reading fetched successfully",
+                utilityReadingProvider.fetchElectricity(roomId, readingDate)
+        );
+    }
+
+    @PostMapping("/fetch/water")
+    public ApiResponse<UtilityMeterFetchResponse> fetchWaterReading(
+            @RequestParam Long roomId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate readingDate
+    ) {
+        return ApiResponse.success(
+                "Water reading fetched successfully",
+                utilityReadingProvider.fetchWater(roomId, readingDate)
         );
     }
 

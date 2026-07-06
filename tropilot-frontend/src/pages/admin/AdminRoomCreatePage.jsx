@@ -1,11 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import * as buildingApi from '../../features/buildings/api.js';
 import * as roomApi from '../../features/rooms/api.js';
 import PageHeader from '../../components/PageHeader.jsx';
 import RoomForm from '../../components/RoomForm.jsx';
+import { translateInterfaceText } from '../../utils/interfaceTranslations.js';
 
 export default function AdminRoomCreatePage() {
+  useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const selectedBuildingId = searchParams.get('buildingId') || '';
@@ -26,7 +29,7 @@ export default function AdminRoomCreatePage() {
       })
       .catch((apiError) => {
         if (active) {
-          setError(apiError.response?.data?.message || 'Buildings could not be loaded');
+          setError(translateInterfaceText(apiError.response?.data?.message || 'Buildings could not be loaded'));
         }
       })
       .finally(() => {
@@ -48,10 +51,10 @@ export default function AdminRoomCreatePage() {
       const response = await roomApi.createAdminRoom(payload);
       navigate(selectedBuildingId ? `/admin/buildings/${selectedBuildingId}/rooms` : `/admin/rooms/${response.data.id}`, {
         replace: true,
-        state: { message: 'Room created successfully.' }
+        state: { message: translateInterfaceText('Room created successfully.') }
       });
     } catch (apiError) {
-      setError(apiError.response?.data?.message || 'Room could not be created');
+      setError(translateInterfaceText(apiError.response?.data?.message || 'Room could not be created'));
     } finally {
       setLoading(false);
     }
@@ -65,25 +68,25 @@ export default function AdminRoomCreatePage() {
   return (
     <section className="content-section narrow-section">
       <div className="page-title-row">
-        <PageHeader eyebrow="Administrator" title="Create room" />
+        <PageHeader eyebrow={translateInterfaceText('Administrator')} title={translateInterfaceText('Create room')} />
         <Link className="secondary-link" to={selectedBuildingId ? `/admin/buildings/${selectedBuildingId}/rooms` : '/admin/rooms'}>
-          Back to rooms
+          {translateInterfaceText('Back to rooms')}
         </Link>
       </div>
 
       {error && <div className="alert error-alert">{error}</div>}
       {!loadingBuildings && buildings.length === 0 && (
-        <div className="alert error-alert">Create a building before creating rooms.</div>
+        <div className="alert error-alert">{translateInterfaceText('Create a building before creating rooms.')}</div>
       )}
 
       {loadingBuildings ? (
-        <div className="empty-state">Loading buildings...</div>
+        <div className="empty-state">{translateInterfaceText('Loading buildings...')}</div>
       ) : (
         <RoomForm
           buildingOptions={buildings}
           initialValues={initialRoomValues}
           loading={loading}
-          submitLabel="Create room"
+          submitLabel={translateInterfaceText('Create room')}
           onSubmit={handleSubmit}
         />
       )}

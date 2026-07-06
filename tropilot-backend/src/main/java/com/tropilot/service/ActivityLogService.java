@@ -13,7 +13,7 @@ public interface ActivityLogService {
 
     void recordCurrentUser(String action, String description);
 
-    List<ActivityLogResponse> getLogs(String action);
+    List<ActivityLogResponse> getLogs(String query);
 
-    List<ActivityLogResponse> getMyLogs(Long userId, String action);
+    List<ActivityLogResponse> getMyLogs(Long userId, String query);
 }

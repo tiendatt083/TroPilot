@@ -385,38 +385,41 @@
 .account-inline-members {
   display: flex;
   min-width: 0;
-  align-items: center;
+  align-items: baseline;
   flex-wrap: wrap;
-  gap: 0.3rem;
-  margin-top: 0.35rem;
+  gap: 0.25rem;
+  margin-top: 0.28rem;
 }
 
 .account-inline-members-label {
   flex: 0 0 auto;
   color: var(--color-text-muted);
-  font-size: 0.68rem;
-  font-weight: 650;
-  line-height: 1.2;
+  font-size: 0.76rem;
+  font-weight: var(--font-weight-medium);
+  line-height: 1.35;
 }
 
 .account-inline-member-list {
   display: flex;
   min-width: 0;
   flex-wrap: wrap;
-  gap: 0.25rem;
+  gap: 0.35rem;
 }
 
 .account-inline-member {
   display: inline-flex;
   align-items: center;
   max-width: 100%;
+  min-height: 0;
   border: 0;
-  border-radius: 999px;
-  padding: 0.18rem 0.42rem;
+  border-radius: 0;
+  padding: 0;
   color: var(--color-primary);
-  background: var(--color-primary-soft);
-  font-size: 0.68rem;
-  font-weight: 650;
+  background: transparent;
+  box-shadow: none;
+  font-size: 0.76rem;
+  font-weight: var(--font-weight-strong);
+  line-height: 1.35;
   overflow: hidden;
   cursor: pointer;
   font-family: inherit;
@@ -424,12 +427,16 @@
   white-space: nowrap;
 }
 
-.account-inline-member:hover,
-.account-inline-member:focus-visible {
-  color: #ffffff;
-  background: var(--color-primary);
+.account-inline-members .account-inline-member:hover:not(:disabled),
+.account-inline-members .account-inline-member:focus-visible {
+  border-color: transparent;
+  color: var(--color-primary-hover);
+  background: transparent !important;
   outline: 0;
-  box-shadow: 0 6px 14px rgba(36, 125, 131, 0.18);
+  box-shadow: none !important;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transform: none;
 }
 
 .pending-member-review-table {
@@ -814,7 +821,7 @@
   padding: 0.25rem 0.48rem;
   color: var(--color-text);
   background: var(--color-accent-soft);
-  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  font-family: var(--font-family-app);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-strong);
 }
@@ -1201,6 +1208,10 @@
   background:
     linear-gradient(90deg, rgba(36, 125, 131, 0.08), rgba(255, 255, 255, 0) 34%),
     var(--color-surface);
+}
+
+.notification-inbox-item.no-read-state {
+  grid-template-columns: 42px minmax(0, 1fr);
 }
 
 .notification-inbox-item.is-unread::before {

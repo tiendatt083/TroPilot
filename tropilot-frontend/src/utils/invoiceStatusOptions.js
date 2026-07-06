@@ -1,9 +1,11 @@
+import { localizedOption } from './interfaceTranslations.js';
+
 export const INVOICE_STATUS_OPTIONS = [
-  { value: 'UNPAID', label: 'Unpaid' },
-  { value: 'PENDING_CONFIRMATION', label: 'Pending confirmation' },
-  { value: 'PAID', label: 'Paid' },
-  { value: 'OVERDUE', label: 'Overdue' },
-  { value: 'REJECTED', label: 'Rejected' }
+  localizedOption('UNPAID', 'Unpaid'),
+  localizedOption('PENDING_CONFIRMATION', 'Pending confirmation'),
+  localizedOption('PAID', 'Paid'),
+  localizedOption('OVERDUE', 'Overdue'),
+  localizedOption('REJECTED', 'Rejected')
 ];
 
 export function getInvoiceStatusLabel(status) {

@@ -4,6 +4,7 @@ import { useOutletContext } from 'react-router-dom';
 import * as taskApi from '../../features/maintenance/taskApi.js';
 import * as roomApi from '../../features/rooms/api.js';
 import * as adminUserApi from '../../features/users/api.js';
+import ActionDialog from '../../components/common/ActionDialog.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
 import TaskForm from '../../components/TaskForm.jsx';
 import TaskTable from '../../components/TaskTable.jsx';
@@ -23,6 +24,7 @@ export default function AdminBuildingTaskPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [formVersion, setFormVersion] = useState(0);
+  const [isCreating, setIsCreating] = useState(false);
 
   const buildingFilter = { buildingId: building.id };
 
@@ -58,6 +60,7 @@ export default function AdminBuildingTaskPage() {
       await taskApi.createAdminTask(payload, buildingFilter);
       setMessage(t('taskManagement.created'));
       setFormVersion((current) => current + 1);
+      setIsCreating(false);
       await loadData();
     } catch (apiError) {
       setError(apiError.response?.data?.message || t('taskManagement.createError'));
@@ -68,7 +71,17 @@ export default function AdminBuildingTaskPage() {
 
   return (
     <div className="building-workspace">
-      <PageHeader eyebrow={t('taskManagement.buildingEyebrow')} title={t('taskManagement.buildingTitle')} />
+      <PageHeader
+        eyebrow={t('taskManagement.buildingEyebrow')}
+        title={t('taskManagement.buildingTitle')}
+        actions={
+          !loading ? (
+            <button className="button-link" type="button" onClick={() => setIsCreating(true)}>
+              {t('taskManagement.create')}
+            </button>
+          ) : null
+        }
+      />
 
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
@@ -76,22 +89,33 @@ export default function AdminBuildingTaskPage() {
       {loading ? (
         <div className="empty-state">{t('taskManagement.loading')}</div>
       ) : (
-        <section className="task-workspace">
-          <div>
-            <PageHeader eyebrow={t('taskManagement.create')} title={t('taskManagement.createForBuilding')} />
-            <TaskForm
-              key={formVersion}
-              rooms={rooms}
-              staffUsers={staffUsers}
-              loading={saving}
-              submitLabel={t('taskManagement.create')}
-              roomPlaceholder={t('forms.task.generalBuildingTask')}
-              onSubmit={handleSubmit}
-            />
-          </div>
+        <section className="task-workspace task-workspace-list-only">
           <TaskTable tasks={tasks} detailBasePath={`/admin/buildings/${building.id}/tasks`} />
         </section>
       )}
+
+      <ActionDialog
+        className="action-dialog-wide"
+        eyebrow={t('taskManagement.create')}
+        labelledBy="task-create-dialog-title"
+        open={isCreating}
+        title={t('taskManagement.createForBuilding')}
+        onClose={() => {
+          if (!saving) {
+            setIsCreating(false);
+          }
+        }}
+      >
+        <TaskForm
+          key={formVersion}
+          rooms={rooms}
+          staffUsers={staffUsers}
+          loading={saving}
+          submitLabel={t('taskManagement.create')}
+          roomPlaceholder={t('forms.task.generalBuildingTask')}
+          onSubmit={handleSubmit}
+        />
+      </ActionDialog>
     </div>
   );
 }

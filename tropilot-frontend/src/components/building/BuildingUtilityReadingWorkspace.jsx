@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
 import * as utilityReadingApi from '../../features/invoices/utilityReadingApi.js';
+import ActionDialog from '../common/ActionDialog.jsx';
 import PageHeader from '../PageHeader.jsx';
 import UtilityReadingForm from '../UtilityReadingForm.jsx';
 import UtilityReadingOverview from '../UtilityReadingOverview.jsx';
@@ -26,6 +27,7 @@ export default function BuildingUtilityReadingWorkspace({
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [formVersion, setFormVersion] = useState(0);
+  const [formOpen, setFormOpen] = useState(false);
   const monthlyReadings = readings.filter((reading) => reading.month === selectedMonth);
 
   const loadData = async (month = selectedMonth) => {
@@ -58,6 +60,7 @@ export default function BuildingUtilityReadingWorkspace({
       await utilityReadingApi.createUtilityReading({ ...payload, buildingId: building.id });
       setMessage(t('buildingUtilityReadings.created'));
       setFormVersion((current) => current + 1);
+      setFormOpen(false);
       await loadData(selectedMonth);
     } catch (apiError) {
       setError(apiError.response?.data?.message || t('buildingUtilityReadings.createError'));
@@ -79,6 +82,7 @@ export default function BuildingUtilityReadingWorkspace({
       await updateReading(editingReading.id, { ...payload, buildingId: building.id });
       setMessage(t('buildingUtilityReadings.updated'));
       setEditingReading(null);
+      setFormOpen(false);
       await loadData(selectedMonth);
     } catch (apiError) {
       setError(apiError.response?.data?.message || t('buildingUtilityReadings.updateError'));
@@ -89,7 +93,14 @@ export default function BuildingUtilityReadingWorkspace({
 
   const renderActions = canEdit
     ? (reading) => (
-        <button className="secondary-button compact-button" type="button" onClick={() => setEditingReading(reading)}>
+        <button
+          className="secondary-button compact-button"
+          type="button"
+          onClick={() => {
+            setEditingReading(reading);
+            setFormOpen(true);
+          }}
+        >
           {t('common.edit')}
         </button>
       )
@@ -101,7 +112,22 @@ export default function BuildingUtilityReadingWorkspace({
 
   return (
     <div className="building-workspace">
-      <PageHeader eyebrow={t('buildingUtilityReadings.eyebrow')} title={t('buildingUtilityReadings.title')} />
+      <PageHeader
+        eyebrow={t('buildingUtilityReadings.eyebrow')}
+        title={t('buildingUtilityReadings.title')}
+        actions={
+          <button
+            className="button-link"
+            type="button"
+            onClick={() => {
+              setEditingReading(null);
+              setFormOpen(true);
+            }}
+          >
+            {t('buildingUtilityReadings.recordReading')}
+          </button>
+        }
+      />
       <p className="page-support-text">{t('buildingUtilityReadings.description')}</p>
 
       {message && <div className="alert success-alert">{message}</div>}
@@ -117,32 +143,44 @@ export default function BuildingUtilityReadingWorkspace({
       {loading ? (
         <div className="empty-state">{t('buildingUtilityReadings.loading')}</div>
       ) : (
-        <section className="utility-reading-workspace">
-          <div>
-            <PageHeader
-              eyebrow={editingReading ? t('buildingUtilityReadings.editReading') : t('buildingUtilityReadings.newReading')}
-              title={formTitle}
-            />
-            <UtilityReadingForm
-              key={editingReading?.id || `building-reading-${building.id}-${selectedMonth}-${formVersion}`}
-              rooms={editingReading ? [toRoomOption(editingReading)] : (overview?.eligibleRooms || [])}
-              readings={readings}
-              initialValues={editingReading}
-              selectedMonth={selectedMonth}
-              loading={saving}
-              mode={editingReading ? 'edit' : 'create'}
-              onFetchReadings={utilityReadingApi.fetchUtilityReadingPreview}
-              submitLabel={
-                editingReading ? t('buildingUtilityReadings.saveChanges') : t('buildingUtilityReadings.recordReading')
-              }
-              onSubmit={editingReading ? handleUpdate : handleCreate}
-              onCancel={editingReading ? () => setEditingReading(null) : undefined}
-            />
-          </div>
-
+        <section className="utility-reading-workspace utility-reading-workspace-list-only">
           <UtilityReadingTable readings={monthlyReadings} renderActions={renderActions} />
         </section>
       )}
+
+      <ActionDialog
+        className="action-dialog-wide"
+        eyebrow={editingReading ? t('buildingUtilityReadings.editReading') : t('buildingUtilityReadings.newReading')}
+        labelledBy="utility-reading-dialog-title"
+        open={formOpen}
+        title={formTitle}
+        onClose={() => {
+          if (!saving) {
+            setFormOpen(false);
+            setEditingReading(null);
+          }
+        }}
+      >
+        <UtilityReadingForm
+          key={editingReading?.id || `building-reading-${building.id}-${selectedMonth}-${formVersion}`}
+          rooms={editingReading ? [toRoomOption(editingReading)] : (overview?.eligibleRooms || [])}
+          readings={readings}
+          initialValues={editingReading}
+          selectedMonth={selectedMonth}
+          loading={saving}
+          mode={editingReading ? 'edit' : 'create'}
+          onFetchElectricityReading={utilityReadingApi.fetchElectricityReadingPreview}
+          onFetchWaterReading={utilityReadingApi.fetchWaterReadingPreview}
+          submitLabel={
+            editingReading ? t('buildingUtilityReadings.saveChanges') : t('buildingUtilityReadings.recordReading')
+          }
+          onSubmit={editingReading ? handleUpdate : handleCreate}
+          onCancel={editingReading ? () => {
+            setFormOpen(false);
+            setEditingReading(null);
+          } : undefined}
+        />
+      </ActionDialog>
     </div>
   );
 }

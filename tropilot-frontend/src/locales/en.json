@@ -23,6 +23,7 @@
     "notBillable": "Not billable",
     "optional": "Optional",
     "saving": "Saving...",
+    "saveChanges": "Save changes",
     "search": "Search",
     "signOut": "Sign out",
     "details": "Details",
@@ -235,7 +236,7 @@
     },
     "actions": {
       "create": "Add staff",
-      "exportExcel": "Export Excel"
+      "exportExcel": "Export"
     },
     "messages": {
       "loading": "Loading staff...",
@@ -267,7 +268,7 @@
     },
     "actions": {
       "create": "Add user",
-      "exportExcel": "Export Excel"
+      "exportExcel": "Export"
     },
     "recordTypes": {
       "headResident": "Head Resident",
@@ -314,7 +315,7 @@
       "deleted": "{{name}} was deleted successfully.",
       "deleteError": "Account could not be deleted"
     },
-    "inlineMembers": "Household members:",
+    "inlineMembers": "Members:",
     "noAssignedRoom": "No room assigned",
     "detail": {
       "eyebrow": "Account details",
@@ -363,6 +364,8 @@
   "userCreate": {
     "eyebrow": "Administrator",
     "title": "Create account",
+    "staffTitle": "Add staff member",
+    "residentHeadTitle": "Add user",
     "backToUsers": "Back to users",
     "backToResidents": "Back to residents",
     "fields": {
@@ -377,10 +380,16 @@
     },
     "actions": {
       "creating": "Creating account...",
-      "create": "Create account"
+      "create": "Create account",
+      "savingStaff": "Saving staff member...",
+      "saveStaff": "Save staff member",
+      "savingResidentHead": "Saving user...",
+      "saveResidentHead": "Save user"
     },
     "messages": {
-      "createError": "Account could not be created"
+      "createError": "Account could not be created",
+      "staffCreated": "Staff member has been added.",
+      "residentHeadCreated": "User has been added."
     }
   },
   "buildingWorkspace": {
@@ -685,7 +694,7 @@
     "loadError": "Building users could not be loaded",
     "empty": "No users found in this building.",
     "actions": {
-      "exportExcel": "Export Excel"
+      "exportExcel": "Export"
     },
     "messages": {
       "exportEmpty": "No users to export."
@@ -815,7 +824,7 @@
     "actions": {
       "createSingle": "Create invoice",
       "createBulk": "Create batch",
-      "exportExcel": "Export Excel",
+      "exportExcel": "Export",
       "refresh": "Refresh",
       "loadingDetail": "Loading..."
     },
@@ -908,8 +917,8 @@
     "loadError": "Activity logs could not be loaded",
     "empty": "No activity logs found.",
     "notAvailable": "Not available",
-    "filterPlaceholder": "Filter by action",
-    "filterAriaLabel": "Action filter",
+    "filterPlaceholder": "Search by action, description, or user",
+    "filterAriaLabel": "Search activity logs",
     "pagination": {
       "summary": "Showing {{from}}-{{to}} of {{total}} logs",
       "previous": "Previous",
@@ -1064,13 +1073,19 @@
       "loading": "Loading dashboard...",
       "loadError": "Staff dashboard could not be loaded",
       "heroDescription": "Daily work queue for readings, payments, maintenance, and assigned operational tasks.",
+      "todayFocus": "Needs attention today",
+      "attentionCount": "{{count}} items",
       "sections": {
+        "priorityTitle": "Priority work",
+        "priorityDescription": "Important work groups are collected here for faster handling.",
         "taskTitle": "Task workload",
         "taskDescription": "Assigned work and overdue items requiring immediate action.",
         "operationsTitle": "Operational queue",
         "operationsDescription": "Building operations that need staff processing.",
         "expenseTitle": "Expense activity",
-        "expenseDescription": "Expenses created from valid operational work."
+        "expenseDescription": "Expenses created from valid operational work.",
+        "quickActionTitle": "Quick access",
+        "quickActionDescription": "Open the staff pages used most often."
       },
       "metrics": {
         "assignedTasks": "Assigned tasks",
@@ -1081,6 +1096,17 @@
         "createdExpenses": "Created expenses",
         "utilityReadingsDue": "Utility readings due",
         "paymentChecks": "Payment checks"
+      },
+      "quick": {
+        "tasks": "Tasks",
+        "utilityReadings": "Utility readings",
+        "payments": "Payments",
+        "maintenance": "Maintenance",
+        "expenses": "Expenses",
+        "taskHelper": "Open the task list",
+        "utilityHelper": "Record utility readings by room",
+        "paymentHelper": "Review payment confirmations",
+        "maintenanceHelper": "Track maintenance requests"
       }
     },
     "resident": {
@@ -1708,6 +1734,11 @@
       "deleteConfirm": "Delete building {{code}}?",
       "deleteTitle": "Delete building",
       "create": "Create building",
+      "created": "Building has been created.",
+      "createError": "Building could not be created",
+      "editTitle": "Edit building",
+      "updated": "Building has been updated.",
+      "updateError": "Building could not be updated",
       "searchAria": "Search buildings",
       "searchPlaceholder": "Search by code or name",
       "caption": "Buildings",
@@ -1830,7 +1861,7 @@
       "rejectError": "Room member could not be rejected",
       "occupants": "Occupants",
       "occupantCount": "{{total}} of {{max}}",
-      "exportExcel": "Export Excel",
+      "exportExcel": "Export",
       "exportEmpty": "No room members to export.",
       "export": {
         "sheetName": "Room members"
@@ -2189,8 +2220,12 @@
         "automaticReading": "Reading sync",
         "mockSource": "Simulated data source",
         "fetchReadings": "Fetch readings",
+        "fetchElectricity": "Fetch electricity",
+        "fetchWater": "Fetch water",
         "fetchingReadings": "Fetching...",
         "fetchError": "Automatic readings could not be fetched",
+        "electricityFetchError": "Electricity reading could not be fetched",
+        "waterFetchError": "Water reading could not be fetched",
         "electricityIncrease": "Electricity",
         "waterIncrease": "Water",
         "allowedImageTypes": "Allowed image types: jpg, jpeg, png. Maximum size: 10 MB.",

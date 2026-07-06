@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { formatDisplayDate, formatDisplayDateTime, formatDisplayMonth } from '../utils/dateFormat.js';
+import { translateInterfaceText } from '../utils/interfaceTranslations.js';
 
 const ROLE_LABEL_KEYS = {
   ADMIN: 'role.admin',
@@ -189,7 +190,7 @@ function formatDescription(description, t) {
     }
   }
 
-  return description;
+  return translateInterfaceText(description);
 }
 
 export default function ActivityLogTable({ logs, showUser = true }) {

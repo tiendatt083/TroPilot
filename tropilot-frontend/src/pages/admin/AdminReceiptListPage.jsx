@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as paymentApi from '../../features/payments/api.js';
+import ActionDialog from '../../components/common/ActionDialog.jsx';
 import EmptyState from '../../components/common/EmptyState.jsx';
 import PageHeader from '../../components/common/PageHeader.jsx';
 import ReceiptDetail from '../../components/ReceiptDetail.jsx';
@@ -56,11 +57,21 @@ export default function AdminReceiptListPage() {
       {loading ? (
         <EmptyState message={t('tables.receipts.loading')} />
       ) : (
-        <section className="receipt-workspace">
+        <section className="receipt-workspace receipt-workspace-list-only">
           <ReceiptTable receipts={receipts} renderActions={renderActions} />
-          <ReceiptDetail receipt={selectedReceipt} showBuilding />
         </section>
       )}
+
+      <ActionDialog
+        className="action-dialog-wide"
+        eyebrow={selectedReceipt?.receiptCode || t('tables.receipts.adminEyebrow')}
+        labelledBy="receipt-detail-dialog-title"
+        open={Boolean(selectedReceipt)}
+        title={t('tables.receipts.title')}
+        onClose={() => setSelectedReceipt(null)}
+      >
+        <ReceiptDetail receipt={selectedReceipt} showBuilding />
+      </ActionDialog>
     </section>
   );
 }
