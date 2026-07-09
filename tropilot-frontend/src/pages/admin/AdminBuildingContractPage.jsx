@@ -5,7 +5,6 @@ import * as contractApi from '../../features/contracts/api.js';
 import ActionDialog from '../../components/common/ActionDialog.jsx';
 import ContractFileHistoryList from '../../components/ContractFileHistoryList.jsx';
 import ContractUploadForm from '../../components/ContractUploadForm.jsx';
-import PageHeader from '../../components/PageHeader.jsx';
 import { getContractStatusClass } from '../../utils/contractStatusOptions.js';
 import { formatDisplayDate } from '../../utils/dateFormat.js';
 import { resolveFileUrl } from '../../utils/fileUrl.js';
@@ -111,7 +110,9 @@ export default function AdminBuildingContractPage() {
 
   return (
     <div className="building-workspace">
-      <PageHeader eyebrow={t('workspace.contracts.eyebrow')} title={t('workspace.contracts.title')} />
+      <div className="building-section-header">
+        <span className="page-eyebrow">{t('workspace.contracts.eyebrow')}</span>
+      </div>
 
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
@@ -121,13 +122,6 @@ export default function AdminBuildingContractPage() {
       ) : (
         <section className="building-contract-workspace">
           <div className="building-contract-list-panel">
-            <div className="building-contract-panel-header">
-              <div>
-                <span>{t('workspace.contracts.currentRentals')}</span>
-                <strong>{t('workspace.contracts.activeContracts')}</strong>
-              </div>
-              <p>{t('workspace.contracts.activeCount', { count: contracts.length })}</p>
-            </div>
             <div className="table-wrap building-contract-table-wrap">
               <table className="data-table">
                 <colgroup>
@@ -154,7 +148,6 @@ export default function AdminBuildingContractPage() {
                       <td>
                         <div className="table-primary-cell">
                           <strong>{formatRoomCode(contract)}</strong>
-                          <span>{contract.buildingCode}</span>
                         </div>
                       </td>
                       <td>
@@ -250,10 +243,12 @@ export default function AdminBuildingContractPage() {
 
               <section className="assignment-panel">
                 <div className="page-title-row">
-                  <PageHeader
-                    eyebrow={hasSelectedContractFile ? t('contracts.uploadedFile') : t('contracts.uploadEyebrow')}
-                    title={hasSelectedContractFile ? t('contracts.currentFile') : t('contracts.upload.file')}
-                  />
+                  <div>
+                    <span className="page-eyebrow">
+                      {hasSelectedContractFile ? t('contracts.uploadedFile') : t('contracts.uploadEyebrow')}
+                    </span>
+                    <h2>{hasSelectedContractFile ? t('contracts.currentFile') : t('contracts.upload.file')}</h2>
+                  </div>
                   <div className="button-row">
                     {hasSelectedContractFile && (
                       <a

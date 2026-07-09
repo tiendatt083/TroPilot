@@ -84,14 +84,84 @@ function buildExportFileName(building) {
   return `tropilot-${buildingCode || 'building'}-invoices-${day}-${month}-${year}.xlsx`;
 }
 
+function getInvoiceErrorMessage(apiError, t, fallbackKey) {
+  const message = apiError.response?.data?.message || '';
+  const normalized = normalize(message);
+
+  if (normalized.includes('utility reading')) {
+    return t('buildingInvoices.errors.missingUtilityReading');
+  }
+
+  if (normalized.includes('invoice already exists')) {
+    return t('buildingInvoices.blockReasons.ALREADY_INVOICED');
+  }
+
+  if (normalized.includes('active head resident')) {
+    return t('buildingInvoices.blockReasons.NO_ACTIVE_HEAD_RESIDENT');
+  }
+
+  if (normalized.includes('occupied rooms')) {
+    return t('buildingInvoices.blockReasons.ROOM_NOT_OCCUPIED');
+  }
+
+  return message || t(fallbackKey);
+}
+
 function createInitialForm() {
   const invoiceDate = formatDateInputValue();
 
   return {
     roomId: '',
     invoiceDate,
-    dueDate: getDefaultDueDate(invoiceDate)
+    dueDate: getDefaultDueDate(invoiceDate),
+    additionalChargeAmount: '',
+    additionalChargeNote: ''
   };
+}
+
+function normalizeAdditionalCharge(value) {
+  const numberValue = Number(value || 0);
+  return Number.isFinite(numberValue) && numberValue > 0 ? numberValue : 0;
+}
+
+function applyAdditionalChargeToPreview(preview, additionalChargeAmount, additionalChargeNote = '') {
+  const amount = normalizeAdditionalCharge(additionalChargeAmount);
+
+  if (!preview || amount <= 0) {
+    return preview;
+  }
+
+  const items = Array.isArray(preview.items) ? preview.items : [];
+  const hasAdditionalCharge = items.some((item) => item.itemName === 'Additional charge');
+
+  if (hasAdditionalCharge) {
+    return preview;
+  }
+
+  return {
+    ...preview,
+    totalAmount: Number(preview.totalAmount || 0) + amount,
+    items: [
+      ...items,
+      {
+        itemName: 'Additional charge',
+        note: additionalChargeNote.trim() || 'Extra room charge',
+        quantity: 1,
+        unitPrice: amount,
+        amount
+      }
+    ]
+  };
+}
+
+function buildSinglePreviewKey(form) {
+  return [
+    form.roomId || '',
+    form.invoiceDate || '',
+    form.dueDate || '',
+    normalizeAdditionalCharge(form.additionalChargeAmount),
+    form.additionalChargeNote || ''
+  ].join('|');
 }
 
 function PreviewPanel({ preview }) {
@@ -112,19 +182,18 @@ function PreviewPanel({ preview }) {
   }
 
   return (
-    <section className="invoice-preview-panel">
+    <section className="invoice-preview-panel invoice-preview-panel-single">
       <div className="invoice-preview-header">
         <div>
           <span>{t('buildingInvoices.previewEyebrow')}</span>
-          <h2>{t('buildingInvoices.previewTitle')}</h2>
         </div>
         <strong>{formatInvoiceAmount(preview.totalAmount)}</strong>
       </div>
 
-      <div className="detail-panel compact-detail-panel">
+      <div className="invoice-preview-summary-grid">
         <div>
           <span>{t('tables.common.room')}</span>
-          <strong>{formatRoomLabel(preview)}</strong>
+          <strong>{formatRoomCode(preview)}</strong>
         </div>
         <div>
           <span>{t('tables.common.headResident')}</span>
@@ -135,24 +204,16 @@ function PreviewPanel({ preview }) {
           <strong>{formatDisplayDate(preview.invoiceDate)}</strong>
         </div>
         <div>
+          <span>{t('tables.common.dueDate')}</span>
+          <strong>{formatDisplayDate(preview.dueDate)}</strong>
+        </div>
+        <div>
           <span>{t('tables.common.month')}</span>
           <strong>{formatDisplayMonth(preview.invoiceMonth)}</strong>
         </div>
         <div>
           <span>{t('buildingInvoices.utilityMonth')}</span>
-          <strong>{formatDisplayMonth(preview.utilityMonth)}</strong>
-        </div>
-        <div>
-          <span>{t('tables.common.dueDate')}</span>
-          <strong>{formatDisplayDate(preview.dueDate)}</strong>
-        </div>
-        <div>
-          <span>{t('buildingInvoices.deposit')}</span>
-          <strong>{preview.depositIncluded ? t('common.yes') : t('common.no')}</strong>
-        </div>
-        <div>
-          <span>{t('buildingInvoices.utilityReading')}</span>
-          <strong>{preview.utilityReadingRequired ? t('buildingInvoices.required') : t('common.notApplicable')}</strong>
+          <strong>{preview.utilityReadingRequired ? formatDisplayMonth(preview.utilityMonth) : t('common.notApplicable')}</strong>
         </div>
       </div>
 
@@ -164,8 +225,8 @@ function PreviewPanel({ preview }) {
         </div>
       )}
 
-      <div className="table-wrap">
-        <table className="data-table invoice-item-table">
+      <div className="invoice-preview-item-table-wrap" aria-label={t('buildingInvoices.itemList')}>
+        <table className="data-table invoice-preview-item-table">
           <thead>
             <tr>
               <th>{t('tables.common.item')}</th>
@@ -178,10 +239,14 @@ function PreviewPanel({ preview }) {
           <tbody>
             {(preview.items || []).map((item) => (
               <tr key={`${item.itemName}-${item.amount}`}>
-                <td>{formatInvoiceText(t, item.itemName)}</td>
+                <td>
+                  <strong>{formatInvoiceText(t, item.itemName)}</strong>
+                </td>
                 <td>{formatInvoiceAmount(item.quantity)}</td>
                 <td>{formatInvoiceAmount(item.unitPrice)}</td>
-                <td>{formatInvoiceAmount(item.amount)}</td>
+                <td>
+                  <strong className="invoice-preview-item-amount">{formatInvoiceAmount(item.amount)}</strong>
+                </td>
                 <td>{item.note ? formatInvoiceText(t, item.note) : t('common.notProvided')}</td>
               </tr>
             ))}
@@ -194,6 +259,8 @@ function PreviewPanel({ preview }) {
 
 function BulkPreviewPanel({ preview }) {
   const { t } = useTranslation();
+  const eligibleInvoices = preview?.eligibleInvoices || [];
+  const blockedRooms = preview?.blockedRooms || [];
 
   if (!preview) {
     return <div className="empty-state">{t('buildingInvoices.bulkPreviewEmpty')}</div>;
@@ -204,7 +271,6 @@ function BulkPreviewPanel({ preview }) {
       <div className="invoice-preview-header">
         <div>
           <span>{t('buildingInvoices.bulkPreviewEyebrow')}</span>
-          <h2>{t('buildingInvoices.bulkPreviewTitle')}</h2>
         </div>
         <strong>{formatInvoiceAmount(preview.totalAmount)}</strong>
       </div>
@@ -228,56 +294,70 @@ function BulkPreviewPanel({ preview }) {
         </div>
       </div>
 
-      <div className="invoice-bulk-columns">
-        <div className="table-wrap">
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>{t('tables.common.room')}</th>
-                <th>{t('tables.common.headResident')}</th>
-                <th>{t('tables.common.totalAmount')}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {(preview.eligibleInvoices || []).map((invoice) => (
-                <tr key={invoice.roomId}>
-                  <td>{formatRoomLabel(invoice)}</td>
-                  <td>{invoice.residentHeadName}</td>
-                  <td>{formatInvoiceAmount(invoice.totalAmount)}</td>
+      <div className="invoice-bulk-sections">
+        <section className="invoice-bulk-table-section">
+          <div className="invoice-bulk-table-heading">
+            <span>{t('buildingInvoices.eligibleRoomsTable')}</span>
+            <strong>{t('buildingInvoices.eligibleRooms')}</strong>
+          </div>
+          <div className="table-wrap invoice-bulk-table-wrap">
+            <table className="data-table invoice-bulk-table">
+              <thead>
+                <tr>
+                  <th>{t('tables.common.room')}</th>
+                  <th>{t('tables.common.headResident')}</th>
+                  <th>{t('tables.common.totalAmount')}</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-          {(preview.eligibleInvoices || []).length === 0 && (
-            <div className="empty-state flat-empty-state">{t('buildingInvoices.noEligibleRooms')}</div>
-          )}
-        </div>
+              </thead>
+              <tbody>
+                {eligibleInvoices.map((invoice) => (
+                  <tr key={invoice.roomId}>
+                    <td>{formatRoomCode(invoice)}</td>
+                    <td>{invoice.residentHeadName || t('common.notProvided')}</td>
+                    <td>{formatInvoiceAmount(invoice.totalAmount)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {eligibleInvoices.length === 0 && (
+              <div className="empty-state flat-empty-state">{t('buildingInvoices.noEligibleRooms')}</div>
+            )}
+          </div>
+        </section>
 
-        <div className="table-wrap">
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>{t('tables.common.room')}</th>
-                <th>{t('tables.common.note')}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {(preview.blockedRooms || []).map((room) => (
-                <tr key={`${room.roomId}-${room.reasonCode}`}>
-                  <td>{formatRoomLabel(room)}</td>
-                  <td>
-                    {t(`buildingInvoices.blockReasons.${room.reasonCode}`, {
-                      defaultValue: room.reason
-                    })}
-                  </td>
+        <section className="invoice-bulk-table-section">
+          <div className="invoice-bulk-table-heading">
+            <span>{t('buildingInvoices.blockedRoomsTable')}</span>
+            <strong>{t('buildingInvoices.blockedRooms')}</strong>
+          </div>
+          <div className="table-wrap invoice-bulk-table-wrap">
+            <table className="data-table invoice-bulk-table">
+              <thead>
+                <tr>
+                  <th>{t('tables.common.room')}</th>
+                  <th>{t('tables.common.headResident')}</th>
+                  <th>{t('buildingInvoices.reason')}</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-          {(preview.blockedRooms || []).length === 0 && (
-            <div className="empty-state flat-empty-state">{t('buildingInvoices.noBlockedRooms')}</div>
-          )}
-        </div>
+              </thead>
+              <tbody>
+                {blockedRooms.map((room) => (
+                  <tr key={`${room.roomId}-${room.reasonCode}`}>
+                    <td>{formatRoomCode(room)}</td>
+                    <td>{room.residentHeadName || t('common.notProvided')}</td>
+                    <td>
+                      {t(`buildingInvoices.blockReasons.${room.reasonCode}`, {
+                        defaultValue: room.reason
+                      })}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {blockedRooms.length === 0 && (
+              <div className="empty-state flat-empty-state">{t('buildingInvoices.noBlockedRooms')}</div>
+            )}
+          </div>
+        </section>
       </div>
     </section>
   );
@@ -290,6 +370,7 @@ export default function BuildingInvoiceWorkspace({ role = 'admin' }) {
   const [invoices, setInvoices] = useState([]);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [singlePreview, setSinglePreview] = useState(null);
+  const [singlePreviewKey, setSinglePreviewKey] = useState('');
   const [bulkPreview, setBulkPreview] = useState(null);
   const [composerOpen, setComposerOpen] = useState(false);
   const [mode, setMode] = useState('single');
@@ -306,6 +387,14 @@ export default function BuildingInvoiceWorkspace({ role = 'admin' }) {
 
   const isAdmin = role === 'admin';
   const invoiceMonth = form.invoiceDate ? form.invoiceDate.slice(0, 7) : '';
+  const currentSinglePreviewKey = useMemo(() => buildSinglePreviewKey(form), [
+    form.roomId,
+    form.invoiceDate,
+    form.dueDate,
+    form.additionalChargeAmount,
+    form.additionalChargeNote
+  ]);
+  const visibleSinglePreview = singlePreviewKey === currentSinglePreviewKey ? singlePreview : null;
   const invoicedRoomIdsForMonth = useMemo(() => {
     return new Set(
       invoices
@@ -341,6 +430,7 @@ export default function BuildingInvoiceWorkspace({ role = 'admin' }) {
     if (!selectedRoomStillAvailable) {
       setForm((current) => ({ ...current, roomId: '' }));
       setSinglePreview(null);
+      setSinglePreviewKey('');
     }
   }, [availableRooms, form.roomId]);
 
@@ -365,6 +455,7 @@ export default function BuildingInvoiceWorkspace({ role = 'admin' }) {
     setLoading(true);
     setSelectedInvoice(null);
     setSinglePreview(null);
+    setSinglePreviewKey('');
     setBulkPreview(null);
     loadData().finally(() => setLoading(false));
   }, [building.id, role, t]);
@@ -372,7 +463,9 @@ export default function BuildingInvoiceWorkspace({ role = 'admin' }) {
   const handleFormChange = (event) => {
     const { name, value } = event.target;
     setSinglePreview(null);
+    setSinglePreviewKey('');
     setBulkPreview(null);
+    setError('');
 
     setForm((current) => {
       if (name === 'invoiceDate') {
@@ -394,6 +487,7 @@ export default function BuildingInvoiceWorkspace({ role = 'admin' }) {
     setMode(nextMode);
     setComposerOpen(true);
     setSinglePreview(null);
+    setSinglePreviewKey('');
     setBulkPreview(null);
     setMessage('');
     setError('');
@@ -406,6 +500,7 @@ export default function BuildingInvoiceWorkspace({ role = 'admin' }) {
 
     setComposerOpen(false);
     setSinglePreview(null);
+    setSinglePreviewKey('');
     setBulkPreview(null);
   };
 
@@ -451,7 +546,9 @@ export default function BuildingInvoiceWorkspace({ role = 'admin' }) {
   const getSinglePayload = () => ({
     roomId: Number(form.roomId),
     invoiceDate: form.invoiceDate,
-    dueDate: form.dueDate
+    dueDate: form.dueDate,
+    additionalChargeAmount: normalizeAdditionalCharge(form.additionalChargeAmount),
+    additionalChargeNote: form.additionalChargeNote.trim()
   });
 
   const getBulkPayload = () => ({
@@ -469,9 +566,10 @@ export default function BuildingInvoiceWorkspace({ role = 'admin' }) {
       const response = isAdmin
         ? await invoiceApi.previewBuildingInvoice(building.id, getSinglePayload())
         : await invoiceApi.previewStaffBuildingInvoice(building.id, getSinglePayload());
-      setSinglePreview(response.data);
+      setSinglePreview(applyAdditionalChargeToPreview(response.data, form.additionalChargeAmount, form.additionalChargeNote));
+      setSinglePreviewKey(buildSinglePreviewKey(form));
     } catch (apiError) {
-      setError(apiError.response?.data?.message || t('buildingInvoices.previewError'));
+      setError(getInvoiceErrorMessage(apiError, t, 'buildingInvoices.previewError'));
     } finally {
       setProcessing(false);
     }
@@ -486,14 +584,15 @@ export default function BuildingInvoiceWorkspace({ role = 'admin' }) {
       const response = isAdmin
         ? await invoiceApi.generateBuildingInvoice(building.id, getSinglePayload())
         : await invoiceApi.generateStaffBuildingInvoice(building.id, getSinglePayload());
-      setSelectedInvoice(response.data);
+      setSelectedInvoice(applyAdditionalChargeToPreview(response.data, form.additionalChargeAmount, form.additionalChargeNote));
       setSinglePreview(null);
+      setSinglePreviewKey('');
       setComposerOpen(false);
       setForm(createInitialForm());
       setMessage(t('buildingInvoices.generated'));
       await loadData();
     } catch (apiError) {
-      setError(apiError.response?.data?.message || t('buildingInvoices.generateError'));
+      setError(getInvoiceErrorMessage(apiError, t, 'buildingInvoices.generateError'));
     } finally {
       setProcessing(false);
     }
@@ -510,7 +609,7 @@ export default function BuildingInvoiceWorkspace({ role = 'admin' }) {
         : await invoiceApi.previewStaffBuildingBulkInvoices(building.id, getBulkPayload());
       setBulkPreview(response.data);
     } catch (apiError) {
-      setError(apiError.response?.data?.message || t('buildingInvoices.bulkPreviewError'));
+      setError(getInvoiceErrorMessage(apiError, t, 'buildingInvoices.bulkPreviewError'));
     } finally {
       setProcessing(false);
     }
@@ -530,7 +629,7 @@ export default function BuildingInvoiceWorkspace({ role = 'admin' }) {
       setMessage(t('buildingInvoices.bulkGenerated', { count: response.data.length }));
       await loadData();
     } catch (apiError) {
-      setError(apiError.response?.data?.message || t('buildingInvoices.bulkGenerateError'));
+      setError(getInvoiceErrorMessage(apiError, t, 'buildingInvoices.bulkGenerateError'));
     } finally {
       setProcessing(false);
     }
@@ -550,7 +649,7 @@ export default function BuildingInvoiceWorkspace({ role = 'admin' }) {
       const response = await loadInvoiceDetail(invoice.id);
       setSelectedInvoice(response.data);
     } catch (apiError) {
-      setError(apiError.response?.data?.message || t('buildingInvoices.invoiceLoadError'));
+      setError(getInvoiceErrorMessage(apiError, t, 'buildingInvoices.invoiceLoadError'));
     } finally {
       setLoadingDetailId(null);
     }
@@ -571,7 +670,7 @@ export default function BuildingInvoiceWorkspace({ role = 'admin' }) {
       setMessage(t('buildingInvoices.deleted'));
       await loadData();
     } catch (apiError) {
-      setError(apiError.response?.data?.message || t('buildingInvoices.deleteError'));
+      setError(getInvoiceErrorMessage(apiError, t, 'buildingInvoices.deleteError'));
     } finally {
       setProcessing(false);
     }
@@ -623,32 +722,25 @@ export default function BuildingInvoiceWorkspace({ role = 'admin' }) {
 
   return (
     <div className="building-workspace invoice-modern-page">
-      <section className="invoice-page-hero">
-        <div>
-          <h1>{t('buildingInvoices.managementTitle')}</h1>
-          <p>{t('buildingInvoices.managementSummary', { count: invoices.length })}</p>
-        </div>
-        <div className="invoice-hero-actions">
-          <button className="invoice-hero-button invoice-hero-button-primary" type="button" onClick={() => handleOpenComposer('single')}>
+      <div className="building-section-header">
+        <span className="page-eyebrow">{t('buildingInvoices.eyebrow')}</span>
+        <div className="button-row">
+          <button className="button-link inline-button" type="button" onClick={() => handleOpenComposer('single')}>
             <PlusIcon />
             {t('buildingInvoices.actions.createSingle')}
           </button>
-          <button className="invoice-hero-button invoice-hero-button-accent" type="button" onClick={() => handleOpenComposer('bulk')}>
-            <PlusIcon />
-            {t('buildingInvoices.actions.createBulk')}
-          </button>
-          <button className="invoice-hero-button invoice-hero-button-success" type="button" onClick={handleExport}>
+          <button className="secondary-button inline-button" type="button" onClick={handleExport}>
             <DownloadIcon />
             {t('buildingInvoices.actions.exportExcel')}
           </button>
         </div>
-      </section>
+      </div>
 
       {message && <div className="alert success-alert">{message}</div>}
-      {error && <div className="alert error-alert">{error}</div>}
+      {error && !composerOpen && <div className="alert error-alert">{error}</div>}
 
       <ActionDialog
-        className="action-dialog-wide invoice-action-dialog"
+        className={`action-dialog-wide invoice-action-dialog invoice-action-dialog-${mode}`}
         eyebrow={mode === 'single' ? t('buildingInvoices.singleRoom') : t('buildingInvoices.bulk')}
         labelledBy="invoice-composer-dialog-title"
         open={composerOpen}
@@ -656,62 +748,104 @@ export default function BuildingInvoiceWorkspace({ role = 'admin' }) {
         onClose={handleCloseComposer}
       >
         <section className="invoice-composer-panel">
-          <div className="invoice-composer-header">
-            <div>
-              <span className="section-eyebrow">
-                {mode === 'single' ? t('buildingInvoices.singleRoom') : t('buildingInvoices.bulk')}
-              </span>
-              <h2>{mode === 'single' ? t('buildingInvoices.actions.createSingle') : t('buildingInvoices.actions.createBulk')}</h2>
-            </div>
-          </div>
+          {error && <div className="alert error-alert invoice-dialog-alert">{error}</div>}
 
           <div className="invoice-composer-grid">
             <div className="invoice-command-panel">
               <div className="segmented-control">
-                <button className={mode === 'single' ? 'active' : ''} type="button" onClick={() => setMode('single')}>
+                <button
+                  className={mode === 'single' ? 'active' : ''}
+                  type="button"
+                  onClick={() => {
+                    setMode('single');
+                    setError('');
+                  }}
+                >
                   {t('buildingInvoices.singleRoom')}
                 </button>
-                <button className={mode === 'bulk' ? 'active' : ''} type="button" onClick={() => setMode('bulk')}>
+                <button
+                  className={mode === 'bulk' ? 'active' : ''}
+                  type="button"
+                  onClick={() => {
+                    setMode('bulk');
+                    setError('');
+                  }}
+                >
                   {t('buildingInvoices.bulk')}
                 </button>
               </div>
 
-              <form className="panel-form" onSubmit={handlePreviewSingle}>
-                <div className="form-grid">
-                  <label htmlFor="invoiceDate">{t('buildingInvoices.invoiceDate')}</label>
-                  <input
-                    id="invoiceDate"
-                    name="invoiceDate"
-                    type="date"
-                    lang="en-GB"
-                    value={form.invoiceDate}
-                    onChange={handleFormChange}
-                    required
-                  />
+              <form className="panel-form invoice-create-form" onSubmit={handlePreviewSingle}>
+                <div className="form-grid invoice-create-form-grid">
+                  <div>
+                    <label htmlFor="invoiceDate">{t('buildingInvoices.invoiceDate')}</label>
+                    <input
+                      id="invoiceDate"
+                      name="invoiceDate"
+                      type="date"
+                      lang="en-GB"
+                      value={form.invoiceDate}
+                      onChange={handleFormChange}
+                      required
+                    />
+                  </div>
 
-                  <label htmlFor="dueDate">{t('tables.common.dueDate')}</label>
-                  <input
-                    id="dueDate"
-                    name="dueDate"
-                    type="date"
-                    lang="en-GB"
-                    value={form.dueDate}
-                    onChange={handleFormChange}
-                    required
-                  />
+                  <div>
+                    <label htmlFor="dueDate">{t('tables.common.dueDate')}</label>
+                    <input
+                      id="dueDate"
+                      name="dueDate"
+                      type="date"
+                      lang="en-GB"
+                      value={form.dueDate}
+                      onChange={handleFormChange}
+                      required
+                    />
+                  </div>
 
                   {mode === 'single' && (
                     <>
-                      <label htmlFor="roomId">{t('tables.common.room')}</label>
-                      <select id="roomId" name="roomId" value={form.roomId} onChange={handleFormChange} required>
-                        <option value="">{t('forms.utilityReading.selectRoom')}</option>
-                        {availableRooms.map((room) => (
-                          <option key={room.id} value={room.id}>
-                            {formatRoomLabel(room)}
-                          </option>
-                        ))}
-                      </select>
-                      <button type="submit" disabled={processing || !form.roomId}>
+                      <div className="form-grid-wide">
+                        <label htmlFor="roomId">{t('tables.common.room')}</label>
+                        <select id="roomId" name="roomId" value={form.roomId} onChange={handleFormChange} required>
+                          <option value="">{t('forms.utilityReading.selectRoom')}</option>
+                          {availableRooms.map((room) => (
+                            <option key={room.id} value={room.id}>
+                              {formatRoomCode(room)}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="form-grid-wide">
+                        <label htmlFor="additionalChargeAmount">{t('buildingInvoices.additionalCharge')}</label>
+                        <div className="currency-input-shell">
+                          <input
+                            id="additionalChargeAmount"
+                            name="additionalChargeAmount"
+                            type="number"
+                            min="0"
+                            step="1000"
+                            inputMode="numeric"
+                            placeholder="0"
+                            value={form.additionalChargeAmount}
+                            onChange={handleFormChange}
+                          />
+                          <span>{t('buildingInvoices.currencyUnit')}</span>
+                        </div>
+                        <input
+                          className="additional-charge-note-input"
+                          id="additionalChargeNote"
+                          name="additionalChargeNote"
+                          type="text"
+                          maxLength="255"
+                          aria-label={t('buildingInvoices.additionalChargeNote')}
+                          placeholder={t('buildingInvoices.additionalChargeNotePlaceholder')}
+                          value={form.additionalChargeNote}
+                          onChange={handleFormChange}
+                        />
+                      </div>
+                      <button className="form-grid-wide" type="submit" disabled={processing || !form.roomId}>
                         {processing ? t('buildingInvoices.previewing') : t('buildingInvoices.preview')}
                       </button>
                     </>
@@ -729,7 +863,7 @@ export default function BuildingInvoiceWorkspace({ role = 'admin' }) {
                 <button
                   className="primary-action-button"
                   type="button"
-                  disabled={processing || !singlePreview}
+                  disabled={processing || !visibleSinglePreview}
                   onClick={handleGenerateSingle}
                 >
                   {processing ? t('forms.invoice.generating') : t('forms.invoice.generate')}
@@ -747,7 +881,7 @@ export default function BuildingInvoiceWorkspace({ role = 'admin' }) {
             </div>
 
             <div className="invoice-preview-column">
-              {mode === 'single' ? <PreviewPanel preview={singlePreview} /> : <BulkPreviewPanel preview={bulkPreview} />}
+              {mode === 'single' ? <PreviewPanel preview={visibleSinglePreview} /> : <BulkPreviewPanel preview={bulkPreview} />}
             </div>
           </div>
         </section>
@@ -814,7 +948,7 @@ export default function BuildingInvoiceWorkspace({ role = 'admin' }) {
 
       <ActionDialog
         className="action-dialog-wide invoice-action-dialog"
-        eyebrow={selectedInvoice ? formatInvoiceCode(selectedInvoice) : t('buildingInvoices.managementTitle')}
+        eyebrow={selectedInvoice ? formatInvoiceCode(selectedInvoice) : t('buildingInvoices.eyebrow')}
         labelledBy="invoice-detail-dialog-title"
         open={Boolean(selectedInvoice)}
         title={t('tables.common.invoice')}

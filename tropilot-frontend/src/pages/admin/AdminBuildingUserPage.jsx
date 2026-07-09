@@ -322,15 +322,9 @@ export default function AdminBuildingUserPage() {
 
   return (
     <div className="building-workspace modern-user-page building-user-modern-page">
-      <div className="account-page-hero">
-        <div>
-          <h1>{t('buildingUsers.title')}</h1>
-          <p>{t('buildingUsers.summary', {
-            count: households.length,
-            building: building.name || building.buildingCode || building.code || t('common.noBuilding')
-          })}</p>
-        </div>
-        <div className="page-action-row">
+      <div className="building-section-header">
+        <span className="page-eyebrow">{t('buildingUsers.eyebrow')}</span>
+        <div className="building-user-actions-row">
           <button className="secondary-button inline-button" type="button" onClick={handleExport}>
             {t('buildingUsers.actions.exportExcel')}
           </button>

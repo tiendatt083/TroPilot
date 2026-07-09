@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import PageHeader from '../components/PageHeader.jsx';
+import ManagementPageHero from '../components/common/ManagementPageHero.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useTheme } from '../context/ThemeContext.jsx';
 
@@ -22,10 +22,11 @@ export default function Settings() {
   };
 
   return (
-    <section className="content-section narrow-section">
-      <div className="page-title-row">
-        <PageHeader eyebrow="Tropilot" title={t('settings.title')} />
-      </div>
+    <section className="content-section management-page settings-page">
+      <ManagementPageHero
+        title={t('settings.title')}
+        description={t('settings.description')}
+      />
 
       <section className="settings-panel">
         <div className="settings-group">

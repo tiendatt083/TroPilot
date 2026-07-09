@@ -30,7 +30,7 @@ public class AdminNotificationController {
     @PostMapping
     public ApiResponse<NotificationResponse> createNotification(
             @AuthenticationPrincipal AuthenticatedUser user,
-            @RequestParam(required = false) Long buildingId,
+            @RequestParam(name = "buildingId", required = false) Long buildingId,
             @Valid @RequestBody NotificationCreateRequest request
     ) {
         return ApiResponse.success(
@@ -41,7 +41,7 @@ public class AdminNotificationController {
 
     @GetMapping
     public ApiResponse<List<NotificationResponse>> getNotifications(
-            @RequestParam(required = false) Long buildingId
+            @RequestParam(name = "buildingId", required = false) Long buildingId
     ) {
         return ApiResponse.success(
                 "Notifications loaded successfully",
@@ -51,7 +51,7 @@ public class AdminNotificationController {
 
     @GetMapping("/sent")
     public ApiResponse<List<NotificationResponse>> getSentNotifications(
-            @RequestParam(required = false) Long buildingId
+            @RequestParam(name = "buildingId", required = false) Long buildingId
     ) {
         return ApiResponse.success(
                 "Sent notifications loaded successfully",

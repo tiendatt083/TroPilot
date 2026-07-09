@@ -14,24 +14,37 @@ export default function CashFlowSummary({ cashFlow }) {
     return <div className="empty-state">{t('cashFlow.unavailable')}</div>;
   }
 
+  const metrics = [
+    {
+      key: 'income',
+      label: t('cashFlow.totalIncome'),
+      value: cashFlow.totalIncome
+    },
+    {
+      key: 'expense',
+      label: t('cashFlow.totalExpense'),
+      value: cashFlow.totalExpense
+    },
+    {
+      key: 'remaining',
+      label: t('cashFlow.remainingCash'),
+      value: cashFlow.remainingCash
+    },
+    {
+      key: 'unpaid',
+      label: t('cashFlow.unpaidAmount'),
+      value: cashFlow.unpaidAmount
+    }
+  ];
+
   return (
     <section className="cashflow-summary">
-      <div>
-        <span>{t('cashFlow.totalIncome')}</span>
-        <strong>{formatNumber(cashFlow.totalIncome)}</strong>
-      </div>
-      <div>
-        <span>{t('cashFlow.totalExpense')}</span>
-        <strong>{formatNumber(cashFlow.totalExpense)}</strong>
-      </div>
-      <div>
-        <span>{t('cashFlow.remainingCash')}</span>
-        <strong>{formatNumber(cashFlow.remainingCash)}</strong>
-      </div>
-      <div>
-        <span>{t('cashFlow.unpaidAmount')}</span>
-        <strong>{formatNumber(cashFlow.unpaidAmount)}</strong>
-      </div>
+      {metrics.map((metric) => (
+        <div className={`cashflow-metric cashflow-metric-${metric.key}`} key={metric.key}>
+          <span>{metric.label}</span>
+          <strong>{formatNumber(metric.value)}</strong>
+        </div>
+      ))}
     </section>
   );
 }

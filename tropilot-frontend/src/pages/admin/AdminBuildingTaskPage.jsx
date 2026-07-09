@@ -5,7 +5,6 @@ import * as taskApi from '../../features/maintenance/taskApi.js';
 import * as roomApi from '../../features/rooms/api.js';
 import * as adminUserApi from '../../features/users/api.js';
 import ActionDialog from '../../components/common/ActionDialog.jsx';
-import PageHeader from '../../components/PageHeader.jsx';
 import TaskForm from '../../components/TaskForm.jsx';
 import TaskTable from '../../components/TaskTable.jsx';
 
@@ -71,17 +70,14 @@ export default function AdminBuildingTaskPage() {
 
   return (
     <div className="building-workspace">
-      <PageHeader
-        eyebrow={t('taskManagement.buildingEyebrow')}
-        title={t('taskManagement.buildingTitle')}
-        actions={
-          !loading ? (
-            <button className="button-link" type="button" onClick={() => setIsCreating(true)}>
-              {t('taskManagement.create')}
-            </button>
-          ) : null
-        }
-      />
+      <div className="building-section-header">
+        <span className="page-eyebrow">{t('taskManagement.buildingEyebrow')}</span>
+        {!loading && (
+          <button className="button-link" type="button" onClick={() => setIsCreating(true)}>
+            {t('taskManagement.create')}
+          </button>
+        )}
+      </div>
 
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}

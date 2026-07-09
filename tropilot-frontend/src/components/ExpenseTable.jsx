@@ -3,7 +3,7 @@ import { getExpenseStatusClass } from '../utils/expenseOptions.js';
 import { resolveFileUrl } from '../utils/fileUrl.js';
 import { formatDisplayDateTime } from '../utils/dateFormat.js';
 import { formatEnumLabel } from '../utils/i18nFormat.js';
-import { formatRoomLabel } from '../utils/roomDisplay.js';
+import { formatRoomCode } from '../utils/roomDisplay.js';
 
 function formatNumber(value) {
   const numberValue = Number(value);
@@ -17,7 +17,25 @@ function roomText(expense, t) {
     return t('common.notLinked');
   }
 
-  return formatRoomLabel(expense);
+  return formatRoomCode(expense);
+}
+
+function formatExpenseCode(expenseCode) {
+  const normalizedCode = String(expenseCode || '').trim();
+
+  if (!normalizedCode) {
+    return '';
+  }
+
+  const parts = normalizedCode.split('-').filter(Boolean);
+
+  if (parts.length >= 3) {
+    return `${parts[0]}-${parts[parts.length - 1]}`;
+  }
+
+  return normalizedCode.length > 18
+    ? `${normalizedCode.slice(0, 6)}...${normalizedCode.slice(-8)}`
+    : normalizedCode;
 }
 
 export default function ExpenseTable({ expenses, renderActions }) {
@@ -29,7 +47,7 @@ export default function ExpenseTable({ expenses, renderActions }) {
       <table className="data-table expense-table">
         <thead>
           <tr>
-            <th>{t('tables.common.expense')}</th>
+            <th>{t('tables.common.expenseCode')}</th>
             <th>{t('tables.common.room')}</th>
             <th>{t('tables.common.type')}</th>
             <th>{t('tables.common.amount')}</th>
@@ -44,12 +62,11 @@ export default function ExpenseTable({ expenses, renderActions }) {
           {expenses.map((expense) => (
             <tr key={expense.id}>
               <td>
-                <strong>{expense.expenseCode}</strong>
+                <strong title={expense.expenseCode}>{formatExpenseCode(expense.expenseCode)}</strong>
                 <span className="table-subtext">{formatDisplayDateTime(expense.createdAt)}</span>
               </td>
               <td>
                 <strong>{roomText(expense, t)}</strong>
-                <span className="table-subtext">{expense.buildingCode || t('common.noBuilding')}</span>
               </td>
               <td>{formatEnumLabel(t, 'expenseType', expense.expenseType)}</td>
               <td>{formatNumber(expense.amount)}</td>
@@ -69,7 +86,6 @@ export default function ExpenseTable({ expenses, renderActions }) {
               </td>
               <td>
                 <strong>{expense.createdByName}</strong>
-                <span className="table-subtext">{expense.createdByRole}</span>
               </td>
               <td>{expense.content}</td>
               {hasActions && <td>{renderActions(expense)}</td>}

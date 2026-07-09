@@ -20,10 +20,6 @@ export default function InvoiceDetail({ invoice, showPaymentInstructions = false
 
   return (
     <section className="invoice-detail-panel">
-      {invoice.hasInvoiceComplaint && (
-        <div className="alert warning-alert">{t('buildingInvoices.complaintBadge')}</div>
-      )}
-
       <div className="detail-panel">
         <div>
           <span>{t('tables.common.room')}</span>

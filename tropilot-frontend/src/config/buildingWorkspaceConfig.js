@@ -42,7 +42,6 @@ const BUILDING_WORKSPACE_GROUPS = [
       { path: '/invoices', labelKey: 'buildingWorkspace.invoices' },
       { path: '/expenses', labelKey: 'buildingWorkspace.expenses' },
       { path: '/cashflow', labelKey: 'buildingWorkspace.cashFlow' },
-      { path: '/invoice-complaints', labelKey: 'buildingWorkspace.invoiceComplaints' },
       { path: '/receipts', labelKey: 'buildingWorkspace.receipts' }
     ]
   }

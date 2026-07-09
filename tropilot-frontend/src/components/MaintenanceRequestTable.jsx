@@ -5,7 +5,11 @@ import { formatDateTime, formatEnumLabel } from '../utils/i18nFormat.js';
 import { formatRoomLabel } from '../utils/roomDisplay.js';
 
 function roomText(request, t) {
-  return request.roomId ? formatRoomLabel(request) : t('equipment.scopes.BUILDING');
+  if (!request.roomId) {
+    return t('equipment.scopes.BUILDING');
+  }
+
+  return request.roomCode || formatRoomLabel(request).split(' - ')[0];
 }
 
 export default function MaintenanceRequestTable({ requests, renderActions, onSelect, selectedId }) {
@@ -17,14 +21,14 @@ export default function MaintenanceRequestTable({ requests, renderActions, onSel
       <table className="data-table maintenance-table">
         <thead>
           <tr>
-            <th>{t('tables.common.request')}</th>
-            <th>{t('tables.common.room')}</th>
-            <th>{t('tables.common.requestedBy')}</th>
-            <th>{t('tables.common.assignedStaff')}</th>
-            <th>{t('tables.common.status')}</th>
-            <th>{t('tables.common.images')}</th>
-            <th>{t('tables.common.created')}</th>
-            {hasActions && <th>{t('tables.common.actions')}</th>}
+            <th className="maintenance-col-request">{t('tables.common.request')}</th>
+            <th className="maintenance-col-room">{t('tables.common.room')}</th>
+            <th className="maintenance-col-requestedBy">{t('tables.common.requestedBy')}</th>
+            <th className="maintenance-col-staff">{t('role.staff')}</th>
+            <th className="maintenance-col-status">{t('tables.common.status')}</th>
+            <th className="maintenance-col-images">{t('tables.common.images')}</th>
+            <th className="maintenance-col-created">{t('tables.common.created')}</th>
+            {hasActions && <th className="maintenance-col-actions">{t('tables.common.actions')}</th>}
           </tr>
         </thead>
         <tbody>
@@ -34,7 +38,7 @@ export default function MaintenanceRequestTable({ requests, renderActions, onSel
               className={selectedId === request.id ? 'selected-row' : undefined}
               onClick={onSelect ? () => onSelect(request) : undefined}
             >
-              <td>
+              <td className="maintenance-col-request">
                 <strong>{request.title}</strong>
                 <span className="table-subtext">{request.content}</span>
                 {request.equipmentId && (
@@ -43,30 +47,25 @@ export default function MaintenanceRequestTable({ requests, renderActions, onSel
                   </span>
                 )}
               </td>
-              <td>
+              <td className="maintenance-col-room">
                 <strong>{roomText(request, t)}</strong>
-                <span className="table-subtext">{request.buildingCode}</span>
               </td>
-              <td>
+              <td className="maintenance-col-requestedBy">
                 <strong>{request.requestedByName || request.residentHeadName || t('common.notProvided')}</strong>
-                <span className="table-subtext">{request.requestedByEmail || request.residentHeadEmail}</span>
               </td>
-              <td>
+              <td className="maintenance-col-staff">
                 {request.assignedToName ? (
-                  <>
-                    <strong>{request.assignedToName}</strong>
-                    <span className="table-subtext">{request.assignedToEmail}</span>
-                  </>
+                  <strong>{request.assignedToName}</strong>
                 ) : (
                   t('common.notAssigned')
                 )}
               </td>
-              <td>
+              <td className="maintenance-col-status">
                 <span className={getMaintenanceStatusClass(request.status)}>
                   {formatEnumLabel(t, 'maintenanceStatus', request.status)}
                 </span>
               </td>
-              <td>
+              <td className="maintenance-col-images">
                 <div className="evidence-links">
                   {request.imageUrl && (
                     <a href={resolveFileUrl(request.imageUrl)} target="_blank" rel="noreferrer" onClick={(event) => event.stopPropagation()}>
@@ -86,8 +85,12 @@ export default function MaintenanceRequestTable({ requests, renderActions, onSel
                   {!request.imageUrl && !request.resultImageUrl && t('common.notProvided')}
                 </div>
               </td>
-              <td>{formatDateTime(request.createdAt, t)}</td>
-              {hasActions && <td onClick={(event) => event.stopPropagation()}>{renderActions(request)}</td>}
+              <td className="maintenance-col-created">{formatDateTime(request.createdAt, t)}</td>
+              {hasActions && (
+                <td className="maintenance-col-actions" onClick={(event) => event.stopPropagation()}>
+                  {renderActions(request)}
+                </td>
+              )}
             </tr>
           ))}
         </tbody>

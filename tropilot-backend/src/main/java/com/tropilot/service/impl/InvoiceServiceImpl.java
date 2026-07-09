@@ -101,6 +101,8 @@ public class InvoiceServiceImpl implements InvoiceService {
                 buildingId,
                 request.getInvoiceDate(),
                 request.getDueDate(),
+                request.getAdditionalChargeAmount(),
+                request.getAdditionalChargeNote(),
                 true
         );
 
@@ -116,6 +118,8 @@ public class InvoiceServiceImpl implements InvoiceService {
                 buildingId,
                 request.getInvoiceDate(),
                 request.getDueDate(),
+                request.getAdditionalChargeAmount(),
+                request.getAdditionalChargeNote(),
                 true
         );
 
@@ -166,6 +170,8 @@ public class InvoiceServiceImpl implements InvoiceService {
                         buildingId,
                         request.getInvoiceDate(),
                         request.getDueDate(),
+                        BigDecimal.ZERO,
+                        null,
                         false
                 );
                 eligibleInvoices.add(toPreviewResponse(calculation));
@@ -224,6 +230,8 @@ public class InvoiceServiceImpl implements InvoiceService {
                             buildingId,
                             request.getInvoiceDate(),
                             request.getDueDate(),
+                            BigDecimal.ZERO,
+                            null,
                             true
                     );
                     return saveInvoice(calculation, createdBy);
@@ -336,6 +344,8 @@ public class InvoiceServiceImpl implements InvoiceService {
             Long buildingId,
             LocalDate invoiceDate,
             LocalDate dueDate,
+            BigDecimal additionalChargeAmount,
+            String additionalChargeNote,
             boolean validateDuplicate
     ) {
         LocalDate invoiceMonth = getInvoiceMonth(invoiceDate);
@@ -387,6 +397,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         }
         addFixedFeeItems(draftInvoice, activeFees);
         addByPersonFeeItems(draftInvoice, activeFees, occupantQuantity);
+        addAdditionalChargeItem(draftInvoice, additionalChargeAmount, additionalChargeNote);
 
         BigDecimal totalAmount = draftInvoice.getItems()
                 .stream()
@@ -495,9 +506,18 @@ public class InvoiceServiceImpl implements InvoiceService {
                 .roomId(room.getId())
                 .roomCode(room.getRoomCode())
                 .roomName(room.getRoomName())
+                .residentHeadName(findActiveResidentHeadName(room))
                 .reasonCode(reasonCode)
                 .reason(reason)
                 .build();
+    }
+
+    private String findActiveResidentHeadName(Room room) {
+        return roomAssignmentRepository
+                .findByRoomIdAndStatus(room.getId(), RoomAssignmentStatus.ACTIVE)
+                .map(RoomAssignment::getResidentHead)
+                .map(User::getFullName)
+                .orElse(null);
     }
 
     private boolean hasDepositItem(List<InvoiceItem> items) {
@@ -525,6 +545,24 @@ public class InvoiceServiceImpl implements InvoiceService {
                 .unitPrice(depositAmount)
                 .amount(depositAmount)
                 .note("Initial refundable deposit")
+                .build());
+    }
+
+    private void addAdditionalChargeItem(Invoice invoice, BigDecimal additionalChargeAmount, String additionalChargeNote) {
+        if (additionalChargeAmount == null || additionalChargeAmount.compareTo(BigDecimal.ZERO) <= 0) {
+            return;
+        }
+
+        String note = additionalChargeNote == null || additionalChargeNote.isBlank()
+                ? "Extra room charge"
+                : additionalChargeNote.trim();
+
+        invoice.addItem(InvoiceItem.builder()
+                .itemName("Additional charge")
+                .quantity(ONE)
+                .unitPrice(additionalChargeAmount)
+                .amount(additionalChargeAmount)
+                .note(note)
                 .build());
     }
 

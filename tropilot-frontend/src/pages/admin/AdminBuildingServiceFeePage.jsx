@@ -3,7 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
 import * as serviceFeeApi from '../../features/invoices/serviceFeeApi.js';
 import ActionDialog from '../../components/common/ActionDialog.jsx';
-import { formatEnumLabel } from '../../utils/i18nFormat.js';
+import LineIcon from '../../components/common/LineIcon.jsx';
+import ServiceFeeTable from '../../components/ServiceFeeTable.jsx';
 import { isServiceFeeActive } from '../../utils/serviceFeeOptions.js';
 
 const utilityFeeConfigs = [
@@ -38,13 +39,6 @@ const emptyAdditionalForm = {
   unitPrice: '',
   calculationType: 'FIXED'
 };
-
-function formatMoney(value) {
-  const numberValue = Number(value);
-  return Number.isFinite(numberValue)
-    ? numberValue.toLocaleString('en-US', { maximumFractionDigits: 2 })
-    : value;
-}
 
 function findPreferredFeeByType(serviceFees, feeType) {
   const matchingFees = serviceFees.filter((serviceFee) => serviceFee.feeType === feeType);
@@ -315,6 +309,54 @@ export default function AdminBuildingServiceFeePage() {
     }
   };
 
+  const renderServiceFeeActions = (serviceFeeRow) => {
+    const active = serviceFeeRow.serviceFee ? isServiceFeeActive(serviceFeeRow.serviceFee) : false;
+    const isProcessing = processingId === serviceFeeRow.serviceFee?.id;
+
+    return (
+      <>
+        <button
+          className="icon-action-button"
+          type="button"
+          aria-label={t('common.edit')}
+          title={t('common.edit')}
+          disabled={isProcessing}
+          onClick={() =>
+            serviceFeeRow.isUtility
+              ? handleEditUtility(serviceFeeRow.config)
+              : handleEditAdditional(serviceFeeRow.serviceFee)
+          }
+        >
+          <LineIcon name="edit" />
+        </button>
+        {!serviceFeeRow.isUtility && (
+          <>
+            <button
+              className="icon-action-button"
+              type="button"
+              aria-label={active ? t('common.deactivate') : t('common.activate')}
+              title={active ? t('common.deactivate') : t('common.activate')}
+              disabled={isProcessing}
+              onClick={() => handleToggle(serviceFeeRow.serviceFee)}
+            >
+              <LineIcon name={active ? 'close' : 'checkShield'} />
+            </button>
+            <button
+              className="icon-action-button icon-action-danger"
+              type="button"
+              aria-label={t('common.delete')}
+              title={t('common.delete')}
+              disabled={isProcessing}
+              onClick={() => handleDelete(serviceFeeRow.serviceFee)}
+            >
+              <LineIcon name="trash" />
+            </button>
+          </>
+        )}
+      </>
+    );
+  };
+
   return (
     <div className="building-workspace">
       <div className="building-section-header">
@@ -335,94 +377,30 @@ export default function AdminBuildingServiceFeePage() {
         <section className="building-service-fee-page">
           <div className="settings-card additional-service-card">
             <div className="additional-service-layout additional-service-list-only">
-              <div className="table-wrap additional-service-table-wrap">
-                <table className="data-table additional-service-table">
-                  <thead>
-                    <tr>
-                      <th>{t('buildingServiceFees.additional.name')}</th>
-                      <th>{t('buildingServiceFees.additional.unitPrice')}</th>
-                      <th>{t('buildingServiceFees.calculationMethod')}</th>
-                      <th>{t('tables.common.status')}</th>
-                      <th>{t('tables.common.actions')}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {serviceFeeRows.map((serviceFeeRow) => {
-                      const active = serviceFeeRow.serviceFee
-                        ? isServiceFeeActive(serviceFeeRow.serviceFee)
-                        : false;
-                      const statusText = serviceFeeRow.serviceFee
-                        ? active
-                          ? t('common.active')
-                          : t('common.inactive')
-                        : t('buildingServiceFees.notConfigured');
-
-                      return (
-                        <tr key={serviceFeeRow.key}>
-                          <td>
-                            <div className="service-fee-name-cell">
-                              <strong>{serviceFeeRow.name}</strong>
-                              {serviceFeeRow.isUtility && (
-                                <span>{t('buildingServiceFees.utility.fixedRow')}</span>
-                              )}
-                            </div>
-                          </td>
-                          <td>
-                            {serviceFeeRow.unitPrice === '' || serviceFeeRow.unitPrice === null
-                              ? t('common.notSet')
-                              : formatMoney(serviceFeeRow.unitPrice)}
-                          </td>
-                          <td>{formatEnumLabel(t, 'calculationType', serviceFeeRow.calculationType)}</td>
-                          <td>
-                            <span className={`status-pill status-${active ? 'active' : 'inactive'}`}>
-                              {statusText}
-                            </span>
-                          </td>
-                          <td>
-                            <div className="table-actions">
-                              <button
-                                className="secondary-button compact-button"
-                                type="button"
-                                disabled={processingId === serviceFeeRow.serviceFee?.id}
-                                onClick={() =>
-                                  serviceFeeRow.isUtility
-                                    ? handleEditUtility(serviceFeeRow.config)
-                                    : handleEditAdditional(serviceFeeRow.serviceFee)
-                                }
-                              >
-                                {t('common.edit')}
-                              </button>
-                              {!serviceFeeRow.isUtility && (
-                                <>
-                                  <button
-                                    className="secondary-button compact-button"
-                                    type="button"
-                                    disabled={processingId === serviceFeeRow.serviceFee.id}
-                                    onClick={() => handleToggle(serviceFeeRow.serviceFee)}
-                                  >
-                                    {active ? t('common.deactivate') : t('common.activate')}
-                                  </button>
-                                  <button
-                                    className="secondary-button compact-button"
-                                    type="button"
-                                    disabled={processingId === serviceFeeRow.serviceFee.id}
-                                    onClick={() => handleDelete(serviceFeeRow.serviceFee)}
-                                  >
-                                    {t('common.delete')}
-                                  </button>
-                                </>
-                              )}
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-                {serviceFeeRows.length === 0 && (
-                  <div className="empty-state flat-empty-state">{t('buildingServiceFees.additional.empty')}</div>
+              <ServiceFeeTable
+                className="building-service-fee-list"
+                serviceFees={serviceFeeRows}
+                showFeeType={false}
+                nameLabel={t('buildingServiceFees.additional.name')}
+                priceLabel={t('buildingServiceFees.additional.unitPrice')}
+                methodLabel={t('buildingServiceFees.calculationMethod')}
+                emptyMessage={t('buildingServiceFees.additional.empty')}
+                getKey={(serviceFeeRow) => serviceFeeRow.key}
+                getDescription={(serviceFeeRow) => (
+                  serviceFeeRow.isUtility ? t('buildingServiceFees.utility.fixedRow') : ''
                 )}
-              </div>
+                getActive={(serviceFeeRow) => (
+                  serviceFeeRow.serviceFee ? isServiceFeeActive(serviceFeeRow.serviceFee) : false
+                )}
+                getStatusLabel={(serviceFeeRow) => {
+                  if (!serviceFeeRow.serviceFee) {
+                    return t('buildingServiceFees.notConfigured');
+                  }
+
+                  return isServiceFeeActive(serviceFeeRow.serviceFee) ? t('common.active') : t('common.inactive');
+                }}
+                renderActions={renderServiceFeeActions}
+              />
             </div>
           </div>
         </section>

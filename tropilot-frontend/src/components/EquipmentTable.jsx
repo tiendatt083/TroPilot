@@ -13,6 +13,22 @@ const DEFAULT_COLUMNS = [
   'maintenanceSchedule'
 ];
 
+function formatBuildingLabel(item) {
+  return item.buildingName || item.buildingCode || '';
+}
+
+function formatRoomCodeOnly(item) {
+  const roomCode = item.roomCode || '';
+  const buildingCode = item.buildingCode || '';
+  const prefix = `${buildingCode}-`;
+
+  if (buildingCode && roomCode.startsWith(prefix)) {
+    return roomCode.slice(prefix.length);
+  }
+
+  return roomCode || item.roomName || formatRoomLabel(item);
+}
+
 export default function EquipmentTable({ equipment, renderActions, visibleColumns = DEFAULT_COLUMNS }) {
   const { t } = useTranslation();
   const hasActions = Boolean(renderActions);
@@ -24,32 +40,25 @@ export default function EquipmentTable({ equipment, renderActions, visibleColumn
     code: {
       header: t('equipment.fields.code'),
       cell: (item) => (
-        <>
+        <span className="equipment-code-cell">
           <strong>{item.equipmentCode}</strong>
-          <span className="table-subtext">{t(`equipment.scopes.${item.scope}`)}</span>
-        </>
+        </span>
       )
     },
     name: {
       header: t('equipment.fields.name'),
       cell: (item) => (
-        <>
+        <span className="equipment-name-cell">
           <strong>{item.name}</strong>
-          <span className="table-subtext">{item.buildingCode} - {item.buildingName}</span>
-        </>
+        </span>
       )
     },
     assignedTo: {
       header: t('equipment.fields.assignedTo'),
       cell: (item) => (
-        <>
-          <strong>
-            {item.scope === 'ROOM' ? formatRoomLabel(item) : t('equipment.scopes.BUILDING')}
-          </strong>
-          <span className="table-subtext">
-            {item.scope === 'ROOM' ? item.buildingName : item.buildingCode}
-          </span>
-        </>
+        <span className="equipment-assigned-cell">
+          <strong>{item.scope === 'ROOM' ? formatRoomCodeOnly(item) : formatBuildingLabel(item)}</strong>
+        </span>
       )
     },
     location: {
@@ -94,7 +103,7 @@ export default function EquipmentTable({ equipment, renderActions, visibleColumn
         <thead>
           <tr>
             {activeColumns.map((columnKey) => (
-              <th key={columnKey}>{columns[columnKey].header}</th>
+              <th key={columnKey} className={`equipment-col-${columnKey}`}>{columns[columnKey].header}</th>
             ))}
           </tr>
         </thead>
@@ -102,7 +111,7 @@ export default function EquipmentTable({ equipment, renderActions, visibleColumn
           {equipment.map((item) => (
             <tr key={item.id}>
               {activeColumns.map((columnKey) => (
-                <td key={columnKey}>{columns[columnKey].cell(item)}</td>
+                <td key={columnKey} className={`equipment-col-${columnKey}`}>{columns[columnKey].cell(item)}</td>
               ))}
             </tr>
           ))}

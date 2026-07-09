@@ -8,7 +8,6 @@ import AdminContractDetailPage from '../pages/admin/AdminContractDetailPage.jsx'
 import AdminContractListPage from '../pages/admin/AdminContractListPage.jsx';
 import AdminDashboardPage from '../pages/admin/AdminDashboardPage.jsx';
 import AdminEquipmentPage from '../pages/admin/AdminEquipmentPage.jsx';
-import AdminInvoiceComplaintPage from '../pages/admin/AdminInvoiceComplaintPage.jsx';
 import AdminMaintenancePage from '../pages/admin/AdminMaintenancePage.jsx';
 import AdminNotificationPage from '../pages/admin/AdminNotificationPage.jsx';
 import AdminPendingMembersPage from '../pages/admin/AdminPendingMembersPage.jsx';
@@ -39,7 +38,7 @@ export const adminRoutes = (
       <Route path="notifications" element={<AdminNotificationPage />} />
       <Route path="activity-logs" element={<AdminActivityLogPage />} />
       <Route path="feedbacks" element={<Navigate to="/admin/buildings" replace />} />
-      <Route path="invoice-complaints" element={<AdminInvoiceComplaintPage />} />
+      <Route path="invoice-complaints" element={<Navigate to="/admin/buildings" replace />} />
       <Route path="users" element={<AdminUserListPage />} />
       <Route path="users/create" element={<AdminUserCreatePage />} />
       <Route path="residents" element={<AdminResidentListPage />} />

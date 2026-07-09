@@ -5,7 +5,6 @@ import * as maintenanceApi from '../../features/maintenance/api.js';
 import * as adminUserApi from '../../features/users/api.js';
 import MaintenanceAssignmentAction from '../../components/MaintenanceAssignmentAction.jsx';
 import MaintenanceRequestTable from '../../components/MaintenanceRequestTable.jsx';
-import PageHeader from '../../components/PageHeader.jsx';
 
 function activeStaff(users) {
   return users.filter((user) => user.role === 'STAFF' && user.status === 'ACTIVE');
@@ -93,7 +92,9 @@ export default function AdminBuildingMaintenancePage() {
 
   return (
     <div className="building-workspace">
-      <PageHeader eyebrow={t('workspace.maintenance.eyebrow')} title={t('workspace.maintenance.title')} />
+      <div className="building-section-header">
+        <span className="page-eyebrow">{t('workspace.maintenance.eyebrow')}</span>
+      </div>
 
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}

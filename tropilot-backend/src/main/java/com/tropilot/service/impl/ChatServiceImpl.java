@@ -20,6 +20,7 @@ public class ChatServiceImpl implements ChatService {
     private final ResidentRoomAccessService residentRoomAccessService;
     private final ChatContextService chatContextService;
     private final GeminiChatClient geminiChatClient;
+    
 
     @Override
     public ChatMessageResponse reply(ChatMessageRequest request) {

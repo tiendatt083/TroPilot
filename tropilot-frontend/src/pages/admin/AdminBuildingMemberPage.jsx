@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useOutletContext } from 'react-router-dom';
 import * as memberApi from '../../features/residents/api.js';
-import PageHeader from '../../components/PageHeader.jsx';
 import { formatDisplayDate } from '../../utils/dateFormat.js';
 import { exportRowsToExcel } from '../../utils/excelExport.js';
 import { formatEnumLabel } from '../../utils/i18nFormat.js';
@@ -148,8 +147,8 @@ export default function AdminBuildingMemberPage() {
 
   return (
     <div className="building-workspace">
-      <div className="page-title-row compact-title-row">
-        <PageHeader eyebrow={t('workspace.members.eyebrow')} title={t('workspace.members.title')} />
+      <div className="building-section-header">
+        <span className="page-eyebrow">{t('workspace.members.eyebrow')}</span>
         <button className="secondary-button inline-button" type="button" onClick={handleExport}>
           {t('workspace.members.exportExcel')}
         </button>

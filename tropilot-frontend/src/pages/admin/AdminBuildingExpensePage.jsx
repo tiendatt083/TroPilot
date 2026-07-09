@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
 import * as expenseApi from '../../features/payments/expenseApi.js';
 import ExpenseTable from '../../components/ExpenseTable.jsx';
-import PageHeader from '../../components/PageHeader.jsx';
 
 export default function AdminBuildingExpensePage() {
   const { t } = useTranslation();
@@ -94,7 +93,9 @@ export default function AdminBuildingExpensePage() {
 
   return (
     <div className="building-workspace">
-      <PageHeader eyebrow={t('workspace.expenses.eyebrow')} title={t('workspace.expenses.title')} />
+      <div className="building-section-header">
+        <span className="page-eyebrow">{t('workspace.expenses.eyebrow')}</span>
+      </div>
 
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}

@@ -1,9 +1,12 @@
 package com.tropilot.dto.request;
 
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Getter
@@ -18,4 +21,10 @@ public class InvoicePreviewRequest {
 
     @NotNull(message = "Due date is required")
     private LocalDate dueDate;
+
+    @DecimalMin(value = "0.00", message = "Additional charge must not be negative")
+    private BigDecimal additionalChargeAmount;
+
+    @Size(max = 255, message = "Additional charge note must not exceed 255 characters")
+    private String additionalChargeNote;
 }

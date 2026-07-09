@@ -7,7 +7,7 @@ import EquipmentForm from './EquipmentForm.jsx';
 import EquipmentMaintenancePanel from './EquipmentMaintenancePanel.jsx';
 import EquipmentTable from './EquipmentTable.jsx';
 import ActionDialog from './common/ActionDialog.jsx';
-import PageHeader from './PageHeader.jsx';
+import LineIcon from './common/LineIcon.jsx';
 import { EQUIPMENT_CONDITIONS, EQUIPMENT_SCOPES } from '../utils/equipmentOptions.js';
 import { formatRoomLabel } from '../utils/roomDisplay.js';
 
@@ -241,11 +241,13 @@ export default function BuildingEquipmentPage({ role }) {
   };
 
   const renderActions = (item) => (
-    <div className="table-actions">
+    <div className="table-actions icon-table-actions equipment-icon-actions">
       {canManage && (
         <>
           <button
-            className="secondary-button compact-button"
+            aria-label={t('common.edit')}
+            className="icon-action-button"
+            data-tooltip={t('common.edit')}
             type="button"
             disabled={processingId === item.id}
             onClick={() => {
@@ -254,33 +256,39 @@ export default function BuildingEquipmentPage({ role }) {
               setPanel({ type: '', equipment: null });
             }}
           >
-            {t('common.edit')}
+            <LineIcon name="edit" />
           </button>
           <button
-            className="danger-button compact-button"
+            aria-label={t('common.delete')}
+            className="icon-action-button icon-action-danger"
+            data-tooltip={t('common.delete')}
             type="button"
             disabled={processingId === item.id}
             onClick={() => handleDelete(item)}
           >
-            {t('common.delete')}
+            <LineIcon name="trash" />
           </button>
         </>
       )}
       {item.condition !== 'INACTIVE' && (
         <button
-          className="secondary-button compact-button"
+          aria-label={t('equipment.actions.requestMaintenance')}
+          className="icon-action-button"
+          data-tooltip={t('equipment.actions.requestMaintenance')}
           type="button"
           onClick={() => openRequestPanel(item)}
         >
-          {t('equipment.actions.requestMaintenance')}
+          <LineIcon name="tool" />
         </button>
       )}
       <button
-        className="secondary-button compact-button"
+        aria-label={t('equipment.actions.viewHistory')}
+        className="icon-action-button"
+        data-tooltip={t('equipment.actions.viewHistory')}
         type="button"
         onClick={() => openHistoryPanel(item)}
       >
-        {t('equipment.actions.viewHistory')}
+        <LineIcon name="clock" />
       </button>
     </div>
   );
@@ -297,9 +305,6 @@ export default function BuildingEquipmentPage({ role }) {
           </div>
         )}
       </div>
-      <p className="page-support-text">
-        {canManage ? t('equipment.adminDescription') : t('equipment.staffDescription')}
-      </p>
 
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
@@ -326,10 +331,6 @@ export default function BuildingEquipmentPage({ role }) {
       )}
 
       <section className="building-section">
-        <div className="building-section-header">
-          <PageHeader eyebrow={t('equipment.records.eyebrow')} title={t('equipment.records.title')} />
-        </div>
-
         <form className="equipment-filter-row building-equipment-filter-row" onSubmit={handleApplyFilters}>
           <input
             aria-label={t('equipment.filters.searchAria')}

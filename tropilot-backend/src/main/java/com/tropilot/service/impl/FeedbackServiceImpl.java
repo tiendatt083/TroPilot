@@ -52,10 +52,6 @@ public class FeedbackServiceImpl implements FeedbackService {
         RoomAssignment assignment = findActiveAssignment(residentHeadId);
         FeedbackType type = parseFeedbackType(request.getType());
 
-        if (type == FeedbackType.INVOICE_COMPLAINT) {
-            throw new BadRequestException("Invoice complaints must be submitted from invoice details");
-        }
-
         Feedback feedback = Feedback.builder()
                 .residentHead(assignment.getResidentHead())
                 .room(assignment.getRoom())

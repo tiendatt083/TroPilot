@@ -50,11 +50,6 @@ export default function InvoiceTable({ invoices, renderActions, detailPathBase }
                 <span className={getInvoiceStatusClass(invoice.status)}>
                   {formatEnumLabel(t, 'invoiceStatus', invoice.status)}
                 </span>
-                {invoice.hasInvoiceComplaint && (
-                  <span className="status-pill warning-status-pill">
-                    {t('buildingInvoices.complaintBadge')}
-                  </span>
-                )}
               </td>
               {hasActions && (
                 <td className="invoice-action-cell">

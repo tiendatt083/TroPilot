@@ -6,7 +6,6 @@ import * as adminUserApi from '../../features/users/api.js';
 import ActionDialog from '../../components/common/ActionDialog.jsx';
 import CheckboxList from '../../components/CheckboxList.jsx';
 import NotificationHistoryPanel from '../../components/NotificationHistoryPanel.jsx';
-import PageHeader from '../../components/PageHeader.jsx';
 import { formatEnumLabel } from '../../utils/i18nFormat.js';
 import { NOTIFICATION_TARGET_OPTIONS } from '../../utils/notificationOptions.js';
 
@@ -177,17 +176,14 @@ export default function AdminBuildingNotificationPage() {
 
   return (
     <div className="building-workspace">
-      <PageHeader
-        eyebrow={t('workspace.notifications.eyebrow')}
-        title={t('workspace.notifications.title')}
-        actions={
-          !composerOpen && (
-            <button className="button-link" type="button" onClick={handleOpenComposer}>
-              {t('notifications.actions.create')}
-            </button>
-          )
-        }
-      />
+      <div className="building-section-header">
+        <span className="page-eyebrow">{t('workspace.notifications.eyebrow')}</span>
+        {!composerOpen && (
+          <button className="button-link" type="button" onClick={handleOpenComposer}>
+            {t('notifications.actions.create')}
+          </button>
+        )}
+      </div>
 
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}

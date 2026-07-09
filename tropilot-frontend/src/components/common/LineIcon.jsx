@@ -86,6 +86,12 @@ const ICONS = {
       <path d="M4 13h7v7H4z" />
     </>
   ),
+  edit: (
+    <>
+      <path d="M4 20h4l10.5-10.5a2.1 2.1 0 0 0-3-3L5 17v3Z" />
+      <path d="m13.5 8.5 2 2" />
+    </>
+  ),
   feedback: (
     <>
       <path d="M5 6h14a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-7l-5 4v-4H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z" />

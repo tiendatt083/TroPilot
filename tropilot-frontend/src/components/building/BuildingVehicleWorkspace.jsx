@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
 import * as vehicleApi from '../../features/residents/vehicleApi.js';
-import PageHeader from '../PageHeader.jsx';
+import LineIcon from '../common/LineIcon.jsx';
 import VehicleTable from '../VehicleTable.jsx';
 
 function hasVehicleActions(vehicle) {
@@ -67,31 +67,37 @@ export default function BuildingVehicleWorkspace({ getVehicles, canManage = fals
           {vehicle.status === 'PENDING' && (
             <>
               <button
-                className="secondary-button compact-button"
+                className="icon-action-button icon-action-success"
                 type="button"
+                aria-label={t('workspace.vehicles.approve')}
+                title={t('workspace.vehicles.approve')}
                 disabled={processingId === vehicle.id}
                 onClick={() => handleAction(vehicle, 'approve')}
               >
-                {t('workspace.vehicles.approve')}
+                <LineIcon name="checkShield" />
               </button>
               <button
-                className="secondary-button compact-button"
+                className="icon-action-button icon-action-danger"
                 type="button"
+                aria-label={t('workspace.vehicles.reject')}
+                title={t('workspace.vehicles.reject')}
                 disabled={processingId === vehicle.id}
                 onClick={() => handleAction(vehicle, 'reject')}
               >
-                {t('workspace.vehicles.reject')}
+                <LineIcon name="close" />
               </button>
             </>
           )}
           {hasVehicleActions(vehicle) ? (
             <button
-              className="secondary-button compact-button"
+              className="icon-action-button"
               type="button"
+              aria-label={t('workspace.vehicles.deactivate')}
+              title={t('workspace.vehicles.deactivate')}
               disabled={processingId === vehicle.id}
               onClick={() => handleAction(vehicle, 'deactivate')}
             >
-              {t('workspace.vehicles.deactivate')}
+              <LineIcon name="lock" />
             </button>
           ) : (
             <span className="muted-text">{t('workspace.vehicles.noAction')}</span>
@@ -102,7 +108,9 @@ export default function BuildingVehicleWorkspace({ getVehicles, canManage = fals
 
   return (
     <div className="building-workspace">
-      <PageHeader eyebrow={t('workspace.vehicles.eyebrow')} title={t('workspace.vehicles.title')} />
+      <div className="building-section-header">
+        <span className="page-eyebrow">{t('workspace.vehicles.eyebrow')}</span>
+      </div>
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
       {loading ? (

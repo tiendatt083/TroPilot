@@ -4,7 +4,6 @@ import { useOutletContext } from 'react-router-dom';
 import * as paymentApi from '../../features/payments/api.js';
 import ActionDialog from '../../components/common/ActionDialog.jsx';
 import EmptyState from '../../components/common/EmptyState.jsx';
-import PageHeader from '../../components/common/PageHeader.jsx';
 import { ReceiptDetail, ReceiptTable } from '../../features/payments/components/index.js';
 
 export default function AdminBuildingReceiptPage() {
@@ -57,7 +56,9 @@ export default function AdminBuildingReceiptPage() {
 
   return (
     <div className="building-workspace">
-      <PageHeader eyebrow={t('workspace.receipts.eyebrow')} title={t('workspace.receipts.title')} />
+      <div className="building-section-header">
+        <span className="page-eyebrow">{t('workspace.receipts.eyebrow')}</span>
+      </div>
 
       {error && <div className="alert error-alert">{error}</div>}
 

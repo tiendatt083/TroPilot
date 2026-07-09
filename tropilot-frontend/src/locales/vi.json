@@ -73,6 +73,7 @@
   },
   "settings": {
     "title": "Cài đặt",
+    "description": "Thiết lập ngôn ngữ, giao diện và phiên đăng nhập cho tài khoản hiện tại.",
     "language": "Ngôn ngữ",
     "currentLanguage": "Ngôn ngữ hiện tại",
     "languageDescription": "Chọn ngôn ngữ được sử dụng trên toàn bộ Tropilot.",
@@ -846,10 +847,15 @@
     },
     "singleRoom": "Một phòng",
     "bulk": "Cả tòa nhà",
-    "invoiceDate": "Ngày lập hóa đơn",
+    "invoiceDate": "Ngày tạo",
     "utilityMonth": "Tháng điện nước",
     "deposit": "Tiền cọc",
     "utilityReading": "Chỉ số điện nước",
+    "additionalCharge": "Phí phát sinh",
+    "additionalChargeHelp": "Khoản phí này chỉ áp dụng cho phòng đang chọn và sẽ được cộng vào tổng hóa đơn.",
+    "additionalChargeNote": "Ghi chú phí phát sinh",
+    "additionalChargeNotePlaceholder": "Ghi chú phí gì...",
+    "currencyUnit": "VNĐ",
     "required": "Bắt buộc",
     "preview": "Xem trước hóa đơn",
     "previewing": "Đang xem trước...",
@@ -859,13 +865,17 @@
     "previewEyebrow": "Xem trước hóa đơn",
     "previewTitle": "Chi tiết hóa đơn",
     "previewEmpty": "Chọn phòng và xem trước hóa đơn trước khi tạo.",
+    "itemList": "Danh sách khoản thu trong hóa đơn",
     "bulkPreviewEyebrow": "Xem trước hàng loạt",
     "bulkPreviewTitle": "Kiểm tra hóa đơn toàn tòa nhà",
-    "bulkPreviewEmpty": "Hãy xem trước tòa nhà để biết phòng đủ điều kiện và phòng bị chặn.",
+    "bulkPreviewEmpty": "Hãy xem trước tòa nhà để biết phòng đủ điều kiện và phòng không đủ điều kiện.",
     "eligibleRooms": "Phòng đủ điều kiện",
-    "blockedRooms": "Phòng bị chặn",
+    "blockedRooms": "Phòng không đủ điều kiện",
+    "eligibleRoomsTable": "Bảng phòng đủ điều kiện",
+    "blockedRoomsTable": "Bảng phòng không đủ điều kiện",
+    "reason": "Lí do",
     "noEligibleRooms": "Không có phòng nào đủ điều kiện tạo hóa đơn.",
-    "noBlockedRooms": "Không có phòng bị chặn.",
+    "noBlockedRooms": "Không có phòng không đủ điều kiện.",
     "complaintBadge": "Khách báo sai hóa đơn",
     "blockReasons": {
       "ALREADY_INVOICED": "Phòng này đã có hóa đơn trong tháng",
@@ -877,6 +887,9 @@
     "warnings": {
       "firstInvoice": "Hóa đơn đầu tiên có tiền cọc và không tính điện nước theo tiêu thụ.",
       "previousMonthUtility": "Điện hoặc nước tính theo tiêu thụ sẽ dùng chỉ số của tháng trước."
+    },
+    "errors": {
+      "missingUtilityReading": "Phòng này chưa có chỉ số điện nước của tháng trước. Hãy ghi chỉ số điện nước trước khi tạo hóa đơn."
     }
   },
   "invoiceText": {
@@ -888,6 +901,8 @@
     "Initial_refundable_deposit": "Tiền cọc ban đầu",
     "Electricity_usage": "Điện tiêu thụ",
     "Water_usage": "Nước tiêu thụ",
+    "Additional_charge": "Phí phát sinh",
+    "Extra_room_charge": "Khoản thu thêm của phòng",
     "Electricity_charged_by_occupant": "Tiền điện tính theo số người",
     "Water_charged_by_occupant": "Tiền nước tính theo số người",
     "Other_fixed_service_fee": "Dịch vụ cố định khác",
@@ -1458,6 +1473,8 @@
       "type": "Loại phản hồi",
       "subject": "Tiêu đề",
       "content": "Nội dung",
+      "create": "Tạo phản hồi",
+      "createTitle": "Tạo phản hồi",
       "historyTitle": "Phản hồi đã gửi",
       "loading": "Đang tải phản hồi đã gửi...",
       "loadError": "Không thể tải phản hồi đã gửi",
@@ -1840,12 +1857,12 @@
     },
     "notifications": {
       "eyebrow": "Thông báo tòa nhà",
-      "title": "Thông báo trong tòa nhà này",
+      "title": "",
       "loadError": "Không thể tải thông báo của tòa nhà"
     },
     "feedbacks": {
       "eyebrow": "Phản hồi tòa nhà",
-      "title": "Phản hồi trong tòa nhà này",
+      "title": "",
       "loadError": "Không thể tải phản hồi của tòa nhà"
     },
     "invoiceComplaints": {
@@ -1935,7 +1952,7 @@
     "feedbackType": {
       "GENERAL": "Chung",
       "MAINTENANCE": "Bảo trì / thiết bị",
-      "INVOICE_COMPLAINT": "Khiếu nại hóa đơn",
+      "INVOICE_COMPLAINT": "Hóa đơn thanh toán",
       "CONTRACT_ERROR": "Lỗi hợp đồng",
       "OTHER": "Khác"
     },
@@ -2037,6 +2054,7 @@
       "electricity": "Điện",
       "evidence": "Bằng chứng",
       "expense": "Chi phí",
+      "expenseCode": "Mã chi phí",
       "feeType": "Loại phí",
       "floor": "Tầng",
       "headResident": "Chủ hộ",
@@ -2230,7 +2248,9 @@
         "waterEvidenceImage": "Ảnh bằng chứng nước (không bắt buộc)",
         "automaticReading": "Đồng bộ chỉ số",
         "mockSource": "Nguồn dữ liệu mô phỏng",
+        "mockApi": "MOCK API",
         "fetchReadings": "Lấy chỉ số",
+        "fetchMeterShort": "Lấy chỉ số",
         "fetchElectricity": "Lấy chỉ số điện",
         "fetchWater": "Lấy chỉ số nước",
         "fetchingReadings": "Đang lấy...",

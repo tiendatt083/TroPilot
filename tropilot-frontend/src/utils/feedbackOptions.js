@@ -4,6 +4,7 @@ import { localizedOption, translateInterfaceText } from './interfaceTranslations
 export const FEEDBACK_TYPE_OPTIONS = [
   localizedOption('GENERAL', 'General'),
   localizedOption('MAINTENANCE', 'Maintenance'),
+  localizedOption('INVOICE_COMPLAINT', 'Payment invoice'),
   localizedOption('CONTRACT_ERROR', 'Contract error'),
   localizedOption('OTHER', 'Other')
 ];
@@ -17,10 +18,6 @@ export const FEEDBACK_STATUS_OPTIONS = [
 ];
 
 export function getFeedbackTypeLabel(type) {
-  if (type === 'INVOICE_COMPLAINT') {
-    return translateInterfaceText('Invoice complaint');
-  }
-
   return FEEDBACK_TYPE_OPTIONS.find((option) => option.value === type)?.label || type;
 }
 

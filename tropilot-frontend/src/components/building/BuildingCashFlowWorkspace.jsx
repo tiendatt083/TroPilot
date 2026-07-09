@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
 import CashFlowSummary from '../CashFlowSummary.jsx';
 import ExpenseTable from '../ExpenseTable.jsx';
-import PageHeader from '../PageHeader.jsx';
+import LineIcon from '../common/LineIcon.jsx';
 import ReceiptTable from '../ReceiptTable.jsx';
 import { formatMonthInputValue } from '../../utils/dateFormat.js';
 
@@ -33,18 +33,32 @@ export default function BuildingCashFlowWorkspace({ getCashFlow, showReceipts = 
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    loadCashFlow(month);
+    setLoading(true);
+    loadCashFlow(month).finally(() => setLoading(false));
   };
 
   return (
     <div className="building-workspace">
-      <PageHeader eyebrow={t('workspace.cashFlow.eyebrow')} title={t('workspace.cashFlow.title')} />
+      <div className="building-section-header">
+        <span className="page-eyebrow">{t('workspace.cashFlow.eyebrow')}</span>
+      </div>
 
       {error && <div className="alert error-alert">{error}</div>}
 
-      <form className="month-filter-row" onSubmit={handleSubmit}>
-        <input type="month" lang="en-GB" value={month} onChange={(event) => setMonth(event.target.value)} required />
-        <button className="inline-button" type="submit">
+      <form className="cashflow-filter-card" onSubmit={handleSubmit}>
+        <label htmlFor="building-cashflow-month">
+          <LineIcon name="calendar" />
+          <span>{t('tables.common.month')}</span>
+        </label>
+        <input
+          id="building-cashflow-month"
+          type="month"
+          lang="en-GB"
+          value={month}
+          onChange={(event) => setMonth(event.target.value)}
+          required
+        />
+        <button className="secondary-button compact-button" type="submit" disabled={loading}>
           {t('workspace.cashFlow.view')}
         </button>
       </form>
@@ -56,16 +70,22 @@ export default function BuildingCashFlowWorkspace({ getCashFlow, showReceipts = 
           <CashFlowSummary cashFlow={cashFlow} />
 
           {showReceipts && (
-            <div>
-              <PageHeader eyebrow={t('workspace.cashFlow.income')} title={t('workspace.cashFlow.receipts')} />
+            <section className="cashflow-record-section">
+              <div className="cashflow-section-heading">
+                <span>{t('workspace.cashFlow.income')}</span>
+                <strong>{t('workspace.cashFlow.receipts')}</strong>
+              </div>
               <ReceiptTable receipts={cashFlow?.receipts || []} />
-            </div>
+            </section>
           )}
 
-          <div>
-            <PageHeader eyebrow={t('workspace.cashFlow.outgoing')} title={t('workspace.cashFlow.expenses')} />
+          <section className="cashflow-record-section">
+            <div className="cashflow-section-heading">
+              <span>{t('workspace.cashFlow.outgoing')}</span>
+              <strong>{t('workspace.cashFlow.expenses')}</strong>
+            </div>
             <ExpenseTable expenses={cashFlow?.expenses || []} />
-          </div>
+          </section>
         </section>
       )}
     </div>

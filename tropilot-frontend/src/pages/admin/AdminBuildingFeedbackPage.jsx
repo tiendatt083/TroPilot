@@ -4,7 +4,6 @@ import { useOutletContext } from 'react-router-dom';
 import * as feedbackApi from '../../features/notifications/feedbackApi.js';
 import * as taskApi from '../../features/maintenance/taskApi.js';
 import * as adminUserApi from '../../features/users/api.js';
-import PageHeader from '../../components/PageHeader.jsx';
 import LineIcon from '../../components/common/LineIcon.jsx';
 import {
   FEEDBACK_STATUS_OPTIONS,
@@ -256,16 +255,6 @@ export default function AdminBuildingFeedbackPage() {
             </button>
           )}
         </div>
-
-        {feedback.assignedTaskId ? (
-          <div className="feedback-linked-task feedback-linked-task-compact">
-            <strong>{t('feedbackManagement.assignedTask')}</strong>
-            <span>
-              {feedback.assignedStaffName || t('common.notAssigned')} -{' '}
-              {formatEnumLabel(t, 'taskStatus', feedback.assignedTaskStatus)}
-            </span>
-          </div>
-        ) : null}
       </div>
     );
   };
@@ -424,6 +413,8 @@ export default function AdminBuildingFeedbackPage() {
 
   const renderFeedbackItem = (feedback) => {
     const isActive = activeAction?.feedbackId === feedback.id;
+    const hasReply = Boolean(feedback.reply);
+    const hasAssignedTask = Boolean(feedback.assignedTaskId);
 
     return (
       <article
@@ -442,25 +433,27 @@ export default function AdminBuildingFeedbackPage() {
               </div>
             </div>
 
-            <p className="feedback-review-message">{feedback.content}</p>
+            <p className="feedback-review-message" title={feedback.content}>{feedback.content}</p>
 
             <div className="feedback-review-meta">
               <span>
-                <strong>{t('tables.common.room')}</strong>
+                <LineIcon name="home" />
                 <em>{formatRoomLabel(feedback)}</em>
               </span>
               <span>
-                <strong>{t('tables.common.resident')}</strong>
+                <LineIcon name="user" />
                 <em>{feedback.residentHeadName}</em>
               </span>
               <span>
-                <strong>{t('tables.common.created')}</strong>
+                <LineIcon name="clock" />
                 <em>{formatFeedbackDateTime(feedback.createdAt)}</em>
               </span>
-              <span>
-                <strong>{t('tables.common.reply')}</strong>
-                <em>{feedback.reply || t('common.noReply')}</em>
-              </span>
+              {hasReply && (
+                <span>
+                  <LineIcon name="feedback" />
+                  <em>{feedback.reply}</em>
+                </span>
+              )}
             </div>
           </div>
 
@@ -468,6 +461,12 @@ export default function AdminBuildingFeedbackPage() {
             <span className={getFeedbackStatusClass(feedback.status)}>
               {formatEnumLabel(t, 'feedbackStatus', feedback.status)}
             </span>
+            {hasAssignedTask && (
+              <div className="feedback-linked-task feedback-linked-task-compact">
+                <strong>{feedback.assignedStaffName || t('common.notAssigned')}</strong>
+                <span>{formatEnumLabel(t, 'taskStatus', feedback.assignedTaskStatus)}</span>
+              </div>
+            )}
             {renderActions(feedback)}
           </div>
         </div>
@@ -476,8 +475,10 @@ export default function AdminBuildingFeedbackPage() {
   };
 
   return (
-    <div className="building-workspace">
-      <PageHeader eyebrow={t('workspace.feedbacks.eyebrow')} title={t('workspace.feedbacks.title')} />
+    <div className="building-workspace feedback-workspace">
+      <div className="building-section-header">
+        <span className="page-eyebrow">{t('workspace.feedbacks.eyebrow')}</span>
+      </div>
 
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
@@ -487,7 +488,7 @@ export default function AdminBuildingFeedbackPage() {
       ) : feedbacks.length === 0 ? (
         <div className="empty-state flat-empty-state">{t('tables.feedbacks.empty')}</div>
       ) : (
-        <section className="feedback-review-list" aria-label={t('workspace.feedbacks.title')}>
+        <section className="feedback-review-list" aria-label={t('navigation.feedbacks')}>
           {feedbacks.map(renderFeedbackItem)}
         </section>
       )}

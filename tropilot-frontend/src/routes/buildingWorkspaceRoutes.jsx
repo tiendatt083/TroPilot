@@ -7,7 +7,6 @@ import AdminBuildingDetailPage from '../pages/admin/AdminBuildingDetailPage.jsx'
 import AdminBuildingEquipmentPage from '../pages/admin/AdminBuildingEquipmentPage.jsx';
 import AdminBuildingExpensePage from '../pages/admin/AdminBuildingExpensePage.jsx';
 import AdminBuildingFeedbackPage from '../pages/admin/AdminBuildingFeedbackPage.jsx';
-import AdminBuildingInvoiceComplaintPage from '../pages/admin/AdminBuildingInvoiceComplaintPage.jsx';
 import AdminBuildingInvoicePage from '../pages/admin/AdminBuildingInvoicePage.jsx';
 import AdminBuildingMaintenancePage from '../pages/admin/AdminBuildingMaintenancePage.jsx';
 import AdminBuildingNotificationPage from '../pages/admin/AdminBuildingNotificationPage.jsx';
@@ -57,7 +56,7 @@ export const adminBuildingWorkspaceRoutes = (
     <Route path="tasks" element={<AdminBuildingTaskPage />} />
     <Route path="tasks/:taskId" element={<AdminBuildingTaskDetailPage />} />
     <Route path="feedbacks" element={<AdminBuildingFeedbackPage />} />
-    <Route path="invoice-complaints" element={<AdminBuildingInvoiceComplaintPage />} />
+    <Route path="invoice-complaints" element={<Navigate to="../feedbacks" replace />} />
     <Route path="notifications" element={<AdminBuildingNotificationPage />} />
   </Route>
 );

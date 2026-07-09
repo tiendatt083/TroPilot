@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { Link, useOutletContext } from 'react-router-dom';
 import RoomForm from '../RoomForm.jsx';
 import ActionDialog from '../common/ActionDialog.jsx';
-import PageHeader from '../PageHeader.jsx';
 import { formatNumber } from '../../utils/numberFormat.js';
 import { formatRoomCode } from '../../utils/roomDisplay.js';
 import { ROOM_STATUS_OPTIONS } from '../../utils/roomStatusOptions.js';
@@ -103,7 +102,7 @@ export default function BuildingRoomsWorkspace({
   return (
     <div className="building-workspace">
       <div className="building-section-header">
-        <PageHeader eyebrow={t('workspace.rooms.eyebrow')} title={t('workspace.rooms.title')} />
+        <span className="page-eyebrow">{t('workspace.rooms.eyebrow')}</span>
         {canManage && createRoomPath && !canUseDialogForm && (
           <Link className="button-link" to={`${createRoomPath}?buildingId=${building.id}`}>
             {t('workspace.rooms.create')}

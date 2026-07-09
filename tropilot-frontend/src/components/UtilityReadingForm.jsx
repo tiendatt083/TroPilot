@@ -9,7 +9,7 @@ import {
 } from '../utils/dateFormat.js';
 import { resolveFileUrl } from '../utils/fileUrl.js';
 import { formatNumber } from '../utils/numberFormat.js';
-import { formatRoomLabel } from '../utils/roomDisplay.js';
+import { formatRoomCode } from '../utils/roomDisplay.js';
 import LineIcon from './common/LineIcon.jsx';
 
 const emptyForm = {
@@ -42,7 +42,6 @@ export default function UtilityReadingForm({
   const [electricityImage, setElectricityImage] = useState(null);
   const [waterImage, setWaterImage] = useState(null);
   const [fetchingMeter, setFetchingMeter] = useState('');
-  const [fetchedReadings, setFetchedReadings] = useState({ electricity: null, water: null });
   const [fetchError, setFetchError] = useState('');
 
   useEffect(() => {
@@ -62,7 +61,6 @@ export default function UtilityReadingForm({
     });
     setElectricityImage(null);
     setWaterImage(null);
-    setFetchedReadings({ electricity: null, water: null });
     setFetchError('');
   }, [initialValues, selectedMonth]);
 
@@ -70,7 +68,6 @@ export default function UtilityReadingForm({
     const { name, value } = event.target;
 
     if (name === 'roomId' || name === 'readingDate') {
-      setFetchedReadings({ electricity: null, water: null });
       setFetchError('');
     }
 
@@ -119,10 +116,6 @@ export default function UtilityReadingForm({
               oldWater: normalizedReading.oldReading,
               newWater: normalizedReading.newReading
             })
-      }));
-      setFetchedReadings((current) => ({
-        ...current,
-        [meterType]: normalizedReading
       }));
     } catch (apiError) {
       setFetchError(
@@ -199,26 +192,28 @@ export default function UtilityReadingForm({
   return (
     <form className="panel-form utility-reading-entry-form" onSubmit={handleSubmit}>
       <div className="utility-reading-shared-form">
-        <label htmlFor="roomId">{t('tables.common.room')}</label>
-        <select
-          id="roomId"
-          name="roomId"
-          value={form.roomId}
-          onChange={handleChange}
-          required
-          disabled={editing || noEligibleRooms}
-        >
-          <option value="">
-            {noEligibleRooms
-              ? t('buildingUtilityReadings.noEligibleRooms')
-              : t('forms.utilityReading.selectRoom')}
-          </option>
-          {rooms.map((room) => (
-            <option key={room.id} value={room.id}>
-              {formatRoomLabel(room)}
+        <div>
+          <label htmlFor="roomId">{t('tables.common.room')}</label>
+          <select
+            id="roomId"
+            name="roomId"
+            value={form.roomId}
+            onChange={handleChange}
+            required
+            disabled={editing || noEligibleRooms}
+          >
+            <option value="">
+              {noEligibleRooms
+                ? t('buildingUtilityReadings.noEligibleRooms')
+                : t('forms.utilityReading.selectRoom')}
             </option>
-          ))}
-        </select>
+            {rooms.map((room) => (
+              <option key={room.id} value={room.id}>
+                {formatRoomCode(room)}
+              </option>
+            ))}
+          </select>
+        </div>
 
         <div>
           <label htmlFor="readingDate">{t('tables.common.readingDate')}</label>
@@ -233,67 +228,10 @@ export default function UtilityReadingForm({
             max={readingDateRange.max}
             required
           />
-          <span className="field-help">{t('forms.utilityReading.readingDateHelp')}</span>
         </div>
       </div>
 
-      {!editing && (onFetchReadings || onFetchElectricityReading || onFetchWaterReading) && (
-        <section className={`utility-reading-fetch-bar${hasFetchedAny(fetchedReadings) ? ' is-ready' : ''}`}>
-          <div className="utility-reading-fetch-heading">
-            <span className="utility-reading-fetch-icon" aria-hidden="true">
-              <LineIcon name="refresh" />
-            </span>
-            <div>
-              <strong>{t('forms.utilityReading.automaticReading')}</strong>
-              <span>{t('forms.utilityReading.mockSource')}</span>
-            </div>
-          </div>
-
-          {hasFetchedAny(fetchedReadings) && (
-            <div className="utility-reading-fetch-result" role="status">
-              {fetchedReadings.electricity && (
-                <span>
-                  {t('forms.utilityReading.electricityIncrease')}
-                  <strong>+{formatNumber(fetchedReadings.electricity.usage)} kWh</strong>
-                </span>
-              )}
-              {fetchedReadings.water && (
-                <span>
-                  {t('forms.utilityReading.waterIncrease')}
-                  <strong>+{formatNumber(fetchedReadings.water.usage)} m3</strong>
-                </span>
-              )}
-            </div>
-          )}
-
-          <div className="utility-reading-fetch-actions">
-            <button
-              className="secondary-button utility-reading-fetch-button"
-              type="button"
-              onClick={() => handleFetchMeter('electricity')}
-              disabled={loading || Boolean(fetchingMeter) || !form.roomId || !form.readingDate}
-            >
-              <LineIcon name="refresh" />
-              {fetchingMeter === 'electricity'
-                ? t('forms.utilityReading.fetchingReadings')
-                : t('forms.utilityReading.fetchElectricity', 'Lấy chỉ số điện')}
-            </button>
-            <button
-              className="secondary-button utility-reading-fetch-button"
-              type="button"
-              onClick={() => handleFetchMeter('water')}
-              disabled={loading || Boolean(fetchingMeter) || !form.roomId || !form.readingDate}
-            >
-              <LineIcon name="refresh" />
-              {fetchingMeter === 'water'
-                ? t('forms.utilityReading.fetchingReadings')
-                : t('forms.utilityReading.fetchWater', 'Lấy chỉ số nước')}
-            </button>
-          </div>
-
-          {fetchError && <p className="utility-reading-fetch-error" role="alert">{fetchError}</p>}
-        </section>
-      )}
+      {fetchError && <p className="utility-reading-fetch-error utility-reading-inline-error" role="alert">{fetchError}</p>}
 
       {form.roomId && <PreviousReadingEvidence previousReading={previousReading} t={t} />}
 
@@ -302,14 +240,22 @@ export default function UtilityReadingForm({
           form={form}
           t={t}
           editing={editing}
+          loading={loading}
+          fetching={fetchingMeter === 'electricity'}
+          canFetch={!editing && Boolean(onFetchReadings || onFetchElectricityReading)}
           onChange={handleChange}
+          onFetch={() => handleFetchMeter('electricity')}
           onImageChange={setElectricityImage}
         />
         <WaterReadingSubform
           form={form}
           t={t}
           editing={editing}
+          loading={loading}
+          fetching={fetchingMeter === 'water'}
+          canFetch={!editing && Boolean(onFetchReadings || onFetchWaterReading)}
           onChange={handleChange}
+          onFetch={() => handleFetchMeter('water')}
           onImageChange={setWaterImage}
         />
       </div>
@@ -345,14 +291,40 @@ export default function UtilityReadingForm({
   );
 }
 
-function ElectricityReadingSubform({ form, t, editing, onChange, onImageChange }) {
+function ElectricityReadingSubform({
+  form,
+  t,
+  editing,
+  loading,
+  fetching,
+  canFetch,
+  onChange,
+  onFetch,
+  onImageChange
+}) {
   const unit = t('forms.utilityReading.electricityUnit');
 
   return (
     <fieldset className="utility-reading-meter-form meter-form-electricity">
       <legend>
-        {t('forms.utilityReading.electricitySectionTitle')}
-        <span className="meter-title-unit">({unit})</span>
+        <span>
+          {t('forms.utilityReading.electricitySectionTitle')}
+          <span className="meter-title-unit">({unit})</span>
+        </span>
+        {canFetch && (
+          <span className="meter-mock-control">
+            <em>{t('forms.utilityReading.mockApi')}</em>
+            <button
+              className="secondary-button utility-reading-fetch-button"
+              type="button"
+              onClick={onFetch}
+              disabled={loading || fetching || !form.roomId || !form.readingDate}
+            >
+              <LineIcon name="refresh" />
+              {fetching ? t('forms.utilityReading.fetchingReadings') : t('forms.utilityReading.fetchMeterShort')}
+            </button>
+          </span>
+        )}
       </legend>
 
       <div className="utility-reading-meter-form-body">
@@ -394,14 +366,40 @@ function ElectricityReadingSubform({ form, t, editing, onChange, onImageChange }
   );
 }
 
-function WaterReadingSubform({ form, t, editing, onChange, onImageChange }) {
+function WaterReadingSubform({
+  form,
+  t,
+  editing,
+  loading,
+  fetching,
+  canFetch,
+  onChange,
+  onFetch,
+  onImageChange
+}) {
   const unit = t('forms.utilityReading.waterUnit');
 
   return (
     <fieldset className="utility-reading-meter-form meter-form-water">
       <legend>
-        {t('forms.utilityReading.waterSectionTitle')}
-        <span className="meter-title-unit">({unit})</span>
+        <span>
+          {t('forms.utilityReading.waterSectionTitle')}
+          <span className="meter-title-unit">({unit})</span>
+        </span>
+        {canFetch && (
+          <span className="meter-mock-control">
+            <em>{t('forms.utilityReading.mockApi')}</em>
+            <button
+              className="secondary-button utility-reading-fetch-button"
+              type="button"
+              onClick={onFetch}
+              disabled={loading || fetching || !form.roomId || !form.readingDate}
+            >
+              <LineIcon name="refresh" />
+              {fetching ? t('forms.utilityReading.fetchingReadings') : t('forms.utilityReading.fetchMeterShort')}
+            </button>
+          </span>
+        )}
       </legend>
 
       <div className="utility-reading-meter-form-body">
@@ -518,10 +516,6 @@ function findPreviousReading(readings, roomId, readingDate, currentReadingId) {
 
 function getReadingSortValue(reading) {
   return reading.readingDate || (reading.month ? `${reading.month}-01` : '');
-}
-
-function hasFetchedAny(readings) {
-  return Boolean(readings.electricity || readings.water);
 }
 
 function normalizeFetchedMeter(reading, meterType) {

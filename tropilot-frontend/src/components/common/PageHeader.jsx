@@ -5,7 +5,7 @@ export default function PageHeader({ eyebrow, title, description, actions, class
     <header className={classes}>
       <div>
         {eyebrow && <span>{eyebrow}</span>}
-        <h1>{title}</h1>
+        {title && <h1>{title}</h1>}
         {description && <p className="page-support-text">{description}</p>}
       </div>
       {actions && <div className="page-header-actions">{actions}</div>}

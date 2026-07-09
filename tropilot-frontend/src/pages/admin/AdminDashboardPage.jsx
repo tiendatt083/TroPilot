@@ -286,7 +286,7 @@ function BuildingSummaryTable({ rows }) {
               <th>Khu / Dãy</th>
               <th>Phòng</th>
               <th>Người thuê</th>
-              <th>Công nợ</th>
+              <th>Chưa thu</th>
               <th>Đã thu</th>
             </tr>
           </thead>
@@ -520,8 +520,8 @@ export default function AdminDashboardPage() {
       icon: 'building',
       tone: 'primary',
       value: formatNumber(dashboard?.totalBuildings),
-      label: 'Dãy trọ',
-      helper: 'Phân khu/phân dãy'
+      label: 'Tòa nhà',
+      helper: 'Tòa nhà đang quản lý'
     },
     {
       icon: 'dashboard',
@@ -667,7 +667,7 @@ export default function AdminDashboardPage() {
                   render: (row) => (
                     <span className={getStatusClass('invoice-status', row.status)}>
                       {INVOICE_STATUS_LABELS[row.status] || row.status}
-                    </span>
+                    </span>  
                   )
                 }
               ]}

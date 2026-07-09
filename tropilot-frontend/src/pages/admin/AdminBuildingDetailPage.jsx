@@ -27,7 +27,6 @@ const EMPTY_BUILDING_OPERATIONS = {
   expenses: [],
   tasks: [],
   feedbacks: [],
-  invoiceComplaints: [],
   notificationCount: 0
 };
 
@@ -379,7 +378,6 @@ export default function AdminBuildingDetailPage() {
           expensesResponse,
           tasksResponse,
           feedbacksResponse,
-          invoiceComplaintsResponse,
           notificationsResponse
         ] = await Promise.all([
           roomApi.getAdminRooms({ buildingId }),
@@ -393,7 +391,6 @@ export default function AdminBuildingDetailPage() {
           expenseApi.getAdminExpenses({ buildingId }),
           taskApi.getAdminTasks({ buildingId }),
           feedbackApi.getAdminFeedbacks({ buildingId }),
-          feedbackApi.getAdminInvoiceComplaints({ buildingId }),
           notificationApi.getAdminNotifications({ buildingId })
         ]);
 
@@ -413,7 +410,6 @@ export default function AdminBuildingDetailPage() {
           expenses: expensesResponse.data || [],
           tasks: tasksResponse.data || [],
           feedbacks: feedbacksResponse.data || [],
-          invoiceComplaints: invoiceComplaintsResponse.data || [],
           notificationCount: notificationsResponse.data?.length || 0
         });
       } catch (apiError) {
@@ -493,8 +489,7 @@ export default function AdminBuildingDetailPage() {
       + operations.pendingPayments.length
       + openMaintenance
       + tasksOpen
-      + feedbacksOpen
-      + operations.invoiceComplaints.length;
+      + feedbacksOpen;
     const paymentPaid = paidAmount || receiptAmount;
     const paymentUnpaid = debtAmount;
     const paymentTotalValue = paymentPaid + paymentUnpaid;
@@ -541,7 +536,7 @@ export default function AdminBuildingDetailPage() {
         { label: 'Tổng hóa đơn', value: invoiceAmount, tone: 'primary' },
         { label: 'Đã thu', value: receiptAmount, tone: 'success' },
         { label: 'Chi phí', value: expenseAmount, tone: 'danger' },
-        { label: 'Công nợ', value: debtAmount, tone: 'warning' }
+        { label: 'Chưa thu', value: debtAmount, tone: 'warning' }
       ],
       kpis: [
         {
@@ -623,7 +618,7 @@ export default function AdminBuildingDetailPage() {
         {
           group: 'Liên hệ',
           primary: `${formatNumber(feedbacksOpen, locale)} phản hồi`,
-          secondary: `${formatNumber(operations.invoiceComplaints.length, locale)} khiếu nại`,
+          secondary: `${formatNumber(operations.feedbacks.length, locale)} tổng phản hồi`,
           followUp: `${formatNumber(operations.notificationCount, locale)} thông báo`
         }
       ]

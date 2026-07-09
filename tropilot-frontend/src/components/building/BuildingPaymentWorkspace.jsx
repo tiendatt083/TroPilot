@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
 import * as paymentApi from '../../features/payments/api.js';
-import PageHeader from '../PageHeader.jsx';
 import PaymentTable from '../PaymentTable.jsx';
 
 export default function BuildingPaymentWorkspace() {
@@ -92,7 +91,9 @@ export default function BuildingPaymentWorkspace() {
 
   return (
     <div className="building-workspace">
-      <PageHeader eyebrow={t('workspace.payments.eyebrow')} title={t('workspace.payments.title')} />
+      <div className="building-section-header">
+        <span className="page-eyebrow">{t('workspace.payments.eyebrow')}</span>
+      </div>
 
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}

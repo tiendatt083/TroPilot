@@ -33,7 +33,7 @@ html[data-theme="dark"] .count-summary,
 html[data-theme="dark"] .dashboard-section-panel,
 html[data-theme="dark"] .dashboard-card,
 html[data-theme="dark"] .dashboard-panel,
-html[data-theme="dark"] .cashflow-summary div,
+html[data-theme="dark"] .cashflow-metric,
 html[data-theme="dark"] .utility-reading-overview,
 html[data-theme="dark"] .building-contract-list-panel,
 html[data-theme="dark"] .contract-history-panel,
@@ -41,6 +41,7 @@ html[data-theme="dark"] .search-row,
 html[data-theme="dark"] .filter-row,
 html[data-theme="dark"] .user-filter-row,
 html[data-theme="dark"] .month-filter-row,
+html[data-theme="dark"] .cashflow-filter-card,
 html[data-theme="dark"] .building-filter-row {
   background: var(--color-surface);
   box-shadow:
@@ -55,6 +56,17 @@ html[data-theme="dark"] .equipment-history-item {
   box-shadow:
     var(--shadow-sm),
     inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+html[data-theme="dark"] .utility-reading-row,
+html[data-theme="dark"] .utility-reading-meter-chip,
+html[data-theme="dark"] .service-fee-row,
+html[data-theme="dark"] .vehicle-row {
+  border-color: var(--color-border-soft);
+  background: var(--color-surface);
+  box-shadow:
+    var(--shadow-sm),
+    inset 3px 0 0 rgba(69, 166, 169, 0.26);
 }
 
 html[data-theme="dark"] .contact-editor {
@@ -195,8 +207,7 @@ html[data-theme="dark"] .home-bar-track {
 html[data-theme="dark"] .status-inactive,
 html[data-theme="dark"] .member-status-left,
 html[data-theme="dark"] .contract-status-not-uploaded,
-html[data-theme="dark"] .vehicle-status-inactive,
-html[data-theme="dark"] .billable-inactive {
+html[data-theme="dark"] .vehicle-status-inactive {
   color: #b2c1d1;
   background: #233247;
 }
@@ -235,11 +246,19 @@ html[data-theme="dark"] input[type="month"]::-webkit-calendar-picker-indicator {
 }
 
 .building-equipment-filter-row {
-  grid-template-columns: minmax(220px, 1fr) minmax(112px, 130px) minmax(108px, 125px) minmax(120px, 135px) auto auto;
-  width: min(100%, 900px);
+  grid-template-columns: minmax(280px, 1.35fr) minmax(132px, 0.55fr) minmax(132px, 0.55fr) minmax(150px, 0.65fr) auto auto;
+  width: min(100%, 980px);
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.55rem;
+  gap: 0.65rem;
+  margin: 0 0 1.15rem;
+  padding: 0.6rem;
+  border: 1px solid rgba(130, 156, 178, 0.24);
+  border-radius: 14px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(247, 251, 253, 0.98));
+  box-shadow:
+    0 14px 30px rgba(16, 32, 51, 0.055),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
 }
 
 .building-equipment-filter-row > div,
@@ -248,9 +267,65 @@ html[data-theme="dark"] input[type="month"]::-webkit-calendar-picker-indicator {
   min-width: 0;
 }
 
+.building-equipment-filter-row input,
+.building-equipment-filter-row select {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid rgba(127, 154, 177, 0.34);
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.92);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.88);
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    background-color 180ms ease;
+}
+
+.building-equipment-filter-row input:focus,
+.building-equipment-filter-row select:focus {
+  border-color: rgba(28, 133, 139, 0.64);
+  background-color: #fff;
+  box-shadow:
+    0 0 0 3px rgba(31, 143, 148, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  outline: none;
+}
+
+.building-equipment-filter-row select:disabled {
+  color: var(--color-text-muted);
+  background-color: rgba(238, 244, 247, 0.82);
+  cursor: not-allowed;
+}
+
 .building-equipment-filter-row button {
   min-width: 0;
   white-space: nowrap;
+  min-height: 42px;
+  border-radius: 10px;
+  padding-inline: 0.95rem;
+  font-weight: 800;
+  transition:
+    transform 160ms ease,
+    box-shadow 180ms ease,
+    background-color 180ms ease;
+}
+
+.building-equipment-filter-row button:hover {
+  transform: translateY(-1px);
+}
+
+.building-equipment-filter-row button:active {
+  transform: translateY(0);
+}
+
+.building-equipment-filter-row .secondary-button {
+  border-color: rgba(127, 154, 177, 0.3);
+  background: rgba(255, 255, 255, 0.82);
+  color: var(--color-text);
+}
+
+.building-equipment-filter-row .secondary-button:hover {
+  background: rgba(242, 248, 250, 0.95);
 }
 
 @media (max-width: 1180px) {
@@ -265,6 +340,15 @@ html[data-theme="dark"] input[type="month"]::-webkit-calendar-picker-indicator {
 
   .equipment-filter-row {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .building-equipment-filter-row {
+    grid-template-columns: minmax(260px, 1fr) minmax(140px, 0.5fr) minmax(140px, 0.5fr);
+    width: 100%;
+  }
+
+  .building-equipment-filter-row input {
+    grid-column: 1 / -1;
   }
 
   .filter-row button,
@@ -317,6 +401,16 @@ html[data-theme="dark"] input[type="month"]::-webkit-calendar-picker-indicator {
   .home-donut-layout {
     grid-template-columns: 1fr;
     justify-items: center;
+  }
+}
+
+@media (max-width: 720px) {
+  .building-equipment-filter-row {
+    grid-template-columns: 1fr;
+  }
+
+  .building-equipment-filter-row button {
+    width: 100%;
   }
 }
 
@@ -759,6 +853,7 @@ html[data-theme="dark"] input[type="month"]::-webkit-calendar-picker-indicator {
   .building-filter-row,
   .equipment-filter-row,
   .month-filter-row,
+  .cashflow-filter-card,
   .notification-form-grid,
   .form-grid,
   .service-fee-utility-grid,
@@ -780,7 +875,8 @@ html[data-theme="dark"] input[type="month"]::-webkit-calendar-picker-indicator {
   .user-filter-row,
   .building-filter-row,
   .equipment-filter-row,
-  .month-filter-row {
+  .month-filter-row,
+  .cashflow-filter-card {
     align-items: stretch;
     padding: var(--space-2);
   }

@@ -73,6 +73,7 @@
   },
   "settings": {
     "title": "Settings",
+    "description": "Manage language, appearance, and the current signed-in session.",
     "language": "Language",
     "currentLanguage": "Current language",
     "languageDescription": "Choose the language used throughout Tropilot.",
@@ -846,10 +847,15 @@
     },
     "singleRoom": "One room",
     "bulk": "Whole building",
-    "invoiceDate": "Invoice date",
+    "invoiceDate": "Created date",
     "utilityMonth": "Utility month",
     "deposit": "Deposit",
     "utilityReading": "Utility reading",
+    "additionalCharge": "Additional charge",
+    "additionalChargeHelp": "This charge applies only to the selected room and is added to the invoice total.",
+    "additionalChargeNote": "Additional charge note",
+    "additionalChargeNotePlaceholder": "What is this fee for...",
+    "currencyUnit": "VND",
     "required": "Required",
     "preview": "Preview invoice",
     "previewing": "Previewing...",
@@ -859,13 +865,17 @@
     "previewEyebrow": "Invoice preview",
     "previewTitle": "Invoice details",
     "previewEmpty": "Select a room and preview the invoice before generating it.",
+    "itemList": "Invoice charge list",
     "bulkPreviewEyebrow": "Bulk preview",
     "bulkPreviewTitle": "Whole-building invoice check",
-    "bulkPreviewEmpty": "Preview the building first to see eligible and blocked rooms.",
+    "bulkPreviewEmpty": "Preview the building first to see eligible and ineligible rooms.",
     "eligibleRooms": "Eligible rooms",
-    "blockedRooms": "Blocked rooms",
+    "blockedRooms": "Ineligible rooms",
+    "eligibleRoomsTable": "Eligible rooms table",
+    "blockedRoomsTable": "Ineligible rooms table",
+    "reason": "Reason",
     "noEligibleRooms": "No room is eligible for invoice generation.",
-    "noBlockedRooms": "No blocked rooms found.",
+    "noBlockedRooms": "No ineligible rooms found.",
     "complaintBadge": "Complaint reported",
     "blockReasons": {
       "ALREADY_INVOICED": "Invoice already exists for this room and month",
@@ -877,6 +887,9 @@
     "warnings": {
       "firstInvoice": "First invoice includes the deposit and excludes usage-based utility charges.",
       "previousMonthUtility": "Usage-based electricity or water uses the previous month utility reading."
+    },
+    "errors": {
+      "missingUtilityReading": "This room has no utility reading for the previous month. Record the utility reading before creating the invoice."
     }
   },
   "invoiceText": {
@@ -888,6 +901,8 @@
     "Initial_refundable_deposit": "Initial refundable deposit",
     "Electricity_usage": "Electricity usage",
     "Water_usage": "Water usage",
+    "Additional_charge": "Additional charge",
+    "Extra_room_charge": "Extra room charge",
     "Electricity_charged_by_occupant": "Electricity charged by occupant",
     "Water_charged_by_occupant": "Water charged by occupant",
     "Other_fixed_service_fee": "Other fixed service fee",
@@ -1458,6 +1473,8 @@
       "type": "Feedback type",
       "subject": "Title",
       "content": "Content",
+      "create": "Create feedback",
+      "createTitle": "Create feedback",
       "historyTitle": "Submitted feedback",
       "loading": "Loading submitted feedback...",
       "loadError": "Submitted feedback could not be loaded",
@@ -1840,12 +1857,12 @@
     },
     "notifications": {
       "eyebrow": "Building notifications",
-      "title": "Notifications in this building",
+      "title": "",
       "loadError": "Building notifications could not be loaded"
     },
     "feedbacks": {
       "eyebrow": "Building feedbacks",
-      "title": "Feedbacks in this building",
+      "title": "",
       "loadError": "Building feedbacks could not be loaded"
     },
     "invoiceComplaints": {
@@ -1935,7 +1952,7 @@
     "feedbackType": {
       "GENERAL": "General",
       "MAINTENANCE": "Maintenance / equipment",
-      "INVOICE_COMPLAINT": "Invoice complaint",
+      "INVOICE_COMPLAINT": "Payment invoice",
       "CONTRACT_ERROR": "Contract error",
       "OTHER": "Other"
     },
@@ -2037,6 +2054,7 @@
       "electricity": "Electricity",
       "evidence": "Evidence",
       "expense": "Expense",
+      "expenseCode": "Expense code",
       "feeType": "Fee type",
       "floor": "Floor",
       "headResident": "Head Resident",
@@ -2230,7 +2248,9 @@
         "waterEvidenceImage": "Water evidence image (optional)",
         "automaticReading": "Reading sync",
         "mockSource": "Simulated data source",
+        "mockApi": "MOCK API",
         "fetchReadings": "Fetch readings",
+        "fetchMeterShort": "Fetch",
         "fetchElectricity": "Fetch electricity",
         "fetchWater": "Fetch water",
         "fetchingReadings": "Fetching...",

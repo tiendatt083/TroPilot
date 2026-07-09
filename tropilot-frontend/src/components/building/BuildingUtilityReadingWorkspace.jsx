@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
 import * as utilityReadingApi from '../../features/invoices/utilityReadingApi.js';
 import ActionDialog from '../common/ActionDialog.jsx';
-import PageHeader from '../PageHeader.jsx';
+import LineIcon from '../common/LineIcon.jsx';
 import UtilityReadingForm from '../UtilityReadingForm.jsx';
 import UtilityReadingOverview from '../UtilityReadingOverview.jsx';
 import UtilityReadingTable from '../UtilityReadingTable.jsx';
@@ -94,14 +94,16 @@ export default function BuildingUtilityReadingWorkspace({
   const renderActions = canEdit
     ? (reading) => (
         <button
-          className="secondary-button compact-button"
+          className="icon-action-button"
           type="button"
+          aria-label={t('common.edit')}
+          title={t('common.edit')}
           onClick={() => {
             setEditingReading(reading);
             setFormOpen(true);
           }}
         >
-          {t('common.edit')}
+          <LineIcon name="edit" />
         </button>
       )
     : undefined;
@@ -112,10 +114,9 @@ export default function BuildingUtilityReadingWorkspace({
 
   return (
     <div className="building-workspace">
-      <PageHeader
-        eyebrow={t('buildingUtilityReadings.eyebrow')}
-        title={t('buildingUtilityReadings.title')}
-        actions={
+      <div className="building-section-header">
+        <span className="page-eyebrow">{t('buildingUtilityReadings.eyebrow')}</span>
+        {canEdit && (
           <button
             className="button-link"
             type="button"
@@ -126,9 +127,8 @@ export default function BuildingUtilityReadingWorkspace({
           >
             {t('buildingUtilityReadings.recordReading')}
           </button>
-        }
-      />
-      <p className="page-support-text">{t('buildingUtilityReadings.description')}</p>
+        )}
+      </div>
 
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
@@ -150,7 +150,7 @@ export default function BuildingUtilityReadingWorkspace({
 
       <ActionDialog
         className="action-dialog-wide"
-        eyebrow={editingReading ? t('buildingUtilityReadings.editReading') : t('buildingUtilityReadings.newReading')}
+        eyebrow={editingReading ? t('buildingUtilityReadings.editReading') : ''}
         labelledBy="utility-reading-dialog-title"
         open={formOpen}
         title={formTitle}
