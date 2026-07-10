@@ -33,29 +33,29 @@ public class AdminTaskController {
     @PostMapping
     public ApiResponse<TaskResponse> createTask(
             @AuthenticationPrincipal AuthenticatedUser user,
-            @RequestParam(required = false) Long buildingId,
+            @RequestParam(name = "buildingId", required = false) Long buildingId,
             @Valid @RequestBody TaskCreateRequest request
     ) {
         return ApiResponse.success("Task created successfully", taskService.createTask(request, getUserId(user), buildingId));
     }
 
     @GetMapping
-    public ApiResponse<List<TaskResponse>> getTasks(@RequestParam(required = false) Long buildingId) {
+    public ApiResponse<List<TaskResponse>> getTasks(@RequestParam(name = "buildingId", required = false) Long buildingId) {
         return ApiResponse.success("Tasks loaded successfully", taskService.getTasks(buildingId));
     }
 
     @GetMapping("/{id}")
     public ApiResponse<TaskResponse> getTask(
-            @PathVariable Long id,
-            @RequestParam(required = false) Long buildingId
+            @PathVariable(name = "id") Long id,
+            @RequestParam(name = "buildingId", required = false) Long buildingId
     ) {
         return ApiResponse.success("Task loaded successfully", taskService.getTask(id, buildingId));
     }
 
     @PutMapping("/{id}")
     public ApiResponse<TaskResponse> updateTask(
-            @PathVariable Long id,
-            @RequestParam(required = false) Long buildingId,
+            @PathVariable(name = "id") Long id,
+            @RequestParam(name = "buildingId", required = false) Long buildingId,
             @Valid @RequestBody TaskUpdateRequest request
     ) {
         return ApiResponse.success("Task updated successfully", taskService.updateTask(id, request, buildingId));

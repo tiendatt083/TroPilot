@@ -38,7 +38,7 @@ public class ResidentInvoiceController {
     @GetMapping("/{id}")
     public ApiResponse<InvoiceResponse> getInvoice(
             @AuthenticationPrincipal AuthenticatedUser user,
-            @PathVariable Long id
+            @PathVariable(name = "id") Long id
     ) {
         return ApiResponse.success("Invoice loaded successfully", invoiceService.getResidentInvoice(getUserId(user), id));
     }
@@ -46,7 +46,7 @@ public class ResidentInvoiceController {
     @PostMapping("/{id}/complaint")
     public ApiResponse<FeedbackResponse> createComplaint(
             @AuthenticationPrincipal AuthenticatedUser user,
-            @PathVariable Long id,
+            @PathVariable(name = "id") Long id,
             @Valid @RequestBody InvoiceComplaintRequest request
     ) {
         return ApiResponse.success(

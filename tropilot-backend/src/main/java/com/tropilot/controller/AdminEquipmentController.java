@@ -35,10 +35,10 @@ public class AdminEquipmentController {
 
     @GetMapping
     public ApiResponse<List<EquipmentResponse>> getEquipment(
-            @RequestParam(required = false) Long buildingId,
-            @RequestParam(required = false) String scope,
-            @RequestParam(required = false) Long roomId,
-            @RequestParam(required = false) String condition
+            @RequestParam(name = "buildingId", required = false) Long buildingId,
+            @RequestParam(name = "scope", required = false) String scope,
+            @RequestParam(name = "roomId", required = false) Long roomId,
+            @RequestParam(name = "condition", required = false) String condition
     ) {
         return ApiResponse.success(
                 "Equipment loaded successfully",
@@ -47,12 +47,12 @@ public class AdminEquipmentController {
     }
 
     @GetMapping("/{id}")
-    public ApiResponse<EquipmentResponse> getEquipment(@PathVariable Long id) {
+    public ApiResponse<EquipmentResponse> getEquipment(@PathVariable(name = "id") Long id) {
         return ApiResponse.success("Equipment loaded successfully", equipmentService.getEquipment(id));
     }
 
     @GetMapping("/{id}/maintenance-history")
-    public ApiResponse<List<EquipmentMaintenanceHistoryResponse>> getMaintenanceHistory(@PathVariable Long id) {
+    public ApiResponse<List<EquipmentMaintenanceHistoryResponse>> getMaintenanceHistory(@PathVariable(name = "id") Long id) {
         return ApiResponse.success(
                 "Equipment maintenance history loaded successfully",
                 equipmentService.getMaintenanceHistory(id)
@@ -62,7 +62,7 @@ public class AdminEquipmentController {
     @PostMapping(path = "/{id}/maintenance-requests", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<MaintenanceRequestResponse> requestMaintenance(
             @AuthenticationPrincipal AuthenticatedUser user,
-            @PathVariable Long id,
+            @PathVariable(name = "id") Long id,
             @Valid @ModelAttribute MaintenanceRequestCreateRequest request
     ) {
         return ApiResponse.success(

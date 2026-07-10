@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import * as buildingApi from '../../features/buildings/api.js';
 import * as roomApi from '../../features/rooms/api.js';
 import PageHeader from '../../components/PageHeader.jsx';
+import FilterBar from '../../components/common/FilterBar.jsx';
 import { formatRoomCode } from '../../utils/roomDisplay.js';
 import { ROOM_STATUS_OPTIONS } from '../../utils/roomStatusOptions.js';
 import { formatEnumLabel } from '../../utils/i18nFormat.js';
@@ -56,22 +57,25 @@ export default function StaffRoomListPage() {
     loadRooms(emptyFilters);
   }, []);
 
+  useEffect(() => {
+    const nextFilters = {
+      ...filters,
+      search: filters.search.trim()
+    };
+    const timer = window.setTimeout(() => {
+      setAppliedFilters(nextFilters);
+      loadRooms(nextFilters);
+    }, filters.search ? 250 : 0);
+
+    return () => window.clearTimeout(timer);
+  }, [filters]);
+
   const handleFilterChange = (event) => {
     const { name, value } = event.target;
     setFilters((current) => ({
       ...current,
       [name]: value
     }));
-  };
-
-  const handleSearch = (event) => {
-    event.preventDefault();
-    const nextFilters = {
-      ...filters,
-      search: filters.search.trim()
-    };
-    setAppliedFilters(nextFilters);
-    loadRooms(nextFilters);
   };
 
   const handleClearFilters = () => {
@@ -84,45 +88,46 @@ export default function StaffRoomListPage() {
     <section className="content-section">
       <PageHeader eyebrow={t('role.staff')} title={t('roomManagement.staffTitle')} />
 
-      <form className="filter-row" onSubmit={handleSearch}>
-        <input
-          aria-label={t('roomManagement.searchAria')}
-          name="search"
-          value={filters.search}
-          onChange={handleFilterChange}
-          placeholder={t('roomManagement.searchPlaceholder')}
-        />
-        <select
-          aria-label={t('roomManagement.buildingFilterAria')}
-          name="buildingId"
-          value={filters.buildingId}
-          onChange={handleFilterChange}
-        >
-          <option value="">{t('roomManagement.allBuildings')}</option>
-          {buildings.map((building) => (
-            <option key={building.id} value={building.id}>
-              {building.buildingCode} - {building.name}
-            </option>
-          ))}
-        </select>
-        <select
-          aria-label={t('roomManagement.statusFilterAria')}
-          name="status"
-          value={filters.status}
-          onChange={handleFilterChange}
-        >
-          <option value="">{t('roomManagement.allStatuses')}</option>
-          {ROOM_STATUS_OPTIONS.map((status) => (
-            <option key={status.value} value={status.value}>
-              {formatEnumLabel(t, 'roomStatus', status.value)}
-            </option>
-          ))}
-        </select>
-        <button type="submit">{t('common.search')}</button>
-        <button className="secondary-button inline-button" type="button" onClick={handleClearFilters}>
-          {t('common.clear')}
-        </button>
-      </form>
+      <FilterBar
+        as="div"
+        className="filter-row"
+        searchAriaLabel={t('roomManagement.searchAria')}
+        searchPlaceholder={t('roomManagement.searchPlaceholder')}
+        searchValue={filters.search}
+        suggestionFields={['roomCode', 'roomName', 'buildingCode', 'buildingName']}
+        suggestionItems={rooms}
+        filters={[
+          {
+            name: 'buildingId',
+            value: filters.buildingId,
+            ariaLabel: t('roomManagement.buildingFilterAria'),
+            onChange: (value) => handleFilterChange({ target: { name: 'buildingId', value } }),
+            options: [
+              { value: '', label: t('roomManagement.allBuildings') },
+              ...buildings.map((building) => ({
+                value: String(building.id),
+                label: `${building.buildingCode} - ${building.name}`
+              }))
+            ]
+          },
+          {
+            name: 'status',
+            value: filters.status,
+            ariaLabel: t('roomManagement.statusFilterAria'),
+            onChange: (value) => handleFilterChange({ target: { name: 'status', value } }),
+            options: [
+              { value: '', label: t('roomManagement.allStatuses') },
+              ...ROOM_STATUS_OPTIONS.map((status) => ({
+                value: status.value,
+                label: formatEnumLabel(t, 'roomStatus', status.value)
+              }))
+            ]
+          }
+        ]}
+        clearLabel={t('common.clear')}
+        onClear={handleClearFilters}
+        onSearchChange={(value) => handleFilterChange({ target: { name: 'search', value } })}
+      />
 
       {error && <div className="alert error-alert">{error}</div>}
 

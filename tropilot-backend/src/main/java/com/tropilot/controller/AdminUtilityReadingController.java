@@ -28,14 +28,14 @@ public class AdminUtilityReadingController {
     private final UtilityReadingService utilityReadingService;
 
     @GetMapping
-    public ApiResponse<List<UtilityReadingResponse>> getReadings(@RequestParam(required = false) Long buildingId) {
+    public ApiResponse<List<UtilityReadingResponse>> getReadings(@RequestParam(name = "buildingId", required = false) Long buildingId) {
         return ApiResponse.success("Utility readings loaded successfully", utilityReadingService.getReadings(buildingId));
     }
 
     @GetMapping("/overview")
     public ApiResponse<UtilityReadingOverviewResponse> getOverview(
-            @RequestParam Long buildingId,
-            @RequestParam String month
+            @RequestParam(name = "buildingId") Long buildingId,
+            @RequestParam(name = "month") String month
     ) {
         return ApiResponse.success(
                 "Utility reading overview loaded successfully",
@@ -45,7 +45,7 @@ public class AdminUtilityReadingController {
 
     @PutMapping(path = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<UtilityReadingResponse> updateReading(
-            @PathVariable Long id,
+            @PathVariable(name = "id") Long id,
             @Valid @ModelAttribute UtilityReadingUpdateRequest request
     ) {
         return ApiResponse.success("Utility reading updated successfully", utilityReadingService.updateReading(id, request));

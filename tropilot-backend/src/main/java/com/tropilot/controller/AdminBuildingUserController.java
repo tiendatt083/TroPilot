@@ -21,7 +21,7 @@ public class AdminBuildingUserController {
     private final BuildingUserService buildingUserService;
 
     @GetMapping
-    public ApiResponse<List<BuildingUserResponse>> getBuildingUsers(@PathVariable Long buildingId) {
+    public ApiResponse<List<BuildingUserResponse>> getBuildingUsers(@PathVariable(name = "buildingId") Long buildingId) {
         return ApiResponse.success("Building users loaded successfully", buildingUserService.getBuildingUsers(buildingId));
     }
 }

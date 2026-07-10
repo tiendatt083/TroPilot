@@ -11,6 +11,7 @@ import com.tropilot.entity.User;
 import com.tropilot.enums.RoomAssignmentStatus;
 import com.tropilot.enums.NotificationEventType;
 import com.tropilot.enums.NotificationSource;
+import com.tropilot.enums.NotificationTargetType;
 import com.tropilot.enums.RoomStatus;
 import com.tropilot.enums.UserRole;
 import com.tropilot.enums.UserStatus;
@@ -69,6 +70,43 @@ class NotificationServiceImplTest {
 
     @InjectMocks
     private NotificationServiceImpl service;
+
+    @Test
+    void adminNotificationsOnlyIncludeManualNotifications() {
+        User admin = BusinessRuleTestFixtures.admin();
+        Notification manualNotification = Notification.builder()
+                .id(1L)
+                .title("Thông báo tiền trọ")
+                .content("Nộp tiền trọ tháng này")
+                .targetType(NotificationTargetType.ALL_RESIDENT_HEADS)
+                .source(NotificationSource.MANUAL)
+                .eventType(NotificationEventType.MANUAL)
+                .createdBy(admin)
+                .build();
+        Notification systemNotification = Notification.builder()
+                .id(2L)
+                .title("New invoice issued")
+                .content("Invoice 24 is ready")
+                .targetType(NotificationTargetType.SELECTED_USERS)
+                .source(NotificationSource.SYSTEM)
+                .eventType(NotificationEventType.INVOICE_ISSUED)
+                .createdBy(admin)
+                .build();
+        NotificationResponse manualResponse = NotificationResponse.builder()
+                .id(manualNotification.getId())
+                .title(manualNotification.getTitle())
+                .build();
+
+        when(notificationRepository.findAllByOrderByCreatedAtDesc())
+                .thenReturn(List.of(systemNotification, manualNotification));
+        when(notificationMapper.toResponse(manualNotification, null)).thenReturn(manualResponse);
+
+        List<NotificationResponse> responses = service.getAdminNotifications(null);
+
+        assertThat(responses)
+                .extracting(NotificationResponse::getId)
+                .containsExactly(manualNotification.getId());
+    }
 
     @Test
     void residentWithoutRoomCannotLoadNotifications() {

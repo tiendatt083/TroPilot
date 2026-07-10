@@ -26,7 +26,7 @@ public class AdminMaintenanceRequestController {
     private final MaintenanceRequestService maintenanceRequestService;
 
     @GetMapping
-    public ApiResponse<List<MaintenanceRequestResponse>> getRequests(@RequestParam(required = false) Long buildingId) {
+    public ApiResponse<List<MaintenanceRequestResponse>> getRequests(@RequestParam(name = "buildingId", required = false) Long buildingId) {
         return ApiResponse.success(
                 "Maintenance requests loaded successfully",
                 maintenanceRequestService.getRequests(buildingId)
@@ -35,9 +35,9 @@ public class AdminMaintenanceRequestController {
 
     @PutMapping("/{id}/assign")
     public ApiResponse<MaintenanceRequestResponse> assignRequest(
-            @PathVariable Long id,
+            @PathVariable(name = "id") Long id,
             @Valid @RequestBody MaintenanceAssignRequest request,
-            @RequestParam(required = false) Long buildingId
+            @RequestParam(name = "buildingId", required = false) Long buildingId
     ) {
         return ApiResponse.success(
                 "Maintenance request assigned successfully",

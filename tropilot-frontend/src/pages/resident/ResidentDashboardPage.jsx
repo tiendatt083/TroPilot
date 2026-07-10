@@ -1,6 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as dashboardApi from '../../features/buildings/dashboardApi.js';
+import * as invoiceApi from '../../features/invoices/api.js';
+import * as utilityReadingApi from '../../features/invoices/utilityReadingApi.js';
 import DashboardMetricGrid from '../../components/DashboardMetricGrid.jsx';
 import DashboardSection from '../../components/DashboardSection.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
@@ -14,6 +16,98 @@ function formatNumber(value) {
   return Number.isFinite(numberValue)
     ? numberValue.toLocaleString('en-US', { maximumFractionDigits: 2 })
     : value;
+}
+
+function toNumber(value) {
+  const numberValue = Number(value);
+  return Number.isFinite(numberValue) ? numberValue : 0;
+}
+
+function formatMoney(value, currencyUnit = 'đ') {
+  return `${formatNumber(value)} ${currencyUnit}`;
+}
+
+function normalizeMonth(value) {
+  if (!value) {
+    return '';
+  }
+
+  const text = String(value);
+  const isoMonth = text.match(/^(\d{4})-(\d{2})/);
+  if (isoMonth) {
+    return `${isoMonth[1]}-${isoMonth[2]}`;
+  }
+
+  const displayMonth = text.match(/^(\d{2})\/(\d{4})$/);
+  if (displayMonth) {
+    return `${displayMonth[2]}-${displayMonth[1]}`;
+  }
+
+  return text;
+}
+
+function extractResponseList(response) {
+  return Array.isArray(response?.data) ? response.data : [];
+}
+
+function buildMonthlyRows(invoices, readings) {
+  const rowsByMonth = new Map();
+
+  readings.forEach((reading) => {
+    const month = normalizeMonth(reading.month);
+    if (!month) {
+      return;
+    }
+
+    const row = rowsByMonth.get(month) || {
+      month,
+      electricity: 0,
+      water: 0,
+      cost: 0
+    };
+
+    row.electricity += toNumber(reading.electricityUsage);
+    row.water += toNumber(reading.waterUsage);
+    rowsByMonth.set(month, row);
+  });
+
+  invoices.forEach((invoice) => {
+    const month = normalizeMonth(invoice.month);
+    if (!month) {
+      return;
+    }
+
+    const row = rowsByMonth.get(month) || {
+      month,
+      electricity: 0,
+      water: 0,
+      cost: 0
+    };
+
+    row.cost += toNumber(invoice.totalAmount);
+    rowsByMonth.set(month, row);
+  });
+
+  return Array.from(rowsByMonth.values())
+    .sort((left, right) => left.month.localeCompare(right.month))
+    .slice(-6)
+    .map((row) => ({
+      ...row,
+      label: formatDisplayMonth(row.month)
+    }));
+}
+
+function getMonthlySummary(monthlyRows) {
+  const latest = monthlyRows[monthlyRows.length - 1] || null;
+  const totalCost = monthlyRows.reduce((sum, row) => sum + row.cost, 0);
+  const averageCost = monthlyRows.length ? totalCost / monthlyRows.length : 0;
+
+  return {
+    latest,
+    averageCost,
+    totalElectricity: monthlyRows.reduce((sum, row) => sum + row.electricity, 0),
+    totalWater: monthlyRows.reduce((sum, row) => sum + row.water, 0)
+  };
 }
 
 function formatFallbackEnumLabel(value) {
@@ -40,25 +134,153 @@ function statusClass(status) {
   return `status-pill room-status-${String(status || 'empty').toLowerCase()}`;
 }
 
+function ResidentInsightStrip({ summary, t }) {
+  const currencyUnit = t('invoices.currencyUnit', { defaultValue: 'đ' });
+  const insightItems = [
+    {
+      label: t('dashboard.resident.charts.currentMonthCost'),
+      value: summary.latest ? formatMoney(summary.latest.cost, currencyUnit) : t('common.notAvailable')
+    },
+    {
+      label: t('dashboard.resident.charts.averageCost'),
+      value: summary.averageCost ? formatMoney(summary.averageCost, currencyUnit) : t('common.notAvailable')
+    },
+    {
+      label: t('dashboard.resident.charts.electricityTotal'),
+      value: `${formatNumber(summary.totalElectricity)} kWh`
+    },
+    {
+      label: t('dashboard.resident.charts.waterTotal'),
+      value: `${formatNumber(summary.totalWater)} m³`
+    }
+  ];
+
+  return (
+    <div className="resident-insight-strip">
+      {insightItems.map((item) => (
+        <div className="resident-insight-item" key={item.label}>
+          <span>{item.label}</span>
+          <strong>{item.value}</strong>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function MonthlyUsageChart({ rows, t }) {
+  const maxElectricity = Math.max(...rows.map((row) => row.electricity), 1);
+  const maxWater = Math.max(...rows.map((row) => row.water), 1);
+
+  return (
+    <article className="resident-chart-card resident-usage-card">
+      <div className="resident-chart-heading">
+        <div>
+          <span>{t('dashboard.resident.charts.lastMonths')}</span>
+          <h2>{t('dashboard.resident.charts.monthlyUsage')}</h2>
+        </div>
+        <div className="resident-chart-legend">
+          <span className="legend-electric">{t('dashboard.resident.charts.electricity')}</span>
+          <span className="legend-water">{t('dashboard.resident.charts.water')}</span>
+        </div>
+      </div>
+
+      {rows.length > 0 ? (
+        <div className="resident-usage-chart" aria-label={t('dashboard.resident.charts.monthlyUsage')}>
+          {rows.map((row) => {
+            const electricHeight = Math.max(10, Math.round((row.electricity / maxElectricity) * 100));
+            const waterHeight = Math.max(10, Math.round((row.water / maxWater) * 100));
+
+            return (
+              <div className="resident-usage-column" key={row.month}>
+                <div className="resident-usage-bars">
+                  <i
+                    className="resident-usage-bar electricity-bar"
+                    style={{ height: `${electricHeight}%` }}
+                    title={`${formatNumber(row.electricity)} kWh`}
+                  />
+                  <i
+                    className="resident-usage-bar water-bar"
+                    style={{ height: `${waterHeight}%` }}
+                    title={`${formatNumber(row.water)} m³`}
+                  />
+                </div>
+                <strong>{row.label}</strong>
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="empty-state flat-empty-state">{t('dashboard.resident.empty.noChartData')}</div>
+      )}
+    </article>
+  );
+}
+
+function MonthlyCostChart({ rows, t }) {
+  const maxCost = Math.max(...rows.map((row) => row.cost), 1);
+  const currencyUnit = t('invoices.currencyUnit', { defaultValue: 'đ' });
+
+  return (
+    <article className="resident-chart-card">
+      <div className="resident-chart-heading">
+        <div>
+          <span>{t('dashboard.resident.charts.paymentTrend')}</span>
+          <h2>{t('dashboard.resident.charts.monthlyCost')}</h2>
+        </div>
+      </div>
+
+      {rows.length > 0 ? (
+        <div className="resident-cost-chart" aria-label={t('dashboard.resident.charts.monthlyCost')}>
+          {rows.map((row) => (
+            <div className="resident-cost-row" key={row.month}>
+              <span>{row.label}</span>
+              <div className="resident-cost-track">
+                <i style={{ width: `${Math.max(8, Math.round((row.cost / maxCost) * 100))}%` }} />
+              </div>
+              <strong>{formatMoney(row.cost, currencyUnit)}</strong>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="empty-state flat-empty-state">{t('dashboard.resident.empty.noChartData')}</div>
+      )}
+    </article>
+  );
+}
+
 export default function ResidentDashboardPage() {
   const { t } = useTranslation();
   const [dashboard, setDashboard] = useState(null);
+  const [invoiceHistory, setInvoiceHistory] = useState([]);
+  const [utilityHistory, setUtilityHistory] = useState([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let active = true;
 
-    dashboardApi
-      .getResidentDashboard()
-      .then((response) => {
-        if (active) {
-          setDashboard(response.data);
+    Promise.allSettled([
+      dashboardApi.getResidentDashboard(),
+      invoiceApi.getResidentInvoices(),
+      utilityReadingApi.getResidentUtilityReadings()
+    ])
+      .then(([dashboardResult, invoicesResult, utilityResult]) => {
+        if (!active) {
+          return;
         }
-      })
-      .catch((apiError) => {
-        if (active) {
-          setError(apiError.response?.data?.message || t('dashboard.resident.loadError'));
+
+        if (dashboardResult.status === 'fulfilled') {
+          setDashboard(dashboardResult.value.data);
+        } else {
+          setError(dashboardResult.reason?.response?.data?.message || t('dashboard.resident.loadError'));
+        }
+
+        if (invoicesResult.status === 'fulfilled') {
+          setInvoiceHistory(extractResponseList(invoicesResult.value));
+        }
+
+        if (utilityResult.status === 'fulfilled') {
+          setUtilityHistory(extractResponseList(utilityResult.value));
         }
       })
       .finally(() => {
@@ -77,6 +299,8 @@ export default function ResidentDashboardPage() {
   const currentContract = dashboard?.currentContract;
   const activeVehicles = dashboard?.activeVehicles || [];
   const recentMaintenanceRequests = dashboard?.recentMaintenanceRequests || [];
+  const monthlyRows = useMemo(() => buildMonthlyRows(invoiceHistory, utilityHistory), [invoiceHistory, utilityHistory]);
+  const monthlySummary = useMemo(() => getMonthlySummary(monthlyRows), [monthlyRows]);
   const metrics = dashboard
     ? [
         { label: t('dashboard.resident.metrics.approvedMembers'), value: formatNumber(dashboard.approvedMemberCount), tone: 'success' },
@@ -142,6 +366,14 @@ export default function ResidentDashboardPage() {
               </div>
             </div>
           </DashboardSection>
+
+          <section className="resident-analytics-section">
+            <ResidentInsightStrip summary={monthlySummary} t={t} />
+            <div className="resident-chart-grid">
+              <MonthlyUsageChart rows={monthlyRows} t={t} />
+              <MonthlyCostChart rows={monthlyRows} t={t} />
+            </div>
+          </section>
 
           <div className="dashboard-two-column">
             <article className="dashboard-panel">

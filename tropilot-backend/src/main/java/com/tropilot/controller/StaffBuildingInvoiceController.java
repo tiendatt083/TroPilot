@@ -31,7 +31,7 @@ public class StaffBuildingInvoiceController {
     private final InvoiceService invoiceService;
 
     @GetMapping
-    public ApiResponse<List<InvoiceResponse>> getInvoices(@PathVariable Long buildingId) {
+    public ApiResponse<List<InvoiceResponse>> getInvoices(@PathVariable(name = "buildingId") Long buildingId) {
         return ApiResponse.success(
                 "Invoices loaded successfully",
                 invoiceService.getBuildingInvoices(buildingId)
@@ -40,8 +40,8 @@ public class StaffBuildingInvoiceController {
 
     @GetMapping("/{invoiceId}")
     public ApiResponse<InvoiceResponse> getInvoice(
-            @PathVariable Long buildingId,
-            @PathVariable Long invoiceId
+            @PathVariable(name = "buildingId") Long buildingId,
+            @PathVariable(name = "invoiceId") Long invoiceId
     ) {
         return ApiResponse.success(
                 "Invoice loaded successfully",
@@ -51,7 +51,7 @@ public class StaffBuildingInvoiceController {
 
     @PostMapping("/preview")
     public ApiResponse<InvoicePreviewResponse> previewInvoice(
-            @PathVariable Long buildingId,
+            @PathVariable(name = "buildingId") Long buildingId,
             @Valid @RequestBody InvoicePreviewRequest request
     ) {
         return ApiResponse.success(
@@ -62,7 +62,7 @@ public class StaffBuildingInvoiceController {
 
     @PostMapping("/generate")
     public ApiResponse<InvoiceResponse> generateInvoice(
-            @PathVariable Long buildingId,
+            @PathVariable(name = "buildingId") Long buildingId,
             @AuthenticationPrincipal AuthenticatedUser user,
             @Valid @RequestBody InvoicePreviewRequest request
     ) {
@@ -74,7 +74,7 @@ public class StaffBuildingInvoiceController {
 
     @PostMapping("/bulk-preview")
     public ApiResponse<BulkInvoicePreviewResponse> previewBulkInvoices(
-            @PathVariable Long buildingId,
+            @PathVariable(name = "buildingId") Long buildingId,
             @Valid @RequestBody BulkInvoiceRequest request
     ) {
         return ApiResponse.success(
@@ -85,7 +85,7 @@ public class StaffBuildingInvoiceController {
 
     @PostMapping("/bulk-generate")
     public ApiResponse<List<InvoiceResponse>> generateBulkInvoices(
-            @PathVariable Long buildingId,
+            @PathVariable(name = "buildingId") Long buildingId,
             @AuthenticationPrincipal AuthenticatedUser user,
             @Valid @RequestBody BulkInvoiceRequest request
     ) {

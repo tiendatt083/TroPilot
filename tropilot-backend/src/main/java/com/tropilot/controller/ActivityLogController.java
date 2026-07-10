@@ -24,8 +24,8 @@ public class ActivityLogController {
     @GetMapping("/me")
     public ApiResponse<List<ActivityLogResponse>> getMyLogs(
             @AuthenticationPrincipal AuthenticatedUser user,
-            @RequestParam(required = false) String query,
-            @RequestParam(required = false) String action
+            @RequestParam(name = "query", required = false) String query,
+            @RequestParam(name = "action", required = false) String action
     ) {
         if (user == null) {
             throw new UnauthorizedException("Authentication is required");

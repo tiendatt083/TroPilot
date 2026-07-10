@@ -53,12 +53,15 @@ export default function BuildingListWorkspace({
     loadBuildings('');
   }, []);
 
-  const handleSearch = (event) => {
-    event.preventDefault();
+  useEffect(() => {
     const nextSearch = search.trim();
-    setAppliedSearch(nextSearch);
-    loadBuildings(nextSearch);
-  };
+    const timer = window.setTimeout(() => {
+      setAppliedSearch(nextSearch);
+      loadBuildings(nextSearch);
+    }, search ? 250 : 0);
+
+    return () => window.clearTimeout(timer);
+  }, [search]);
 
   const handleClearSearch = () => {
     setSearch('');
@@ -223,18 +226,17 @@ export default function BuildingListWorkspace({
         </div>
       )}
 
-      <FilterBar onSubmit={handleSearch}>
-        <input
-          aria-label={t('workspace.buildings.searchAria')}
-          value={search}
-          onChange={(event) => setSearch(event.target.value)}
-          placeholder={t('workspace.buildings.searchPlaceholder')}
-        />
-        <button type="submit">{t('common.filter')}</button>
-        <button className="secondary-button inline-button" type="button" onClick={handleClearSearch}>
-          {t('common.clear')}
-        </button>
-      </FilterBar>
+      <FilterBar
+        as="div"
+        searchAriaLabel={t('workspace.buildings.searchAria')}
+        searchPlaceholder={t('workspace.buildings.searchPlaceholder')}
+        searchValue={search}
+        suggestionFields={['buildingCode', 'name', 'address']}
+        suggestionItems={buildings}
+        clearLabel={t('common.clear')}
+        onClear={handleClearSearch}
+        onSearchChange={setSearch}
+      />
 
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}

@@ -34,10 +34,10 @@ export default function StaffExpenseListPage() {
     loadData(month).finally(() => setLoading(false));
   }, []);
 
-  const handleMonthSubmit = (event) => {
-    event.preventDefault();
-    loadData(month);
-  };
+  useEffect(() => {
+    setLoading(true);
+    loadData(month).finally(() => setLoading(false));
+  }, [month]);
 
   return (
     <section className="content-section">
@@ -50,12 +50,9 @@ export default function StaffExpenseListPage() {
 
       {error && <div className="alert error-alert">{error}</div>}
 
-      <form className="month-filter-row" onSubmit={handleMonthSubmit}>
+      <div className="month-filter-row">
         <input type="month" lang="en-GB" value={month} onChange={(event) => setMonth(event.target.value)} required />
-        <button className="inline-button" type="submit">
-          {t('expenseManagement.viewCashFlow')}
-        </button>
-      </form>
+      </div>
 
       {loading ? (
         <div className="empty-state">{t('expenseManagement.loading')}</div>

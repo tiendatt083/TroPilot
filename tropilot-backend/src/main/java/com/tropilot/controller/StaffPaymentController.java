@@ -29,15 +29,15 @@ public class StaffPaymentController {
     private final PaymentService paymentService;
 
     @GetMapping("/pending")
-    public ApiResponse<List<PaymentResponse>> getPendingPayments(@RequestParam(required = false) Long buildingId) {
+    public ApiResponse<List<PaymentResponse>> getPendingPayments(@RequestParam(name = "buildingId", required = false) Long buildingId) {
         return ApiResponse.success("Pending payments loaded successfully", paymentService.getPendingPayments(buildingId));
     }
 
     @PutMapping("/{id}/approve")
     public ApiResponse<PaymentResponse> approvePayment(
             @AuthenticationPrincipal AuthenticatedUser user,
-            @PathVariable Long id,
-            @RequestParam(required = false) Long buildingId,
+            @PathVariable(name = "id") Long id,
+            @RequestParam(name = "buildingId", required = false) Long buildingId,
             @Valid @RequestBody(required = false) PaymentDecisionRequest request
     ) {
         return ApiResponse.success(
@@ -49,8 +49,8 @@ public class StaffPaymentController {
     @PutMapping("/{id}/reject")
     public ApiResponse<PaymentResponse> rejectPayment(
             @AuthenticationPrincipal AuthenticatedUser user,
-            @PathVariable Long id,
-            @RequestParam(required = false) Long buildingId,
+            @PathVariable(name = "id") Long id,
+            @RequestParam(name = "buildingId", required = false) Long buildingId,
             @Valid @RequestBody(required = false) PaymentDecisionRequest request
     ) {
         return ApiResponse.success(

@@ -20,8 +20,8 @@ public class AdminCashFlowController {
 
     @GetMapping
     public ApiResponse<CashFlowResponse> getCashFlow(
-            @RequestParam(required = false) String month,
-            @RequestParam(required = false) Long buildingId
+            @RequestParam(name = "month", required = false) String month,
+            @RequestParam(name = "buildingId", required = false) Long buildingId
     ) {
         return ApiResponse.success("Cash flow loaded successfully", cashFlowService.getCashFlow(month, buildingId));
     }

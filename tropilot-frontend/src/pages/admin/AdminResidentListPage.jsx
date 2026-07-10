@@ -5,6 +5,7 @@ import * as memberApi from '../../features/residents/api.js';
 import * as adminUserApi from '../../features/users/api.js';
 import AdminAccountDirectoryTable from '../../components/AdminAccountDirectoryTable.jsx';
 import AdminUserCreateDialog from '../../components/AdminUserCreateDialog.jsx';
+import FilterBar from '../../components/common/FilterBar.jsx';
 import { formatDisplayDate } from '../../utils/dateFormat.js';
 import { exportRowsToExcel } from '../../utils/excelExport.js';
 
@@ -246,35 +247,40 @@ export default function AdminResidentListPage() {
       {error && <div className="alert error-alert">{error}</div>}
 
       <div className="account-control-panel resident-directory-control-panel">
-        <div className="account-search-control">
-          <input
-            aria-label={t('residentDirectory.filters.searchAria')}
-            name="search"
-            value={filters.search}
-            onChange={handleFilterChange}
-            placeholder={t('residentDirectory.filters.searchPlaceholder')}
-          />
-          <select
-            aria-label={t('residentDirectory.filters.buildingAria')}
-            name="buildingId"
-            value={filters.buildingId}
-            onChange={handleFilterChange}
-          >
-            <option value="">{t('residentDirectory.filters.allBuildings')}</option>
-            {buildings.map((building) => (
-              <option key={building.id} value={building.id}>
-                {building.buildingCode} - {building.name}
-              </option>
-            ))}
-          </select>
-          <button
-            className="secondary-button inline-button"
-            type="button"
-            onClick={() => setFilters(emptyFilters)}
-          >
-            {t('common.clear')}
-          </button>
-        </div>
+        <FilterBar
+          as="div"
+          className="account-search-control instant-account-filter"
+          searchAriaLabel={t('residentDirectory.filters.searchAria')}
+          searchPlaceholder={t('residentDirectory.filters.searchPlaceholder')}
+          searchValue={filters.search}
+          suggestionFields={[
+            'fullName',
+            'email',
+            'phone',
+            'assignedRoomCode',
+            'assignedRoomName',
+            (resident) => resident.members?.map((member) => member.fullName).join(', ')
+          ]}
+          suggestionItems={residents}
+          filters={[
+            {
+              name: 'buildingId',
+              value: filters.buildingId,
+              ariaLabel: t('residentDirectory.filters.buildingAria'),
+              onChange: (value) => setFilters((current) => ({ ...current, buildingId: value })),
+              options: [
+                { value: '', label: t('residentDirectory.filters.allBuildings') },
+                ...buildings.map((building) => ({
+                  value: String(building.id),
+                  label: `${building.buildingCode} - ${building.name}`
+                }))
+              ]
+            }
+          ]}
+          clearLabel={t('common.clear')}
+          onClear={() => setFilters(emptyFilters)}
+          onSearchChange={(value) => setFilters((current) => ({ ...current, search: value }))}
+        />
       </div>
 
       {loading ? (

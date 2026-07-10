@@ -22,14 +22,14 @@ public class AdminReceiptController {
     private final ReceiptService receiptService;
 
     @GetMapping
-    public ApiResponse<List<ReceiptResponse>> getReceipts(@RequestParam(required = false) Long buildingId) {
+    public ApiResponse<List<ReceiptResponse>> getReceipts(@RequestParam(name = "buildingId", required = false) Long buildingId) {
         return ApiResponse.success("Receipts loaded successfully", receiptService.getReceipts(buildingId));
     }
 
     @GetMapping("/{id}")
     public ApiResponse<ReceiptResponse> getReceipt(
-            @PathVariable Long id,
-            @RequestParam(required = false) Long buildingId
+            @PathVariable(name = "id") Long id,
+            @RequestParam(name = "buildingId", required = false) Long buildingId
     ) {
         return ApiResponse.success("Receipt loaded successfully", receiptService.getReceipt(id, buildingId));
     }

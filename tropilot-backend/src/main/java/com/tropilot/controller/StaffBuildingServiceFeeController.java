@@ -21,7 +21,7 @@ public class StaffBuildingServiceFeeController {
     private final ServiceFeeService serviceFeeService;
 
     @GetMapping
-    public ApiResponse<List<ServiceFeeResponse>> getServiceFees(@PathVariable Long buildingId) {
+    public ApiResponse<List<ServiceFeeResponse>> getServiceFees(@PathVariable(name = "buildingId") Long buildingId) {
         return ApiResponse.success(
                 "Service fees loaded successfully",
                 serviceFeeService.getBuildingServiceFees(buildingId)

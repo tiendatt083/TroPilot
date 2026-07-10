@@ -25,22 +25,22 @@ public class AdminContractController {
     private final RentalContractService rentalContractService;
 
     @GetMapping
-    public ApiResponse<List<RentalContractResponse>> getContracts(@RequestParam(required = false) Long buildingId) {
+    public ApiResponse<List<RentalContractResponse>> getContracts(@RequestParam(name = "buildingId", required = false) Long buildingId) {
         return ApiResponse.success("Rental contracts loaded successfully", rentalContractService.getContracts(buildingId));
     }
 
     @GetMapping("/{id}")
     public ApiResponse<RentalContractResponse> getContract(
-            @PathVariable Long id,
-            @RequestParam(required = false) Long buildingId
+            @PathVariable(name = "id") Long id,
+            @RequestParam(name = "buildingId", required = false) Long buildingId
     ) {
         return ApiResponse.success("Rental contract loaded successfully", rentalContractService.getContract(id, buildingId));
     }
 
     @PostMapping("/{id}/upload")
     public ApiResponse<RentalContractResponse> uploadContract(
-            @PathVariable Long id,
-            @RequestParam(required = false) Long buildingId,
+            @PathVariable(name = "id") Long id,
+            @RequestParam(name = "buildingId", required = false) Long buildingId,
             @RequestParam("file") MultipartFile file
     ) {
         return ApiResponse.success(
@@ -51,8 +51,8 @@ public class AdminContractController {
 
     @PutMapping("/{id}/mark-need-update")
     public ApiResponse<RentalContractResponse> markNeedUpdate(
-            @PathVariable Long id,
-            @RequestParam(required = false) Long buildingId
+            @PathVariable(name = "id") Long id,
+            @RequestParam(name = "buildingId", required = false) Long buildingId
     ) {
         return ApiResponse.success(
                 "Rental contract marked as needing update successfully",

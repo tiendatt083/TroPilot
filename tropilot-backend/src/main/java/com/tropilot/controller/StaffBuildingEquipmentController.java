@@ -23,10 +23,10 @@ public class StaffBuildingEquipmentController {
 
     @GetMapping
     public ApiResponse<List<EquipmentResponse>> getEquipment(
-            @PathVariable Long buildingId,
-            @RequestParam(required = false) String scope,
-            @RequestParam(required = false) Long roomId,
-            @RequestParam(required = false) String condition
+            @PathVariable(name = "buildingId") Long buildingId,
+            @RequestParam(name = "scope", required = false) String scope,
+            @RequestParam(name = "roomId", required = false) Long roomId,
+            @RequestParam(name = "condition", required = false) String condition
     ) {
         return ApiResponse.success(
                 "Equipment loaded successfully",

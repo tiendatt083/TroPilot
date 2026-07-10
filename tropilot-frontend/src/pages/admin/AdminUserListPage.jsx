@@ -3,11 +3,11 @@ import { useTranslation } from 'react-i18next';
 import * as adminUserApi from '../../features/users/api.js';
 import AdminAccountDirectoryTable from '../../components/AdminAccountDirectoryTable.jsx';
 import AdminUserCreateDialog from '../../components/AdminUserCreateDialog.jsx';
+import FilterBar from '../../components/common/FilterBar.jsx';
 import ManagementPageHero from '../../components/common/ManagementPageHero.jsx';
 import { exportRowsToExcel } from '../../utils/excelExport.js';
 
 const MANAGED_ACCOUNT_ROLES = new Set(['ADMIN', 'STAFF']);
-const ROLE_FILTERS = ['ALL', 'ADMIN', 'STAFF'];
 
 function normalize(value) {
   return String(value || '').trim().toLowerCase();
@@ -26,7 +26,6 @@ export default function AdminUserListPage() {
   const { t } = useTranslation();
   const [accounts, setAccounts] = useState([]);
   const [search, setSearch] = useState('');
-  const [roleFilter, setRoleFilter] = useState('ALL');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
@@ -58,12 +57,10 @@ export default function AdminUserListPage() {
     const searchValue = normalize(search);
 
     return accounts.filter((account) => (
-      (roleFilter === 'ALL' || account.role === roleFilter)
-      && (!searchValue || [account.fullName, account.email, account.phone]
+      !searchValue || [account.fullName, account.email, account.phone]
         .some((value) => normalize(value).includes(searchValue))
-      )
     ));
-  }, [accounts, roleFilter, search]);
+  }, [accounts, search]);
 
   const handleDelete = async (account) => {
     if (!window.confirm(t('accountDirectory.confirmations.delete', { name: account.fullName }))) {
@@ -172,41 +169,19 @@ export default function AdminUserListPage() {
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
 
-      <div className="account-control-panel">
-        <div className="account-role-filter">
-          <span>{t('userManagement.filters.roleLabel')}</span>
-          <div className="account-role-chips" role="group" aria-label={t('userManagement.filters.roleLabel')}>
-            {ROLE_FILTERS.map((role) => (
-              <button
-                className={`account-role-chip${roleFilter === role ? ' is-active' : ''}`}
-                key={role}
-                type="button"
-                aria-pressed={roleFilter === role}
-                onClick={() => setRoleFilter(role)}
-              >
-                {role === 'ALL' ? t('userManagement.filters.allRoles') : formatRole(role, t)}
-              </button>
-            ))}
-          </div>
-        </div>
-        <div className="account-search-control">
-          <input
-            aria-label={t('userManagement.filters.searchAria')}
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder={t('userManagement.filters.searchPlaceholder')}
-          />
-          <button
-            className="secondary-button inline-button"
-            type="button"
-            onClick={() => {
-              setSearch('');
-              setRoleFilter('ALL');
-            }}
-          >
-            {t('common.clear')}
-          </button>
-        </div>
+      <div className="account-control-panel account-search-only-panel">
+        <FilterBar
+          as="div"
+          className="account-search-control instant-account-filter"
+          searchAriaLabel={t('userManagement.filters.searchAria')}
+          searchPlaceholder={t('userManagement.filters.searchPlaceholder')}
+          searchValue={search}
+          suggestionFields={['fullName', 'email', 'phone']}
+          suggestionItems={accounts}
+          clearLabel={t('common.clear')}
+          onClear={() => setSearch('')}
+          onSearchChange={setSearch}
+        />
       </div>
 
       {loading ? (

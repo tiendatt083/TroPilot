@@ -1,0 +1,488 @@
+/* Final UI consistency layer for admin, staff, and resident screens. */
+
+html {
+  font-size: 16px;
+}
+
+body {
+  font-family: var(--font-family-app);
+  font-size: var(--font-size-md);
+  font-weight: 400;
+  line-height: 1.54;
+}
+
+:root {
+  --app-hero-pattern:
+    radial-gradient(circle at 82% 30%, rgba(28, 184, 152, 0.2), transparent 28%),
+    radial-gradient(circle at 96% 108%, rgba(255, 255, 255, 0.1), transparent 34%),
+    linear-gradient(135deg, #26385f 0%, #365a87 100%);
+  --app-hero-pattern-dark:
+    radial-gradient(circle at 82% 30%, rgba(28, 184, 152, 0.18), transparent 28%),
+    radial-gradient(circle at 96% 108%, rgba(255, 255, 255, 0.075), transparent 34%),
+    linear-gradient(135deg, #172238 0%, #233b62 100%);
+}
+
+button,
+input,
+select,
+textarea,
+.button-link,
+.secondary-button,
+.secondary-link {
+  font-family: var(--font-family-app);
+  font-size: var(--font-size-sm);
+}
+
+button,
+.button-link,
+.secondary-button,
+.secondary-link {
+  min-height: var(--control-height);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.82rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+input,
+select,
+textarea {
+  min-height: var(--control-height);
+  border-radius: var(--radius-sm);
+  padding: 0.54rem 0.72rem;
+  font-size: var(--font-size-sm);
+  line-height: 1.35;
+}
+
+textarea {
+  min-height: 94px;
+}
+
+label,
+.form-label,
+.auth-form label,
+.panel-form label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-strong);
+}
+
+.page-header h1,
+.page-title-row h1,
+.management-page-hero h1,
+.modern-user-page .account-page-hero h1,
+.dashboard-hero .page-header h1,
+.contact-hero h1,
+.contact-hero-title,
+.settings-page h1,
+.profile-page h1,
+.member-workspace .page-header h1,
+.vehicle-workspace .page-header h1,
+.utility-reading-workspace .page-header h1,
+.invoice-workspace .page-header h1,
+.service-fee-workspace .page-header h1,
+.task-workspace .page-header h1,
+.maintenance-workspace .page-header h1 {
+  font-size: var(--font-size-page-title);
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: 0;
+}
+
+.dashboard-section-header h2,
+.panel-form h2,
+.detail-panel h2,
+.settings-card h2,
+.settings-panel h2,
+.modal-panel h2,
+.contact-section-title,
+.equipment-maintenance-panel h2,
+.building-contract-list-panel h2,
+.contract-history-panel h2,
+.cashflow-section-title,
+.invoice-preview-panel h2,
+.invoice-command-panel h2 {
+  font-size: var(--font-size-section-title);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0;
+}
+
+.eyebrow,
+.page-eyebrow,
+.page-header span,
+.section-eyebrow,
+.workspace-section-eyebrow,
+.content-section > span:first-child,
+.building-section > span:first-child {
+  font-size: var(--font-size-xs);
+  letter-spacing: 0;
+  line-height: 1.25;
+}
+
+.content-section,
+.building-section,
+.dashboard-page,
+.modern-user-page,
+.building-workspace-content {
+  font-size: var(--font-size-md);
+}
+
+.management-page-hero,
+.modern-user-page .account-page-hero {
+  min-height: 104px;
+  padding: 1.25rem 1.5rem;
+}
+
+.management-page-hero,
+.modern-user-page .account-page-hero,
+.invoice-page-hero,
+.resident-cost-hero,
+.ops-welcome-card {
+  position: relative;
+  overflow: hidden;
+  color: #eff6ff;
+  border-color: rgba(255, 255, 255, 0.08);
+  background: var(--app-hero-pattern);
+  box-shadow: 0 18px 36px rgba(21, 34, 56, 0.16);
+}
+
+.management-page-hero > *,
+.modern-user-page .account-page-hero > *,
+.invoice-page-hero > *,
+.resident-cost-hero > *,
+.ops-welcome-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.management-page-hero h1,
+.modern-user-page .account-page-hero h1,
+.invoice-page-hero h1,
+.resident-cost-hero h2,
+.ops-welcome-card h2 {
+  color: #ffffff;
+}
+
+.management-page-hero p,
+.modern-user-page .account-page-hero p,
+.invoice-page-hero p,
+.resident-cost-hero p,
+.ops-welcome-card p {
+  color: rgba(239, 246, 255, 0.84);
+}
+
+.management-page-hero .eyebrow,
+.management-page-hero .page-eyebrow,
+.management-page-hero span,
+.modern-user-page .account-page-hero span,
+.invoice-page-hero span,
+.resident-cost-hero span,
+.resident-cost-hero small {
+  color: rgba(239, 246, 255, 0.78);
+}
+
+.management-page-hero p,
+.modern-user-page .account-page-hero p,
+.dashboard-hero p,
+.page-header p,
+.content-section p,
+.building-section p {
+  font-size: var(--font-size-md);
+  line-height: 1.48;
+}
+
+.ops-welcome-card {
+  min-height: 112px;
+  padding: 1.35rem 1.5rem;
+}
+
+.ops-welcome-card h2 {
+  font-size: clamp(1.5rem, 1.9vw, 1.78rem);
+  font-weight: 700;
+  line-height: 1.14;
+}
+
+.ops-welcome-card p {
+  margin-top: 0.55rem;
+  font-size: var(--font-size-md);
+  line-height: 1.45;
+}
+
+.ops-welcome-actions button,
+.ops-welcome-actions span {
+  min-height: var(--control-height);
+  font-size: var(--font-size-sm);
+}
+
+html[data-theme="dark"] .management-page-hero,
+html[data-theme="dark"] .modern-user-page .account-page-hero,
+html[data-theme="dark"] .invoice-page-hero,
+html[data-theme="dark"] .resident-cost-hero,
+html[data-theme="dark"] .ops-welcome-card {
+  background: var(--app-hero-pattern-dark);
+}
+
+.ops-kpi-card {
+  min-height: 88px;
+  padding: 0.9rem 1rem;
+}
+
+.ops-kpi-card strong,
+.home-metric-card strong,
+.cashflow-summary strong,
+.count-summary strong {
+  font-size: clamp(1.28rem, 1.8vw, 1.58rem);
+  font-weight: 700;
+  line-height: 1.08;
+}
+
+.ops-kpi-card h3,
+.home-metric-card h3 {
+  font-size: var(--font-size-sm);
+  line-height: 1.28;
+}
+
+.ops-kpi-card p,
+.home-metric-card small {
+  font-size: var(--font-size-sm);
+  line-height: 1.35;
+}
+
+.workspace-tabs,
+.account-control-panel,
+.search-row,
+.filter-row,
+.user-filter-row,
+.month-filter-row,
+.cashflow-filter-card,
+.building-filter-row,
+.equipment-filter-row,
+.invoice-list-toolbar,
+.utility-reading-overview {
+  padding: 0.75rem;
+}
+
+.workspace-tabs a,
+.building-workspace-tabs a,
+.building-workspace-tabs .workspace-tab-group-toggle {
+  min-height: var(--control-height-sm);
+  padding: 0.38rem 0.66rem;
+  font-size: var(--font-size-sm);
+}
+
+.data-table,
+.ops-data-table,
+.invoice-preview-item-table,
+.invoice-bulk-table,
+.task-table,
+.notification-table {
+  font-size: var(--font-size-sm);
+}
+
+.data-table th,
+.data-table td,
+.ops-data-table th,
+.ops-data-table td,
+.invoice-preview-item-table th,
+.invoice-preview-item-table td,
+.invoice-bulk-table th,
+.invoice-bulk-table td,
+.notification-table th,
+.notification-table td {
+  padding: var(--table-cell-padding-y) var(--table-cell-padding-x);
+  vertical-align: middle;
+  line-height: 1.36;
+}
+
+.data-table th,
+.ops-data-table th,
+.invoice-preview-item-table th,
+.invoice-bulk-table th,
+.notification-table th {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  line-height: 1.22;
+}
+
+.data-table td,
+.ops-data-table td,
+.invoice-preview-item-table td,
+.invoice-bulk-table td,
+.notification-table td {
+  font-weight: 400;
+}
+
+.data-table td strong,
+.ops-data-table td strong,
+.invoice-preview-item-table td strong,
+.invoice-bulk-table td strong,
+.notification-table td strong,
+.service-fee-row strong,
+.vehicle-row strong,
+.utility-reading-row strong,
+.feedback-review-card strong,
+.equipment-history-item strong {
+  font-weight: 600;
+}
+
+.table-actions,
+.row-actions,
+.equipment-icon-actions,
+.feedback-card-actions,
+.notification-row-actions {
+  align-items: center;
+}
+
+.status-pill,
+.role-pill,
+.priority-pill,
+.password-state,
+.badge,
+.target-badge,
+.notification-target-pill {
+  min-height: 22px;
+  padding: 0.18rem 0.52rem;
+  font-size: var(--font-size-xs);
+  line-height: 1;
+}
+
+.compact-button,
+.inline-button,
+.table-actions .secondary-button,
+.feedback-action-buttons-compact button,
+.notification-page-buttons .compact-button {
+  min-height: var(--control-height-sm);
+  padding: 0.36rem 0.58rem;
+  font-size: var(--font-size-xs);
+}
+
+.icon-action-button,
+.notification-read-button,
+.modal-close-button,
+.profile-edit-button {
+  width: var(--control-height-sm);
+  min-width: var(--control-height-sm);
+  height: var(--control-height-sm);
+  min-height: var(--control-height-sm);
+  padding: 0;
+}
+
+.icon-action-button svg,
+.notification-read-button svg,
+.modal-close-button svg,
+.profile-edit-button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.panel-form,
+.detail-panel,
+.settings-card,
+.settings-panel,
+.contact-card,
+.contact-editor-surface,
+.dashboard-section-panel,
+.table-wrap,
+.service-fee-list-shell,
+.utility-reading-list-shell,
+.invoice-command-panel,
+.invoice-preview-panel {
+  border-radius: var(--radius-lg);
+}
+
+.service-fee-row,
+.vehicle-row,
+.utility-reading-row,
+.feedback-review-card,
+.notification-list-item,
+.equipment-history-item {
+  font-size: var(--font-size-sm);
+  line-height: 1.35;
+}
+
+.service-fee-row,
+.vehicle-row,
+.utility-reading-row {
+  min-height: 62px;
+  padding: 0.72rem 0.82rem;
+}
+
+.utility-reading-meter-chip,
+.invoice-preview-summary-card,
+.invoice-preview-info-card {
+  padding: 0.62rem 0.72rem;
+}
+
+.modal-panel,
+.dialog-panel {
+  font-size: var(--font-size-md);
+}
+
+.modal-panel > header,
+.dialog-panel > header,
+.modal-header {
+  padding-bottom: 0.75rem;
+}
+
+.notification-table td,
+.activity-log-table td {
+  height: auto;
+  min-height: 0;
+}
+
+.notification-table tbody tr,
+.activity-log-table tbody tr {
+  min-height: 0;
+}
+
+.notification-table .notification-title,
+.notification-table strong,
+.activity-log-table strong {
+  font-size: var(--font-size-sm);
+  line-height: 1.32;
+}
+
+.notification-table .notification-target,
+.notification-table small,
+.activity-log-table small {
+  font-size: var(--font-size-xs);
+  line-height: 1.35;
+}
+
+.sidebar-nav-item,
+.sidebar-nav-group-toggle,
+.sidebar-subnav a,
+.sidebar-user {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+}
+
+.sidebar-nav-item,
+.sidebar-nav-group-toggle {
+  min-height: 34px;
+}
+
+@media (max-width: 900px) {
+  .management-page-hero,
+  .modern-user-page .account-page-hero {
+    min-height: 0;
+    padding: 1rem;
+  }
+
+  .page-header h1,
+  .page-title-row h1,
+  .management-page-hero h1,
+  .modern-user-page .account-page-hero h1 {
+    font-size: 1.35rem;
+  }
+
+  button,
+  .button-link,
+  .secondary-button,
+  .secondary-link,
+  input,
+  select,
+  textarea {
+    min-height: 36px;
+  }
+}

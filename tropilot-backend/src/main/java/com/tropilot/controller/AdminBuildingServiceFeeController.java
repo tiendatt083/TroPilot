@@ -29,7 +29,7 @@ public class AdminBuildingServiceFeeController {
 
     @PostMapping
     public ApiResponse<ServiceFeeResponse> createServiceFee(
-            @PathVariable Long buildingId,
+            @PathVariable(name = "buildingId") Long buildingId,
             @Valid @RequestBody ServiceFeeUpsertRequest request
     ) {
         return ApiResponse.success(
@@ -39,7 +39,7 @@ public class AdminBuildingServiceFeeController {
     }
 
     @GetMapping
-    public ApiResponse<List<ServiceFeeResponse>> getServiceFees(@PathVariable Long buildingId) {
+    public ApiResponse<List<ServiceFeeResponse>> getServiceFees(@PathVariable(name = "buildingId") Long buildingId) {
         return ApiResponse.success(
                 "Service fees loaded successfully",
                 serviceFeeService.getBuildingServiceFees(buildingId)
@@ -48,8 +48,8 @@ public class AdminBuildingServiceFeeController {
 
     @GetMapping("/{id}")
     public ApiResponse<ServiceFeeResponse> getServiceFee(
-            @PathVariable Long buildingId,
-            @PathVariable Long id
+            @PathVariable(name = "buildingId") Long buildingId,
+            @PathVariable(name = "id") Long id
     ) {
         return ApiResponse.success(
                 "Service fee loaded successfully",
@@ -59,8 +59,8 @@ public class AdminBuildingServiceFeeController {
 
     @PutMapping("/{id}")
     public ApiResponse<ServiceFeeResponse> updateServiceFee(
-            @PathVariable Long buildingId,
-            @PathVariable Long id,
+            @PathVariable(name = "buildingId") Long buildingId,
+            @PathVariable(name = "id") Long id,
             @Valid @RequestBody ServiceFeeUpsertRequest request
     ) {
         return ApiResponse.success(
@@ -71,8 +71,8 @@ public class AdminBuildingServiceFeeController {
 
     @DeleteMapping("/{id}")
     public ApiResponse<ServiceFeeDeleteResponse> deleteServiceFee(
-            @PathVariable Long buildingId,
-            @PathVariable Long id
+            @PathVariable(name = "buildingId") Long buildingId,
+            @PathVariable(name = "id") Long id
     ) {
         ServiceFeeDeleteResponse response = serviceFeeService.deleteBuildingServiceFee(buildingId, id);
         String message = response.isDeleted()
@@ -84,8 +84,8 @@ public class AdminBuildingServiceFeeController {
 
     @PutMapping("/{id}/toggle")
     public ApiResponse<ServiceFeeResponse> toggleServiceFee(
-            @PathVariable Long buildingId,
-            @PathVariable Long id
+            @PathVariable(name = "buildingId") Long buildingId,
+            @PathVariable(name = "id") Long id
     ) {
         return ApiResponse.success(
                 "Service fee status updated successfully",

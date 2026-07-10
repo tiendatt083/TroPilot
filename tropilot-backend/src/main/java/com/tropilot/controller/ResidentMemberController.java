@@ -50,7 +50,7 @@ public class ResidentMemberController {
     @PutMapping("/{id}")
     public ApiResponse<RoomMemberResponse> updateMember(
             @AuthenticationPrincipal AuthenticatedUser user,
-            @PathVariable Long id,
+            @PathVariable(name = "id") Long id,
             @Valid @RequestBody RoomMemberUpsertRequest request
     ) {
         return ApiResponse.success(
@@ -62,7 +62,7 @@ public class ResidentMemberController {
     @PutMapping("/{id}/leave")
     public ApiResponse<RoomMemberResponse> markMemberLeft(
             @AuthenticationPrincipal AuthenticatedUser user,
-            @PathVariable Long id
+            @PathVariable(name = "id") Long id
     ) {
         return ApiResponse.success(
                 "Room member marked as left successfully",

@@ -44,7 +44,7 @@ public class ResidentEquipmentController {
     @PostMapping(path = "/{id}/maintenance-requests", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<MaintenanceRequestResponse> requestMaintenance(
             @AuthenticationPrincipal AuthenticatedUser user,
-            @PathVariable Long id,
+            @PathVariable(name = "id") Long id,
             @Valid @ModelAttribute MaintenanceRequestCreateRequest request
     ) {
         return ApiResponse.success(

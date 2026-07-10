@@ -39,35 +39,35 @@ public class AdminUserController {
     }
 
     @GetMapping("/{id}")
-    public ApiResponse<UserResponse> getUser(@PathVariable Long id) {
+    public ApiResponse<UserResponse> getUser(@PathVariable(name = "id") Long id) {
         return ApiResponse.success("User loaded successfully", userService.getUser(id));
     }
 
     @PutMapping("/{id}")
     public ApiResponse<UserResponse> updateUser(
-            @PathVariable Long id,
+            @PathVariable(name = "id") Long id,
             @Valid @RequestBody AdminUpdateUserRequest request
     ) {
         return ApiResponse.success("User updated successfully", userService.updateUser(id, request));
     }
 
     @PutMapping("/{id}/lock")
-    public ApiResponse<UserResponse> lockUser(@PathVariable Long id) {
+    public ApiResponse<UserResponse> lockUser(@PathVariable(name = "id") Long id) {
         return ApiResponse.success("User locked successfully", userService.lockUser(id));
     }
 
     @PutMapping("/{id}/unlock")
-    public ApiResponse<UserResponse> unlockUser(@PathVariable Long id) {
+    public ApiResponse<UserResponse> unlockUser(@PathVariable(name = "id") Long id) {
         return ApiResponse.success("User unlocked successfully", userService.unlockUser(id));
     }
 
     @PutMapping("/{id}/reset-password")
-    public ApiResponse<PasswordResetResponse> resetPassword(@PathVariable Long id) {
+    public ApiResponse<PasswordResetResponse> resetPassword(@PathVariable(name = "id") Long id) {
         return ApiResponse.success("Temporary password generated successfully", userService.resetPassword(id));
     }
 
     @DeleteMapping("/{id}")
-    public ApiResponse<Void> deleteUser(@PathVariable Long id) {
+    public ApiResponse<Void> deleteUser(@PathVariable(name = "id") Long id) {
         userService.deleteUser(id);
         return ApiResponse.success("User deleted successfully");
     }

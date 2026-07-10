@@ -22,12 +22,12 @@ public class StaffBuildingController {
     private final BuildingService buildingService;
 
     @GetMapping
-    public ApiResponse<List<BuildingResponse>> getBuildings(@RequestParam(required = false) String search) {
+    public ApiResponse<List<BuildingResponse>> getBuildings(@RequestParam(name = "search", required = false) String search) {
         return ApiResponse.success("Buildings loaded successfully", buildingService.getBuildings(search));
     }
 
     @GetMapping("/{id}")
-    public ApiResponse<BuildingResponse> getBuilding(@PathVariable Long id) {
+    public ApiResponse<BuildingResponse> getBuilding(@PathVariable(name = "id") Long id) {
         return ApiResponse.success("Building loaded successfully", buildingService.getBuilding(id));
     }
 }

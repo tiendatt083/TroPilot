@@ -50,7 +50,7 @@ public class ResidentMaintenanceRequestController {
     @GetMapping("/{id}")
     public ApiResponse<MaintenanceRequestResponse> getRequest(
             @AuthenticationPrincipal AuthenticatedUser user,
-            @PathVariable Long id
+            @PathVariable(name = "id") Long id
     ) {
         return ApiResponse.success(
                 "Maintenance request loaded successfully",

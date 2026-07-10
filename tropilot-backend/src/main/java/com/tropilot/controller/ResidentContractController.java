@@ -34,7 +34,7 @@ public class ResidentContractController {
     @PutMapping("/{id}/confirm")
     public ApiResponse<RentalContractResponse> confirmContract(
             @AuthenticationPrincipal AuthenticatedUser user,
-            @PathVariable Long id
+            @PathVariable(name = "id") Long id
     ) {
         return ApiResponse.success(
                 "Rental contract confirmed successfully",
@@ -45,7 +45,7 @@ public class ResidentContractController {
     @PostMapping("/{id}/report-error")
     public ApiResponse<RentalContractResponse> reportContractIssue(
             @AuthenticationPrincipal AuthenticatedUser user,
-            @PathVariable Long id
+            @PathVariable(name = "id") Long id
     ) {
         return ApiResponse.success(
                 "Rental contract issue reported successfully",

@@ -7,6 +7,7 @@ import EquipmentForm from './EquipmentForm.jsx';
 import EquipmentMaintenancePanel from './EquipmentMaintenancePanel.jsx';
 import EquipmentTable from './EquipmentTable.jsx';
 import ActionDialog from './common/ActionDialog.jsx';
+import FilterBar from './common/FilterBar.jsx';
 import LineIcon from './common/LineIcon.jsx';
 import { EQUIPMENT_CONDITIONS, EQUIPMENT_SCOPES } from '../utils/equipmentOptions.js';
 import { formatRoomLabel } from '../utils/roomDisplay.js';
@@ -109,6 +110,19 @@ export default function BuildingEquipmentPage({ role }) {
     loadData(EMPTY_FILTERS).finally(() => setLoading(false));
   }, [building.id, api]);
 
+  useEffect(() => {
+    const activeFilters = {
+      ...filters,
+      search: filters.search.trim()
+    };
+    const timer = window.setTimeout(() => {
+      setLoading(true);
+      loadData(activeFilters).finally(() => setLoading(false));
+    }, filters.search ? 250 : 0);
+
+    return () => window.clearTimeout(timer);
+  }, [filters, building.id, api]);
+
   const handleFilterChange = (event) => {
     const { name, value } = event.target;
     setFilters((current) => ({
@@ -116,18 +130,6 @@ export default function BuildingEquipmentPage({ role }) {
       [name]: value,
       ...(name === 'scope' && value !== 'ROOM' ? { roomId: '' } : {})
     }));
-  };
-
-  const handleApplyFilters = async (event) => {
-    event.preventDefault();
-    const activeFilters = {
-      ...filters,
-      search: filters.search.trim()
-    };
-    setFilters(activeFilters);
-    setLoading(true);
-    await loadData(activeFilters);
-    setLoading(false);
   };
 
   const handleClearFilters = async () => {
@@ -331,68 +333,60 @@ export default function BuildingEquipmentPage({ role }) {
       )}
 
       <section className="building-section">
-        <form className="equipment-filter-row building-equipment-filter-row" onSubmit={handleApplyFilters}>
-          <input
-            aria-label={t('equipment.filters.searchAria')}
-            name="search"
-            value={filters.search}
-            onChange={handleFilterChange}
-            placeholder={t('equipment.filters.searchPlaceholder')}
-          />
-          <div>
-            <select
-              id="equipmentScopeFilter"
-              aria-label={t('equipment.filters.scope')}
-              name="scope"
-              value={filters.scope}
-              onChange={handleFilterChange}
-            >
-              <option value="">{t('equipment.filters.allScopes')}</option>
-              {EQUIPMENT_SCOPES.map((scope) => (
-                <option key={scope} value={scope}>
-                  {t(`equipment.scopes.${scope}`)}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <select
-              id="equipmentRoomFilter"
-              aria-label={t('equipment.filters.room')}
-              name="roomId"
-              value={filters.roomId}
-              disabled={filters.scope !== 'ROOM'}
-              onChange={handleFilterChange}
-            >
-              <option value="">{t('equipment.filters.allRooms')}</option>
-              {rooms.map((room) => (
-                <option key={room.id} value={room.id}>
-                  {formatRoomLabel(room)}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <select
-              id="equipmentConditionFilter"
-              aria-label={t('equipment.filters.condition')}
-              name="condition"
-              value={filters.condition}
-              onChange={handleFilterChange}
-            >
-              <option value="">{t('equipment.filters.allConditions')}</option>
-              {EQUIPMENT_CONDITIONS.map((condition) => (
-                <option key={condition} value={condition}>
-                  {t(`equipment.conditions.${condition}`)}
-                </option>
-              ))}
-            </select>
-          </div>
-          <button type="submit">{t('common.filter')}</button>
-          <button className="secondary-button inline-button" type="button" onClick={handleClearFilters}>
-            {t('common.clear')}
-          </button>
-        </form>
+        <FilterBar
+          as="div"
+          className="equipment-filter-row building-equipment-filter-row"
+          searchAriaLabel={t('equipment.filters.searchAria')}
+          searchPlaceholder={t('equipment.filters.searchPlaceholder')}
+          searchValue={filters.search}
+          suggestionFields={['equipmentCode', 'name', 'roomCode', 'buildingCode', 'locationDescription']}
+          suggestionItems={equipment}
+          filters={[
+            {
+              name: 'scope',
+              value: filters.scope,
+              ariaLabel: t('equipment.filters.scope'),
+              onChange: (value) => handleFilterChange({ target: { name: 'scope', value } }),
+              options: [
+                { value: '', label: t('equipment.filters.allScopes') },
+                ...EQUIPMENT_SCOPES.map((scope) => ({
+                  value: scope,
+                  label: t(`equipment.scopes.${scope}`)
+                }))
+              ]
+            },
+            {
+              name: 'roomId',
+              value: filters.roomId,
+              disabled: filters.scope !== 'ROOM',
+              ariaLabel: t('equipment.filters.room'),
+              onChange: (value) => handleFilterChange({ target: { name: 'roomId', value } }),
+              options: [
+                { value: '', label: t('equipment.filters.allRooms') },
+                ...rooms.map((room) => ({
+                  value: String(room.id),
+                  label: formatRoomLabel(room)
+                }))
+              ]
+            },
+            {
+              name: 'condition',
+              value: filters.condition,
+              ariaLabel: t('equipment.filters.condition'),
+              onChange: (value) => handleFilterChange({ target: { name: 'condition', value } }),
+              options: [
+                { value: '', label: t('equipment.filters.allConditions') },
+                ...EQUIPMENT_CONDITIONS.map((condition) => ({
+                  value: condition,
+                  label: t(`equipment.conditions.${condition}`)
+                }))
+              ]
+            }
+          ]}
+          clearLabel={t('common.clear')}
+          onClear={handleClearFilters}
+          onSearchChange={(value) => handleFilterChange({ target: { name: 'search', value } })}
+        />
 
         {loading ? (
           <div className="empty-state">{t('equipment.messages.loading')}</div>

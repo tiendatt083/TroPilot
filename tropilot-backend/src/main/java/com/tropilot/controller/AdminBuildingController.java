@@ -33,25 +33,25 @@ public class AdminBuildingController {
     }
 
     @GetMapping
-    public ApiResponse<List<BuildingResponse>> getBuildings(@RequestParam(required = false) String search) {
+    public ApiResponse<List<BuildingResponse>> getBuildings(@RequestParam(name = "search", required = false) String search) {
         return ApiResponse.success("Buildings loaded successfully", buildingService.getBuildings(search));
     }
 
     @GetMapping("/{id}")
-    public ApiResponse<BuildingResponse> getBuilding(@PathVariable Long id) {
+    public ApiResponse<BuildingResponse> getBuilding(@PathVariable(name = "id") Long id) {
         return ApiResponse.success("Building loaded successfully", buildingService.getBuilding(id));
     }
 
     @PutMapping("/{id}")
     public ApiResponse<BuildingResponse> updateBuilding(
-            @PathVariable Long id,
+            @PathVariable(name = "id") Long id,
             @Valid @RequestBody BuildingUpsertRequest request
     ) {
         return ApiResponse.success("Building updated successfully", buildingService.updateBuilding(id, request));
     }
 
     @DeleteMapping("/{id}")
-    public ApiResponse<Void> deleteBuilding(@PathVariable Long id) {
+    public ApiResponse<Void> deleteBuilding(@PathVariable(name = "id") Long id) {
         buildingService.deleteBuilding(id);
         return ApiResponse.success("Building deleted successfully");
     }

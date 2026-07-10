@@ -50,7 +50,7 @@ public class ResidentVehicleController {
     @PutMapping("/{id}/request-cancel")
     public ApiResponse<VehicleResponse> requestCancel(
             @AuthenticationPrincipal AuthenticatedUser user,
-            @PathVariable Long id
+            @PathVariable(name = "id") Long id
     ) {
         return ApiResponse.success(
                 "Vehicle cancellation requested successfully",

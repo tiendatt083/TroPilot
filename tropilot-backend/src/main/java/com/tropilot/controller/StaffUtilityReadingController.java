@@ -49,8 +49,8 @@ public class StaffUtilityReadingController {
 
     @PostMapping("/fetch")
     public ApiResponse<UtilityReadingFetchResponse> fetchReading(
-            @RequestParam Long roomId,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate readingDate
+            @RequestParam(name = "roomId") Long roomId,
+            @RequestParam(name = "readingDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate readingDate
     ) {
         return ApiResponse.success(
                 "Utility readings fetched successfully",
@@ -60,8 +60,8 @@ public class StaffUtilityReadingController {
 
     @PostMapping("/fetch/electricity")
     public ApiResponse<UtilityMeterFetchResponse> fetchElectricityReading(
-            @RequestParam Long roomId,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate readingDate
+            @RequestParam(name = "roomId") Long roomId,
+            @RequestParam(name = "readingDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate readingDate
     ) {
         return ApiResponse.success(
                 "Electricity reading fetched successfully",
@@ -71,8 +71,8 @@ public class StaffUtilityReadingController {
 
     @PostMapping("/fetch/water")
     public ApiResponse<UtilityMeterFetchResponse> fetchWaterReading(
-            @RequestParam Long roomId,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate readingDate
+            @RequestParam(name = "roomId") Long roomId,
+            @RequestParam(name = "readingDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate readingDate
     ) {
         return ApiResponse.success(
                 "Water reading fetched successfully",
@@ -81,14 +81,14 @@ public class StaffUtilityReadingController {
     }
 
     @GetMapping
-    public ApiResponse<List<UtilityReadingResponse>> getReadings(@RequestParam(required = false) Long buildingId) {
+    public ApiResponse<List<UtilityReadingResponse>> getReadings(@RequestParam(name = "buildingId", required = false) Long buildingId) {
         return ApiResponse.success("Utility readings loaded successfully", utilityReadingService.getReadings(buildingId));
     }
 
     @GetMapping("/overview")
     public ApiResponse<UtilityReadingOverviewResponse> getOverview(
-            @RequestParam Long buildingId,
-            @RequestParam String month
+            @RequestParam(name = "buildingId") Long buildingId,
+            @RequestParam(name = "month") String month
     ) {
         return ApiResponse.success(
                 "Utility reading overview loaded successfully",
@@ -97,7 +97,7 @@ public class StaffUtilityReadingController {
     }
 
     @GetMapping("/{id}")
-    public ApiResponse<UtilityReadingResponse> getReading(@PathVariable Long id) {
+    public ApiResponse<UtilityReadingResponse> getReading(@PathVariable(name = "id") Long id) {
         return ApiResponse.success("Utility reading loaded successfully", utilityReadingService.getReading(id));
     }
 

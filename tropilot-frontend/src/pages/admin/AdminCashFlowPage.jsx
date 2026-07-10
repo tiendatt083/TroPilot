@@ -29,10 +29,10 @@ export default function AdminCashFlowPage() {
     loadCashFlow(month).finally(() => setLoading(false));
   }, []);
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    loadCashFlow(month);
-  };
+  useEffect(() => {
+    setLoading(true);
+    loadCashFlow(month).finally(() => setLoading(false));
+  }, [month]);
 
   return (
     <section className="content-section">
@@ -40,12 +40,9 @@ export default function AdminCashFlowPage() {
 
       {error && <div className="alert error-alert">{error}</div>}
 
-      <form className="month-filter-row" onSubmit={handleSubmit}>
+      <div className="month-filter-row">
         <input type="month" lang="en-GB" value={month} onChange={(event) => setMonth(event.target.value)} required />
-        <button className="inline-button" type="submit">
-          {t('workspace.cashFlow.view')}
-        </button>
-      </form>
+      </div>
 
       {loading ? (
         <div className="empty-state">{t('workspace.cashFlow.loading')}</div>

@@ -21,7 +21,7 @@ public class AdminInvoiceComplaintController {
     private final FeedbackService feedbackService;
 
     @GetMapping
-    public ApiResponse<List<FeedbackResponse>> getInvoiceComplaints(@RequestParam(required = false) Long buildingId) {
+    public ApiResponse<List<FeedbackResponse>> getInvoiceComplaints(@RequestParam(name = "buildingId", required = false) Long buildingId) {
         return ApiResponse.success("Invoice complaints loaded successfully", feedbackService.getInvoiceComplaints(buildingId));
     }
 }

@@ -37,7 +37,7 @@ public class StaffExpenseController {
     }
 
     @GetMapping
-    public ApiResponse<List<ExpenseResponse>> getExpenses(@RequestParam(required = false) Long buildingId) {
+    public ApiResponse<List<ExpenseResponse>> getExpenses(@RequestParam(name = "buildingId", required = false) Long buildingId) {
         return ApiResponse.success("Expenses loaded successfully", expenseService.getExpenses(buildingId));
     }
 

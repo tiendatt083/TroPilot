@@ -123,7 +123,7 @@
   "contact": {
     "title": "Liên hệ",
     "eyebrow": "Hỗ trợ hệ thống",
-    "description": "Sử dụng các thông tin dưới đây để liên hệ với đơn vị quản lý. Thông tin liên hệ này áp dụng chung cho toàn bộ khu trọ.",
+    "description": "Sử dụng các thông tin dưới đây để liên hệ với đơn vị quản lý. Thông tin liên hệ này áp dụng chung cho toàn bộ tòa nhà.",
     "summaryTitle": "Thông tin đơn vị quản lý",
     "editTitle": "Chỉnh sửa thông tin liên hệ",
       "phoneListTitle": "Số điện thoại",
@@ -177,7 +177,7 @@
     "admin": "Điều hướng Admin",
     "staff": "Điều hướng nhân viên",
     "resident": "Điều hướng chủ hộ",
-    "buildingWorkspace": "Điều hướng quản lý khu trọ",
+    "buildingWorkspace": "Điều hướng quản lý tòa nhà",
     "collapseSidebar": "Thu gọn thanh điều hướng",
     "expandSidebar": "Mở rộng thanh điều hướng",
     "dashboard": "Trang chủ",
@@ -216,7 +216,7 @@
   "userManagement": {
     "eyebrow": "Tài khoản hệ thống",
     "title": "Quản lý nhân viên",
-    "summary": "Quản lý tài khoản nhân viên trong hệ thống ({{count}} tài khoản)",
+    "summary": "Quản lý {{count}} tài khoản nhân viên trong hệ thống",
     "filters": {
       "searchAria": "Tìm kiếm nhân viên",
       "searchPlaceholder": "Tìm kiếm...",
@@ -1083,6 +1083,157 @@
         "next30Days": "30 ngày tới"
       }
     },
+    "ops": {
+      "hero": {
+        "greeting": "Xin chào, {{name}}!",
+        "description": "Chào mừng bạn đến với hệ thống quản lý phòng trọ Copilot"
+      },
+      "eyebrow": "Tổng quan",
+      "todayOperations": "Vận hành hôm nay",
+      "trackedItems": "{{count}} mục cần theo dõi",
+      "loadingAdmin": "Đang tải dữ liệu tổng quan...",
+      "emptyAdmin": "Chưa có dữ liệu dashboard.",
+      "adminLoadError": "Không thể tải dữ liệu tổng quan quản trị.",
+      "loadingBuilding": "Đang tải tổng quan tòa nhà...",
+      "units": {
+        "currency": "đ",
+        "million": "tr",
+        "billion": "tỷ"
+      },
+      "status": {
+        "invoice": {
+          "UNPAID": "Chưa thanh toán",
+          "PENDING_CONFIRMATION": "Chờ xác nhận",
+          "PAID": "Đã thanh toán",
+          "OVERDUE": "Quá hạn",
+          "REJECTED": "Bị từ chối"
+        },
+        "feedback": {
+          "PENDING": "Chờ xử lý",
+          "IN_PROGRESS": "Đang xử lý",
+          "RESOLVED": "Đã giải quyết",
+          "REJECTED": "Đã đóng"
+        },
+        "maintenance": {
+          "PENDING": "Chờ xử lý",
+          "ASSIGNED": "Đã phân công",
+          "IN_PROGRESS": "Đang xử lý",
+          "COMPLETED": "Hoàn thành",
+          "REJECTED": "Từ chối"
+        },
+        "room": {
+          "OCCUPIED": "Đang thuê",
+          "EMPTY": "Trống",
+          "MAINTENANCE": "Bảo trì",
+          "RESERVED": "Đã giữ chỗ"
+        }
+      },
+      "labels": {
+        "buildings": "Tòa nhà",
+        "rooms": "Phòng",
+        "totalRooms": "Tổng phòng",
+        "residents": "Người thuê",
+        "devices": "Thiết bị",
+        "unpaidInvoices": "HĐ chưa thanh toán",
+        "pendingFeedback": "Phản hồi chờ xử lý",
+        "scheduledMaintenance": "Bảo trì đã lên lịch",
+        "occupiedRooms": "Phòng đang thuê",
+        "emptyRooms": "Phòng trống",
+        "openWork": "Việc đang mở",
+        "paid": "Đã thu",
+        "unpaid": "Chưa thu",
+        "totalInvoices": "Tổng hóa đơn",
+        "expenses": "Chi phí"
+      },
+      "helpers": {
+        "managedBuildings": "Tòa nhà đang quản lý",
+        "managedRooms": "Số phòng đang quản lý",
+        "residentProfiles": "Hồ sơ người thuê",
+        "runningDevices": "Thiết bị vận hành",
+        "needsReview": "Cần theo dõi",
+        "needsReply": "Cần phản hồi",
+        "upcomingWork": "Công việc sắp tới",
+        "roomsInBuilding": "Số phòng trong tòa",
+        "rentable": "Có thể cho thuê",
+        "residentRecords": "Hồ sơ đang ở",
+        "activeResidents": "{{count}} người thuê đang ở",
+        "occupancyRate": "{{percent}}% tỷ lệ thuê",
+        "validReceipts": "{{count}} biên lai hợp lệ",
+        "workAndMaintenance": "Bảo trì và công việc"
+      },
+      "counts": {
+        "contracts": "{{count}} hợp đồng",
+        "residents": "{{count}} người thuê",
+        "pending": "{{count}} chờ duyệt",
+        "invoices": "{{count}} hóa đơn",
+        "receipts": "{{count}} biên lai",
+        "maintenance": "{{count}} bảo trì",
+        "tasks": "{{count}} công việc",
+        "vehicles": "{{count}} xe",
+        "feedbacks": "{{count}} phản hồi",
+        "totalFeedbacks": "{{count}} tổng phản hồi",
+        "notifications": "{{count}} thông báo"
+      },
+      "summaryGroups": {
+        "rentals": "Thuê phòng",
+        "payments": "Thanh toán",
+        "operations": "Vận hành",
+        "contact": "Liên hệ"
+      },
+      "buildingSummary": {
+        "title": "Tổng hợp theo tòa",
+        "area": "Tòa",
+        "rooms": "Phòng",
+        "residents": "Người thuê",
+        "unpaid": "Chưa thu",
+        "paid": "Đã thu",
+        "empty": "Chưa có dữ liệu tòa."
+      },
+      "charts": {
+        "monthlyRevenue": "Doanh thu theo tháng",
+        "paymentRate": "Tỷ lệ thanh toán",
+        "roomStatus": "Tình trạng phòng",
+        "feedbackDistribution": "Phân bố phản hồi",
+        "attentionDistribution": "Phân bố việc cần xử lý",
+        "buildingFinance": "Tài chính tòa nhà",
+        "operationalSummary": "Tổng hợp vận hành"
+      },
+      "columns": {
+        "group": "Nhóm",
+        "primary": "Chỉ số chính",
+        "secondary": "Số lượng",
+        "followUp": "Theo dõi",
+        "title": "Tiêu đề",
+        "room": "Phòng",
+        "status": "Trạng thái",
+        "invoiceCode": "Mã HĐ",
+        "amount": "Tổng tiền",
+        "dueDate": "Hạn",
+        "description": "Mô tả",
+        "equipment": "Thiết bị",
+        "startDate": "Ngày bắt đầu",
+        "finishDate": "Ngày hoàn thành",
+        "cost": "Chi phí"
+      },
+      "empty": {
+        "recentFeedbacks": "Chưa có phản hồi gần đây.",
+        "recentInvoices": "Chưa có hóa đơn gần đây.",
+        "recentMaintenance": "Chưa có lịch bảo trì gần đây."
+      },
+      "fallback": {
+        "noRoom": "Chưa có phòng",
+        "noTitle": "Không có tiêu đề",
+        "noDescription": "Không có mô tả",
+        "notSet": "Chưa đặt",
+        "noEquipment": "Không gắn thiết bị",
+        "tracking": "Đang theo dõi"
+      },
+      "recent": {
+        "feedbacks": "Phản hồi gần đây",
+        "invoices": "Hóa đơn gần đây",
+        "maintenance": "Lịch bảo trì gần đây"
+      }
+    },
     "staff": {
       "title": "Bảng điều khiển",
       "eyebrow": "Nhân viên",
@@ -1159,12 +1310,25 @@
         "activeVehicles": "Xe đang hoạt động",
         "recentMaintenanceRequests": "Yêu cầu bảo trì gần đây"
       },
+      "charts": {
+        "lastMonths": "Theo tháng",
+        "monthlyUsage": "Điện nước tiêu thụ",
+        "paymentTrend": "Chi phí đã ghi nhận",
+        "monthlyCost": "Chi phí hàng tháng",
+        "electricity": "Điện",
+        "water": "Nước",
+        "currentMonthCost": "Tháng gần nhất",
+        "averageCost": "Trung bình tháng",
+        "electricityTotal": "Tổng điện",
+        "waterTotal": "Tổng nước"
+      },
       "empty": {
         "noActiveContract": "Không có hợp đồng đang hoạt động.",
         "noInvoice": "Không có hóa đơn.",
         "noActiveVehicle": "Không có xe đang hoạt động.",
         "noMaintenanceRequest": "Không có yêu cầu bảo trì nào.",
-        "noAssignedRoom": "Tài khoản của bạn chưa được gán phòng."
+        "noAssignedRoom": "Tài khoản của bạn chưa được gán phòng.",
+        "noChartData": "Chưa có dữ liệu theo tháng."
       }
     }
   },
@@ -1328,7 +1492,7 @@
   "notifications": {
     "adminEyebrow": "Admin",
     "title": "Thông báo",
-    "summary": "Theo dõi {{count}} thông báo đã tạo và phạm vi người nhận.",
+    "summary": "Theo dõi {{count}} thông báo đã tạo.",
     "inboxTitle": "Hộp thư",
     "sentTitle": "Đã gửi",
     "systemSender": "Hệ thống",

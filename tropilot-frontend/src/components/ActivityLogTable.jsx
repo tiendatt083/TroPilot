@@ -202,16 +202,20 @@ export default function ActivityLogTable({ logs, showUser = true }) {
       <table className="data-table activity-log-table">
         <thead>
           <tr>
-            <th>{t('activityLogs.columns.time')}</th>
-            {showUser && <th>{t('activityLogs.columns.user')}</th>}
-            <th>{t('activityLogs.columns.action')}</th>
-            <th>{t('activityLogs.columns.description')}</th>
+            <th className="activity-log-action-column">{t('activityLogs.columns.action')}</th>
+            <th className="activity-log-description-column">{t('activityLogs.columns.description')}</th>
+            {showUser && <th className="activity-log-user-column">{t('activityLogs.columns.user')}</th>}
+            <th className="activity-log-time-column">{t('activityLogs.columns.time')}</th>
           </tr>
         </thead>
         <tbody>
           {logs.map((log) => (
             <tr key={log.id}>
-              <td>{formatDateTime(log.createdAt, t)}</td>
+              <td>
+                <strong>{formatAction(log.action, t)}</strong>
+                {isEnglish && log.action && <span className="table-subtext">{log.action}</span>}
+              </td>
+              <td>{formatDescription(log.description, t)}</td>
               {showUser && (
                 <td>
                   <strong>{log.userFullName || t('activityLogs.notAvailable')}</strong>
@@ -219,11 +223,7 @@ export default function ActivityLogTable({ logs, showUser = true }) {
                   <span className="table-subtext">{formatRole(log.userRole, t)}</span>
                 </td>
               )}
-              <td>
-                <strong>{formatAction(log.action, t)}</strong>
-                {isEnglish && log.action && <span className="table-subtext">{log.action}</span>}
-              </td>
-              <td>{formatDescription(log.description, t)}</td>
+              <td>{formatDateTime(log.createdAt, t)}</td>
             </tr>
           ))}
         </tbody>

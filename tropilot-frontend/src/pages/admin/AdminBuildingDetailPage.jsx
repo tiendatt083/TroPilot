@@ -30,29 +30,6 @@ const EMPTY_BUILDING_OPERATIONS = {
   notificationCount: 0
 };
 
-const INVOICE_STATUS_LABELS = {
-  UNPAID: 'Chưa thanh toán',
-  PENDING_CONFIRMATION: 'Chờ xác nhận',
-  PAID: 'Đã thanh toán',
-  OVERDUE: 'Quá hạn',
-  REJECTED: 'Bị từ chối'
-};
-
-const FEEDBACK_STATUS_LABELS = {
-  PENDING: 'Chờ xử lý',
-  IN_PROGRESS: 'Đang xử lý',
-  RESOLVED: 'Đã giải quyết',
-  REJECTED: 'Đã đóng'
-};
-
-const MAINTENANCE_STATUS_LABELS = {
-  PENDING: 'Chờ xử lý',
-  ASSIGNED: 'Đã phân công',
-  IN_PROGRESS: 'Đang xử lý',
-  COMPLETED: 'Hoàn thành',
-  REJECTED: 'Từ chối'
-};
-
 function toNumber(value) {
   const numberValue = Number(value ?? 0);
   return Number.isFinite(numberValue) ? numberValue : 0;
@@ -62,22 +39,22 @@ function formatNumber(value, locale = 'vi-VN') {
   return toNumber(value).toLocaleString(locale, { maximumFractionDigits: 2 });
 }
 
-function formatCurrency(value, locale = 'vi-VN') {
-  return `${formatNumber(value, locale)} đ`;
+function formatCurrency(value, locale = 'vi-VN', currencyLabel = 'VND') {
+  return `${formatNumber(value, locale)} ${currencyLabel}`;
 }
 
-function formatCompactCurrency(value) {
+function formatCompactCurrency(value, locale = 'vi-VN', t) {
   const amount = toNumber(value);
 
   if (Math.abs(amount) >= 1_000_000_000) {
-    return `${(amount / 1_000_000_000).toLocaleString('vi-VN', { maximumFractionDigits: 1 })} tỷ`;
+    return `${(amount / 1_000_000_000).toLocaleString(locale, { maximumFractionDigits: 1 })} ${t('dashboard.ops.units.billion')}`;
   }
 
   if (Math.abs(amount) >= 1_000_000) {
-    return `${(amount / 1_000_000).toLocaleString('vi-VN', { maximumFractionDigits: 1 })} tr`;
+    return `${(amount / 1_000_000).toLocaleString(locale, { maximumFractionDigits: 1 })} ${t('dashboard.ops.units.million')}`;
   }
 
-  return formatCurrency(amount);
+  return formatCurrency(amount, locale, t('dashboard.ops.units.currency'));
 }
 
 function sumAmounts(items, amountKey) {
@@ -144,8 +121,8 @@ function getInvoiceCode(invoice) {
   return `HD-${month}-${String(invoice.id || '').padStart(3, '0')}`;
 }
 
-function getRoomLabel(record) {
-  return record.roomCode || record.roomName || 'Chưa có phòng';
+function getRoomLabel(record, fallback) {
+  return record.roomCode || record.roomName || fallback;
 }
 
 function getMaintenanceCost(record) {
@@ -162,6 +139,14 @@ function getMaintenanceFinishedDate(record) {
 
 function getStatusClass(prefix, status) {
   return `status-pill ${prefix}-${String(status || '').toLowerCase().replaceAll('_', '-')}`;
+}
+
+function getLocale(language) {
+  return String(language || '').startsWith('en') ? 'en-US' : 'vi-VN';
+}
+
+function statusLabel(t, group, status) {
+  return t(`dashboard.ops.status.${group}.${status}`, { defaultValue: status || '' });
 }
 
 function createDonutStyle(segments) {
@@ -231,7 +216,7 @@ function PanelTitle({ icon, title, action }) {
   );
 }
 
-function MonthlyRevenueChart({ rows }) {
+function MonthlyRevenueChart({ rows, locale, t }) {
   const maxValue = Math.max(
     ...rows.flatMap((row) => [row.paid, row.unpaid]),
     1
@@ -239,10 +224,10 @@ function MonthlyRevenueChart({ rows }) {
 
   return (
     <section className="ops-panel">
-      <PanelTitle icon="barChart" title="Doanh thu theo tháng" />
+      <PanelTitle icon="barChart" title={t('dashboard.ops.charts.monthlyRevenue')} />
       <div className="ops-chart-legend">
-        <span><i className="ops-legend-paid" />Đã thu</span>
-        <span><i className="ops-legend-unpaid" />Chưa thu</span>
+        <span><i className="ops-legend-paid" />{t('dashboard.ops.labels.paid')}</span>
+        <span><i className="ops-legend-unpaid" />{t('dashboard.ops.labels.unpaid')}</span>
       </div>
       <div className="ops-revenue-chart">
         {rows.map((row) => (
@@ -251,12 +236,12 @@ function MonthlyRevenueChart({ rows }) {
               <span
                 className="ops-revenue-bar ops-revenue-paid"
                 style={{ height: `${Math.max(3, getPercent(row.paid, maxValue))}%` }}
-                title={`Đã thu ${formatCompactCurrency(row.paid)}`}
+                title={`${t('dashboard.ops.labels.paid')} ${formatCompactCurrency(row.paid, locale, t)}`}
               />
               <span
                 className="ops-revenue-bar ops-revenue-unpaid"
                 style={{ height: `${Math.max(3, getPercent(row.unpaid, maxValue))}%` }}
-                title={`Chưa thu ${formatCompactCurrency(row.unpaid)}`}
+                title={`${t('dashboard.ops.labels.unpaid')} ${formatCompactCurrency(row.unpaid, locale, t)}`}
               />
             </div>
             <span>{formatDisplayMonth(row.month)}</span>
@@ -267,7 +252,7 @@ function MonthlyRevenueChart({ rows }) {
   );
 }
 
-function DonutPanel({ center, icon, segments, title }) {
+function DonutPanel({ center, icon, locale, segments, title }) {
   return (
     <section className="ops-panel ops-donut-panel">
       <PanelTitle icon={icon} title={title} />
@@ -280,7 +265,7 @@ function DonutPanel({ center, icon, segments, title }) {
             <span key={segment.label}>
               <i style={{ backgroundColor: segment.color }} />
               {segment.label}
-              <strong>{formatNumber(segment.value)}</strong>
+              <strong>{formatNumber(segment.value, locale)}</strong>
             </span>
           ))}
         </div>
@@ -289,18 +274,18 @@ function DonutPanel({ center, icon, segments, title }) {
   );
 }
 
-function SummaryTable({ rows }) {
+function SummaryTable({ rows, t }) {
   return (
     <section className="ops-panel">
-      <PanelTitle icon="activity" title="Tổng hợp vận hành" />
+      <PanelTitle icon="activity" title={t('dashboard.ops.charts.operationalSummary')} />
       <div className="ops-table-scroll">
         <table className="ops-data-table">
           <thead>
             <tr>
-              <th>Nhóm</th>
-              <th>Chỉ số chính</th>
-              <th>Số lượng</th>
-              <th>Theo dõi</th>
+              <th>{t('dashboard.ops.columns.group')}</th>
+              <th>{t('dashboard.ops.columns.primary')}</th>
+              <th>{t('dashboard.ops.columns.secondary')}</th>
+              <th>{t('dashboard.ops.columns.followUp')}</th>
             </tr>
           </thead>
           <tbody>
@@ -355,7 +340,8 @@ export default function AdminBuildingDetailPage() {
   const [operations, setOperations] = useState(EMPTY_BUILDING_OPERATIONS);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
-  const locale = i18n.language === 'vi' ? 'vi-VN' : 'en-US';
+  const locale = getLocale(i18n.resolvedLanguage || i18n.language);
+  const currencyLabel = t('dashboard.ops.units.currency');
 
   useEffect(() => {
     let active = true;
@@ -517,116 +503,116 @@ export default function AdminBuildingDetailPage() {
       unresolvedFeedbacks: feedbacksOpen,
       validReceipts: receipts,
       roomSegments: [
-        { label: 'Đang thuê', value: occupied, color: '#10b981' },
-        { label: 'Trống', value: empty, color: '#3b82f6' },
-        { label: 'Bảo trì', value: maintenance, color: '#f59e0b' }
+        { label: statusLabel(t, 'room', 'OCCUPIED'), value: occupied, color: '#10b981' },
+        { label: statusLabel(t, 'room', 'EMPTY'), value: empty, color: '#3b82f6' },
+        { label: statusLabel(t, 'room', 'MAINTENANCE'), value: maintenance, color: '#f59e0b' }
       ],
       attentionSegments: [
-        { label: 'Thành viên chờ duyệt', value: pending, color: '#f59e0b' },
-        { label: 'Thanh toán chờ duyệt', value: operations.pendingPayments.length, color: '#ef4444' },
-        { label: 'Bảo trì đang mở', value: openMaintenance, color: '#10b981' },
-        { label: 'Công việc đang mở', value: tasksOpen, color: '#6b7280' },
-        { label: 'Phản hồi chờ xử lý', value: feedbacksOpen, color: '#3b82f6' }
+        { label: t('navigation.pendingMembers'), value: pending, color: '#f59e0b' },
+        { label: t('navigation.pendingPayments'), value: operations.pendingPayments.length, color: '#ef4444' },
+        { label: t('dashboard.ops.labels.scheduledMaintenance'), value: openMaintenance, color: '#10b981' },
+        { label: t('dashboard.ops.labels.openWork'), value: tasksOpen, color: '#6b7280' },
+        { label: t('dashboard.ops.labels.pendingFeedback'), value: feedbacksOpen, color: '#3b82f6' }
       ],
       paymentSegments: [
-        { label: 'Đã thanh toán', value: paymentPaid, color: '#10b981' },
-        { label: 'Chưa thanh toán', value: paymentUnpaid, color: '#ef4444' }
+        { label: statusLabel(t, 'invoice', 'PAID'), value: paymentPaid, color: '#10b981' },
+        { label: statusLabel(t, 'invoice', 'UNPAID'), value: paymentUnpaid, color: '#ef4444' }
       ],
       financeRows: [
-        { label: 'Tổng hóa đơn', value: invoiceAmount, tone: 'primary' },
-        { label: 'Đã thu', value: receiptAmount, tone: 'success' },
-        { label: 'Chi phí', value: expenseAmount, tone: 'danger' },
-        { label: 'Chưa thu', value: debtAmount, tone: 'warning' }
+        { label: t('dashboard.ops.labels.totalInvoices'), value: invoiceAmount, tone: 'primary' },
+        { label: t('dashboard.ops.labels.paid'), value: receiptAmount, tone: 'success' },
+        { label: t('dashboard.ops.labels.expenses'), value: expenseAmount, tone: 'danger' },
+        { label: t('dashboard.ops.labels.unpaid'), value: debtAmount, tone: 'warning' }
       ],
       kpis: [
         {
           icon: 'dashboard',
           tone: 'primary',
           value: formatNumber(operations.rooms.length, locale),
-          label: 'Tổng phòng',
-          helper: 'Số phòng trong tòa'
+          label: t('dashboard.ops.labels.totalRooms'),
+          helper: t('dashboard.ops.helpers.roomsInBuilding')
         },
         {
           icon: 'home',
           tone: 'success',
           value: formatNumber(occupied, locale),
-          label: 'Phòng đang thuê',
-          helper: `${occupancyPercent}% tỷ lệ thuê`
+          label: t('dashboard.ops.labels.occupiedRooms'),
+          helper: t('dashboard.ops.helpers.occupancyRate', { percent: occupancyPercent })
         },
         {
           icon: 'building',
           tone: 'cyan',
           value: formatNumber(empty, locale),
-          label: 'Phòng trống',
-          helper: 'Có thể cho thuê'
+          label: t('dashboard.ops.labels.emptyRooms'),
+          helper: t('dashboard.ops.helpers.rentable')
         },
         {
           icon: 'users',
           tone: 'violet',
           value: formatNumber(occupants, locale),
-          label: 'Người thuê',
-          helper: 'Hồ sơ đang ở'
+          label: t('dashboard.ops.labels.residents'),
+          helper: t('dashboard.ops.helpers.residentRecords')
         },
         {
           icon: 'fileText',
           tone: 'danger',
           value: formatNumber(unpaidCount, locale),
-          label: 'HĐ chưa thanh toán',
-          helper: formatCurrency(debtAmount, locale)
+          label: t('dashboard.ops.labels.unpaidInvoices'),
+          helper: formatCurrency(debtAmount, locale, currencyLabel)
         },
         {
           icon: 'wallet',
           tone: 'success',
-          value: formatCompactCurrency(receiptAmount),
-          label: 'Đã thu',
-          helper: `${formatNumber(receipts.length, locale)} biên lai hợp lệ`
+          value: formatCompactCurrency(receiptAmount, locale, t),
+          label: t('dashboard.ops.labels.paid'),
+          helper: t('dashboard.ops.helpers.validReceipts', { count: formatNumber(receipts.length, locale) })
         },
         {
           icon: 'feedback',
           tone: 'warning',
           value: formatNumber(feedbacksOpen, locale),
-          label: 'Phản hồi chờ xử lý',
-          helper: 'Cần phản hồi'
+          label: t('dashboard.ops.labels.pendingFeedback'),
+          helper: t('dashboard.ops.helpers.needsReply')
         },
         {
           icon: 'tool',
           tone: attentionCount > 0 ? 'primary' : 'success',
           value: formatNumber(openMaintenance + tasksOpen, locale),
-          label: 'Việc đang mở',
-          helper: 'Bảo trì và công việc'
+          label: t('dashboard.ops.labels.openWork'),
+          helper: t('dashboard.ops.helpers.workAndMaintenance')
         }
       ],
       summaryRows: [
         {
-          group: 'Thuê phòng',
-          primary: `${formatNumber(operations.contracts.length, locale)} hợp đồng`,
-          secondary: `${formatNumber(approved, locale)} người thuê`,
-          followUp: `${formatNumber(pending, locale)} chờ duyệt`
+          group: t('dashboard.ops.summaryGroups.rentals'),
+          primary: t('dashboard.ops.counts.contracts', { count: formatNumber(operations.contracts.length, locale) }),
+          secondary: t('dashboard.ops.counts.residents', { count: formatNumber(approved, locale) }),
+          followUp: t('dashboard.ops.counts.pending', { count: formatNumber(pending, locale) })
         },
         {
-          group: 'Thanh toán',
-          primary: `${formatNumber(operations.invoices.length, locale)} hóa đơn`,
-          secondary: `${formatNumber(operations.pendingPayments.length, locale)} chờ duyệt`,
-          followUp: `${formatNumber(receipts.length, locale)} biên lai`
+          group: t('dashboard.ops.summaryGroups.payments'),
+          primary: t('dashboard.ops.counts.invoices', { count: formatNumber(operations.invoices.length, locale) }),
+          secondary: t('dashboard.ops.counts.pending', { count: formatNumber(operations.pendingPayments.length, locale) }),
+          followUp: t('dashboard.ops.counts.receipts', { count: formatNumber(receipts.length, locale) })
         },
         {
-          group: 'Vận hành',
-          primary: `${formatNumber(openMaintenance, locale)} bảo trì`,
-          secondary: `${formatNumber(tasksOpen, locale)} công việc`,
-          followUp: `${formatNumber(vehicles, locale)} xe`
+          group: t('dashboard.ops.summaryGroups.operations'),
+          primary: t('dashboard.ops.counts.maintenance', { count: formatNumber(openMaintenance, locale) }),
+          secondary: t('dashboard.ops.counts.tasks', { count: formatNumber(tasksOpen, locale) }),
+          followUp: t('dashboard.ops.counts.vehicles', { count: formatNumber(vehicles, locale) })
         },
         {
-          group: 'Liên hệ',
-          primary: `${formatNumber(feedbacksOpen, locale)} phản hồi`,
-          secondary: `${formatNumber(operations.feedbacks.length, locale)} tổng phản hồi`,
-          followUp: `${formatNumber(operations.notificationCount, locale)} thông báo`
+          group: t('dashboard.ops.summaryGroups.contact'),
+          primary: t('dashboard.ops.counts.feedbacks', { count: formatNumber(feedbacksOpen, locale) }),
+          secondary: t('dashboard.ops.counts.totalFeedbacks', { count: formatNumber(operations.feedbacks.length, locale) }),
+          followUp: t('dashboard.ops.counts.notifications', { count: formatNumber(operations.notificationCount, locale) })
         }
       ]
     };
-  }, [locale, operations]);
+  }, [currencyLabel, locale, operations, t]);
 
   if (loading) {
-    return <div className="empty-state">Đang tải tổng quan tòa nhà...</div>;
+    return <div className="empty-state">{t('dashboard.ops.loadingBuilding')}</div>;
   }
 
   return (
@@ -637,10 +623,10 @@ export default function AdminBuildingDetailPage() {
         <section className="ops-overview-panel">
           <div className="ops-overview-title">
             <div>
-              <span>Tổng quan</span>
-              <h2>Vận hành hôm nay</h2>
+              <span>{t('dashboard.ops.eyebrow')}</span>
+              <h2>{t('dashboard.ops.todayOperations')}</h2>
             </div>
-            <strong>{formatNumber(trackedItems, locale)} mục cần theo dõi</strong>
+            <strong>{t('dashboard.ops.trackedItems', { count: formatNumber(trackedItems, locale) })}</strong>
           </div>
           <div className="ops-kpi-grid">
             {kpis.map((metric) => (
@@ -650,12 +636,13 @@ export default function AdminBuildingDetailPage() {
         </section>
 
         <div className="ops-chart-grid">
-          <MonthlyRevenueChart rows={monthlyRevenue} />
+          <MonthlyRevenueChart rows={monthlyRevenue} locale={locale} t={t} />
           <DonutPanel
             center={`${getPercent(paidInvoiceAmount, paymentTotal)}%`}
             icon="chartPulse"
+            locale={locale}
             segments={paymentSegments}
-            title="Tỷ lệ thanh toán"
+            title={t('dashboard.ops.charts.paymentRate')}
           />
         </div>
 
@@ -663,87 +650,89 @@ export default function AdminBuildingDetailPage() {
           <DonutPanel
             center={formatNumber(operations.rooms.length, locale)}
             icon="building"
+            locale={locale}
             segments={roomSegments}
-            title="Tình trạng phòng"
+            title={t('dashboard.ops.charts.roomStatus')}
           />
           <DonutPanel
             center={formatNumber(trackedItems, locale)}
             icon="activity"
+            locale={locale}
             segments={attentionSegments}
-            title="Phân bố việc cần xử lý"
+            title={t('dashboard.ops.charts.attentionDistribution')}
           />
         </div>
 
         <div className="ops-chart-grid">
           <section className="ops-panel">
-            <PanelTitle icon="wallet" title="Tài chính tòa nhà" />
+            <PanelTitle icon="wallet" title={t('dashboard.ops.charts.buildingFinance')} />
             <div className="ops-finance-list">
               {financeRows.map((row) => (
                 <div className={`ops-finance-row ops-finance-${row.tone}`} key={row.label}>
                   <span>{row.label}</span>
-                  <strong>{formatCurrency(row.value, locale)}</strong>
+                  <strong>{formatCurrency(row.value, locale, currencyLabel)}</strong>
                 </div>
               ))}
             </div>
           </section>
-          <SummaryTable rows={summaryRows} />
+          <SummaryTable rows={summaryRows} t={t} />
         </div>
 
         <div className="ops-recent-grid">
           <RecentTable
             columns={[
-              { key: 'title', label: 'Tiêu đề', render: (row) => <strong>{row.title || row.content || 'Không có tiêu đề'}</strong> },
-              { key: 'room', label: 'Phòng', render: (row) => getRoomLabel(row) },
+              { key: 'title', label: t('dashboard.ops.columns.title'), render: (row) => <strong>{row.title || row.content || t('dashboard.ops.fallback.noTitle')}</strong> },
+              { key: 'room', label: t('dashboard.ops.columns.room'), render: (row) => getRoomLabel(row, t('dashboard.ops.fallback.noRoom')) },
               {
                 key: 'status',
-                label: 'Trạng thái',
+                label: t('dashboard.ops.columns.status'),
                 render: (row) => (
                   <span className={getStatusClass('feedback-status', row.status)}>
-                    {FEEDBACK_STATUS_LABELS[row.status] || row.status}
+                    {statusLabel(t, 'feedback', row.status)}
                   </span>
                 )
               }
             ]}
-            emptyText="Chưa có phản hồi gần đây."
+            emptyText={t('dashboard.ops.empty.recentFeedbacks')}
             icon="feedback"
             rows={recentFeedbacks}
-            title="Phản hồi gần đây"
+            title={t('dashboard.ops.recent.feedbacks')}
           />
           <RecentTable
             columns={[
-              { key: 'code', label: 'Mã HĐ', render: (row) => <strong>{getInvoiceCode(row)}</strong> },
-              { key: 'amount', label: 'Tổng tiền', render: (row) => formatCurrency(row.totalAmount, locale) },
-              { key: 'dueDate', label: 'Hạn', render: (row) => formatDisplayDate(row.dueDate, 'Chưa đặt') },
+              { key: 'code', label: t('dashboard.ops.columns.invoiceCode'), render: (row) => <strong>{getInvoiceCode(row)}</strong> },
+              { key: 'amount', label: t('dashboard.ops.columns.amount'), render: (row) => formatCurrency(row.totalAmount, locale, currencyLabel) },
+              { key: 'dueDate', label: t('dashboard.ops.columns.dueDate'), render: (row) => formatDisplayDate(row.dueDate, t('dashboard.ops.fallback.notSet')) },
               {
                 key: 'status',
-                label: 'Trạng thái',
+                label: t('dashboard.ops.columns.status'),
                 render: (row) => (
                   <span className={getStatusClass('invoice-status', row.status)}>
-                    {INVOICE_STATUS_LABELS[row.status] || row.status}
+                    {statusLabel(t, 'invoice', row.status)}
                   </span>
                 )
               }
             ]}
-            emptyText="Chưa có hóa đơn gần đây."
+            emptyText={t('dashboard.ops.empty.recentInvoices')}
             icon="fileText"
             rows={recentInvoices}
-            title="Hóa đơn gần đây"
+            title={t('dashboard.ops.recent.invoices')}
           />
         </div>
 
         <div className="ops-recent-grid ops-recent-grid-single">
           <RecentTable
             columns={[
-              { key: 'title', label: 'Mô tả', render: (row) => <strong>{row.title || row.content || 'Không có mô tả'}</strong> },
-              { key: 'equipment', label: 'Thiết bị', render: (row) => row.equipmentName || row.equipmentCode || 'Không gắn thiết bị' },
-              { key: 'startDate', label: 'Ngày bắt đầu', render: (row) => formatDisplayDate(row.createdAt, 'Chưa đặt') },
-              { key: 'finishDate', label: 'Ngày hoàn thành', render: (row) => formatDisplayDate(getMaintenanceFinishedDate(row), MAINTENANCE_STATUS_LABELS[row.status] || 'Đang theo dõi') },
-              { key: 'cost', label: 'Chi phí', render: (row) => formatCurrency(getMaintenanceCost(row), locale) }
+              { key: 'title', label: t('dashboard.ops.columns.description'), render: (row) => <strong>{row.title || row.content || t('dashboard.ops.fallback.noDescription')}</strong> },
+              { key: 'equipment', label: t('dashboard.ops.columns.equipment'), render: (row) => row.equipmentName || row.equipmentCode || t('dashboard.ops.fallback.noEquipment') },
+              { key: 'startDate', label: t('dashboard.ops.columns.startDate'), render: (row) => formatDisplayDate(row.createdAt, t('dashboard.ops.fallback.notSet')) },
+              { key: 'finishDate', label: t('dashboard.ops.columns.finishDate'), render: (row) => formatDisplayDate(getMaintenanceFinishedDate(row), statusLabel(t, 'maintenance', row.status) || t('dashboard.ops.fallback.tracking')) },
+              { key: 'cost', label: t('dashboard.ops.columns.cost'), render: (row) => formatCurrency(getMaintenanceCost(row), locale, currencyLabel) }
             ]}
-            emptyText="Chưa có lịch bảo trì gần đây."
+            emptyText={t('dashboard.ops.empty.recentMaintenance')}
             icon="tool"
             rows={recentMaintenance}
-            title="Lịch bảo trì gần đây"
+            title={t('dashboard.ops.recent.maintenance')}
           />
         </div>
       </div>

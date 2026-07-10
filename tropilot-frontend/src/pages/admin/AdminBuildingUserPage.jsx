@@ -5,6 +5,7 @@ import * as buildingApi from '../../features/buildings/api.js';
 import * as roomApi from '../../features/rooms/api.js';
 import * as adminUserApi from '../../features/users/api.js';
 import AdminAccountDirectoryTable from '../../components/AdminAccountDirectoryTable.jsx';
+import FilterBar from '../../components/common/FilterBar.jsx';
 import ModalCloseButton from '../../components/common/ModalCloseButton.jsx';
 import { addMonthsToDateInput, formatDateInputValue, formatDisplayDate } from '../../utils/dateFormat.js';
 import { exportRowsToExcel } from '../../utils/excelExport.js';
@@ -182,22 +183,6 @@ export default function AdminBuildingUserPage() {
   );
   const roomOptions = useMemo(() => createRoomOptions(households), [households]);
 
-  const handleFilterChange = (event) => {
-    const { name, value } = event.target;
-    setFilters((currentFilters) => ({
-      ...currentFilters,
-      [name]: value
-    }));
-  };
-
-  const handleSearch = (event) => {
-    event.preventDefault();
-    setFilters((currentFilters) => ({
-      ...currentFilters,
-      search: currentFilters.search.trim()
-    }));
-  };
-
   const handleClearFilters = () => {
     setFilters(emptyFilters);
   };
@@ -337,38 +322,42 @@ export default function AdminBuildingUserPage() {
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
 
-      <form className="account-control-panel building-user-control-panel" onSubmit={handleSearch}>
-        <div className="account-search-control">
-          <input
-            aria-label={t('buildingUsers.filters.searchAria')}
-            name="search"
-            value={filters.search}
-            onChange={handleFilterChange}
-            placeholder={t('buildingUsers.filters.searchPlaceholder')}
-          />
-          <select
-            aria-label={t('buildingUsers.filters.roomAria')}
-            name="roomId"
-            value={filters.roomId}
-            onChange={handleFilterChange}
-          >
-            <option value="">{t('buildingUsers.filters.allRooms')}</option>
-            {roomOptions.map((room) => (
-              <option key={room.id} value={room.id}>
-                {room.label}
-              </option>
-            ))}
-          </select>
-          <button type="submit">{t('common.filter')}</button>
-          <button
-            className="secondary-button inline-button compact-clear-filter"
-            type="button"
-            onClick={handleClearFilters}
-          >
-            {t('common.clear')}
-          </button>
-        </div>
-      </form>
+      <div className="account-control-panel building-user-control-panel">
+        <FilterBar
+          as="div"
+          className="account-search-control instant-account-filter"
+          searchAriaLabel={t('buildingUsers.filters.searchAria')}
+          searchPlaceholder={t('buildingUsers.filters.searchPlaceholder')}
+          searchValue={filters.search}
+          suggestionFields={[
+            'fullName',
+            'email',
+            'phone',
+            'roomCode',
+            'roomName',
+            (residentHead) => residentHead.members?.map((member) => member.fullName).join(', ')
+          ]}
+          suggestionItems={households}
+          filters={[
+            {
+              name: 'roomId',
+              value: filters.roomId,
+              ariaLabel: t('buildingUsers.filters.roomAria'),
+              onChange: (value) => setFilters((current) => ({ ...current, roomId: value })),
+              options: [
+                { value: '', label: t('buildingUsers.filters.allRooms') },
+                ...roomOptions.map((room) => ({
+                  value: String(room.id),
+                  label: room.label
+                }))
+              ]
+            }
+          ]}
+          clearLabel={t('common.clear')}
+          onClear={handleClearFilters}
+          onSearchChange={(value) => setFilters((current) => ({ ...current, search: value }))}
+        />
+      </div>
 
       {loading ? (
         <div className="empty-state">{t('buildingUsers.loading')}</div>

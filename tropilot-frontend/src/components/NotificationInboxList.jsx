@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import LineIcon from './common/LineIcon.jsx';
 import { formatDateTime } from '../utils/i18nFormat.js';
@@ -26,22 +25,12 @@ const EVENT_ICONS = {
 
 export default function NotificationInboxList({
   notifications,
-  onMarkRead,
+  onOpenNotification,
   processingId,
   showReadState = true
 }) {
-  const navigate = useNavigate();
   const { t } = useTranslation();
-  const canMarkRead = showReadState && typeof onMarkRead === 'function';
-
-  const handleOpen = async (notification) => {
-    if (canMarkRead && !notification.read) {
-      await onMarkRead(notification, { silent: true });
-    }
-    if (notification.actionPath) {
-      navigate(notification.actionPath);
-    }
-  };
+  const canOpenNotification = typeof onOpenNotification === 'function';
 
   if (notifications.length === 0) {
     return <div className="empty-state notification-inbox-empty">{t('tables.notifications.empty')}</div>;
@@ -50,20 +39,18 @@ export default function NotificationInboxList({
   return (
     <div className="notification-inbox-list">
       {notifications.map((notification) => (
-        <article
+        <button
           className={`notification-inbox-item${showReadState ? '' : ' no-read-state'}${showReadState && !notification.read ? ' is-unread' : ''}`}
           key={notification.id}
+          type="button"
+          disabled={processingId === notification.id}
+          onClick={() => canOpenNotification && onOpenNotification(notification)}
         >
           <span className="notification-event-icon">
             <LineIcon name={EVENT_ICONS[notification.eventType] || 'bell'} />
           </span>
 
-          <button
-            className="notification-inbox-content"
-            type="button"
-            disabled={processingId === notification.id}
-            onClick={() => handleOpen(notification)}
-          >
+          <span className="notification-inbox-content">
             <span className="notification-inbox-topline">
               <span className="notification-inbox-heading">
                 <strong>{translateInterfaceText(notification.title)}</strong>
@@ -73,33 +60,18 @@ export default function NotificationInboxList({
               </span>
               <span className="notification-inbox-time">{formatDateTime(notification.createdAt, t)}</span>
             </span>
-            <span className="notification-inbox-message">{translateInterfaceText(notification.content)}</span>
-            <span className="notification-inbox-meta">
-              <LineIcon name="user" />
-              <span>
-                {notification.source === 'SYSTEM'
-                  ? t('notifications.systemSender')
-                  : notification.createdByName}
-              </span>
-              {notification.actionPath && (
-                <span className="notification-open-hint">{t('common.details')}</span>
-              )}
-            </span>
-          </button>
+          </span>
 
-          {canMarkRead && !notification.read && (
-            <button
-              className="notification-read-button"
-              type="button"
-              title={t('tables.notifications.markRead')}
-              aria-label={t('tables.notifications.markRead')}
-              disabled={processingId === notification.id}
-              onClick={() => onMarkRead(notification)}
+          {showReadState && (
+            <span
+              className={`notification-state-icon ${notification.read ? 'is-read' : 'is-unread'}`}
+              title={t(`enum.readStatus.${notification.read ? 'READ' : 'UNREAD'}`)}
+              aria-label={t(`enum.readStatus.${notification.read ? 'READ' : 'UNREAD'}`)}
             >
-              <LineIcon name="checkShield" />
-            </button>
+              <LineIcon name={notification.read ? 'checkShield' : 'bell'} />
+            </span>
           )}
-        </article>
+        </button>
       ))}
     </div>
   );

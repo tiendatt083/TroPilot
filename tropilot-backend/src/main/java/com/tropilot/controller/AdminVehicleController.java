@@ -23,35 +23,35 @@ public class AdminVehicleController {
     private final VehicleService vehicleService;
 
     @GetMapping
-    public ApiResponse<List<VehicleResponse>> getVehicles(@RequestParam(required = false) Long buildingId) {
+    public ApiResponse<List<VehicleResponse>> getVehicles(@RequestParam(name = "buildingId", required = false) Long buildingId) {
         return ApiResponse.success("Vehicles loaded successfully", vehicleService.getVehicles(buildingId));
     }
 
     @GetMapping("/pending")
-    public ApiResponse<List<VehicleResponse>> getPendingVehicles(@RequestParam(required = false) Long buildingId) {
+    public ApiResponse<List<VehicleResponse>> getPendingVehicles(@RequestParam(name = "buildingId", required = false) Long buildingId) {
         return ApiResponse.success("Pending vehicles loaded successfully", vehicleService.getPendingVehicles(buildingId));
     }
 
     @PutMapping("/{id}/approve")
     public ApiResponse<VehicleResponse> approveVehicle(
-            @PathVariable Long id,
-            @RequestParam(required = false) Long buildingId
+            @PathVariable(name = "id") Long id,
+            @RequestParam(name = "buildingId", required = false) Long buildingId
     ) {
         return ApiResponse.success("Vehicle approved successfully", vehicleService.approveVehicle(id, buildingId));
     }
 
     @PutMapping("/{id}/reject")
     public ApiResponse<VehicleResponse> rejectVehicle(
-            @PathVariable Long id,
-            @RequestParam(required = false) Long buildingId
+            @PathVariable(name = "id") Long id,
+            @RequestParam(name = "buildingId", required = false) Long buildingId
     ) {
         return ApiResponse.success("Vehicle rejected successfully", vehicleService.rejectVehicle(id, buildingId));
     }
 
     @PutMapping("/{id}/deactivate")
     public ApiResponse<VehicleResponse> deactivateVehicle(
-            @PathVariable Long id,
-            @RequestParam(required = false) Long buildingId
+            @PathVariable(name = "id") Long id,
+            @RequestParam(name = "buildingId", required = false) Long buildingId
     ) {
         return ApiResponse.success("Vehicle deactivated successfully", vehicleService.deactivateVehicle(id, buildingId));
     }

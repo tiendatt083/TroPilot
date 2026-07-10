@@ -216,7 +216,7 @@
   "userManagement": {
     "eyebrow": "System accounts",
     "title": "Staff management",
-    "summary": "Manage staff accounts in the system ({{count}} accounts)",
+    "summary": "Manage {{count}} staff accounts in the system",
     "filters": {
       "searchAria": "Search staff",
       "searchPlaceholder": "Search...",
@@ -1083,6 +1083,157 @@
         "next30Days": "Next 30 days"
       }
     },
+    "ops": {
+      "hero": {
+        "greeting": "Hi, {{name}}!",
+        "description": "Welcome to the Copilot room rental management system"
+      },
+      "eyebrow": "Overview",
+      "todayOperations": "Today's operations",
+      "trackedItems": "{{count}} items to review",
+      "loadingAdmin": "Loading overview...",
+      "emptyAdmin": "No dashboard data.",
+      "adminLoadError": "Admin dashboard could not be loaded.",
+      "loadingBuilding": "Loading building overview...",
+      "units": {
+        "currency": "VND",
+        "million": "M",
+        "billion": "B"
+      },
+      "status": {
+        "invoice": {
+          "UNPAID": "Unpaid",
+          "PENDING_CONFIRMATION": "Pending confirmation",
+          "PAID": "Paid",
+          "OVERDUE": "Overdue",
+          "REJECTED": "Rejected"
+        },
+        "feedback": {
+          "PENDING": "Pending",
+          "IN_PROGRESS": "In progress",
+          "RESOLVED": "Resolved",
+          "REJECTED": "Closed"
+        },
+        "maintenance": {
+          "PENDING": "Pending",
+          "ASSIGNED": "Assigned",
+          "IN_PROGRESS": "In progress",
+          "COMPLETED": "Completed",
+          "REJECTED": "Rejected"
+        },
+        "room": {
+          "OCCUPIED": "Occupied",
+          "EMPTY": "Empty",
+          "MAINTENANCE": "Maintenance",
+          "RESERVED": "Reserved"
+        }
+      },
+      "labels": {
+        "buildings": "Buildings",
+        "rooms": "Rooms",
+        "totalRooms": "Total rooms",
+        "residents": "Residents",
+        "devices": "Equipment",
+        "unpaidInvoices": "Unpaid invoices",
+        "pendingFeedback": "Pending feedback",
+        "scheduledMaintenance": "Scheduled maintenance",
+        "occupiedRooms": "Occupied rooms",
+        "emptyRooms": "Empty rooms",
+        "openWork": "Open work",
+        "paid": "Paid",
+        "unpaid": "Unpaid",
+        "totalInvoices": "Total invoices",
+        "expenses": "Expenses"
+      },
+      "helpers": {
+        "managedBuildings": "Managed buildings",
+        "managedRooms": "Managed rooms",
+        "residentProfiles": "Resident records",
+        "runningDevices": "Operating equipment",
+        "needsReview": "Needs review",
+        "needsReply": "Needs reply",
+        "upcomingWork": "Upcoming work",
+        "roomsInBuilding": "Rooms in this building",
+        "rentable": "Available to rent",
+        "residentRecords": "Active resident records",
+        "activeResidents": "{{count}} active residents",
+        "occupancyRate": "{{percent}}% occupied",
+        "validReceipts": "{{count}} valid receipts",
+        "workAndMaintenance": "Maintenance and tasks"
+      },
+      "counts": {
+        "contracts": "{{count}} contracts",
+        "residents": "{{count}} residents",
+        "pending": "{{count}} pending",
+        "invoices": "{{count}} invoices",
+        "receipts": "{{count}} receipts",
+        "maintenance": "{{count}} maintenance",
+        "tasks": "{{count}} tasks",
+        "vehicles": "{{count}} vehicles",
+        "feedbacks": "{{count}} feedbacks",
+        "totalFeedbacks": "{{count}} total feedback",
+        "notifications": "{{count}} notifications"
+      },
+      "summaryGroups": {
+        "rentals": "Rentals",
+        "payments": "Payments",
+        "operations": "Operations",
+        "contact": "Contact"
+      },
+      "buildingSummary": {
+        "title": "Building summary",
+        "area": "Building",
+        "rooms": "Rooms",
+        "residents": "Residents",
+        "unpaid": "Unpaid",
+        "paid": "Paid",
+        "empty": "No building summary data."
+      },
+      "charts": {
+        "monthlyRevenue": "Monthly revenue",
+        "paymentRate": "Payment rate",
+        "roomStatus": "Room status",
+        "feedbackDistribution": "Feedback distribution",
+        "attentionDistribution": "Attention distribution",
+        "buildingFinance": "Building finance",
+        "operationalSummary": "Operational summary"
+      },
+      "columns": {
+        "group": "Group",
+        "primary": "Primary metric",
+        "secondary": "Count",
+        "followUp": "Follow-up",
+        "title": "Title",
+        "room": "Room",
+        "status": "Status",
+        "invoiceCode": "Invoice code",
+        "amount": "Amount",
+        "dueDate": "Due date",
+        "description": "Description",
+        "equipment": "Equipment",
+        "startDate": "Start date",
+        "finishDate": "Finish date",
+        "cost": "Cost"
+      },
+      "empty": {
+        "recentFeedbacks": "No recent feedback.",
+        "recentInvoices": "No recent invoices.",
+        "recentMaintenance": "No recent maintenance schedule."
+      },
+      "fallback": {
+        "noRoom": "No room",
+        "noTitle": "No title",
+        "noDescription": "No description",
+        "notSet": "Not set",
+        "noEquipment": "No equipment",
+        "tracking": "Tracking"
+      },
+      "recent": {
+        "feedbacks": "Recent feedback",
+        "invoices": "Recent invoices",
+        "maintenance": "Recent maintenance"
+      }
+    },
     "staff": {
       "title": "Dashboard",
       "eyebrow": "Staff",
@@ -1159,12 +1310,25 @@
         "activeVehicles": "Active vehicles",
         "recentMaintenanceRequests": "Recent maintenance requests"
       },
+      "charts": {
+        "lastMonths": "Monthly view",
+        "monthlyUsage": "Utility consumption",
+        "paymentTrend": "Recorded costs",
+        "monthlyCost": "Monthly costs",
+        "electricity": "Electricity",
+        "water": "Water",
+        "currentMonthCost": "Latest month",
+        "averageCost": "Monthly average",
+        "electricityTotal": "Total electricity",
+        "waterTotal": "Total water"
+      },
       "empty": {
         "noActiveContract": "No active contract is available.",
         "noInvoice": "No invoice is available.",
         "noActiveVehicle": "No active vehicle is registered.",
         "noMaintenanceRequest": "No maintenance request is available.",
-        "noAssignedRoom": "No room is assigned to your account."
+        "noAssignedRoom": "No room is assigned to your account.",
+        "noChartData": "No monthly data yet."
       }
     }
   },

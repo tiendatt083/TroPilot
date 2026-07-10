@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Link, useOutletContext } from 'react-router-dom';
 import RoomForm from '../RoomForm.jsx';
 import ActionDialog from '../common/ActionDialog.jsx';
+import FilterBar from '../common/FilterBar.jsx';
 import { formatNumber } from '../../utils/numberFormat.js';
 import { formatRoomCode } from '../../utils/roomDisplay.js';
 import { ROOM_STATUS_OPTIONS } from '../../utils/roomStatusOptions.js';
@@ -59,12 +60,15 @@ export default function BuildingRoomsWorkspace({
     loadRooms(emptyFilters);
   }, [building.id]);
 
-  const handleSearch = (event) => {
-    event.preventDefault();
+  useEffect(() => {
     const nextFilters = { ...filters, search: filters.search.trim() };
-    setAppliedFilters(nextFilters);
-    loadRooms(nextFilters);
-  };
+    const timer = window.setTimeout(() => {
+      setAppliedFilters(nextFilters);
+      loadRooms(nextFilters);
+    }, filters.search ? 250 : 0);
+
+    return () => window.clearTimeout(timer);
+  }, [filters, building.id]);
 
   const handleClearFilters = () => {
     setFilters(emptyFilters);
@@ -115,32 +119,33 @@ export default function BuildingRoomsWorkspace({
         )}
       </div>
 
-      <form className="building-filter-row" onSubmit={handleSearch}>
-        <input
-          aria-label={t('workspace.rooms.searchAria')}
-          name="search"
-          value={filters.search}
-          onChange={(event) => setFilters((current) => ({ ...current, search: event.target.value }))}
-          placeholder={t('workspace.rooms.searchPlaceholder')}
-        />
-        <select
-          aria-label={t('workspace.rooms.statusAria')}
-          name="status"
-          value={filters.status}
-          onChange={(event) => setFilters((current) => ({ ...current, status: event.target.value }))}
-        >
-          <option value="">{t('workspace.rooms.allStatuses')}</option>
-          {ROOM_STATUS_OPTIONS.map((status) => (
-            <option key={status.value} value={status.value}>
-              {formatEnumLabel(t, 'roomStatus', status.value)}
-            </option>
-          ))}
-        </select>
-        <button type="submit">{t('common.filter')}</button>
-        <button className="secondary-button inline-button" type="button" onClick={handleClearFilters}>
-          {t('common.clear')}
-        </button>
-      </form>
+      <FilterBar
+        as="div"
+        className="building-filter-row"
+        searchAriaLabel={t('workspace.rooms.searchAria')}
+        searchPlaceholder={t('workspace.rooms.searchPlaceholder')}
+        searchValue={filters.search}
+        suggestionFields={['roomCode', 'roomName']}
+        suggestionItems={rooms}
+        filters={[
+          {
+            name: 'status',
+            value: filters.status,
+            ariaLabel: t('workspace.rooms.statusAria'),
+            onChange: (value) => setFilters((current) => ({ ...current, status: value })),
+            options: [
+              { value: '', label: t('workspace.rooms.allStatuses') },
+              ...ROOM_STATUS_OPTIONS.map((status) => ({
+                value: status.value,
+                label: formatEnumLabel(t, 'roomStatus', status.value)
+              }))
+            ]
+          }
+        ]}
+        clearLabel={t('common.clear')}
+        onClear={handleClearFilters}
+        onSearchChange={(value) => setFilters((current) => ({ ...current, search: value }))}
+      />
 
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}

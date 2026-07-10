@@ -1,16 +1,70 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as notificationApi from '../features/notifications/api.js';
+import ActionDialog from './common/ActionDialog.jsx';
+import LineIcon from './common/LineIcon.jsx';
 import NotificationInboxList from './NotificationInboxList.jsx';
 import NotificationPaginationControls from './NotificationPaginationControls.jsx';
 import PageHeader from './PageHeader.jsx';
+import { formatDateTime } from '../utils/i18nFormat.js';
+import { translateInterfaceText } from '../utils/interfaceTranslations.js';
 
 const HISTORY_PAGE_SIZE = 30;
+
+function NotificationDetailDialog({ notification, onClose }) {
+  const { t } = useTranslation();
+
+  return (
+    <ActionDialog
+      className="notification-user-detail-dialog"
+      eyebrow={t('resident.notifications.detailEyebrow')}
+      labelledBy="user-notification-detail-title"
+      open={Boolean(notification)}
+      title={notification ? translateInterfaceText(notification.title) : ''}
+      onClose={onClose}
+    >
+      {notification && (
+        <div className="user-notification-detail">
+          <div className="user-notification-detail-status">
+            <span className={`notification-state-icon ${notification.read ? 'is-read' : 'is-unread'}`}>
+              <LineIcon name={notification.read ? 'checkShield' : 'bell'} />
+            </span>
+            <div>
+              <span>{t('tables.notifications.readStatus')}</span>
+              <strong>{t(`enum.readStatus.${notification.read ? 'READ' : 'UNREAD'}`)}</strong>
+            </div>
+          </div>
+
+          <div className="notification-detail-meta">
+            <div>
+              <span>{t('resident.notifications.sender')}</span>
+              <strong>
+                {notification.source === 'SYSTEM'
+                  ? t('notifications.systemSender')
+                  : notification.createdByName || t('common.notAvailable')}
+              </strong>
+            </div>
+            <div>
+              <span>{t('resident.notifications.createdAt')}</span>
+              <strong>{formatDateTime(notification.createdAt, t)}</strong>
+            </div>
+          </div>
+
+          <div className="notification-detail-content">
+            <span>{t('resident.notifications.content')}</span>
+            <p>{translateInterfaceText(notification.content) || t('common.notAvailable')}</p>
+          </div>
+        </div>
+      )}
+    </ActionDialog>
+  );
+}
 
 export default function UserNotificationPage({ eyebrow, eyebrowKey }) {
   const { t } = useTranslation();
   const [notifications, setNotifications] = useState([]);
   const [notificationPage, setNotificationPage] = useState(0);
+  const [selectedNotification, setSelectedNotification] = useState(null);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
@@ -42,10 +96,21 @@ export default function UserNotificationPage({ eyebrow, eyebrowKey }) {
       if (!options.silent) {
         setMessage(t('resident.notifications.markedRead'));
       }
+      return response.data;
     } catch (apiError) {
       setError(apiError.response?.data?.message || t('resident.notifications.markReadError'));
+      return notification;
     } finally {
       setProcessingId(null);
+    }
+  };
+
+  const handleOpenNotification = async (notification) => {
+    setSelectedNotification(notification);
+
+    if (!notification.read) {
+      const updatedNotification = await handleMarkRead(notification, { silent: true });
+      setSelectedNotification(updatedNotification);
     }
   };
 
@@ -67,13 +132,17 @@ export default function UserNotificationPage({ eyebrow, eyebrowKey }) {
           <NotificationInboxList
             notifications={pagedNotifications}
             processingId={processingId}
-            onMarkRead={handleMarkRead}
+            onOpenNotification={handleOpenNotification}
           />
           <NotificationPaginationControls
             page={notificationPage}
             pageSize={HISTORY_PAGE_SIZE}
             totalItems={notifications.length}
             onPageChange={handleNotificationPageChange}
+          />
+          <NotificationDetailDialog
+            notification={selectedNotification}
+            onClose={() => setSelectedNotification(null)}
           />
         </>
       )}

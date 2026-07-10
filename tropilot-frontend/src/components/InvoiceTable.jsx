@@ -5,16 +5,17 @@ import { formatDisplayDate, formatDisplayMonth } from '../utils/dateFormat.js';
 import { formatEnumLabel } from '../utils/i18nFormat.js';
 import { formatRoomCode, formatRoomLabel } from '../utils/roomDisplay.js';
 
-function formatNumber(value) {
+function formatNumber(value, locale) {
   const numberValue = Number(value);
   return Number.isFinite(numberValue)
-    ? numberValue.toLocaleString('en-US', { maximumFractionDigits: 2 })
+    ? numberValue.toLocaleString(locale, { maximumFractionDigits: 2 })
     : value;
 }
 
 export default function InvoiceTable({ invoices, renderActions, detailPathBase }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const hasActions = Boolean(renderActions || detailPathBase);
+  const locale = String(i18n.resolvedLanguage || i18n.language || '').startsWith('en') ? 'en-US' : 'vi-VN';
 
   return (
     <div className="table-wrap invoice-table-wrap">
@@ -44,7 +45,9 @@ export default function InvoiceTable({ invoices, renderActions, detailPathBase }
                   {[invoice.buildingCode, invoice.residentHeadName].filter(Boolean).join(' - ')}
                 </span>
               </td>
-              <td className="invoice-amount-cell">{formatInvoiceCurrency(invoice.totalAmount)}</td>
+              <td className="invoice-amount-cell">
+                {formatInvoiceCurrency(invoice.totalAmount, locale, t('buildingInvoices.currencyUnit'))}
+              </td>
               <td className="invoice-date-cell">{formatDisplayDate(invoice.dueDate)}</td>
               <td>
                 <span className={getInvoiceStatusClass(invoice.status)}>
@@ -85,9 +88,9 @@ export function formatInvoiceCode(invoice) {
   return `HD-${formatDisplayMonth(invoice.month || invoice.invoiceDate, '00/0000')}-${id}`;
 }
 
-function formatInvoiceCurrency(value) {
-  const formatted = formatNumber(value);
-  return formatted === value ? value : `${formatted} đ`;
+function formatInvoiceCurrency(value, locale, currencyLabel) {
+  const formatted = formatNumber(value, locale);
+  return formatted === value ? value : `${formatted} ${currencyLabel}`;
 }
 
 function EyeIcon() {

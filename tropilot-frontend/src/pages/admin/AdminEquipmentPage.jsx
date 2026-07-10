@@ -5,6 +5,7 @@ import * as equipmentApi from '../../features/equipment/api.js';
 import { EquipmentForm, EquipmentMaintenancePanel, EquipmentTable } from '../../features/equipment/components/index.js';
 import * as roomApi from '../../features/rooms/api.js';
 import PageHeader from '../../components/PageHeader.jsx';
+import FilterBar from '../../components/common/FilterBar.jsx';
 import { EQUIPMENT_CONDITIONS, EQUIPMENT_SCOPES } from '../../utils/equipmentOptions.js';
 import { formatRoomLabel } from '../../utils/roomDisplay.js';
 
@@ -70,6 +71,11 @@ export default function AdminEquipmentPage() {
     loadData(EMPTY_FILTERS).finally(() => setLoading(false));
   }, []);
 
+  useEffect(() => {
+    setLoading(true);
+    loadData(filters).finally(() => setLoading(false));
+  }, [filters]);
+
   const handleFilterChange = (event) => {
     const { name, value } = event.target;
 
@@ -79,13 +85,6 @@ export default function AdminEquipmentPage() {
       ...(name === 'buildingId' ? { roomId: '' } : {}),
       ...(name === 'scope' && value !== 'ROOM' ? { roomId: '' } : {})
     }));
-  };
-
-  const handleApplyFilters = async (event) => {
-    event.preventDefault();
-    setLoading(true);
-    await loadData(filters);
-    setLoading(false);
   };
 
   const handleClearFilters = async () => {
@@ -260,77 +259,67 @@ export default function AdminEquipmentPage() {
       <section className="building-section">
         <PageHeader eyebrow={t('equipment.records.eyebrow')} title={t('equipment.records.title')} />
 
-        <form className="equipment-filter-row admin-equipment-filter-row" onSubmit={handleApplyFilters}>
-          <div>
-            <label htmlFor="equipmentBuildingFilter">{t('equipment.filters.building')}</label>
-            <select
-              id="equipmentBuildingFilter"
-              name="buildingId"
-              value={filters.buildingId}
-              onChange={handleFilterChange}
-            >
-              <option value="">{t('equipment.filters.allBuildings')}</option>
-              {buildings.map((building) => (
-                <option key={building.id} value={building.id}>
-                  {building.buildingCode} - {building.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label htmlFor="equipmentScopeFilter">{t('equipment.filters.scope')}</label>
-            <select
-              id="equipmentScopeFilter"
-              name="scope"
-              value={filters.scope}
-              onChange={handleFilterChange}
-            >
-              <option value="">{t('equipment.filters.allScopes')}</option>
-              {EQUIPMENT_SCOPES.map((scope) => (
-                <option key={scope} value={scope}>
-                  {t(`equipment.scopes.${scope}`)}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label htmlFor="equipmentRoomFilter">{t('equipment.filters.room')}</label>
-            <select
-              id="equipmentRoomFilter"
-              name="roomId"
-              value={filters.roomId}
-              disabled={!filters.buildingId || filters.scope !== 'ROOM'}
-              onChange={handleFilterChange}
-            >
-              <option value="">{t('equipment.filters.allRooms')}</option>
-              {filteredRooms.map((room) => (
-                <option key={room.id} value={room.id}>
-                  {formatRoomLabel(room)}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label htmlFor="equipmentConditionFilter">{t('equipment.filters.condition')}</label>
-            <select
-              id="equipmentConditionFilter"
-              name="condition"
-              value={filters.condition}
-              onChange={handleFilterChange}
-            >
-              <option value="">{t('equipment.filters.allConditions')}</option>
-              {EQUIPMENT_CONDITIONS.map((condition) => (
-                <option key={condition} value={condition}>
-                  {t(`equipment.conditions.${condition}`)}
-                </option>
-              ))}
-            </select>
-          </div>
-          <button type="submit">{t('common.filter')}</button>
-          <button className="secondary-button inline-button" type="button" onClick={handleClearFilters}>
-            {t('common.clear')}
-          </button>
-        </form>
+        <FilterBar
+          as="div"
+          className="equipment-filter-row admin-equipment-filter-row"
+          filters={[
+            {
+              name: 'buildingId',
+              value: filters.buildingId,
+              ariaLabel: t('equipment.filters.building'),
+              onChange: (value) => handleFilterChange({ target: { name: 'buildingId', value } }),
+              options: [
+                { value: '', label: t('equipment.filters.allBuildings') },
+                ...buildings.map((building) => ({
+                  value: String(building.id),
+                  label: `${building.buildingCode} - ${building.name}`
+                }))
+              ]
+            },
+            {
+              name: 'scope',
+              value: filters.scope,
+              ariaLabel: t('equipment.filters.scope'),
+              onChange: (value) => handleFilterChange({ target: { name: 'scope', value } }),
+              options: [
+                { value: '', label: t('equipment.filters.allScopes') },
+                ...EQUIPMENT_SCOPES.map((scope) => ({
+                  value: scope,
+                  label: t(`equipment.scopes.${scope}`)
+                }))
+              ]
+            },
+            {
+              name: 'roomId',
+              value: filters.roomId,
+              disabled: !filters.buildingId || filters.scope !== 'ROOM',
+              ariaLabel: t('equipment.filters.room'),
+              onChange: (value) => handleFilterChange({ target: { name: 'roomId', value } }),
+              options: [
+                { value: '', label: t('equipment.filters.allRooms') },
+                ...filteredRooms.map((room) => ({
+                  value: String(room.id),
+                  label: formatRoomLabel(room)
+                }))
+              ]
+            },
+            {
+              name: 'condition',
+              value: filters.condition,
+              ariaLabel: t('equipment.filters.condition'),
+              onChange: (value) => handleFilterChange({ target: { name: 'condition', value } }),
+              options: [
+                { value: '', label: t('equipment.filters.allConditions') },
+                ...EQUIPMENT_CONDITIONS.map((condition) => ({
+                  value: condition,
+                  label: t(`equipment.conditions.${condition}`)
+                }))
+              ]
+            }
+          ]}
+          clearLabel={t('common.clear')}
+          onClear={handleClearFilters}
+        />
 
         {loading ? (
           <div className="empty-state">{t('equipment.messages.loading')}</div>

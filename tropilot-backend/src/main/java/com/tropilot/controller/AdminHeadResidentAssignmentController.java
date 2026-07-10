@@ -25,7 +25,7 @@ public class AdminHeadResidentAssignmentController {
 
     @PostMapping
     public ApiResponse<HeadResidentAssignmentResponse> assignHeadResident(
-            @PathVariable Long roomId,
+            @PathVariable(name = "roomId") Long roomId,
             @Valid @RequestBody AssignHeadResidentRequest request
     ) {
         return ApiResponse.success(
@@ -35,7 +35,7 @@ public class AdminHeadResidentAssignmentController {
     }
 
     @GetMapping
-    public ApiResponse<HeadResidentAssignmentResponse> getHeadResident(@PathVariable Long roomId) {
+    public ApiResponse<HeadResidentAssignmentResponse> getHeadResident(@PathVariable(name = "roomId") Long roomId) {
         return ApiResponse.success(
                 "Head Resident assignment loaded successfully",
                 headResidentAssignmentService.getHeadResidentAssignment(roomId)
@@ -43,7 +43,7 @@ public class AdminHeadResidentAssignmentController {
     }
 
     @DeleteMapping
-    public ApiResponse<HeadResidentAssignmentResponse> removeHeadResident(@PathVariable Long roomId) {
+    public ApiResponse<HeadResidentAssignmentResponse> removeHeadResident(@PathVariable(name = "roomId") Long roomId) {
         return ApiResponse.success(
                 "Contract ended successfully",
                 headResidentAssignmentService.removeHeadResident(roomId)

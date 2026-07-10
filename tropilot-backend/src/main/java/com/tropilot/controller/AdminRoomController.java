@@ -34,28 +34,28 @@ public class AdminRoomController {
 
     @GetMapping
     public ApiResponse<List<RoomResponse>> getRooms(
-            @RequestParam(required = false) Long buildingId,
-            @RequestParam(required = false) String status,
-            @RequestParam(required = false) String search
+            @RequestParam(name = "buildingId", required = false) Long buildingId,
+            @RequestParam(name = "status", required = false) String status,
+            @RequestParam(name = "search", required = false) String search
     ) {
         return ApiResponse.success("Rooms loaded successfully", roomService.getRooms(buildingId, status, search));
     }
 
     @GetMapping("/{id}")
-    public ApiResponse<RoomResponse> getRoom(@PathVariable Long id) {
+    public ApiResponse<RoomResponse> getRoom(@PathVariable(name = "id") Long id) {
         return ApiResponse.success("Room loaded successfully", roomService.getRoom(id));
     }
 
     @PutMapping("/{id}")
     public ApiResponse<RoomResponse> updateRoom(
-            @PathVariable Long id,
+            @PathVariable(name = "id") Long id,
             @Valid @RequestBody RoomUpsertRequest request
     ) {
         return ApiResponse.success("Room updated successfully", roomService.updateRoom(id, request));
     }
 
     @DeleteMapping("/{id}")
-    public ApiResponse<Void> deleteRoom(@PathVariable Long id) {
+    public ApiResponse<Void> deleteRoom(@PathVariable(name = "id") Long id) {
         roomService.deleteRoom(id);
         return ApiResponse.success("Room deleted successfully");
     }

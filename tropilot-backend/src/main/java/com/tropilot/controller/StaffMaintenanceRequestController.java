@@ -34,7 +34,7 @@ public class StaffMaintenanceRequestController {
     @GetMapping
     public ApiResponse<List<MaintenanceRequestResponse>> getRequests(
             @AuthenticationPrincipal AuthenticatedUser user,
-            @RequestParam(required = false) Long buildingId
+            @RequestParam(name = "buildingId", required = false) Long buildingId
     ) {
         return ApiResponse.success(
                 "Maintenance requests loaded successfully",
@@ -45,7 +45,7 @@ public class StaffMaintenanceRequestController {
     @PutMapping("/{id}/start")
     public ApiResponse<MaintenanceRequestResponse> startRequest(
             @AuthenticationPrincipal AuthenticatedUser user,
-            @PathVariable Long id
+            @PathVariable(name = "id") Long id
     ) {
         return ApiResponse.success(
                 "Maintenance request started successfully",
@@ -56,7 +56,7 @@ public class StaffMaintenanceRequestController {
     @PutMapping(path = "/{id}/complete", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<MaintenanceRequestResponse> completeRequest(
             @AuthenticationPrincipal AuthenticatedUser user,
-            @PathVariable Long id,
+            @PathVariable(name = "id") Long id,
             @Valid @ModelAttribute MaintenanceCompleteRequest request
     ) {
         return ApiResponse.success(
@@ -68,7 +68,7 @@ public class StaffMaintenanceRequestController {
     @PutMapping("/{id}/reject")
     public ApiResponse<MaintenanceRequestResponse> rejectRequest(
             @AuthenticationPrincipal AuthenticatedUser user,
-            @PathVariable Long id,
+            @PathVariable(name = "id") Long id,
             @Valid @RequestBody(required = false) MaintenanceRejectRequest request
     ) {
         return ApiResponse.success(

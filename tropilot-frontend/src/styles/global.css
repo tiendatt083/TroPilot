@@ -7,6 +7,7 @@
 @import './tables.css';
 @import './forms.css';
 @import './dashboard.css';
+@import './consistency.css';
 
 /* Cross-module dark theme overrides and responsive rules remain last. */
 html[data-theme="dark"] body {

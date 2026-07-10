@@ -26,15 +26,15 @@ public class AdminExpenseController {
     private final ExpenseService expenseService;
 
     @GetMapping
-    public ApiResponse<List<ExpenseResponse>> getExpenses(@RequestParam(required = false) Long buildingId) {
+    public ApiResponse<List<ExpenseResponse>> getExpenses(@RequestParam(name = "buildingId", required = false) Long buildingId) {
         return ApiResponse.success("Expenses loaded successfully", expenseService.getExpenses(buildingId));
     }
 
     @PutMapping("/{id}/cancel")
     public ApiResponse<ExpenseResponse> cancelExpense(
             @AuthenticationPrincipal AuthenticatedUser user,
-            @PathVariable Long id,
-            @RequestParam(required = false) Long buildingId
+            @PathVariable(name = "id") Long id,
+            @RequestParam(name = "buildingId", required = false) Long buildingId
     ) {
         return ApiResponse.success(
                 "Expense cancelled successfully",
@@ -45,8 +45,8 @@ public class AdminExpenseController {
     @PutMapping("/{id}/approve")
     public ApiResponse<ExpenseResponse> approveExpense(
             @AuthenticationPrincipal AuthenticatedUser user,
-            @PathVariable Long id,
-            @RequestParam(required = false) Long buildingId
+            @PathVariable(name = "id") Long id,
+            @RequestParam(name = "buildingId", required = false) Long buildingId
     ) {
         return ApiResponse.success(
                 "Expense approved successfully",

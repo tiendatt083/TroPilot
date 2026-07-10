@@ -30,15 +30,15 @@ public class AdminFeedbackController {
     private final FeedbackService feedbackService;
 
     @GetMapping
-    public ApiResponse<List<FeedbackResponse>> getFeedbacks(@RequestParam(required = false) Long buildingId) {
+    public ApiResponse<List<FeedbackResponse>> getFeedbacks(@RequestParam(name = "buildingId", required = false) Long buildingId) {
         return ApiResponse.success("Feedbacks loaded successfully", feedbackService.getFeedbacks(buildingId));
     }
 
     @PutMapping("/{id}/reply")
     public ApiResponse<FeedbackResponse> replyFeedback(
             @AuthenticationPrincipal AuthenticatedUser user,
-            @PathVariable Long id,
-            @RequestParam(required = false) Long buildingId,
+            @PathVariable(name = "id") Long id,
+            @RequestParam(name = "buildingId", required = false) Long buildingId,
             @Valid @RequestBody FeedbackReplyRequest request
     ) {
         return ApiResponse.success("Feedback replied successfully", feedbackService.replyFeedback(id, getUserId(user), request, buildingId));
@@ -47,8 +47,8 @@ public class AdminFeedbackController {
     @PutMapping("/{id}/status")
     public ApiResponse<FeedbackResponse> updateStatus(
             @AuthenticationPrincipal AuthenticatedUser user,
-            @PathVariable Long id,
-            @RequestParam(required = false) Long buildingId,
+            @PathVariable(name = "id") Long id,
+            @RequestParam(name = "buildingId", required = false) Long buildingId,
             @Valid @RequestBody FeedbackStatusUpdateRequest request
     ) {
         return ApiResponse.success(

@@ -30,7 +30,7 @@ public class AdminBuildingEquipmentController {
 
     @PostMapping
     public ApiResponse<EquipmentResponse> createEquipment(
-            @PathVariable Long buildingId,
+            @PathVariable(name = "buildingId") Long buildingId,
             @Valid @RequestBody EquipmentUpsertRequest request
     ) {
         return ApiResponse.success(
@@ -41,10 +41,10 @@ public class AdminBuildingEquipmentController {
 
     @GetMapping
     public ApiResponse<List<EquipmentResponse>> getEquipment(
-            @PathVariable Long buildingId,
-            @RequestParam(required = false) String scope,
-            @RequestParam(required = false) Long roomId,
-            @RequestParam(required = false) String condition
+            @PathVariable(name = "buildingId") Long buildingId,
+            @RequestParam(name = "scope", required = false) String scope,
+            @RequestParam(name = "roomId", required = false) Long roomId,
+            @RequestParam(name = "condition", required = false) String condition
     ) {
         return ApiResponse.success(
                 "Equipment loaded successfully",
@@ -54,8 +54,8 @@ public class AdminBuildingEquipmentController {
 
     @PutMapping("/{id}")
     public ApiResponse<EquipmentResponse> updateEquipment(
-            @PathVariable Long buildingId,
-            @PathVariable Long id,
+            @PathVariable(name = "buildingId") Long buildingId,
+            @PathVariable(name = "id") Long id,
             @Valid @RequestBody EquipmentUpsertRequest request
     ) {
         return ApiResponse.success(
@@ -66,8 +66,8 @@ public class AdminBuildingEquipmentController {
 
     @DeleteMapping("/{id}")
     public ApiResponse<EquipmentDeleteResponse> deleteEquipment(
-            @PathVariable Long buildingId,
-            @PathVariable Long id
+            @PathVariable(name = "buildingId") Long buildingId,
+            @PathVariable(name = "id") Long id
     ) {
         EquipmentDeleteResponse response = equipmentService.deleteEquipment(buildingId, id);
         String message = response.isDeleted()

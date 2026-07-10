@@ -11,6 +11,7 @@ import { exportRowsToExcel } from '../utils/excelExport.js';
 import { isOccupiedRoom } from '../utils/roomEligibility.js';
 import { formatRoomCode, formatRoomLabel } from '../utils/roomDisplay.js';
 import ActionDialog from './common/ActionDialog.jsx';
+import FilterBar from './common/FilterBar.jsx';
 import InvoiceDetail from './InvoiceDetail.jsx';
 import InvoiceTable, { formatInvoiceCode } from './InvoiceTable.jsx';
 
@@ -909,37 +910,45 @@ export default function BuildingInvoiceWorkspace({ role = 'admin' }) {
               </select>
             </div>
 
-            <div className="invoice-search-tools">
-              <div className="invoice-search-field">
-                <SearchIcon />
-                <input
-                  aria-label={t('buildingInvoices.filters.searchAria')}
-                  value={search}
-                  onChange={(event) => setSearch(event.target.value)}
-                  placeholder={t('buildingInvoices.filters.searchPlaceholder')}
-                />
-              </div>
-              <button
-                className="secondary-button inline-button invoice-sort-button"
-                type="button"
-                onClick={() => setSortDirection((current) => (current === 'desc' ? 'asc' : 'desc'))}
-              >
-                {sortDirection === 'desc' ? <ArrowDownIcon /> : <ArrowUpIcon />}
-                {sortDirection === 'desc' ? t('buildingInvoices.filters.newest') : t('buildingInvoices.filters.oldest')}
-              </button>
-              <button
-                aria-label={t('buildingInvoices.actions.refresh')}
-                className="secondary-button inline-button invoice-refresh-button"
-                type="button"
-                disabled={refreshing}
-                onClick={handleRefresh}
-              >
-                <RefreshIcon />
-              </button>
-              <button className="secondary-button inline-button" type="button" onClick={handleClearInvoiceFilters}>
-                {t('common.clear')}
-              </button>
-            </div>
+            <FilterBar
+              as="div"
+              className="invoice-search-tools"
+              searchAriaLabel={t('buildingInvoices.filters.searchAria')}
+              searchPlaceholder={t('buildingInvoices.filters.searchPlaceholder')}
+              searchValue={search}
+              suggestionFields={[
+                'invoiceNumber',
+                'roomCode',
+                'roomName',
+                'residentName',
+                'residentEmail'
+              ]}
+              suggestionItems={invoices}
+              actions={(
+                <>
+                  <button
+                    className="secondary-button inline-button invoice-sort-button"
+                    type="button"
+                    onClick={() => setSortDirection((current) => (current === 'desc' ? 'asc' : 'desc'))}
+                  >
+                    {sortDirection === 'desc' ? <ArrowDownIcon /> : <ArrowUpIcon />}
+                    {sortDirection === 'desc' ? t('buildingInvoices.filters.newest') : t('buildingInvoices.filters.oldest')}
+                  </button>
+                  <button
+                    aria-label={t('buildingInvoices.actions.refresh')}
+                    className="secondary-button inline-button invoice-refresh-button"
+                    type="button"
+                    disabled={refreshing}
+                    onClick={handleRefresh}
+                  >
+                    <RefreshIcon />
+                  </button>
+                </>
+              )}
+              clearLabel={t('common.clear')}
+              onClear={handleClearInvoiceFilters}
+              onSearchChange={setSearch}
+            />
           </div>
 
           <InvoiceTable invoices={filteredInvoices} renderActions={renderActions} />

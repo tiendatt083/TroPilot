@@ -21,7 +21,7 @@ public class StaffVehicleController {
     private final VehicleService vehicleService;
 
     @GetMapping
-    public ApiResponse<List<VehicleResponse>> getVehicles(@RequestParam(required = false) Long buildingId) {
+    public ApiResponse<List<VehicleResponse>> getVehicles(@RequestParam(name = "buildingId", required = false) Long buildingId) {
         return ApiResponse.success("Vehicles loaded successfully", vehicleService.getVehicles(buildingId));
     }
 }

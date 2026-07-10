@@ -29,13 +29,7 @@ export default function BuildingCashFlowWorkspace({ getCashFlow, showReceipts = 
   useEffect(() => {
     setLoading(true);
     loadCashFlow(month).finally(() => setLoading(false));
-  }, [building.id]);
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    setLoading(true);
-    loadCashFlow(month).finally(() => setLoading(false));
-  };
+  }, [building.id, month]);
 
   return (
     <div className="building-workspace">
@@ -45,7 +39,7 @@ export default function BuildingCashFlowWorkspace({ getCashFlow, showReceipts = 
 
       {error && <div className="alert error-alert">{error}</div>}
 
-      <form className="cashflow-filter-card" onSubmit={handleSubmit}>
+      <div className="cashflow-filter-card">
         <label htmlFor="building-cashflow-month">
           <LineIcon name="calendar" />
           <span>{t('tables.common.month')}</span>
@@ -58,10 +52,7 @@ export default function BuildingCashFlowWorkspace({ getCashFlow, showReceipts = 
           onChange={(event) => setMonth(event.target.value)}
           required
         />
-        <button className="secondary-button compact-button" type="submit" disabled={loading}>
-          {t('workspace.cashFlow.view')}
-        </button>
-      </form>
+      </div>
 
       {loading ? (
         <div className="empty-state">{t('workspace.cashFlow.loading')}</div>

@@ -35,7 +35,7 @@ public class NotificationController {
     @PutMapping("/{id}/read")
     public ApiResponse<NotificationResponse> markRead(
             @AuthenticationPrincipal AuthenticatedUser user,
-            @PathVariable Long id
+            @PathVariable(name = "id") Long id
     ) {
         return ApiResponse.success("Notification marked as read successfully", notificationService.markRead(getUserId(user), id));
     }

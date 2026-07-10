@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as activityLogApi from '../api/activityLogApi.js';
 import ActivityLogTable from './ActivityLogTable.jsx';
+import FilterBar from './common/FilterBar.jsx';
 import ManagementPageHero from './common/ManagementPageHero.jsx';
 import NotificationPaginationControls from './NotificationPaginationControls.jsx';
 
@@ -58,10 +59,13 @@ export default function MyActivityLogPage() {
     };
   }, [t]);
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    loadLogs();
-  };
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      loadLogs(query);
+    }, query ? 250 : 0);
+
+    return () => window.clearTimeout(timer);
+  }, [query]);
 
   const handleClear = () => {
     setQuery('');
@@ -77,18 +81,17 @@ export default function MyActivityLogPage() {
 
       {error && <div className="alert error-alert">{error}</div>}
 
-      <form className="search-row" onSubmit={handleSubmit}>
-        <input
-          aria-label={t('activityLogs.filterAriaLabel')}
-          placeholder={t('activityLogs.filterPlaceholder')}
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-        />
-        <button className="inline-button" type="submit">{t('common.search')}</button>
-        <button className="secondary-button inline-button" type="button" onClick={handleClear}>
-          {t('common.clear')}
-        </button>
-      </form>
+      <FilterBar
+        as="div"
+        searchAriaLabel={t('activityLogs.filterAriaLabel')}
+        searchPlaceholder={t('activityLogs.filterPlaceholder')}
+        searchValue={query}
+        suggestionFields={['action', 'description', 'createdByName']}
+        suggestionItems={logs}
+        clearLabel={t('common.clear')}
+        onClear={handleClear}
+        onSearchChange={setQuery}
+      />
 
       {loading ? (
         <div className="empty-state">{t('activityLogs.loading')}</div>

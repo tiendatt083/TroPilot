@@ -23,15 +23,15 @@ public class StaffRoomController {
 
     @GetMapping
     public ApiResponse<List<RoomResponse>> getRooms(
-            @RequestParam(required = false) Long buildingId,
-            @RequestParam(required = false) String status,
-            @RequestParam(required = false) String search
+            @RequestParam(name = "buildingId", required = false) Long buildingId,
+            @RequestParam(name = "status", required = false) String status,
+            @RequestParam(name = "search", required = false) String search
     ) {
         return ApiResponse.success("Rooms loaded successfully", roomService.getRooms(buildingId, status, search));
     }
 
     @GetMapping("/{id}")
-    public ApiResponse<RoomResponse> getRoom(@PathVariable Long id) {
+    public ApiResponse<RoomResponse> getRoom(@PathVariable(name = "id") Long id) {
         return ApiResponse.success("Room loaded successfully", roomService.getRoom(id));
     }
 }

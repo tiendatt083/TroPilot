@@ -33,12 +33,12 @@ public class StaffEquipmentController {
     private final MaintenanceRequestService maintenanceRequestService;
 
     @GetMapping("/{id}")
-    public ApiResponse<EquipmentResponse> getEquipment(@PathVariable Long id) {
+    public ApiResponse<EquipmentResponse> getEquipment(@PathVariable(name = "id") Long id) {
         return ApiResponse.success("Equipment loaded successfully", equipmentService.getEquipment(id));
     }
 
     @GetMapping("/{id}/maintenance-history")
-    public ApiResponse<List<EquipmentMaintenanceHistoryResponse>> getMaintenanceHistory(@PathVariable Long id) {
+    public ApiResponse<List<EquipmentMaintenanceHistoryResponse>> getMaintenanceHistory(@PathVariable(name = "id") Long id) {
         return ApiResponse.success(
                 "Equipment maintenance history loaded successfully",
                 equipmentService.getMaintenanceHistory(id)
@@ -48,7 +48,7 @@ public class StaffEquipmentController {
     @PostMapping(path = "/{id}/maintenance-requests", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<MaintenanceRequestResponse> requestMaintenance(
             @AuthenticationPrincipal AuthenticatedUser user,
-            @PathVariable Long id,
+            @PathVariable(name = "id") Long id,
             @Valid @ModelAttribute MaintenanceRequestCreateRequest request
     ) {
         return ApiResponse.success(

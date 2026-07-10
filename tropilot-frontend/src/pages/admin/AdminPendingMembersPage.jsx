@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import * as memberApi from '../../features/residents/api.js';
+import FilterBar from '../../components/common/FilterBar.jsx';
 import { formatRoomCode } from '../../utils/roomDisplay.js';
 
 function normalize(value) {
@@ -100,21 +101,25 @@ export default function AdminPendingMembersPage() {
       {error && <div className="alert error-alert">{error}</div>}
 
       <div className="account-control-panel pending-member-control-panel">
-        <div className="account-search-control">
-          <input
-            aria-label={t('pendingMemberReview.filters.searchAria')}
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder={t('pendingMemberReview.filters.searchPlaceholder')}
-          />
-          <button
-            className="secondary-button inline-button"
-            type="button"
-            onClick={() => setSearch('')}
-          >
-            {t('common.clear')}
-          </button>
-        </div>
+        <FilterBar
+          as="div"
+          className="account-search-control instant-account-filter"
+          searchAriaLabel={t('pendingMemberReview.filters.searchAria')}
+          searchPlaceholder={t('pendingMemberReview.filters.searchPlaceholder')}
+          searchValue={search}
+          suggestionFields={[
+            'fullName',
+            'phone',
+            'email',
+            'residentHeadName',
+            'roomCode',
+            'buildingCode'
+          ]}
+          suggestionItems={members}
+          clearLabel={t('common.clear')}
+          onClear={() => setSearch('')}
+          onSearchChange={setSearch}
+        />
       </div>
 
       {loading ? (

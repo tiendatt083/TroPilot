@@ -38,7 +38,7 @@ public class StaffTaskController {
     @GetMapping("/{id}")
     public ApiResponse<TaskResponse> getTask(
             @AuthenticationPrincipal AuthenticatedUser user,
-            @PathVariable Long id
+            @PathVariable(name = "id") Long id
     ) {
         return ApiResponse.success("Task loaded successfully", taskService.getStaffTask(getUserId(user), id));
     }
@@ -46,7 +46,7 @@ public class StaffTaskController {
     @PutMapping("/{id}/start")
     public ApiResponse<TaskResponse> startTask(
             @AuthenticationPrincipal AuthenticatedUser user,
-            @PathVariable Long id
+            @PathVariable(name = "id") Long id
     ) {
         return ApiResponse.success("Task started successfully", taskService.startTask(getUserId(user), id));
     }
@@ -54,7 +54,7 @@ public class StaffTaskController {
     @PutMapping(path = "/{id}/complete", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<TaskResponse> completeTask(
             @AuthenticationPrincipal AuthenticatedUser user,
-            @PathVariable Long id,
+            @PathVariable(name = "id") Long id,
             @Valid @ModelAttribute TaskCompleteRequest request
     ) {
         return ApiResponse.success("Task completed successfully", taskService.completeTask(getUserId(user), id, request));
@@ -63,7 +63,7 @@ public class StaffTaskController {
     @PutMapping("/{id}/reject")
     public ApiResponse<TaskResponse> rejectTask(
             @AuthenticationPrincipal AuthenticatedUser user,
-            @PathVariable Long id,
+            @PathVariable(name = "id") Long id,
             @Valid @RequestBody(required = false) TaskRejectRequest request
     ) {
         return ApiResponse.success("Task rejected successfully", taskService.rejectTask(getUserId(user), id, request));
