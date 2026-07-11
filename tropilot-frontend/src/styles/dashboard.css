@@ -3356,10 +3356,91 @@
   background: var(--color-surface-muted);
 }
 
+.staff-building-ops-dashboard .ops-dashboard-workspace {
+  gap: clamp(var(--space-4), 1.5vw, var(--space-5));
+}
+
+.staff-building-recent-panel {
+  min-height: 100%;
+}
+
+.staff-building-recent-list {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4);
+}
+
+.staff-building-recent-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-md);
+  padding: 0.85rem 1rem;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(248, 251, 251, 0.94));
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background 160ms ease;
+}
+
+.staff-building-recent-row:hover {
+  transform: translateY(-1px);
+  border-color: rgba(36, 125, 131, 0.26);
+  box-shadow: 0 14px 26px rgba(15, 45, 58, 0.06);
+  background: #ffffff;
+}
+
+.staff-building-recent-copy {
+  display: grid;
+  min-width: 0;
+  gap: 0.38rem;
+}
+
+.staff-building-recent-copy strong {
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-strong);
+  line-height: 1.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.staff-building-recent-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.65rem;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.35;
+}
+
+.staff-building-recent-meta span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.staff-building-recent-row .status-pill {
+  flex: 0 0 auto;
+}
+
+.staff-building-empty-panel {
+  margin: var(--space-4);
+}
+
 html[data-theme="dark"] .staff-building-admin-match .ops-overview-panel,
 html[data-theme="dark"] .staff-building-admin-match .ops-panel,
 html[data-theme="dark"] .staff-building-profile-copy,
 html[data-theme="dark"] .staff-building-profile-facts div {
+  background: var(--color-surface);
+}
+
+html[data-theme="dark"] .staff-building-recent-row {
   background: var(--color-surface);
 }
 
