@@ -10,6 +10,14 @@
 @import './consistency.css';
 
 /* Cross-module dark theme overrides and responsive rules remain last. */
+.line-icon {
+  display: inline-block;
+  flex: 0 0 auto;
+  fill: none;
+  stroke: currentColor;
+  vertical-align: middle;
+}
+
 html[data-theme="dark"] body {
   background:
     linear-gradient(135deg, rgba(36, 168, 190, 0.08), rgba(118, 151, 232, 0.035) 42%, transparent 68%),
@@ -597,7 +605,7 @@ html[data-theme="dark"] input[type="month"]::-webkit-calendar-picker-indicator {
   .assignment-action-row,
   .invoice-bulk-summary,
   .dashboard-grid,
-  .profile-grid,
+  .profile-detail-grid,
   .detail-panel {
     grid-template-columns: 1fr;
   }
@@ -688,7 +696,7 @@ html[data-theme="dark"] input[type="month"]::-webkit-calendar-picker-indicator {
   .building-billing-workspace,
   .building-contract-detail-column,
   .contact-layout.is-editable,
-  .profile-grid,
+  .profile-detail-grid,
   .sepay-payment-panel,
   .home-donut-layout {
     grid-template-columns: 1fr;

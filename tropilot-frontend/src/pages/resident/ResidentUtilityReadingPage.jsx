@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as utilityReadingApi from '../../features/invoices/utilityReadingApi.js';
-import PageHeader from '../../components/PageHeader.jsx';
+import ManagementPageHero from '../../components/common/ManagementPageHero.jsx';
 import { UtilityReadingTable } from '../../features/invoices/components/index.js';
 
 export default function ResidentUtilityReadingPage() {
@@ -38,7 +38,10 @@ export default function ResidentUtilityReadingPage() {
 
   return (
     <section className="content-section">
-      <PageHeader eyebrow={t('resident.eyebrow')} title={t('resident.utilityReadings.title')} />
+      <ManagementPageHero
+        description={t('resident.utilityReadings.description')}
+        title={t('resident.utilityReadings.title')}
+      />
 
       {error && <div className="alert error-alert">{error}</div>}
 

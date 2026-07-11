@@ -43,7 +43,7 @@ function EvidenceLinks({ reading, t }) {
 
 function MeterBlock({ label, oldValue, newValue, usage, joinText, usageLabel }) {
   return (
-    <div className="utility-reading-meter-chip">
+    <div className="utility-reading-meter-cell">
       <span>{label}</span>
       <strong>
         {formatNumber(oldValue)} <small>{joinText}</small> {formatNumber(newValue)}
@@ -58,65 +58,83 @@ export default function UtilityReadingTable({ readings, renderActions }) {
   const hasActions = Boolean(renderActions);
 
   return (
-    <div className="utility-reading-list">
-      {readings.map((reading) => (
-        <article className="utility-reading-row" key={reading.id}>
-          <div className="utility-reading-room-cell">
-            <span>{t('tables.common.room')}</span>
-            <strong>{formatRoomCode(reading)}</strong>
-            <small>{formatDisplayMonth(reading.month)}</small>
-          </div>
-
-          <div className="utility-reading-date-cell">
-            <span>{t('tables.common.readingDate')}</span>
-            <strong>{formatDisplayDate(reading.readingDate, t('common.notSet'))}</strong>
-          </div>
-
-          <div className="utility-reading-meter-grid">
-            <MeterBlock
-              label={t('tables.common.electricity')}
-              oldValue={reading.oldElectricity}
-              newValue={reading.newElectricity}
-              usage={reading.electricityUsage}
-              joinText={t('common.to')}
-              usageLabel={t('tables.utilityReadings.usage')}
-            />
-            <MeterBlock
-              label={t('tables.common.water')}
-              oldValue={reading.oldWater}
-              newValue={reading.newWater}
-              usage={reading.waterUsage}
-              joinText={t('common.to')}
-              usageLabel={t('tables.utilityReadings.usage')}
-            />
-          </div>
-
-          <div className="utility-reading-meta-cell">
-            <div>
-              <span>{t('tables.common.createdBy')}</span>
-              <strong>{reading.createdByName || t('common.notSet')}</strong>
-            </div>
-            {reading.editReason && (
-              <div>
-                <span>{t('tables.common.editReason')}</span>
-                <strong>{reading.editReason}</strong>
-              </div>
-            )}
-          </div>
-
-          <div className="utility-reading-evidence-cell">
-            <span>{t('tables.common.evidence')}</span>
-            <EvidenceLinks reading={reading} t={t} />
-          </div>
-
-          {hasActions && (
-            <div className="utility-reading-row-actions">
-              {renderActions(reading)}
-            </div>
+    <div className="table-wrap utility-reading-table-wrap">
+      <table className="data-table utility-reading-table">
+        <thead>
+          <tr>
+            <th>{t('tables.common.room')}</th>
+            <th>{t('tables.common.readingDate')}</th>
+            <th>{t('tables.common.electricity')}</th>
+            <th>{t('tables.common.water')}</th>
+            <th>{t('tables.common.createdBy')}</th>
+            <th>{t('tables.common.evidence')}</th>
+            {hasActions && <th>{t('tables.common.actions')}</th>}
+          </tr>
+        </thead>
+        <tbody>
+          {readings.length === 0 ? (
+            <tr>
+              <td colSpan={hasActions ? 7 : 6}>
+                <div className="empty-state flat-empty-state">{t('tables.utilityReadings.empty')}</div>
+              </td>
+            </tr>
+          ) : (
+            readings.map((reading) => (
+              <tr key={reading.id}>
+                <td>
+                  <div className="utility-reading-room-cell">
+                    <strong>{formatRoomCode(reading)}</strong>
+                    <span className="table-subtext">{formatDisplayMonth(reading.month)}</span>
+                  </div>
+                </td>
+                <td>
+                  <strong>{formatDisplayDate(reading.readingDate, t('common.notSet'))}</strong>
+                </td>
+                <td>
+                  <MeterBlock
+                    label={t('tables.common.electricity')}
+                    oldValue={reading.oldElectricity}
+                    newValue={reading.newElectricity}
+                    usage={reading.electricityUsage}
+                    joinText={t('common.to')}
+                    usageLabel={t('tables.utilityReadings.usage')}
+                  />
+                </td>
+                <td>
+                  <MeterBlock
+                    label={t('tables.common.water')}
+                    oldValue={reading.oldWater}
+                    newValue={reading.newWater}
+                    usage={reading.waterUsage}
+                    joinText={t('common.to')}
+                    usageLabel={t('tables.utilityReadings.usage')}
+                  />
+                </td>
+                <td>
+                  <div className="utility-reading-meta-cell">
+                    <strong>{reading.createdByName || t('common.notSet')}</strong>
+                    {reading.editReason && (
+                      <span className="table-subtext">
+                        {t('tables.common.editReason')}: {reading.editReason}
+                      </span>
+                    )}
+                  </div>
+                </td>
+                <td>
+                  <EvidenceLinks reading={reading} t={t} />
+                </td>
+                {hasActions && (
+                  <td>
+                    <div className="table-actions utility-reading-row-actions">
+                      {renderActions(reading)}
+                    </div>
+                  </td>
+                )}
+              </tr>
+            ))
           )}
-        </article>
-      ))}
-      {readings.length === 0 && <div className="empty-state flat-empty-state">{t('tables.utilityReadings.empty')}</div>}
+        </tbody>
+      </table>
     </div>
   );
 }

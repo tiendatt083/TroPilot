@@ -123,7 +123,7 @@
   "contact": {
     "title": "Liên hệ",
     "eyebrow": "Hỗ trợ hệ thống",
-    "description": "Sử dụng các thông tin dưới đây để liên hệ với đơn vị quản lý. Thông tin liên hệ này áp dụng chung cho toàn bộ tòa nhà.",
+    "description": "Sử dụng các thông tin dưới đây để liên hệ với đơn vị quản lý",
     "summaryTitle": "Thông tin đơn vị quản lý",
     "editTitle": "Chỉnh sửa thông tin liên hệ",
       "phoneListTitle": "Số điện thoại",
@@ -1389,6 +1389,7 @@
   },
   "contracts": {
     "title": "Hợp đồng thuê",
+    "residentDescription": "Xem hợp đồng hiện tại, tệp đã tải lên và trạng thái xác nhận.",
     "adminEyebrow": "Admin",
     "listTitle": "Hợp đồng thuê",
     "listLoading": "Đang tải hợp đồng thuê...",
@@ -1442,7 +1443,9 @@
   },
   "maintenance": {
     "title": "Yêu cầu bảo trì",
+    "residentDescription": "Theo dõi các yêu cầu bảo trì đã gửi cho phòng của bạn.",
     "createTitle": "Tạo yêu cầu bảo trì",
+    "createDescription": "Mô tả sự cố để đơn vị quản lý kiểm tra và xử lý.",
     "create": "Tạo yêu cầu",
     "back": "Quay lại bảo trì",
     "loading": "Đang tải yêu cầu bảo trì...",
@@ -1574,6 +1577,7 @@
   },
   "vehicles": {
     "title": "Xe",
+    "residentDescription": "Quản lý xe đã đăng ký và gửi yêu cầu đăng ký xe mới.",
     "requestEyebrow": "Yêu cầu mới",
     "requestTitle": "Yêu cầu đăng ký xe",
     "loading": "Đang tải xe...",
@@ -1602,14 +1606,21 @@
   "resident": {
     "eyebrow": "Chủ hộ",
     "notifications": {
+      "description": "Theo dõi các thông báo dành cho tài khoản của bạn.",
       "loading": "Đang tải thông báo...",
       "loadError": "Không thể tải thông báo",
       "markedRead": "Đã đánh dấu thông báo là đã đọc.",
-      "markReadError": "Không thể đánh dấu thông báo là đã đọc"
+      "markReadError": "Không thể đánh dấu thông báo là đã đọc",
+      "detailEyebrow": "Chi tiết thông báo",
+      "sender": "Người gửi",
+      "createdAt": "Thời gian",
+      "content": "Nội dung"
     },
     "invoices": {
       "title": "Hóa đơn",
+      "description": "Theo dõi hóa đơn, hạn thanh toán và trạng thái thanh toán của phòng.",
       "details": "Chi tiết hóa đơn",
+      "detailDescription": "Xem các khoản phí, trạng thái thanh toán và bằng chứng thanh toán của hóa đơn.",
       "back": "Quay lại hóa đơn",
       "loading": "Đang tải hóa đơn...",
       "loadingDetail": "Đang tải hóa đơn...",
@@ -1634,6 +1645,7 @@
     },
     "feedback": {
       "title": "Phản hồi",
+      "description": "Gửi phản hồi cho đơn vị quản lý và theo dõi trạng thái xử lý.",
       "type": "Loại phản hồi",
       "subject": "Tiêu đề",
       "content": "Nội dung",
@@ -1672,6 +1684,7 @@
     },
     "utilityReadings": {
       "title": "Chỉ số điện nước",
+      "description": "Xem lịch sử ghi điện nước đã áp dụng cho phòng của bạn.",
       "loading": "Đang tải chỉ số điện nước...",
       "loadError": "Không thể tải chỉ số điện nước"
     },
@@ -1781,7 +1794,6 @@
     "staffTitle": "Công việc của tôi",
     "buildingEyebrow": "Công việc tòa nhà",
     "buildingTitle": "Công việc trong tòa nhà này",
-    "staffBuildingTitle": "Công việc của tôi trong tòa nhà này",
     "create": "Tạo công việc",
     "createTitle": "Tạo công việc",
     "createForBuilding": "Tạo công việc cho tòa nhà này",
@@ -2216,6 +2228,7 @@
       "dueDate": "Ngày đến hạn",
       "editReason": "Lý do sửa",
       "electricity": "Điện",
+      "equipment": "Thiết bị",
       "evidence": "Bằng chứng",
       "expense": "Chi phí",
       "expenseCode": "Mã chi phí",

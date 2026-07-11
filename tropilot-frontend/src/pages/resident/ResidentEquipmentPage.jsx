@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as equipmentApi from '../../features/equipment/api.js';
 import EquipmentTable from '../../components/EquipmentTable.jsx';
-import PageHeader from '../../components/PageHeader.jsx';
+import ManagementPageHero from '../../components/common/ManagementPageHero.jsx';
 
 const residentEquipmentColumns = ['code', 'name', 'installationDate', 'condition', 'maintenanceSchedule'];
 
@@ -29,8 +29,10 @@ export default function ResidentEquipmentPage() {
 
   return (
     <section className="content-section equipment-page">
-      <PageHeader eyebrow={t('role.residentHead')} title={t('equipment.residentTitle')} />
-      <p className="page-support-text">{t('equipment.residentDescription')}</p>
+      <ManagementPageHero
+        description={t('equipment.residentDescription')}
+        title={t('equipment.residentTitle')}
+      />
 
       {error && <div className="alert error-alert">{error}</div>}
 

@@ -45,7 +45,7 @@ export default function StaffTaskListPage() {
       {loading ? (
         <div className="empty-state">{t('taskManagement.loading')}</div>
       ) : (
-        <TaskTable tasks={tasks} detailBasePath="/staff/tasks" />
+        <TaskTable tasks={tasks} detailBasePath="/staff/tasks" showAssignedStaff={false} />
       )}
     </section>
   );

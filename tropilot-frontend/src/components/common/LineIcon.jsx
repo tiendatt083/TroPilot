@@ -92,6 +92,12 @@ const ICONS = {
       <path d="m13.5 8.5 2 2" />
     </>
   ),
+  eye: (
+    <>
+      <path d="M2.5 12s3.4-6 9.5-6 9.5 6 9.5 6-3.4 6-9.5 6-9.5-6-9.5-6Z" />
+      <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+    </>
+  ),
   feedback: (
     <>
       <path d="M5 6h14a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-7l-5 4v-4H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z" />
@@ -249,7 +255,12 @@ export default function LineIcon({ name, className = '' }) {
   return (
     <svg
       aria-hidden="true"
-      className={className}
+      className={['line-icon', className].filter(Boolean).join(' ')}
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
       viewBox="0 0 24 24"
     >
       {icon}

@@ -4,6 +4,7 @@ import * as feedbackApi from '../../features/notifications/feedbackApi.js';
 import FeedbackTable from '../../components/FeedbackTable.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
 import ActionDialog from '../../components/common/ActionDialog.jsx';
+import ManagementPageHero from '../../components/common/ManagementPageHero.jsx';
 import { FEEDBACK_TYPE_OPTIONS } from '../../utils/feedbackOptions.js';
 
 const emptyForm = {
@@ -92,14 +93,13 @@ export default function ResidentFeedbackPage() {
 
   return (
     <section className="content-section resident-feedback-page">
-      <PageHeader
+      <ManagementPageHero
         actions={(
           <button className="button-link inline-button" type="button" onClick={handleOpenComposer}>
             {t('resident.feedback.create')}
           </button>
         )}
-        className="resident-feedback-header"
-        eyebrow={t('resident.eyebrow')}
+        description={t('resident.feedback.description')}
         title={t('resident.feedback.title')}
       />
 

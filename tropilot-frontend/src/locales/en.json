@@ -123,7 +123,7 @@
   "contact": {
     "title": "Contact",
     "eyebrow": "System support",
-    "description": "Use these details to contact the property management team. The same contact information applies to every building.",
+    "description": "Use the information below to contact the management team.",
     "summaryTitle": "Management contact",
     "editTitle": "Edit contact information",
       "phoneListTitle": "Phone numbers",
@@ -1389,6 +1389,7 @@
   },
   "contracts": {
     "title": "Rental contract",
+    "residentDescription": "View your current contract, uploaded files, and confirmation status.",
     "adminEyebrow": "Administrator",
     "listTitle": "Rental contracts",
     "listLoading": "Loading rental contracts...",
@@ -1442,7 +1443,9 @@
   },
   "maintenance": {
     "title": "Maintenance requests",
+    "residentDescription": "Track maintenance requests submitted for your room.",
     "createTitle": "Create maintenance request",
+    "createDescription": "Describe the issue so management can review and handle it.",
     "create": "Create request",
     "back": "Back to maintenance",
     "loading": "Loading maintenance requests...",
@@ -1574,6 +1577,7 @@
   },
   "vehicles": {
     "title": "Vehicles",
+    "residentDescription": "Manage registered vehicles and submit new vehicle requests.",
     "requestEyebrow": "New request",
     "requestTitle": "Request vehicle registration",
     "loading": "Loading vehicles...",
@@ -1602,14 +1606,21 @@
   "resident": {
     "eyebrow": "Head resident",
     "notifications": {
+      "description": "Review notifications sent to your account.",
       "loading": "Loading notifications...",
       "loadError": "Notifications could not be loaded",
       "markedRead": "Notification marked as read.",
-      "markReadError": "Notification could not be marked as read"
+      "markReadError": "Notification could not be marked as read",
+      "detailEyebrow": "Notification details",
+      "sender": "Sender",
+      "createdAt": "Time",
+      "content": "Content"
     },
     "invoices": {
       "title": "Invoices",
+      "description": "Track invoices, due dates, and payment status for your room.",
       "details": "Invoice details",
+      "detailDescription": "Review invoice charges, payment status, and uploaded payment proof.",
       "back": "Back to invoices",
       "loading": "Loading invoices...",
       "loadingDetail": "Loading invoice...",
@@ -1634,6 +1645,7 @@
     },
     "feedback": {
       "title": "Feedback",
+      "description": "Send feedback to management and follow its handling status.",
       "type": "Feedback type",
       "subject": "Title",
       "content": "Content",
@@ -1672,6 +1684,7 @@
     },
     "utilityReadings": {
       "title": "Utility readings",
+      "description": "View electricity and water readings recorded for your room.",
       "loading": "Loading utility readings...",
       "loadError": "Utility readings could not be loaded"
     },
@@ -1781,7 +1794,6 @@
     "staffTitle": "My tasks",
     "buildingEyebrow": "Building tasks",
     "buildingTitle": "Tasks in this building",
-    "staffBuildingTitle": "My tasks in this building",
     "create": "Create task",
     "createTitle": "Create task",
     "createForBuilding": "Create task for this building",
@@ -2216,6 +2228,7 @@
       "dueDate": "Due date",
       "editReason": "Edit reason",
       "electricity": "Electricity",
+      "equipment": "Equipment",
       "evidence": "Evidence",
       "expense": "Expense",
       "expenseCode": "Expense code",

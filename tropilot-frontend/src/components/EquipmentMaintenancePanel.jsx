@@ -13,6 +13,7 @@ export default function EquipmentMaintenancePanel({
   equipment,
   history,
   historyLoading,
+  hideHeader = false,
   requestLoading,
   showHistory,
   onClose,
@@ -46,19 +47,21 @@ export default function EquipmentMaintenancePanel({
 
   return (
     <section className="equipment-maintenance-panel">
-      <div className="building-section-header">
-        <div>
-          <span className="eyebrow">
-            {showHistory ? t('equipment.history.eyebrow') : t('equipment.request.eyebrow')}
-          </span>
-          <h2>
-            {showHistory ? t('equipment.history.title') : t('equipment.request.title')}: {equipment.name}
-          </h2>
+      {!hideHeader && (
+        <div className="building-section-header">
+          <div>
+            <span className="eyebrow">
+              {showHistory ? t('equipment.history.eyebrow') : t('equipment.request.eyebrow')}
+            </span>
+            <h2>
+              {showHistory ? t('equipment.history.title') : t('equipment.request.title')}: {equipment.name}
+            </h2>
+          </div>
+          <button className="secondary-button inline-button" type="button" onClick={onClose}>
+            {t('equipment.actions.closePanel')}
+          </button>
         </div>
-        <button className="secondary-button inline-button" type="button" onClick={onClose}>
-          {t('equipment.actions.closePanel')}
-        </button>
-      </div>
+      )}
 
       {showHistory ? (
         <div className="equipment-history-list">

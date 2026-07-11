@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as invoiceApi from '../../features/invoices/api.js';
 import { InvoiceTable } from '../../features/invoices/components/index.js';
-import PageHeader from '../../components/PageHeader.jsx';
+import ManagementPageHero from '../../components/common/ManagementPageHero.jsx';
 
 export default function ResidentInvoiceListPage() {
   const { t } = useTranslation();
@@ -38,7 +38,10 @@ export default function ResidentInvoiceListPage() {
 
   return (
     <section className="content-section">
-      <PageHeader eyebrow={t('resident.eyebrow')} title={t('resident.invoices.title')} />
+      <ManagementPageHero
+        description={t('resident.invoices.description')}
+        title={t('resident.invoices.title')}
+      />
 
       {error && <div className="alert error-alert">{error}</div>}
 

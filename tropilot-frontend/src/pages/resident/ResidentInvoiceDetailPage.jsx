@@ -5,6 +5,7 @@ import * as invoiceApi from '../../features/invoices/api.js';
 import * as paymentApi from '../../features/payments/api.js';
 import { InvoiceDetail } from '../../features/invoices/components/index.js';
 import PageHeader from '../../components/PageHeader.jsx';
+import ManagementPageHero from '../../components/common/ManagementPageHero.jsx';
 import { PaymentProofUploadForm, PaymentTable } from '../../features/payments/components/index.js';
 import useInvoicePaymentPolling from '../../hooks/useInvoicePaymentPolling.js';
 
@@ -92,12 +93,15 @@ export default function ResidentInvoiceDetailPage() {
 
   return (
     <section className="content-section">
-      <div className="page-title-row">
-        <PageHeader eyebrow={t('resident.eyebrow')} title={t('resident.invoices.details')} />
-        <Link className="secondary-link" to="/resident/invoices">
-          {t('resident.invoices.back')}
-        </Link>
-      </div>
+      <ManagementPageHero
+        actions={(
+          <Link className="secondary-link" to="/resident/invoices">
+            {t('resident.invoices.back')}
+          </Link>
+        )}
+        description={t('resident.invoices.detailDescription')}
+        title={t('resident.invoices.details')}
+      />
 
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}

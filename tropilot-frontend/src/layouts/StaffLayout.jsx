@@ -31,7 +31,7 @@ export default function StaffLayout() {
   const { t } = useTranslation();
 
   return (
-    <div className="app-shell">
+    <div className="app-shell staff-shell">
       <aside className="sidebar">
         <SidebarBrand />
         <SidebarUserCard />

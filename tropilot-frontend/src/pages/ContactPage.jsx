@@ -150,14 +150,10 @@ export default function ContactPage() {
             description={t('contact.description')}
           />
         ) : (
-          <header className="contact-hero">
-            <div className="contact-hero-copy">
-              <span className="page-eyebrow">{t('contact.eyebrow')}</span>
-              <h1>{t('contact.title')}</h1>
-              <p>{t('contact.description')}</p>
-            </div>
-            <ContactHeroIllustration />
-          </header>
+          <ManagementPageHero
+            title={t('contact.title')}
+            description={t('contact.description')}
+          />
         )}
 
         {message && <div className="alert success-alert">{message}</div>}
@@ -233,11 +229,10 @@ function ContactSummary({ contact, t }) {
       </dl>
 
       <section className="contact-phone-section">
-        <ContactSectionHeading
-          eyebrow={t('contact.sections.phones')}
-          icon="phone"
-          title={t('contact.phoneListTitle')}
-        />
+        <div className="contact-phone-section-label">
+          <LineIcon name="phone" />
+          <span>{t('contact.sections.phones')}</span>
+        </div>
         <div className="contact-phone-list">
           {contact.phones.map((phone, index) => (
             <a
@@ -464,27 +459,6 @@ function ContactFieldControl({ children, icon }) {
     <div className="contact-field-control">
       <LineIcon className="contact-field-icon" name={icon} />
       {children}
-    </div>
-  );
-}
-
-function ContactHeroIllustration() {
-  return (
-    <div className="contact-hero-art" aria-hidden="true">
-      <svg viewBox="0 0 220 150" role="img">
-        <circle cx="118" cy="72" r="64" />
-        <path d="M66 66h88v58H66z" className="hero-envelope" />
-        <path d="m66 67 44 35 44-35" className="hero-envelope-line" />
-        <path d="M81 37h62l18 18v40H81z" className="hero-paper" />
-        <path d="M143 37v19h18" className="hero-paper-line" />
-        <path d="M96 57h34" className="hero-paper-line" />
-        <path d="M96 74h46" className="hero-paper-line" />
-        <path d="M172 34h28a10 10 0 0 1 10 10v12a10 10 0 0 1-10 10h-12l-12 11v-11h-4a10 10 0 0 1-10-10V44a10 10 0 0 1 10-10Z" className="hero-bubble" />
-        <path d="M177 50h4M187 50h4M197 50h4" className="hero-bubble-dots" />
-        <path d="M32 128c12-17 28-16 38 0" className="hero-plant" />
-        <path d="M34 128c-4-17 4-28 19-33 3 16-3 27-19 33Z" className="hero-leaf" />
-        <path d="M178 128c9-20 24-25 39-14-8 16-20 22-39 14Z" className="hero-leaf" />
-      </svg>
     </div>
   );
 }

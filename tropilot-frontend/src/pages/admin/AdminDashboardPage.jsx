@@ -8,6 +8,7 @@ import * as maintenanceApi from '../../api/maintenanceApi.js';
 import * as roomApi from '../../api/roomApi.js';
 import * as dashboardApi from '../../features/buildings/dashboardApi.js';
 import LineIcon from '../../components/common/LineIcon.jsx';
+import { CHART_COLORS, ChartPanel, DonutChart, GroupedBarChart } from '../../components/common/DashboardCharts.jsx';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { formatDisplayDate, formatDisplayMonth } from '../../utils/dateFormat.js';
 import { getUserDisplayName } from '../../utils/userDisplay.js';
@@ -143,24 +144,6 @@ function getStatusClass(prefix, status) {
   return `status-pill ${prefix}-${String(status || '').toLowerCase().replaceAll('_', '-')}`;
 }
 
-function createDonutStyle(segments) {
-  const total = segments.reduce((sum, segment) => sum + toNumber(segment.value), 0);
-
-  if (total <= 0) {
-    return { background: 'conic-gradient(#d7e0e5 0deg 360deg)' };
-  }
-
-  let cursor = 0;
-  const stops = segments.map((segment) => {
-    const start = cursor;
-    const size = (toNumber(segment.value) / total) * 360;
-    cursor += size;
-    return `${segment.color} ${start}deg ${cursor}deg`;
-  });
-
-  return { background: `conic-gradient(${stops.join(', ')})` };
-}
-
 function formatLongDate(value = new Date(), locale = 'vi-VN') {
   return new Intl.DateTimeFormat(locale, {
     weekday: 'long',
@@ -291,60 +274,25 @@ function BuildingSummaryTable({ rows, t }) {
 }
 
 function MonthlyRevenueChart({ rows, locale, t }) {
-  const maxValue = Math.max(
-    ...rows.flatMap((row) => [row.paid, row.unpaid]),
-    1
-  );
-
   return (
-    <section className="ops-panel">
-      <PanelTitle icon="barChart" title={t('dashboard.ops.charts.monthlyRevenue')} />
-      <div className="ops-chart-legend">
-        <span><i className="ops-legend-paid" />{t('dashboard.ops.labels.paid')}</span>
-        <span><i className="ops-legend-unpaid" />{t('dashboard.ops.labels.unpaid')}</span>
-      </div>
-      <div className="ops-revenue-chart">
-        {rows.map((row) => (
-          <div className="ops-revenue-month" key={row.month}>
-            <div className="ops-revenue-bars">
-              <span
-                className="ops-revenue-bar ops-revenue-paid"
-                style={{ height: `${Math.max(3, getPercent(row.paid, maxValue))}%` }}
-                title={`${t('dashboard.ops.labels.paid')} ${formatCompactCurrency(row.paid, locale, t)}`}
-              />
-              <span
-                className="ops-revenue-bar ops-revenue-unpaid"
-                style={{ height: `${Math.max(3, getPercent(row.unpaid, maxValue))}%` }}
-                title={`${t('dashboard.ops.labels.unpaid')} ${formatCompactCurrency(row.unpaid, locale, t)}`}
-              />
-            </div>
-            <span>{formatDisplayMonth(row.month)}</span>
-          </div>
-        ))}
-      </div>
-    </section>
+    <ChartPanel icon="barChart" title={t('dashboard.ops.charts.monthlyRevenue')}>
+      <GroupedBarChart
+        rows={rows.map((row) => ({ ...row, label: formatDisplayMonth(row.month) }))}
+        series={[
+          { key: 'paid', label: t('dashboard.ops.labels.paid'), color: 'paid' },
+          { key: 'unpaid', label: t('dashboard.ops.labels.unpaid'), color: 'unpaid' }
+        ]}
+        valueFormatter={(value) => formatCompactCurrency(value, locale, t)}
+      />
+    </ChartPanel>
   );
 }
 
 function DonutPanel({ center, icon, locale, segments, title }) {
   return (
-    <section className="ops-panel ops-donut-panel">
-      <PanelTitle icon={icon} title={title} />
-      <div className="ops-donut-layout">
-        <div className="ops-donut" style={createDonutStyle(segments)}>
-          <div>{center}</div>
-        </div>
-        <div className="ops-donut-legend">
-          {segments.map((segment) => (
-            <span key={segment.label}>
-              <i style={{ backgroundColor: segment.color }} />
-              {segment.label}
-              <strong>{formatNumber(segment.value, locale)}</strong>
-            </span>
-          ))}
-        </div>
-      </div>
-    </section>
+    <ChartPanel className="ops-donut-panel" icon={icon} title={title}>
+      <DonutChart center={center} items={segments} locale={locale} />
+    </ChartPanel>
   );
 }
 
@@ -479,19 +427,19 @@ export default function AdminDashboardPage() {
   const paymentUnpaidValue = unpaidInvoiceAmount || toNumber(dashboard?.unpaidAmount);
   const paymentTotal = paymentPaidValue + paymentUnpaidValue;
   const roomSegments = [
-    { label: statusLabel(t, 'room', 'OCCUPIED'), value: dashboard?.occupiedRooms || 0, color: '#10b981' },
-    { label: statusLabel(t, 'room', 'EMPTY'), value: dashboard?.emptyRooms || 0, color: '#3b82f6' },
-    { label: statusLabel(t, 'room', 'MAINTENANCE'), value: dashboard?.maintenanceRooms || 0, color: '#f59e0b' }
+    { label: statusLabel(t, 'room', 'OCCUPIED'), value: dashboard?.occupiedRooms || 0, color: CHART_COLORS.paid },
+    { label: statusLabel(t, 'room', 'EMPTY'), value: dashboard?.emptyRooms || 0, color: CHART_COLORS.info },
+    { label: statusLabel(t, 'room', 'MAINTENANCE'), value: dashboard?.maintenanceRooms || 0, color: CHART_COLORS.warning }
   ];
   const feedbackSegments = [
-    { label: statusLabel(t, 'feedback', 'PENDING'), value: insights.feedbacks.filter((item) => item.status === 'PENDING').length, color: '#f59e0b' },
-    { label: statusLabel(t, 'feedback', 'IN_PROGRESS'), value: insights.feedbacks.filter((item) => item.status === 'IN_PROGRESS').length, color: '#3b82f6' },
-    { label: statusLabel(t, 'feedback', 'RESOLVED'), value: insights.feedbacks.filter((item) => item.status === 'RESOLVED').length, color: '#10b981' },
-    { label: statusLabel(t, 'feedback', 'REJECTED'), value: insights.feedbacks.filter((item) => item.status === 'REJECTED').length, color: '#6b7280' }
+    { label: statusLabel(t, 'feedback', 'PENDING'), value: insights.feedbacks.filter((item) => item.status === 'PENDING').length, color: CHART_COLORS.warning },
+    { label: statusLabel(t, 'feedback', 'IN_PROGRESS'), value: insights.feedbacks.filter((item) => item.status === 'IN_PROGRESS').length, color: CHART_COLORS.info },
+    { label: statusLabel(t, 'feedback', 'RESOLVED'), value: insights.feedbacks.filter((item) => item.status === 'RESOLVED').length, color: CHART_COLORS.paid },
+    { label: statusLabel(t, 'feedback', 'REJECTED'), value: insights.feedbacks.filter((item) => item.status === 'REJECTED').length, color: CHART_COLORS.neutral }
   ];
   const paymentSegments = [
-    { label: statusLabel(t, 'invoice', 'PAID'), value: paymentPaidValue, color: '#10b981' },
-    { label: statusLabel(t, 'invoice', 'UNPAID'), value: paymentUnpaidValue, color: '#ef4444' }
+    { label: statusLabel(t, 'invoice', 'PAID'), value: paymentPaidValue, color: CHART_COLORS.paid },
+    { label: statusLabel(t, 'invoice', 'UNPAID'), value: paymentUnpaidValue, color: CHART_COLORS.unpaid }
   ];
   const trackedItems = toNumber(dashboard?.unpaidInvoices)
     + toNumber(dashboard?.pendingMaintenanceRequests)

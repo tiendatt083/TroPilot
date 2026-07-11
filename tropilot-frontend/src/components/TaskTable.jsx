@@ -16,7 +16,7 @@ function roomText(task, t) {
   return formatRoomLabel(task);
 }
 
-export default function TaskTable({ tasks, detailBasePath }) {
+export default function TaskTable({ tasks, detailBasePath, showAssignedStaff = true }) {
   const { t } = useTranslation();
 
   return (
@@ -26,7 +26,7 @@ export default function TaskTable({ tasks, detailBasePath }) {
           <tr>
             <th>{t('tables.tasks.title')}</th>
             <th>{t('tables.common.room')}</th>
-            <th>{t('tables.common.assignedStaff')}</th>
+            {showAssignedStaff && <th>{t('tables.common.assignedStaff')}</th>}
             <th>{t('tables.common.type')}</th>
             <th>{t('tables.common.deadline')}</th>
             <th>{t('tables.common.status')}</th>
@@ -44,10 +44,12 @@ export default function TaskTable({ tasks, detailBasePath }) {
                 <strong>{roomText(task, t)}</strong>
                 <span className="table-subtext">{task.buildingCode || t('common.noBuilding')}</span>
               </td>
-              <td>
-                <strong>{task.assignedToName}</strong>
-                <span className="table-subtext">{task.assignedToEmail}</span>
-              </td>
+              {showAssignedStaff && (
+                <td>
+                  <strong>{task.assignedToName}</strong>
+                  <span className="table-subtext">{task.assignedToEmail}</span>
+                </td>
+              )}
               <td>{formatEnumLabel(t, 'taskType', task.taskType)}</td>
               <td>{formatDateTime(task.deadline, t)}</td>
               <td>

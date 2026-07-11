@@ -294,6 +294,14 @@ export default function BuildingEquipmentPage({ role }) {
       </button>
     </div>
   );
+  const maintenanceDialogOpen = Boolean(panel.equipment);
+  const maintenanceDialogTitle = panel.equipment
+    ? `${panel.type === 'history' ? t('equipment.history.title') : t('equipment.request.title')}: ${panel.equipment.name}`
+    : '';
+  const maintenanceDialogEyebrow = panel.type === 'history'
+    ? t('equipment.history.eyebrow')
+    : t('equipment.request.eyebrow');
+  const closeMaintenanceDialog = () => setPanel({ type: '', equipment: null });
 
   return (
     <div className="building-workspace equipment-page">
@@ -404,15 +412,25 @@ export default function BuildingEquipmentPage({ role }) {
         )}
       </section>
 
-      <EquipmentMaintenancePanel
-        equipment={panel.equipment}
-        history={history}
-        historyLoading={historyLoading}
-        requestLoading={requestLoading}
-        showHistory={panel.type === 'history'}
-        onClose={() => setPanel({ type: '', equipment: null })}
-        onSubmit={handleMaintenanceRequest}
-      />
+      <ActionDialog
+        className="equipment-maintenance-dialog"
+        eyebrow={maintenanceDialogEyebrow}
+        labelledBy="equipment-maintenance-dialog-title"
+        open={maintenanceDialogOpen}
+        title={maintenanceDialogTitle}
+        onClose={closeMaintenanceDialog}
+      >
+        <EquipmentMaintenancePanel
+          equipment={panel.equipment}
+          history={history}
+          historyLoading={historyLoading}
+          requestLoading={requestLoading}
+          showHistory={panel.type === 'history'}
+          hideHeader
+          onClose={closeMaintenanceDialog}
+          onSubmit={handleMaintenanceRequest}
+        />
+      </ActionDialog>
     </div>
   );
 }

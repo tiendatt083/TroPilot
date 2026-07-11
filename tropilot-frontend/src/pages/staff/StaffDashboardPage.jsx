@@ -2,8 +2,6 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import * as dashboardApi from '../../features/buildings/dashboardApi.js';
-import DashboardMetricGrid from '../../components/DashboardMetricGrid.jsx';
-import DashboardSection from '../../components/DashboardSection.jsx';
 import LineIcon from '../../components/common/LineIcon.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
 
@@ -12,11 +10,6 @@ function formatNumber(value) {
   return Number.isFinite(numberValue)
     ? numberValue.toLocaleString('en-US', { maximumFractionDigits: 2 })
     : value;
-}
-
-function toMetricNumber(value) {
-  const numberValue = Number(value ?? 0);
-  return Number.isFinite(numberValue) ? numberValue : 0;
 }
 
 export default function StaffDashboardPage() {
@@ -69,20 +62,9 @@ export default function StaffDashboardPage() {
         { label: t('dashboard.staff.metrics.createdExpenses'), value: formatNumber(dashboard.createdExpenses), tone: 'primary' }
       ]
     : [];
-  const heroMetrics = dashboard
-    ? [
-        { label: t('dashboard.staff.metrics.assignedTasks'), value: formatNumber(dashboard.assignedTasks) },
-        { label: t('dashboard.staff.metrics.overdueTasks'), value: formatNumber(dashboard.overdueTasks) },
-        { label: t('dashboard.staff.metrics.utilityReadingsDue'), value: formatNumber(dashboard.roomsNeedingUtilityReading) },
-        { label: t('dashboard.staff.metrics.paymentChecks'), value: formatNumber(dashboard.pendingPaymentConfirmations) }
-      ]
+  const overviewMetrics = dashboard
+    ? [...workloadMetrics, ...operationsMetrics, ...financeMetrics]
     : [];
-  const attentionCount = dashboard
-    ? toMetricNumber(dashboard.overdueTasks)
-      + toMetricNumber(dashboard.roomsNeedingUtilityReading)
-      + toMetricNumber(dashboard.pendingPaymentConfirmations)
-      + toMetricNumber(dashboard.activeMaintenanceRequests)
-    : 0;
   const priorityItems = dashboard
     ? [
         {
@@ -133,14 +115,7 @@ export default function StaffDashboardPage() {
         <div className="staff-dashboard-hero-copy">
           <PageHeader eyebrow={t('dashboard.staff.eyebrow')} title={t('dashboard.staff.title')} />
           <p>{t('dashboard.staff.heroDescription')}</p>
-          {dashboard && (
-            <div className="staff-dashboard-focus-strip">
-              <span>{t('dashboard.staff.todayFocus')}</span>
-              <strong>{t('dashboard.staff.attentionCount', { count: formatNumber(attentionCount) })}</strong>
-            </div>
-          )}
         </div>
-        {dashboard && <DashboardMetricGrid metrics={heroMetrics} compact />}
       </div>
 
       {error && <div className="alert error-alert">{error}</div>}
@@ -172,38 +147,39 @@ export default function StaffDashboardPage() {
             </div>
           </section>
 
-          <div className="dashboard-section-stack staff-dashboard-grid">
-            <DashboardSection
-              title={t('dashboard.staff.sections.taskTitle')}
-              description={t('dashboard.staff.sections.taskDescription')}
-              metrics={workloadMetrics}
-            />
-            <DashboardSection
-              title={t('dashboard.staff.sections.operationsTitle')}
-              description={t('dashboard.staff.sections.operationsDescription')}
-              metrics={operationsMetrics}
-            />
-            <DashboardSection
-              title={t('dashboard.staff.sections.expenseTitle')}
-              description={t('dashboard.staff.sections.expenseDescription')}
-              metrics={financeMetrics}
-            />
-          </div>
+          <div className="staff-dashboard-grid">
+            <section className="staff-workload-panel">
+              <div className="dashboard-section-header">
+                <div>
+                  <h2>{t('dashboard.staff.sections.taskTitle')}</h2>
+                  <p>{t('dashboard.staff.sections.taskDescription')}</p>
+                </div>
+              </div>
+              <div className="staff-workload-list">
+                {overviewMetrics.map((metric) => (
+                  <div className={`staff-workload-row staff-workload-row-${metric.tone || 'primary'}`} key={metric.label}>
+                    <span>{metric.label}</span>
+                    <strong>{metric.value}</strong>
+                  </div>
+                ))}
+              </div>
+            </section>
 
-          <section className="staff-quick-actions-panel">
-            <div>
-              <h2>{t('dashboard.staff.sections.quickActionTitle')}</h2>
-              <p>{t('dashboard.staff.sections.quickActionDescription')}</p>
-            </div>
-            <div className="staff-quick-action-list">
-              {quickActions.map((action) => (
-                <Link className="staff-quick-action" key={action.to} to={action.to}>
-                  <LineIcon name={action.icon} />
-                  <span>{action.label}</span>
-                </Link>
-              ))}
-            </div>
-          </section>
+            <section className="staff-quick-actions-panel">
+              <div>
+                <h2>{t('dashboard.staff.sections.quickActionTitle')}</h2>
+                <p>{t('dashboard.staff.sections.quickActionDescription')}</p>
+              </div>
+              <div className="staff-quick-action-list">
+                {quickActions.map((action) => (
+                  <Link className="staff-quick-action" key={action.to} to={action.to}>
+                    <LineIcon name={action.icon} />
+                    <span>{action.label}</span>
+                  </Link>
+                ))}
+              </div>
+            </section>
+          </div>
         </div>
       )}
     </section>

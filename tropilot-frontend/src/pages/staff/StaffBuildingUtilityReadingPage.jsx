@@ -6,6 +6,9 @@ export default function StaffBuildingUtilityReadingPage() {
     <BuildingUtilityReadingWorkspace
       getOverview={utilityReadingApi.getStaffUtilityReadingOverview}
       getReadings={utilityReadingApi.getStaffUtilityReadings}
+      canRecord
+      canEdit
+      updateReading={utilityReadingApi.updateStaffUtilityReading}
     />
   );
 }

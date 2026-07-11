@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import PageHeader from '../components/PageHeader.jsx';
+import ActionDialog from '../components/common/ActionDialog.jsx';
+import LineIcon from '../components/common/LineIcon.jsx';
+import ManagementPageHero from '../components/common/ManagementPageHero.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 
 const initialForm = {
@@ -106,104 +108,127 @@ export default function ProfilePage() {
     setEditing(false);
   };
 
-  return (
-    <section className="content-section">
-      <div className="page-title-row">
-        <PageHeader
-          actions={!editing ? (
-            <button className="button-link" type="button" onClick={handleEdit}>
-              {t('common.edit')}
-            </button>
-          ) : null}
-          eyebrow={t('profile.eyebrow')}
-          title={t('profile.title')}
-        />
-      </div>
+  const profileItems = [
+    {
+      icon: 'user',
+      label: t('profile.fields.fullName'),
+      value: user?.fullName || t('common.notAvailable')
+    },
+    {
+      icon: 'mail',
+      label: t('profile.fields.email'),
+      value: user?.email || t('common.notAvailable')
+    },
+    {
+      icon: 'phone',
+      label: t('profile.fields.phone'),
+      value: user?.phone || t('common.notProvided')
+    },
+    {
+      icon: 'checkShield',
+      label: t('profile.fields.status'),
+      value: getStatusLabel(t, user?.status)
+    }
+  ];
 
-      <p className="page-support-text">{t('profile.description')}</p>
+  return (
+    <section className="content-section profile-page">
+      <ManagementPageHero
+        actions={(
+          <button className="button-link profile-hero-edit-button" type="button" onClick={handleEdit}>
+            <LineIcon name="edit" />
+            {t('common.edit')}
+          </button>
+        )}
+        description={t('profile.description')}
+        title={t('profile.title')}
+      />
 
       {message && <div className="alert success-alert">{message}</div>}
-      {error && <div className="alert error-alert">{error}</div>}
 
-      <div className={`profile-grid${editing ? '' : ' profile-grid-view-only'}`}>
-        <section className="settings-panel profile-summary-panel">
-          <div className="settings-language-summary">
-            <span>{t('profile.sections.account')}</span>
-            <strong>{user?.fullName || t('common.notAvailable')}</strong>
+      <section className="profile-summary-card">
+        <div className="profile-identity-row">
+          <div className="profile-avatar" aria-hidden="true">
+            <LineIcon name="user" />
+          </div>
+          <div className="profile-identity-copy">
+            <span className="section-eyebrow">{t('profile.sections.account')}</span>
+            <h2>{user?.fullName || t('common.notAvailable')}</h2>
+            <p>{user?.email || t('common.notAvailable')}</p>
+          </div>
+          <span className="role-pill profile-role-pill">{getRoleLabel(t, user?.role)}</span>
+        </div>
+
+        <div className="profile-detail-grid">
+          {profileItems.map((item) => (
+            <div className="profile-detail-item" key={item.label}>
+              <span className="profile-detail-icon" aria-hidden="true">
+                <LineIcon name={item.icon} />
+              </span>
+              <div>
+                <span>{item.label}</span>
+                <strong>{item.value}</strong>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <ActionDialog
+        className="profile-edit-dialog"
+        eyebrow={t('profile.sections.edit')}
+        labelledBy="profile-edit-dialog-title"
+        onClose={handleCancelEdit}
+        open={editing}
+        title={t('profile.editTitle')}
+      >
+        {error && <div className="alert error-alert">{error}</div>}
+
+        <form className="panel-form profile-edit-form" onSubmit={handleSubmit}>
+          <div className="form-grid">
+            <div>
+              <label htmlFor="profileFullName">{t('profile.fields.fullName')}</label>
+              <input
+                id="profileFullName"
+                name="fullName"
+                value={form.fullName}
+                onChange={handleChange}
+                maxLength={120}
+                required
+              />
+            </div>
+
+            <div>
+              <label htmlFor="profilePhone">{t('profile.fields.phone')}</label>
+              <input
+                id="profilePhone"
+                name="phone"
+                value={form.phone}
+                onChange={handleChange}
+                maxLength={30}
+              />
+            </div>
           </div>
 
-          <div className="detail-panel profile-detail-panel">
-            <div>
-              <span>{t('profile.fields.fullName')}</span>
-              <strong>{user?.fullName || t('common.notAvailable')}</strong>
-            </div>
-            <div>
-              <span>{t('profile.fields.email')}</span>
-              <strong>{user?.email || t('common.notAvailable')}</strong>
-            </div>
-            <div>
-              <span>{t('profile.fields.phone')}</span>
-              <strong>{user?.phone || t('common.notProvided')}</strong>
-            </div>
-            <div>
-              <span>{t('profile.fields.role')}</span>
-              <strong>{getRoleLabel(t, user?.role)}</strong>
-            </div>
-            <div>
-              <span>{t('profile.fields.status')}</span>
-              <strong>{getStatusLabel(t, user?.status)}</strong>
-            </div>
+          <label htmlFor="profileEmail">{t('profile.fields.email')}</label>
+          <input
+            id="profileEmail"
+            name="email"
+            type="email"
+            value={user?.email || ''}
+            disabled
+            readOnly
+          />
+          <span className="field-help">{t('profile.emailHelp')}</span>
+
+          <div className="form-action-row profile-edit-actions">
+            <button type="submit" disabled={loading}>
+              <LineIcon name="save" />
+              {loading ? t('profile.actions.saving') : t('profile.actions.save')}
+            </button>
           </div>
-        </section>
-
-        {editing && (
-          <form className="panel-form profile-edit-form" onSubmit={handleSubmit}>
-            <div>
-              <p className="eyebrow">{t('profile.sections.edit')}</p>
-              <h2>{t('profile.editTitle')}</h2>
-            </div>
-
-            <label htmlFor="profileFullName">{t('profile.fields.fullName')}</label>
-            <input
-              id="profileFullName"
-              name="fullName"
-              value={form.fullName}
-              onChange={handleChange}
-              maxLength={120}
-              required
-            />
-
-            <label htmlFor="profileEmail">{t('profile.fields.email')}</label>
-            <input
-              id="profileEmail"
-              name="email"
-              type="email"
-              value={user?.email || ''}
-              disabled
-              readOnly
-            />
-            <span className="field-help">{t('profile.emailHelp')}</span>
-
-            <label htmlFor="profilePhone">{t('profile.fields.phone')}</label>
-            <input
-              id="profilePhone"
-              name="phone"
-              value={form.phone}
-              onChange={handleChange}
-              maxLength={30}
-            />
-
-            <div className="form-action-row">
-              <button type="submit" disabled={loading}>
-                {loading ? t('profile.actions.saving') : t('profile.actions.save')}
-              </button>
-              <button className="secondary-button" type="button" disabled={loading} onClick={handleCancelEdit}>
-                {t('common.cancel')}
-              </button>
-            </div>
-          </form>
-        )}
-      </div>
+        </form>
+      </ActionDialog>
     </section>
   );
 }

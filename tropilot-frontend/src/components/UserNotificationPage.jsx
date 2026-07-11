@@ -3,9 +3,9 @@ import { useTranslation } from 'react-i18next';
 import * as notificationApi from '../features/notifications/api.js';
 import ActionDialog from './common/ActionDialog.jsx';
 import LineIcon from './common/LineIcon.jsx';
+import ManagementPageHero from './common/ManagementPageHero.jsx';
 import NotificationInboxList from './NotificationInboxList.jsx';
 import NotificationPaginationControls from './NotificationPaginationControls.jsx';
-import PageHeader from './PageHeader.jsx';
 import { formatDateTime } from '../utils/i18nFormat.js';
 import { translateInterfaceText } from '../utils/interfaceTranslations.js';
 
@@ -60,7 +60,7 @@ function NotificationDetailDialog({ notification, onClose }) {
   );
 }
 
-export default function UserNotificationPage({ eyebrow, eyebrowKey }) {
+export default function UserNotificationPage({ descriptionKey = 'resident.notifications.description' } = {}) {
   const { t } = useTranslation();
   const [notifications, setNotifications] = useState([]);
   const [notificationPage, setNotificationPage] = useState(0);
@@ -120,7 +120,10 @@ export default function UserNotificationPage({ eyebrow, eyebrowKey }) {
 
   return (
     <section className="content-section notification-page-shell">
-      <PageHeader eyebrow={eyebrowKey ? t(eyebrowKey) : eyebrow} title={t('navigation.notifications')} />
+      <ManagementPageHero
+        description={t(descriptionKey, { defaultValue: t('resident.notifications.description') })}
+        title={t('navigation.notifications')}
+      />
 
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}

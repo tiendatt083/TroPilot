@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import * as maintenanceApi from '../../features/maintenance/api.js';
 import MaintenanceRequestTable from '../../components/MaintenanceRequestTable.jsx';
-import PageHeader from '../../components/PageHeader.jsx';
+import ManagementPageHero from '../../components/common/ManagementPageHero.jsx';
 
 export default function ResidentMaintenanceListPage() {
   const { t } = useTranslation();
@@ -41,9 +41,10 @@ export default function ResidentMaintenanceListPage() {
 
   return (
     <section className="content-section">
-      <div className="page-title-row">
-        <PageHeader eyebrow={t('resident.eyebrow')} title={t('maintenance.title')} />
-      </div>
+      <ManagementPageHero
+        description={t('maintenance.residentDescription')}
+        title={t('maintenance.title')}
+      />
 
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}

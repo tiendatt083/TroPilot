@@ -2,9 +2,13 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useOutletContext } from 'react-router-dom';
 import * as maintenanceApi from '../../features/maintenance/api.js';
+import ActionDialog from '../../components/common/ActionDialog.jsx';
+import LineIcon from '../../components/common/LineIcon.jsx';
 import MaintenanceRequestDetail from '../../components/MaintenanceRequestDetail.jsx';
-import MaintenanceRequestTable from '../../components/MaintenanceRequestTable.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
+import { formatDateTime, formatEnumLabel } from '../../utils/i18nFormat.js';
+import { getMaintenanceStatusClass } from '../../utils/maintenanceOptions.js';
+import { formatRoomCode } from '../../utils/roomDisplay.js';
 
 export default function StaffMaintenancePage() {
   const { t } = useTranslation();
@@ -12,6 +16,7 @@ export default function StaffMaintenancePage() {
   const building = outletContext?.building;
   const [requests, setRequests] = useState([]);
   const [selectedRequest, setSelectedRequest] = useState(null);
+  const [detailOpen, setDetailOpen] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
@@ -116,12 +121,31 @@ export default function StaffMaintenancePage() {
   const canComplete = selectedRequest?.status === 'IN_PROGRESS';
   const canReject = selectedRequest?.status === 'ASSIGNED' || selectedRequest?.status === 'IN_PROGRESS';
 
+  const openRequestDetail = (request) => {
+    setSelectedRequest(request);
+    setDetailOpen(true);
+  };
+
+  const closeRequestDetail = () => {
+    if (processing) {
+      return;
+    }
+
+    setDetailOpen(false);
+  };
+
   return (
-    <section className={building ? 'building-workspace' : 'content-section'}>
-      <PageHeader
-        eyebrow={building ? t('maintenance.staff.buildingEyebrow') : t('maintenance.staff.eyebrow')}
-        title={building ? t('maintenance.staff.buildingTitle') : t('maintenance.title')}
-      />
+    <section className={`${building ? 'building-workspace' : 'content-section'} staff-maintenance-page`}>
+      {building ? (
+        <div className="building-section-header">
+          <span className="page-eyebrow">{t('maintenance.staff.buildingEyebrow')}</span>
+        </div>
+      ) : (
+        <PageHeader
+          eyebrow={t('maintenance.staff.eyebrow')}
+          title={t('maintenance.title')}
+        />
+      )}
 
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
@@ -129,92 +153,148 @@ export default function StaffMaintenancePage() {
       {loading ? (
         <div className="empty-state">{t('maintenance.loading')}</div>
       ) : (
-        <section className="maintenance-workspace">
-          <MaintenanceRequestTable
-            requests={requests}
-            selectedId={selectedRequest?.id}
-            onSelect={setSelectedRequest}
-          />
-
-          <aside className="maintenance-actions-panel">
-            <MaintenanceRequestDetail request={selectedRequest} />
-
-            {selectedRequest && (
-              <div className="task-actions-panel">
-                <PageHeader eyebrow={t('maintenance.staff.actions')} title={t('maintenance.staff.progress')} />
-
-                {canStart && (
-                  <button className="inline-button" type="button" disabled={processing} onClick={handleStart}>
-                    {processing ? t('maintenance.staff.starting') : t('maintenance.staff.start')}
-                  </button>
-                )}
-
-                {canComplete && (
-                  <form className="panel-form" onSubmit={handleComplete}>
-                    <label htmlFor="maintenanceResultNote">{t('maintenance.staff.resultNote')}</label>
-                    <textarea
-                      id="maintenanceResultNote"
-                      name="resultNote"
-                      rows="5"
-                      value={completionForm.resultNote}
-                      onChange={handleCompletionChange}
-                      required
-                    />
-
-                    <label htmlFor="maintenanceResultImage">{t('maintenance.staff.resultImage')}</label>
-                    <input
-                      id="maintenanceResultImage"
-                      name="resultImage"
-                      type="file"
-                      accept="image/jpeg,image/png"
-                      onChange={handleCompletionChange}
-                    />
-
-                    <button type="submit" disabled={processing}>
-                      {processing ? t('maintenance.staff.completing') : t('maintenance.staff.complete')}
-                    </button>
-                  </form>
-                )}
-
-                {canReject && (
-                  <form className="panel-form" onSubmit={handleReject}>
-                    <label htmlFor="maintenanceRejectNote">{t('maintenance.staff.rejectionNote')}</label>
-                    <textarea
-                      id="maintenanceRejectNote"
-                      name="rejectNote"
-                      rows="4"
-                      value={rejectNote}
-                      onChange={(event) => setRejectNote(event.target.value)}
-                    />
-                    <button className="secondary-button" type="submit" disabled={processing}>
-                      {processing ? t('maintenance.staff.rejecting') : t('maintenance.staff.reject')}
-                    </button>
-                  </form>
-                )}
-
-                {selectedRequest.roomId && (
-                  <Link
-                    className="secondary-link"
-                    to={building ? `/staff/buildings/${building.id}/expenses` : '/staff/expenses/create'}
-                    state={{
-                      roomId: selectedRequest.roomId,
-                      maintenanceRequestId: selectedRequest.id,
-                      expenseType: 'MAINTENANCE',
-                      content: `Maintenance request #${selectedRequest.id}: ${selectedRequest.title}`
-                    }}
-                  >
-                    {t('maintenance.staff.linkedExpense')}
-                  </Link>
-                )}
-
-                {!canStart && !canComplete && !canReject && (
-                  <div className="empty-state">{t('maintenance.staff.noAction')}</div>
-                )}
-              </div>
-            )}
-          </aside>
+        <section className="maintenance-card-list maintenance-card-list-polished">
+          {requests.map((request) => (
+            <button
+              className="maintenance-card"
+              key={request.id}
+              type="button"
+              onClick={() => openRequestDetail(request)}
+            >
+              <span className="maintenance-card-accent" aria-hidden="true" />
+              <span className="maintenance-card-main">
+                <span className="maintenance-card-type">
+                  {request.equipmentId ? t('navigation.equipment') : t('tables.common.request')}
+                </span>
+                <strong>{request.title}</strong>
+                <small>{request.content || t('common.notProvided')}</small>
+              </span>
+              <span className="maintenance-card-meta-grid">
+                <span className="maintenance-card-meta">
+                  <span>
+                    <LineIcon name="home" />
+                    {t('tables.common.room')}
+                  </span>
+                  <strong>{request.roomId ? formatRoomCode(request) : t('equipment.scopes.BUILDING')}</strong>
+                </span>
+                <span className="maintenance-card-meta">
+                  <span>
+                    <LineIcon name="user" />
+                    {t('tables.common.requestedBy')}
+                  </span>
+                  <strong>{request.requestedByName || request.residentHeadName || t('common.notProvided')}</strong>
+                </span>
+                <span className="maintenance-card-meta">
+                  <span>
+                    <LineIcon name="calendar" />
+                    {t('tables.common.created')}
+                  </span>
+                  <strong>{formatDateTime(request.createdAt, t)}</strong>
+                </span>
+              </span>
+              <span className="maintenance-card-state">
+                <span className={getMaintenanceStatusClass(request.status)}>
+                  {formatEnumLabel(t, 'maintenanceStatus', request.status)}
+                </span>
+                <span className="maintenance-card-view icon-action-button" aria-hidden="true">
+                  <LineIcon name="eye" />
+                </span>
+              </span>
+            </button>
+          ))}
+          {requests.length === 0 && (
+            <div className="empty-state flat-empty-state">{t('tables.maintenanceRequests.empty')}</div>
+          )}
         </section>
       )}
+
+      <ActionDialog
+        className="maintenance-staff-dialog action-dialog-wide"
+        eyebrow={t('maintenance.staff.actions')}
+        labelledBy="staff-maintenance-dialog-title"
+        open={detailOpen && Boolean(selectedRequest)}
+        title={selectedRequest?.title || t('maintenance.title')}
+        onClose={closeRequestDetail}
+      >
+        <div className="maintenance-staff-dialog-grid">
+          <MaintenanceRequestDetail request={selectedRequest} />
+
+          {selectedRequest && (
+            <div className="task-actions-panel maintenance-staff-action-panel">
+              {canStart && (
+                <button className="inline-button" type="button" disabled={processing} onClick={handleStart}>
+                  {processing ? t('maintenance.staff.starting') : t('maintenance.staff.start')}
+                </button>
+              )}
+
+              {canComplete && (
+                <form className="panel-form" onSubmit={handleComplete}>
+                  <label htmlFor="maintenanceResultNote">{t('maintenance.staff.resultNote')}</label>
+                  <textarea
+                    id="maintenanceResultNote"
+                    name="resultNote"
+                    rows="4"
+                    value={completionForm.resultNote}
+                    onChange={handleCompletionChange}
+                    required
+                  />
+
+                  <label htmlFor="maintenanceResultImage">{t('maintenance.staff.resultImage')}</label>
+                  <input
+                    id="maintenanceResultImage"
+                    name="resultImage"
+                    type="file"
+                    accept="image/jpeg,image/png"
+                    onChange={handleCompletionChange}
+                  />
+
+                  <button type="submit" disabled={processing}>
+                    {processing ? t('maintenance.staff.completing') : t('maintenance.staff.complete')}
+                  </button>
+                </form>
+              )}
+
+              {canReject && (
+                <form className="panel-form" onSubmit={handleReject}>
+                  <label htmlFor="maintenanceRejectNote">{t('maintenance.staff.rejectionNote')}</label>
+                  <textarea
+                    id="maintenanceRejectNote"
+                    name="rejectNote"
+                    rows="3"
+                    value={rejectNote}
+                    onChange={(event) => setRejectNote(event.target.value)}
+                  />
+                  <button className="secondary-button" type="submit" disabled={processing}>
+                    {processing ? t('maintenance.staff.rejecting') : t('maintenance.staff.reject')}
+                  </button>
+                </form>
+              )}
+
+              {selectedRequest.roomId && (
+                <Link
+                  className="secondary-link"
+                  to={building ? `/staff/buildings/${building.id}/expenses` : '/staff/expenses/create'}
+                  state={{
+                    openCreateExpense: true,
+                    roomId: selectedRequest.roomId,
+                    maintenanceRequestId: selectedRequest.id,
+                    equipmentId: selectedRequest.equipmentId || '',
+                    equipmentCode: selectedRequest.equipmentCode || '',
+                    expenseType: 'MAINTENANCE',
+                    content: `Yêu cầu bảo trì #${selectedRequest.id}: ${selectedRequest.title}`
+                  }}
+                >
+                  {t('maintenance.staff.linkedExpense')}
+                </Link>
+              )}
+
+              {!canStart && !canComplete && !canReject && (
+                <div className="empty-state">{t('maintenance.staff.noAction')}</div>
+              )}
+            </div>
+          )}
+        </div>
+      </ActionDialog>
     </section>
   );
 }

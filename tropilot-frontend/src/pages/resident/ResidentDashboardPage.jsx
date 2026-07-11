@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import * as dashboardApi from '../../features/buildings/dashboardApi.js';
 import * as invoiceApi from '../../features/invoices/api.js';
 import * as utilityReadingApi from '../../features/invoices/utilityReadingApi.js';
+import { ChartPanel, GroupedBarChart, HorizontalBarChart } from '../../components/common/DashboardCharts.jsx';
 import DashboardMetricGrid from '../../components/DashboardMetricGrid.jsx';
 import DashboardSection from '../../components/DashboardSection.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
@@ -168,83 +169,41 @@ function ResidentInsightStrip({ summary, t }) {
 }
 
 function MonthlyUsageChart({ rows, t }) {
-  const maxElectricity = Math.max(...rows.map((row) => row.electricity), 1);
-  const maxWater = Math.max(...rows.map((row) => row.water), 1);
-
   return (
-    <article className="resident-chart-card resident-usage-card">
-      <div className="resident-chart-heading">
-        <div>
-          <span>{t('dashboard.resident.charts.lastMonths')}</span>
-          <h2>{t('dashboard.resident.charts.monthlyUsage')}</h2>
-        </div>
-        <div className="resident-chart-legend">
-          <span className="legend-electric">{t('dashboard.resident.charts.electricity')}</span>
-          <span className="legend-water">{t('dashboard.resident.charts.water')}</span>
-        </div>
-      </div>
-
-      {rows.length > 0 ? (
-        <div className="resident-usage-chart" aria-label={t('dashboard.resident.charts.monthlyUsage')}>
-          {rows.map((row) => {
-            const electricHeight = Math.max(10, Math.round((row.electricity / maxElectricity) * 100));
-            const waterHeight = Math.max(10, Math.round((row.water / maxWater) * 100));
-
-            return (
-              <div className="resident-usage-column" key={row.month}>
-                <div className="resident-usage-bars">
-                  <i
-                    className="resident-usage-bar electricity-bar"
-                    style={{ height: `${electricHeight}%` }}
-                    title={`${formatNumber(row.electricity)} kWh`}
-                  />
-                  <i
-                    className="resident-usage-bar water-bar"
-                    style={{ height: `${waterHeight}%` }}
-                    title={`${formatNumber(row.water)} m³`}
-                  />
-                </div>
-                <strong>{row.label}</strong>
-              </div>
-            );
-          })}
-        </div>
-      ) : (
-        <div className="empty-state flat-empty-state">{t('dashboard.resident.empty.noChartData')}</div>
-      )}
-    </article>
+    <ChartPanel
+      eyebrow={t('dashboard.resident.charts.lastMonths')}
+      icon="chartPulse"
+      title={t('dashboard.resident.charts.monthlyUsage')}
+    >
+      <GroupedBarChart
+        emptyText={t('dashboard.resident.empty.noChartData')}
+        rows={rows.map((row) => ({ ...row, label: row.label }))}
+        series={[
+          { key: 'electricity', label: t('dashboard.resident.charts.electricity'), color: 'info' },
+          { key: 'water', label: t('dashboard.resident.charts.water'), color: 'cyan' }
+        ]}
+        valueFormatter={(value) => formatNumber(value)}
+      />
+    </ChartPanel>
   );
 }
 
 function MonthlyCostChart({ rows, t }) {
-  const maxCost = Math.max(...rows.map((row) => row.cost), 1);
   const currencyUnit = t('invoices.currencyUnit', { defaultValue: 'đ' });
 
   return (
-    <article className="resident-chart-card">
-      <div className="resident-chart-heading">
-        <div>
-          <span>{t('dashboard.resident.charts.paymentTrend')}</span>
-          <h2>{t('dashboard.resident.charts.monthlyCost')}</h2>
-        </div>
-      </div>
-
-      {rows.length > 0 ? (
-        <div className="resident-cost-chart" aria-label={t('dashboard.resident.charts.monthlyCost')}>
-          {rows.map((row) => (
-            <div className="resident-cost-row" key={row.month}>
-              <span>{row.label}</span>
-              <div className="resident-cost-track">
-                <i style={{ width: `${Math.max(8, Math.round((row.cost / maxCost) * 100))}%` }} />
-              </div>
-              <strong>{formatMoney(row.cost, currencyUnit)}</strong>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className="empty-state flat-empty-state">{t('dashboard.resident.empty.noChartData')}</div>
-      )}
-    </article>
+    <ChartPanel
+      eyebrow={t('dashboard.resident.charts.paymentTrend')}
+      icon="wallet"
+      title={t('dashboard.resident.charts.monthlyCost')}
+    >
+      <HorizontalBarChart
+        emptyText={t('dashboard.resident.empty.noChartData')}
+        rows={rows}
+        valueFormatter={(value) => formatMoney(value, currencyUnit)}
+        valueKey="cost"
+      />
+    </ChartPanel>
   );
 }
 

@@ -13,6 +13,7 @@ import { formatRoomCode } from '../../utils/roomDisplay.js';
 export default function BuildingUtilityReadingWorkspace({
   getOverview,
   getReadings,
+  canRecord = false,
   canEdit = false,
   updateReading
 }) {
@@ -116,7 +117,7 @@ export default function BuildingUtilityReadingWorkspace({
     <div className="building-workspace">
       <div className="building-section-header">
         <span className="page-eyebrow">{t('buildingUtilityReadings.eyebrow')}</span>
-        {canEdit && (
+        {canRecord && (
           <button
             className="button-link"
             type="button"

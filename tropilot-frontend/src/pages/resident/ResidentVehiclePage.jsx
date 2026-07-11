@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 import * as memberApi from '../../features/residents/api.js';
 import * as vehicleApi from '../../features/residents/vehicleApi.js';
 import PageHeader from '../../components/PageHeader.jsx';
+import ManagementPageHero from '../../components/common/ManagementPageHero.jsx';
+import LineIcon from '../../components/common/LineIcon.jsx';
 import VehicleForm from '../../components/VehicleForm.jsx';
 import VehicleTable from '../../components/VehicleTable.jsx';
 
@@ -104,14 +106,25 @@ export default function ResidentVehiclePage() {
 
   return (
     <section className="content-section">
-      <PageHeader eyebrow={t('resident.eyebrow')} title={t('vehicles.title')} />
+      <ManagementPageHero
+        actions={
+          !showRequestForm && (
+            <button className="button-link hero-action-button" type="button" onClick={() => setShowRequestForm(true)}>
+              <LineIcon name="plus" />
+              {t('vehicles.requestTitle')}
+            </button>
+          )
+        }
+        description={t('vehicles.residentDescription')}
+        title={t('vehicles.title')}
+      />
 
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
 
-      <section className="vehicle-workspace">
-        <div>
-          {showRequestForm ? (
+      <section className={`vehicle-workspace ${showRequestForm ? '' : 'vehicle-workspace-list-only'}`}>
+        {showRequestForm && (
+          <div>
             <>
               <PageHeader eyebrow={t('vehicles.requestEyebrow')} title={t('vehicles.requestTitle')} />
               <VehicleForm
@@ -122,18 +135,14 @@ export default function ResidentVehiclePage() {
                 onSubmit={handleRequestVehicle}
               />
             </>
-          ) : (
-            <button className="button-link" type="button" onClick={() => setShowRequestForm(true)}>
-              {t('vehicles.requestTitle')}
-            </button>
-          )}
-        </div>
+          </div>
+        )}
 
         <div>
           {loading ? (
             <div className="empty-state">{t('vehicles.loading')}</div>
           ) : (
-            <VehicleTable vehicles={vehicles} renderActions={renderActions} />
+            <VehicleTable variant="resident" vehicles={vehicles} renderActions={renderActions} />
           )}
         </div>
       </section>

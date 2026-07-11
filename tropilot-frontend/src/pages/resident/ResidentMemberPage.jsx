@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 import * as memberApi from '../../features/residents/api.js';
 import MemberForm from '../../components/MemberForm.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
+import ManagementPageHero from '../../components/common/ManagementPageHero.jsx';
+import LineIcon from '../../components/common/LineIcon.jsx';
 import { formatDateInputValue, formatDisplayDate } from '../../utils/dateFormat.js';
 import { formatEnumLabel } from '../../utils/i18nFormat.js';
 
@@ -148,17 +150,25 @@ export default function ResidentMemberPage() {
 
   return (
     <section className="content-section">
-      <div className="page-title-row">
-        <PageHeader eyebrow={t('resident.eyebrow')} title={t('resident.members.title')} />
-        <div className="count-summary">{countText(firstMember, t)}</div>
-      </div>
+      <ManagementPageHero
+        actions={
+          !showForm && (
+            <button className="button-link hero-action-button" type="button" onClick={handleOpenCreateForm}>
+              <LineIcon name="plus" />
+              {t('resident.members.addTitle')}
+            </button>
+          )
+        }
+        description={countText(firstMember, t)}
+        title={t('resident.members.title')}
+      />
 
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
 
-      <section className="member-workspace">
-        <div>
-          {showForm ? (
+      <section className={`member-workspace ${showForm ? '' : 'member-workspace-list-only'}`}>
+        {showForm && (
+          <div>
             <>
               <PageHeader
                 eyebrow={isEditing ? t('resident.members.editEyebrow') : t('resident.members.newEyebrow')}
@@ -179,12 +189,8 @@ export default function ResidentMemberPage() {
                 onCancel={handleCancelFormAction}
               />
             </>
-          ) : (
-            <button className="button-link" type="button" onClick={handleOpenCreateForm}>
-              {t('resident.members.addTitle')}
-            </button>
-          )}
-        </div>
+          </div>
+        )}
 
         <div>
           {loading ? (

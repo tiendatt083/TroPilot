@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as contractApi from '../../features/contracts/api.js';
 import ContractFileHistoryList from '../../components/ContractFileHistoryList.jsx';
-import PageHeader from '../../components/PageHeader.jsx';
+import ManagementPageHero from '../../components/common/ManagementPageHero.jsx';
 import { getContractStatusClass } from '../../utils/contractStatusOptions.js';
 import { formatDisplayDate } from '../../utils/dateFormat.js';
 import { resolveFileUrl } from '../../utils/fileUrl.js';
@@ -77,7 +77,10 @@ export default function ResidentContractPage() {
 
   return (
     <section className="content-section">
-      <PageHeader eyebrow={t('resident.eyebrow')} title={t('contracts.title')} />
+      <ManagementPageHero
+        description={t('contracts.residentDescription')}
+        title={t('contracts.title')}
+      />
 
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}

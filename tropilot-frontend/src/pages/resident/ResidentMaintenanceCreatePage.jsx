@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import * as maintenanceApi from '../../features/maintenance/api.js';
 import MaintenanceRequestForm from '../../components/MaintenanceRequestForm.jsx';
-import PageHeader from '../../components/PageHeader.jsx';
+import ManagementPageHero from '../../components/common/ManagementPageHero.jsx';
 
 export default function ResidentMaintenanceCreatePage() {
   const { t } = useTranslation();
@@ -31,12 +31,15 @@ export default function ResidentMaintenanceCreatePage() {
 
   return (
     <section className="content-section narrow-section">
-      <div className="page-title-row">
-        <PageHeader eyebrow={t('resident.eyebrow')} title={t('maintenance.createTitle')} />
-        <Link className="secondary-link" to="/resident/maintenance">
-          {t('maintenance.back')}
-        </Link>
-      </div>
+      <ManagementPageHero
+        actions={(
+          <Link className="secondary-link" to="/resident/maintenance">
+            {t('maintenance.back')}
+          </Link>
+        )}
+        description={t('maintenance.createDescription')}
+        title={t('maintenance.createTitle')}
+      />
 
       {error && <div className="alert error-alert">{error}</div>}
 

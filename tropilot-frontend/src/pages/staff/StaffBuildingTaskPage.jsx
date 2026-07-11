@@ -50,9 +50,13 @@ export default function StaffBuildingTaskPage() {
 
   return (
     <div className="building-workspace">
-      <PageHeader eyebrow={t('taskManagement.buildingEyebrow')} title={t('taskManagement.staffBuildingTitle')} />
+      <PageHeader eyebrow={t('taskManagement.buildingEyebrow')}/>
       {error && <div className="alert error-alert">{error}</div>}
-      {loading ? <div className="empty-state">{t('taskManagement.loading')}</div> : <TaskTable tasks={tasks} detailBasePath="/staff/tasks" />}
+      {loading ? (
+        <div className="empty-state">{t('taskManagement.loading')}</div>
+      ) : (
+        <TaskTable tasks={tasks} detailBasePath="/staff/tasks" showAssignedStaff={false} />
+      )}
     </div>
   );
 }

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import * as invoiceApi from '../../features/invoices/api.js';
 import * as serviceFeeApi from '../../features/invoices/serviceFeeApi.js';
 import LineIcon from '../../components/common/LineIcon.jsx';
-import PageHeader from '../../components/PageHeader.jsx';
+import ManagementPageHero from '../../components/common/ManagementPageHero.jsx';
 import { formatEnumLabel } from '../../utils/i18nFormat.js';
 
 function toNumber(value) {
@@ -183,12 +183,6 @@ export default function ResidentBuildingCostPage() {
     };
   }, [serviceFees]);
 
-  const roomLabel = assignment?.roomCode && assignment?.roomName
-    ? `${assignment.roomCode} - ${assignment.roomName}`
-    : assignment?.roomName || assignment?.roomCode || t('common.notAvailable');
-  const buildingLabel = assignment?.buildingCode && assignment?.buildingName
-    ? `${assignment.buildingCode} - ${assignment.buildingName}`
-    : assignment?.buildingName || assignment?.buildingCode || t('common.notAvailable');
   const roomPrice = assignment?.roomPrice ?? assignment?.depositAmount;
 
   const summaryCards = [
@@ -232,8 +226,10 @@ export default function ResidentBuildingCostPage() {
 
   return (
     <section className="content-section resident-cost-page">
-      <PageHeader eyebrow={t('resident.eyebrow')} title={t('resident.buildingCosts.title')} />
-      <p className="page-support-text">{t('resident.buildingCosts.description')}</p>
+      <ManagementPageHero
+        description={t('resident.buildingCosts.description')}
+        title={t('resident.buildingCosts.title')}
+      />
 
       {error && <div className="alert error-alert">{error}</div>}
 
@@ -241,19 +237,6 @@ export default function ResidentBuildingCostPage() {
         <div className="empty-state">{t('resident.buildingCosts.loading')}</div>
       ) : assignment?.assigned ? (
         <>
-          <section className="resident-cost-hero" aria-label={t('resident.buildingCosts.overview')}>
-            <div>
-              <span>{t('resident.buildingCosts.currentBuilding')}</span>
-              <h2>{buildingLabel}</h2>
-              <p>{t('resident.buildingCosts.roomSummary', { room: roomLabel })}</p>
-            </div>
-            <div className="resident-cost-hero-price">
-              <span>{t('resident.buildingCosts.cards.roomPrice')}</span>
-              <strong>{formatMoney(roomPrice, t)}</strong>
-              <small>{t('resident.buildingCosts.perMonth')}</small>
-            </div>
-          </section>
-
           <div className="resident-cost-grid">
             {summaryCards.map((card) => (
               <article className={`resident-cost-card resident-cost-card-${card.tone}`} key={card.key}>
@@ -270,26 +253,35 @@ export default function ResidentBuildingCostPage() {
           </div>
 
           <article className="dashboard-panel resident-cost-panel">
-            <h2>{t('resident.buildingCosts.feeListTitle')}</h2>
+            <div className="resident-cost-panel-header">
+              <div>
+                <span>{t('resident.buildingCosts.activeFees')}</span>
+                <h2>{t('resident.buildingCosts.feeListTitle')}</h2>
+              </div>
+              <strong>{t('resident.buildingCosts.serviceCount', { count: serviceFees.length })}</strong>
+            </div>
             {serviceFees.length > 0 ? (
-              <div className="resident-cost-list">
+              <div className="resident-fee-list" role="list">
                 {serviceFees.map((fee) => (
-                  <div className="resident-cost-row" key={fee.id}>
-                    <div className="resident-cost-row-main">
+                  <div className="resident-fee-row" key={fee.id} role="listitem">
+                    <div className="resident-fee-service">
                       <span className={`resident-cost-row-icon resident-cost-row-icon-${getFeeTone(fee.feeType)}`}>
                         <LineIcon className="resident-cost-icon" name={getFeeIcon(fee.feeType)} />
                       </span>
                       <div>
                         <strong>{fee.name}</strong>
-                        <span>
-                          {formatEnumLabel(t, 'feeType', fee.feeType)} - {getCalculationUnit(fee.calculationType, t, fee.fallbackNote)}
-                        </span>
+                        <span>{formatEnumLabel(t, 'feeType', fee.feeType)}</span>
                       </div>
                     </div>
-                    <div className="resident-cost-row-price">
-                      <strong>{formatMoney(fee.unitPrice, t)}</strong>
-                      <span>{getCalculationUnit(fee.calculationType, t, fee.fallbackNote)}</span>
+                    <div className="resident-fee-method">
+                      <span>{t('tables.common.calculation')}</span>
+                      <strong>{getCalculationUnit(fee.calculationType, t, fee.fallbackNote)}</strong>
                     </div>
+                    <div className="resident-fee-price">
+                      <span>{t('tables.common.amount')}</span>
+                      <strong>{formatMoney(fee.unitPrice, t)}</strong>
+                    </div>
+                    <span className="status-pill status-active">{t('common.active')}</span>
                   </div>
                 ))}
               </div>

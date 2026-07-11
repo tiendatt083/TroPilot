@@ -86,6 +86,15 @@ export async function getStaffUtilityReadingOverview(filters) {
   return response.data;
 }
 
+export async function updateStaffUtilityReading(id, payload) {
+  const response = await apiClient.put(
+    `/api/staff/utility-readings/${id}`,
+    toFormData(payload),
+    multipartConfig
+  );
+  return response.data;
+}
+
 export async function getAdminUtilityReadings(filters) {
   const response = await apiClient.get('/api/admin/utility-readings', filterConfig(filters));
   return response.data;

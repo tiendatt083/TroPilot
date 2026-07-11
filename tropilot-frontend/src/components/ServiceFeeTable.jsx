@@ -28,6 +28,7 @@ export default function ServiceFeeTable({
   const hasActions = Boolean(renderActions);
   const classes = [
     'service-fee-list',
+    hasActions ? 'service-fee-list-has-actions' : 'service-fee-list-readonly',
     !showFeeType ? 'service-fee-list-no-type' : '',
     className
   ].filter(Boolean).join(' ');

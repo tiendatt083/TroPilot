@@ -7,6 +7,7 @@ export default function AdminBuildingUtilityReadingPage() {
       getOverview={utilityReadingApi.getAdminUtilityReadingOverview}
       getReadings={utilityReadingApi.getAdminUtilityReadings}
       updateReading={utilityReadingApi.updateAdminUtilityReading}
+      canRecord
       canEdit
     />
   );
