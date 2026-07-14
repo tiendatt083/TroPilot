@@ -8,6 +8,11 @@ const ROLE_LABEL_KEYS = {
   RESIDENT_HEAD: 'role.residentHead'
 };
 
+const ACTION_ALIASES = {
+  'Feedback Status Updated': 'FEEDBACK_STATUS_UPDATED',
+  'System Contact Updated': 'SYSTEM_CONTACT_UPDATED'
+};
+
 const DESCRIPTION_PATTERNS = [
   {
     pattern: /^Changed first-time password$/i,
@@ -35,6 +40,19 @@ const DESCRIPTION_PATTERNS = [
   {
     pattern: /^Updated profile information$/i,
     key: 'activityLogs.descriptions.updatedProfileInformation',
+    params: () => ({})
+  },
+  {
+    pattern: /^Updated feedback (.+) to ([A-Z_]+)$/i,
+    key: 'activityLogs.descriptions.updatedFeedbackStatus',
+    params: (match, t) => ({
+      feedback: match[1],
+      status: formatActivityStatus(match[2], t)
+    })
+  },
+  {
+    pattern: /^Updated system contact information$/i,
+    key: 'activityLogs.descriptions.updatedSystemContact',
     params: () => ({})
   },
   {
@@ -149,7 +167,7 @@ const DESCRIPTION_PATTERNS = [
   }
 ];
 
-function formatDateTime(value, t) {
+export function formatDateTime(value, t) {
   if (!value) {
     return t('activityLogs.notAvailable');
   }
@@ -158,27 +176,42 @@ function formatDateTime(value, t) {
 }
 
 function formatFallbackAction(action) {
-  return action
+  return String(action)
+    .trim()
+    .replace(/\s+/g, '_')
     .toLowerCase()
     .split('_')
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(' ');
 }
 
-function formatAction(action, t) {
+function normalizeActionKey(action) {
+  const trimmedAction = String(action).trim();
+  return ACTION_ALIASES[trimmedAction] || trimmedAction.toUpperCase().replace(/\s+/g, '_');
+}
+
+function formatActivityStatus(status, t) {
+  const statusKey = String(status || '').trim().toUpperCase();
+  return t(`activityLogs.statusInText.${statusKey}`, {
+    defaultValue: translateInterfaceText(status || '')
+  });
+}
+
+export function formatAction(action, t) {
   if (!action) {
     return t('activityLogs.notAvailable');
   }
 
-  const actionKey = `activityLogs.actions.${action}`;
-  return t(actionKey, { defaultValue: formatFallbackAction(action) });
+  const normalizedAction = normalizeActionKey(action);
+  const actionKey = `activityLogs.actions.${normalizedAction}`;
+  return t(actionKey, { defaultValue: formatFallbackAction(normalizedAction) });
 }
 
 function formatRole(role, t) {
   return t(ROLE_LABEL_KEYS[role] || 'activityLogs.notAvailable');
 }
 
-function formatDescription(description, t) {
+export function formatDescription(description, t) {
   if (!description) {
     return t('activityLogs.notAvailable');
   }

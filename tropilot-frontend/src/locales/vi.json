@@ -254,7 +254,7 @@
   "residentDirectory": {
     "eyebrow": "Danh sách người dùng",
     "title": "Danh sách cư dân",
-    "summary": "Quản lý chủ hộ và thành viên đang thuộc các phòng trong hệ thống ({{count}} chủ hộ)",
+    "summary": "Quản lý {{count}} chủ hộ và thành viên đang thuộc các phòng trong hệ thống ",
     "filters": {
       "searchAria": "Tìm kiếm cư dân",
       "searchPlaceholder": "Tìm theo chủ hộ, thành viên, email, số điện thoại hoặc phòng",
@@ -972,12 +972,25 @@
       "USER_DELETED": "Xóa người dùng",
       "PROFILE_UPDATED": "Cập nhật hồ sơ",
       "USER_PASSWORD_RESET": "Tạo lại mật khẩu người dùng",
-      "UTILITY_READING_RECORDED": "Ghi chỉ số tiện ích"
+      "UTILITY_READING_RECORDED": "Ghi chỉ số tiện ích",
+      "FEEDBACK_STATUS_UPDATED": "Cập nhật trạng thái phản hồi",
+      "SYSTEM_CONTACT_UPDATED": "Cập nhật liên hệ hệ thống"
     },
     "roleInText": {
       "ADMIN": "Admin",
       "STAFF": "nhân viên",
       "RESIDENT_HEAD": "chủ hộ"
+    },
+    "statusInText": {
+      "PENDING": "đang chờ",
+      "ASSIGNED": "đã phân công",
+      "IN_PROGRESS": "đang xử lý",
+      "RESOLVED": "đã giải quyết",
+      "CLOSED": "đã đóng",
+      "COMPLETED": "đã hoàn thành",
+      "CANCELLED": "đã hủy",
+      "ACTIVE": "hoạt động",
+      "INACTIVE": "ngừng hoạt động"
     },
     "descriptions": {
       "changedFirstTimePassword": "Đã đổi mật khẩu lần đầu",
@@ -985,6 +998,8 @@
       "resetTemporaryPassword": "Đã tạo lại mật khẩu tạm thời cho {{target}}",
       "deletedUserAccount": "Đã xóa tài khoản người dùng {{target}}",
       "updatedProfileInformation": "Đã cập nhật thông tin hồ sơ",
+      "updatedFeedbackStatus": "Đã cập nhật phản hồi {{feedback}} sang {{status}}",
+      "updatedSystemContact": "Đã cập nhật thông tin liên hệ hệ thống",
       "createdRoom": "Đã tạo phòng {{room}} trong tòa nhà {{building}}",
       "assignedHeadResident": "Đã gán chủ hộ {{resident}} vào phòng {{room}}",
       "addedRoomMemberRequest": "Đã gửi yêu cầu thêm thành viên phòng cho {{member}}",

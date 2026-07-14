@@ -4026,26 +4026,57 @@ html[data-theme="dark"] .staff-maintenance-page .maintenance-card-meta {
 .notification-selection-panel {
   border: 1px solid rgba(14, 145, 170, 0.16);
   border-radius: var(--radius-md);
-  padding: 0.85rem;
+  padding: 0.7rem;
   background:
     linear-gradient(180deg, rgba(232, 247, 250, 0.74), rgba(255, 255, 255, 0.72));
 }
 
 .notification-selection-panel .checkbox-list {
-  max-height: 220px;
+  max-height: 168px;
   background: var(--color-surface);
+}
+
+.notification-selection-panel .checkbox-list-item {
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 42px;
+  padding: 0.48rem 0.65rem;
+}
+
+.notification-selection-panel .checkbox-list-item input {
+  width: 14px;
+  min-height: 14px;
+  margin-top: 0;
+}
+
+.notification-selection-panel .checkbox-list-item strong {
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-regular);
+  line-height: 1.25;
+}
+
+.notification-selection-panel .checkbox-list-item small {
+  margin-top: 0.05rem;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-regular);
+  line-height: 1.25;
 }
 
 .notification-submit-row {
   display: flex;
+  gap: 0.65rem;
   justify-content: flex-end;
   border-top: 1px solid var(--color-border-soft);
-  padding-top: 0.95rem;
+  padding-top: 0.8rem;
 }
 
 .notification-submit-row button {
-  min-width: 180px;
+  min-width: 112px;
+  min-height: 38px;
+  padding: 0.5rem 0.9rem;
   margin-top: 0;
+  font-size: var(--font-size-sm);
 }
 
 .upload-form,
@@ -4408,9 +4439,12 @@ html[data-theme="dark"] .staff-maintenance-page .maintenance-card-meta {
 
 .instant-search-control input {
   width: 100%;
-  min-height: 42px;
+  height: 35px;
+  min-height: 35px;
   border-color: rgba(127, 154, 177, 0.34);
   border-radius: 12px;
+  padding-top: 0;
+  padding-bottom: 0;
   padding-left: 2.35rem;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 252, 253, 0.96));
@@ -4463,8 +4497,14 @@ html[data-theme="dark"] .staff-maintenance-page .maintenance-card-meta {
 }
 
 .instant-clear-button {
-  min-height: 42px;
+  height:35px;
+  min-height: 35px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 12px;
+  padding-top: 0;
+  padding-bottom: 0;
   padding-inline: 0.95rem;
   background: rgba(255, 255, 255, 0.88);
   box-shadow: 0 8px 18px rgba(16, 32, 51, 0.045);
@@ -4570,6 +4610,47 @@ html[data-theme="dark"] .staff-maintenance-page .maintenance-card-meta {
 
 .notification-selection-panel .checkbox-list {
   background: var(--color-surface);
+}
+
+.notification-composer-form .notification-selection-panel {
+  padding: 0.7rem;
+}
+
+.notification-composer-form .notification-selection-panel .checkbox-list {
+  max-height: 168px;
+}
+
+.notification-composer-form .notification-selection-panel .checkbox-list-item {
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 42px;
+  padding: 0.48rem 0.65rem;
+}
+
+.notification-composer-form .notification-selection-panel .checkbox-list-item strong,
+.notification-composer-form .notification-selection-panel .checkbox-list-item small {
+  font-weight: var(--font-weight-regular);
+}
+
+.notification-composer-form .notification-selection-panel .checkbox-list-item input {
+  width: 14px;
+  min-height: 14px;
+  margin-top: 0;
+}
+
+.notification-composer-form .notification-submit-row {
+  justify-content: flex-end;
+  gap: 0.65rem;
+  padding-top: 0.8rem;
+}
+
+.notification-composer-form .notification-submit-row button {
+  width: auto;
+  min-width: 112px;
+  min-height: 38px;
+  padding: 0.5rem 0.9rem;
+  margin-top: 0;
+  font-size: var(--font-size-sm);
 }
 
 .count-summary,

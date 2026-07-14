@@ -254,7 +254,7 @@
   "residentDirectory": {
     "eyebrow": "User list",
     "title": "Resident directory",
-    "summary": "Manage Head Residents and household members assigned to rooms ({{count}} Head Residents)",
+    "summary": "Manage {{count}} head residents and household members assigned to rooms",
     "filters": {
       "searchAria": "Search residents",
       "searchPlaceholder": "Search by head resident, member, email, phone, or room",
@@ -972,12 +972,25 @@
       "USER_DELETED": "User deleted",
       "PROFILE_UPDATED": "Profile updated",
       "USER_PASSWORD_RESET": "User password reset",
-      "UTILITY_READING_RECORDED": "Utility reading recorded"
+      "UTILITY_READING_RECORDED": "Utility reading recorded",
+      "FEEDBACK_STATUS_UPDATED": "Feedback status updated",
+      "SYSTEM_CONTACT_UPDATED": "System contact updated"
     },
     "roleInText": {
       "ADMIN": "Admin",
       "STAFF": "Staff",
       "RESIDENT_HEAD": "Head Resident"
+    },
+    "statusInText": {
+      "PENDING": "pending",
+      "ASSIGNED": "assigned",
+      "IN_PROGRESS": "in progress",
+      "RESOLVED": "resolved",
+      "CLOSED": "closed",
+      "COMPLETED": "completed",
+      "CANCELLED": "cancelled",
+      "ACTIVE": "active",
+      "INACTIVE": "inactive"
     },
     "descriptions": {
       "changedFirstTimePassword": "Changed first-time password",
@@ -985,6 +998,8 @@
       "resetTemporaryPassword": "Reset temporary password for {{target}}",
       "deletedUserAccount": "Deleted user account for {{target}}",
       "updatedProfileInformation": "Updated profile information",
+      "updatedFeedbackStatus": "Updated feedback {{feedback}} to {{status}}",
+      "updatedSystemContact": "Updated system contact information",
       "createdRoom": "Created room {{room}} in building {{building}}",
       "assignedHeadResident": "Assigned Head Resident {{resident}} to room {{room}}",
       "addedRoomMemberRequest": "Added room member request for {{member}}",

@@ -1,37 +1,56 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as activityLogApi from '../api/activityLogApi.js';
-import ActivityLogTable from './ActivityLogTable.jsx';
+import ActivityLogTable, { formatAction, formatDateTime, formatDescription } from './ActivityLogTable.jsx';
 import FilterBar from './common/FilterBar.jsx';
 import ManagementPageHero from './common/ManagementPageHero.jsx';
 import NotificationPaginationControls from './NotificationPaginationControls.jsx';
 
 const HISTORY_PAGE_SIZE = 30;
 
+function normalizeSearch(value) {
+  return String(value || '')
+    .trim()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
+}
+
 export default function MyActivityLogPage() {
   const { t } = useTranslation();
-  const [logs, setLogs] = useState([]);
+  const [allLogs, setAllLogs] = useState([]);
   const [logPage, setLogPage] = useState(0);
   const [query, setQuery] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
 
+  const logs = useMemo(() => {
+    const normalizedQuery = normalizeSearch(query);
+
+    if (!normalizedQuery) {
+      return allLogs;
+    }
+
+    return allLogs.filter((log) => {
+      const searchableText = [
+        formatAction(log.action, t),
+        formatDescription(log.description, t),
+        formatDateTime(log.createdAt, t),
+        log.action,
+        log.description,
+        log.userFullName,
+        log.userEmail,
+        log.createdAt
+      ].map(normalizeSearch).join(' ');
+
+      return searchableText.includes(normalizedQuery);
+    });
+  }, [allLogs, query, t]);
+
   const pagedLogs = useMemo(() => {
     const start = logPage * HISTORY_PAGE_SIZE;
     return logs.slice(start, start + HISTORY_PAGE_SIZE);
   }, [logPage, logs]);
-
-  const loadLogs = async (targetQuery = query) => {
-    setError('');
-
-    try {
-      const response = await activityLogApi.getMyActivityLogs(targetQuery.trim());
-      setLogs(response.data);
-      setLogPage(0);
-    } catch (apiError) {
-      setError(apiError.response?.data?.message || t('activityLogs.loadError'));
-    }
-  };
 
   useEffect(() => {
     let active = true;
@@ -40,7 +59,7 @@ export default function MyActivityLogPage() {
       .getMyActivityLogs()
       .then((response) => {
         if (active) {
-          setLogs(response.data);
+          setAllLogs(response.data);
         }
       })
       .catch((apiError) => {
@@ -60,23 +79,19 @@ export default function MyActivityLogPage() {
   }, [t]);
 
   useEffect(() => {
-    const timer = window.setTimeout(() => {
-      loadLogs(query);
-    }, query ? 250 : 0);
-
-    return () => window.clearTimeout(timer);
+    setLogPage(0);
   }, [query]);
 
   const handleClear = () => {
     setQuery('');
-    loadLogs('');
+    setLogPage(0);
   };
 
   return (
     <section className="content-section management-page">
       <ManagementPageHero
         title={t('activityLogs.title')}
-        description={t('activityLogs.summary', { count: logs.length })}
+        description={t('activityLogs.summary', { count: allLogs.length })}
       />
 
       {error && <div className="alert error-alert">{error}</div>}
@@ -86,8 +101,6 @@ export default function MyActivityLogPage() {
         searchAriaLabel={t('activityLogs.filterAriaLabel')}
         searchPlaceholder={t('activityLogs.filterPlaceholder')}
         searchValue={query}
-        suggestionFields={['action', 'description', 'createdByName']}
-        suggestionItems={logs}
         clearLabel={t('common.clear')}
         onClear={handleClear}
         onSearchChange={setQuery}
