@@ -14,6 +14,19 @@ function periodText(vehicle, t) {
   return `${startDate} ${t('common.to')} ${endDate}`;
 }
 
+function vehicleRegistrationDateText(vehicle, t) {
+  return formatDisplayDate(vehicle.startDate || vehicle.createdAt, t('common.notSet'));
+}
+
+function vehicleBrandText(vehicle, t) {
+  if (!vehicle.brand && !vehicle.color) {
+    return '';
+  }
+
+  const brand = vehicle.brand ? `${t('vehicles.form.brand')}: ${vehicle.brand}` : '';
+  return [brand, vehicle.color].filter(Boolean).join(', ');
+}
+
 function residentPeriodText(vehicle, t) {
   return formatDisplayDate(vehicle.startDate || vehicle.createdAt, t('common.notSet'));
 }
@@ -22,10 +35,64 @@ export default function VehicleTable({ vehicles, renderActions, variant = 'defau
   const { t } = useTranslation();
   const hasActions = Boolean(renderActions);
 
+  if (variant === 'building') {
+    return (
+      <div className={`table-wrap vehicle-table-wrap-building${hasActions ? ' vehicle-table-has-actions' : ''}`}>
+        <table className="data-table vehicle-table-building">
+          <thead>
+            <tr>
+              <th>{t('tables.common.licensePlate')}</th>
+              <th>{t('tables.common.vehicleType')}</th>
+              <th>{t('tables.common.room')}</th>
+              <th>{t('tables.common.owner')}</th>
+              <th>{t('tables.common.period')}</th>
+              <th>{t('tables.common.status')}</th>
+              {hasActions && <th>{t('tables.common.actions')}</th>}
+            </tr>
+          </thead>
+          <tbody>
+            {vehicles.map((vehicle) => (
+              <tr key={vehicle.id}>
+                <td>
+                  <strong>{vehicle.licensePlate}</strong>
+                  {vehicleBrandText(vehicle, t) && <small>{vehicleBrandText(vehicle, t)}</small>}
+                </td>
+                <td>{formatEnumLabel(t, 'vehicleType', vehicle.vehicleType)}</td>
+                <td>
+                  <strong>{formatRoomCode(vehicle)}</strong>
+                </td>
+                <td>
+                  <strong>{vehicle.ownerName || t('common.notProvided')}</strong>
+                  <small>{formatEnumLabel(t, 'vehicleOwnerType', vehicle.ownerType)}</small>
+                </td>
+                <td>{vehicleRegistrationDateText(vehicle, t)}</td>
+                <td>
+                  <span className={getVehicleStatusClass(vehicle.status)}>
+                    {formatEnumLabel(t, 'vehicleStatus', vehicle.status)}
+                  </span>
+                </td>
+                {hasActions && <td>{renderActions(vehicle)}</td>}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {vehicles.length === 0 && <div className="empty-state flat-empty-state">{t('tables.vehicles.empty')}</div>}
+      </div>
+    );
+  }
+
   if (variant === 'resident') {
     return (
       <div className="table-wrap vehicle-table-wrap-resident">
         <table className="data-table vehicle-table-resident">
+          <colgroup>
+            <col className="vehicle-col-plate" />
+            <col className="vehicle-col-type" />
+            <col className="vehicle-col-owner" />
+            <col className="vehicle-col-date" />
+            <col className="vehicle-col-status" />
+            {hasActions && <col className="vehicle-col-actions" />}
+          </colgroup>
           <thead>
             <tr>
               <th>{t('tables.common.licensePlate')}</th>

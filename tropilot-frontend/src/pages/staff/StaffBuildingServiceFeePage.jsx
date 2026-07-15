@@ -59,6 +59,7 @@ export default function StaffBuildingServiceFeePage() {
                 className="building-service-fee-list"
                 serviceFees={serviceFees}
                 showFeeType={false}
+                variant="table"
                 nameLabel={t('buildingServiceFees.additional.name')}
                 priceLabel={t('buildingServiceFees.additional.unitPrice')}
                 methodLabel={t('buildingServiceFees.calculationMethod')}

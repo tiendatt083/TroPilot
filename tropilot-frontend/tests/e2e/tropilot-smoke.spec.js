@@ -40,6 +40,27 @@ test.describe('Tropilot smoke flow', () => {
     await expectNoVisibleAppError(page);
   });
 
+  test('staff building overview requests utility overview for the current month', async ({ page }) => {
+    await mockTropilotApi(page);
+    const utilityOverviewRequests = [];
+
+    page.on('request', (request) => {
+      const url = new URL(request.url());
+
+      if (url.pathname === '/api/staff/utility-readings/overview') {
+        utilityOverviewRequests.push(url);
+      }
+    });
+
+    await loginAs(page, 'staff');
+    await page.goto('/staff/buildings/1');
+
+    await expect(page.getByRole('heading', { name: 'Building 01' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Today operations' })).toBeVisible();
+    expect(utilityOverviewRequests.some((url) => url.searchParams.has('month'))).toBe(true);
+    await expectNoVisibleAppError(page);
+  });
+
   test('resident without active room is redirected away from room-only pages', async ({ page }) => {
     await mockTropilotApi(page, { residentHasRoom: false });
 

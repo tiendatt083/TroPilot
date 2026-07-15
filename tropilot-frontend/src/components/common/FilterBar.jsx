@@ -40,6 +40,7 @@ export default function FilterBar({
           <LineIcon name="search" className="instant-search-icon" />
           <input
             aria-label={searchAriaLabel}
+            autoComplete="off"
             value={searchValue}
             onChange={(event) => onSearchChange(event.target.value)}
             placeholder={searchPlaceholder}

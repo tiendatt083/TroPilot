@@ -7,6 +7,7 @@ import lombok.Getter;
 @Builder
 public class StaffDashboardResponse {
 
+    private long totalRooms;
     private long assignedTasks;
     private long overdueTasks;
     private long roomsNeedingUtilityReading;

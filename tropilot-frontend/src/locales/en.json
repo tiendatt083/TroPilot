@@ -1262,6 +1262,8 @@
         "priorityDescription": "Important work groups are collected here for faster handling.",
         "taskTitle": "Task workload",
         "taskDescription": "Assigned work and overdue items requiring immediate action.",
+        "operationOverviewTitle": "Operations overview",
+        "operationOverviewDescription": "Charts summarizing electricity and water readings and work.",
         "operationsTitle": "Operational queue",
         "operationsDescription": "Building operations that need staff processing.",
         "expenseTitle": "Expense activity",
@@ -1272,12 +1274,25 @@
       "metrics": {
         "assignedTasks": "Assigned tasks",
         "overdueTasks": "Overdue tasks",
-        "roomsNeedingUtilityReading": "Rooms needing utility reading",
+        "roomsNeedingUtilityReading": "Rooms needing electricity and water readings",
         "pendingPaymentConfirmations": "Pending payment confirmations",
         "activeMaintenanceRequests": "Active maintenance requests",
         "createdExpenses": "Created expenses",
-        "utilityReadingsDue": "Utility readings due",
+        "utilityReadingsDue": "Electricity and water readings due",
         "paymentChecks": "Payment checks"
+      },
+      "charts": {
+        "utilityReadings": "Electricity and water readings",
+        "utilityReadingsHelper": "Rooms still needing readings this cycle",
+        "workload": "Work",
+        "workloadHelper": "Assigned work and overdue items",
+        "expenses": "Expenses",
+        "expensesHelper": "Expenses created by staff",
+        "recorded": "Recorded",
+        "needReading": "Need reading",
+        "assigned": "Assigned",
+        "overdue": "Overdue",
+        "created": "Created"
       },
       "quick": {
         "tasks": "Tasks",
@@ -1288,7 +1303,8 @@
         "taskHelper": "Open the task list",
         "utilityHelper": "Record utility readings by room",
         "paymentHelper": "Review payment confirmations",
-        "maintenanceHelper": "Track maintenance requests"
+        "maintenanceHelper": "Track maintenance requests",
+        "expenseHelper": "Open created expenses"
       }
     },
     "resident": {
@@ -1436,9 +1452,13 @@
     "period": "Contract period",
     "status": "Contract status",
     "rentalStatus": "Rental status",
-    "open": "Open contract",
+    "open": "View contract",
     "noFile": "No file uploaded",
     "confirmViewed": "Confirm viewed",
+    "confirmedViewed": "Confirmed",
+    "confirmDialogTitle": "Confirm contract",
+    "confirmDialogMessage": "Please confirm that this contract has the correct information, matches your requirements, and has no errors.",
+    "confirmDialogAccept": "Agree",
     "reportIssue": "Report issue",
     "noCurrent": "No current rental contract found.",
     "upload": {
@@ -1595,6 +1615,7 @@
     "residentDescription": "Manage registered vehicles and submit new vehicle requests.",
     "requestEyebrow": "New request",
     "requestTitle": "Request vehicle registration",
+    "registerButton": "Register vehicle",
     "loading": "Loading vehicles...",
     "loadError": "Vehicles could not be loaded",
     "submitted": "Vehicle registration submitted for approval successfully.",
@@ -1682,6 +1703,7 @@
       "loadError": "Room members could not be loaded",
       "newEyebrow": "New member",
       "editEyebrow": "Edit member",
+      "addButton": "Add member",
       "addTitle": "Add room member",
       "submitted": "Room member submitted for approval successfully.",
       "submitError": "Room member could not be submitted",
@@ -1712,13 +1734,14 @@
       "currentBuilding": "Current building",
       "roomSummary": "Room {{room}}",
       "currencySuffix": "VND",
-      "perMonth": "per month",
+      "perMonth": "Per month",
       "notConfigured": "Not configured",
       "waitingForSetup": "Waiting for setup",
-      "fromLatestInvoice": "from latest invoice",
+      "fromLatestInvoice": "From latest invoice",
       "serviceCount": "{{count}} fees",
-      "activeFees": "active fees",
+      "activeFees": "Active fees",
       "feeListTitle": "Active fees",
+      "feeNameColumn": "Fee name",
       "empty": "No service fees have been configured.",
       "cards": {
         "roomPrice": "Room rent",
@@ -1727,10 +1750,10 @@
         "services": "Service fees"
       },
       "calculationUnits": {
-        "FIXED": "per room",
-        "BY_USAGE": "by usage",
-        "BY_PERSON": "per person",
-        "BY_QUANTITY": "by quantity"
+        "FIXED": "Per room",
+        "BY_USAGE": "By usage",
+        "BY_PERSON": "Per person",
+        "BY_QUANTITY": "By quantity"
       }
     }
   },

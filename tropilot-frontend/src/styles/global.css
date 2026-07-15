@@ -1071,3 +1071,531 @@ html[data-theme="dark"] input[type="month"]::-webkit-calendar-picker-indicator {
     padding: 0;
   }
 }
+
+/* Final shared search/filter sizing. Keep this at the end so legacy page styles cannot override it. */
+.search-row,
+.filter-row,
+.user-filter-row,
+.account-filter-row,
+.building-filter-row,
+.building-user-filter-row,
+.equipment-filter-row,
+.building-equipment-filter-row,
+.admin-equipment-filter-row,
+.month-filter-row,
+.filter-bar,
+.instant-filter-bar,
+.instant-account-filter,
+.account-search-control,
+.invoice-search-tools,
+.invoice-filter-panel,
+.cashflow-filter-card,
+.resident-directory-control-panel,
+.pending-member-control-panel,
+.building-user-control-panel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: none;
+  min-height: 58px;
+}
+
+.search-row .instant-search-control,
+.filter-row .instant-search-control,
+.user-filter-row .instant-search-control,
+.account-filter-row .instant-search-control,
+.building-filter-row .instant-search-control,
+.building-user-filter-row .instant-search-control,
+.equipment-filter-row .instant-search-control,
+.building-equipment-filter-row .instant-search-control,
+.admin-equipment-filter-row .instant-search-control,
+.month-filter-row .instant-search-control,
+.filter-bar .instant-search-control,
+.instant-filter-bar .instant-search-control,
+.instant-account-filter .instant-search-control,
+.account-search-control .instant-search-control,
+.invoice-search-tools .instant-search-control,
+.invoice-filter-panel .instant-search-control,
+.cashflow-filter-card .instant-search-control,
+.resident-directory-control-panel .instant-search-control,
+.pending-member-control-panel .instant-search-control,
+.building-user-control-panel .instant-search-control {
+  flex: 1 1 auto;
+  width: auto;
+  max-width: none;
+  min-width: 240px;
+}
+
+.search-row input,
+.filter-row input,
+.user-filter-row input,
+.account-filter-row input,
+.building-filter-row input,
+.building-user-filter-row input,
+.equipment-filter-row input,
+.building-equipment-filter-row input,
+.admin-equipment-filter-row input,
+.month-filter-row input,
+.filter-bar input,
+.instant-filter-bar input,
+.instant-account-filter input,
+.account-search-control input,
+.invoice-search-tools input,
+.invoice-filter-panel input,
+.cashflow-filter-card input,
+.resident-directory-control-panel input,
+.pending-member-control-panel input,
+.building-user-control-panel input {
+  width: 100%;
+  max-width: none;
+  height: 42px;
+  min-height: 42px;
+}
+
+.search-row select,
+.filter-row select,
+.user-filter-row select,
+.account-filter-row select,
+.building-filter-row select,
+.building-user-filter-row select,
+.equipment-filter-row select,
+.building-equipment-filter-row select,
+.admin-equipment-filter-row select,
+.month-filter-row select,
+.filter-bar select,
+.instant-filter-bar select,
+.instant-account-filter select,
+.account-search-control select,
+.invoice-filter-panel select,
+.cashflow-filter-card select,
+.resident-directory-control-panel select,
+.pending-member-control-panel select,
+.building-user-control-panel select {
+  flex: 0 1 220px;
+  width: auto;
+  height: 42px;
+  min-height: 42px;
+}
+
+.search-row button,
+.filter-row button,
+.user-filter-row button,
+.account-filter-row button,
+.building-filter-row button,
+.building-user-filter-row button,
+.equipment-filter-row button,
+.building-equipment-filter-row button,
+.admin-equipment-filter-row button,
+.month-filter-row button,
+.filter-bar button,
+.instant-filter-bar button,
+.instant-account-filter button,
+.account-search-control button,
+.invoice-search-tools button,
+.invoice-filter-panel button,
+.cashflow-filter-card button,
+.resident-directory-control-panel button,
+.pending-member-control-panel button,
+.building-user-control-panel button,
+.instant-clear-button,
+.compact-clear-filter {
+  flex: 0 0 auto;
+  height: 42px;
+  min-height: 42px;
+  white-space: nowrap;
+}
+
+html[data-theme="dark"] .search-row,
+html[data-theme="dark"] .filter-row,
+html[data-theme="dark"] .user-filter-row,
+html[data-theme="dark"] .account-filter-row,
+html[data-theme="dark"] .building-filter-row,
+html[data-theme="dark"] .building-user-filter-row,
+html[data-theme="dark"] .equipment-filter-row,
+html[data-theme="dark"] .building-equipment-filter-row,
+html[data-theme="dark"] .admin-equipment-filter-row,
+html[data-theme="dark"] .month-filter-row,
+html[data-theme="dark"] .filter-bar,
+html[data-theme="dark"] .instant-filter-bar,
+html[data-theme="dark"] .instant-account-filter,
+html[data-theme="dark"] .account-search-control,
+html[data-theme="dark"] .invoice-search-tools,
+html[data-theme="dark"] .invoice-filter-panel,
+html[data-theme="dark"] .cashflow-filter-card,
+html[data-theme="dark"] .resident-directory-control-panel,
+html[data-theme="dark"] .pending-member-control-panel,
+html[data-theme="dark"] .building-user-control-panel {
+  border-color: rgba(125, 164, 190, 0.24);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0)),
+    rgba(17, 31, 49, 0.88);
+  box-shadow:
+    0 14px 34px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+html[data-theme="dark"] .search-row input,
+html[data-theme="dark"] .filter-row input,
+html[data-theme="dark"] .user-filter-row input,
+html[data-theme="dark"] .account-filter-row input,
+html[data-theme="dark"] .building-filter-row input,
+html[data-theme="dark"] .building-user-filter-row input,
+html[data-theme="dark"] .equipment-filter-row input,
+html[data-theme="dark"] .building-equipment-filter-row input,
+html[data-theme="dark"] .admin-equipment-filter-row input,
+html[data-theme="dark"] .month-filter-row input,
+html[data-theme="dark"] .filter-bar input,
+html[data-theme="dark"] .instant-filter-bar input,
+html[data-theme="dark"] .instant-account-filter input,
+html[data-theme="dark"] .account-search-control input,
+html[data-theme="dark"] .invoice-search-tools input,
+html[data-theme="dark"] .invoice-filter-panel input,
+html[data-theme="dark"] .cashflow-filter-card input,
+html[data-theme="dark"] .resident-directory-control-panel input,
+html[data-theme="dark"] .pending-member-control-panel input,
+html[data-theme="dark"] .building-user-control-panel input,
+html[data-theme="dark"] .search-row select,
+html[data-theme="dark"] .filter-row select,
+html[data-theme="dark"] .user-filter-row select,
+html[data-theme="dark"] .account-filter-row select,
+html[data-theme="dark"] .building-filter-row select,
+html[data-theme="dark"] .building-user-filter-row select,
+html[data-theme="dark"] .equipment-filter-row select,
+html[data-theme="dark"] .building-equipment-filter-row select,
+html[data-theme="dark"] .admin-equipment-filter-row select,
+html[data-theme="dark"] .month-filter-row select,
+html[data-theme="dark"] .filter-bar select,
+html[data-theme="dark"] .instant-filter-bar select,
+html[data-theme="dark"] .instant-account-filter select,
+html[data-theme="dark"] .account-search-control select,
+html[data-theme="dark"] .invoice-filter-panel select,
+html[data-theme="dark"] .cashflow-filter-card select,
+html[data-theme="dark"] .resident-directory-control-panel select,
+html[data-theme="dark"] .pending-member-control-panel select,
+html[data-theme="dark"] .building-user-control-panel select {
+  color: var(--color-text);
+  border-color: rgba(132, 164, 188, 0.32);
+  background: rgba(8, 18, 31, 0.74);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+html[data-theme="dark"] .search-row input::placeholder,
+html[data-theme="dark"] .filter-row input::placeholder,
+html[data-theme="dark"] .user-filter-row input::placeholder,
+html[data-theme="dark"] .account-filter-row input::placeholder,
+html[data-theme="dark"] .building-filter-row input::placeholder,
+html[data-theme="dark"] .building-user-filter-row input::placeholder,
+html[data-theme="dark"] .equipment-filter-row input::placeholder,
+html[data-theme="dark"] .building-equipment-filter-row input::placeholder,
+html[data-theme="dark"] .admin-equipment-filter-row input::placeholder,
+html[data-theme="dark"] .month-filter-row input::placeholder,
+html[data-theme="dark"] .filter-bar input::placeholder,
+html[data-theme="dark"] .instant-filter-bar input::placeholder,
+html[data-theme="dark"] .instant-account-filter input::placeholder,
+html[data-theme="dark"] .account-search-control input::placeholder,
+html[data-theme="dark"] .invoice-search-tools input::placeholder,
+html[data-theme="dark"] .invoice-filter-panel input::placeholder,
+html[data-theme="dark"] .cashflow-filter-card input::placeholder,
+html[data-theme="dark"] .resident-directory-control-panel input::placeholder,
+html[data-theme="dark"] .pending-member-control-panel input::placeholder,
+html[data-theme="dark"] .building-user-control-panel input::placeholder {
+  color: rgba(164, 178, 193, 0.72);
+}
+
+html[data-theme="dark"] .search-row button,
+html[data-theme="dark"] .filter-row button,
+html[data-theme="dark"] .user-filter-row button,
+html[data-theme="dark"] .account-filter-row button,
+html[data-theme="dark"] .building-filter-row button,
+html[data-theme="dark"] .building-user-filter-row button,
+html[data-theme="dark"] .equipment-filter-row button,
+html[data-theme="dark"] .building-equipment-filter-row button,
+html[data-theme="dark"] .admin-equipment-filter-row button,
+html[data-theme="dark"] .month-filter-row button,
+html[data-theme="dark"] .filter-bar button,
+html[data-theme="dark"] .instant-filter-bar button,
+html[data-theme="dark"] .instant-account-filter button,
+html[data-theme="dark"] .account-search-control button,
+html[data-theme="dark"] .invoice-search-tools button,
+html[data-theme="dark"] .invoice-filter-panel button,
+html[data-theme="dark"] .cashflow-filter-card button,
+html[data-theme="dark"] .resident-directory-control-panel button,
+html[data-theme="dark"] .pending-member-control-panel button,
+html[data-theme="dark"] .building-user-control-panel button,
+html[data-theme="dark"] .instant-clear-button,
+html[data-theme="dark"] .compact-clear-filter {
+  color: var(--color-text);
+  border-color: rgba(132, 164, 188, 0.32);
+  background: rgba(10, 24, 39, 0.88);
+}
+
+@media (max-width: 720px) {
+  .search-row,
+  .filter-row,
+  .user-filter-row,
+  .account-filter-row,
+  .building-filter-row,
+  .building-user-filter-row,
+  .equipment-filter-row,
+  .building-equipment-filter-row,
+  .admin-equipment-filter-row,
+  .month-filter-row,
+  .filter-bar,
+  .instant-filter-bar,
+  .instant-account-filter,
+  .account-search-control,
+  .invoice-search-tools,
+  .invoice-filter-panel,
+  .cashflow-filter-card,
+  .resident-directory-control-panel,
+  .pending-member-control-panel,
+  .building-user-control-panel {
+    align-items: stretch;
+    flex-wrap: wrap;
+  }
+
+  .search-row .instant-search-control,
+  .filter-row .instant-search-control,
+  .user-filter-row .instant-search-control,
+  .account-filter-row .instant-search-control,
+  .building-filter-row .instant-search-control,
+  .building-user-filter-row .instant-search-control,
+  .equipment-filter-row .instant-search-control,
+  .building-equipment-filter-row .instant-search-control,
+  .admin-equipment-filter-row .instant-search-control,
+  .month-filter-row .instant-search-control,
+  .filter-bar .instant-search-control,
+  .instant-filter-bar .instant-search-control,
+  .instant-account-filter .instant-search-control,
+  .account-search-control .instant-search-control,
+  .invoice-search-tools .instant-search-control,
+  .invoice-filter-panel .instant-search-control,
+  .cashflow-filter-card .instant-search-control,
+  .resident-directory-control-panel .instant-search-control,
+  .pending-member-control-panel .instant-search-control,
+  .building-user-control-panel .instant-search-control,
+  .search-row select,
+  .filter-row select,
+  .user-filter-row select,
+  .account-filter-row select,
+  .building-filter-row select,
+  .building-user-filter-row select,
+  .equipment-filter-row select,
+  .building-equipment-filter-row select,
+  .admin-equipment-filter-row select,
+  .month-filter-row select,
+  .filter-bar select,
+  .instant-filter-bar select,
+  .instant-account-filter select,
+  .account-search-control select,
+  .invoice-filter-panel select,
+  .cashflow-filter-card select,
+  .resident-directory-control-panel select,
+  .pending-member-control-panel select,
+  .building-user-control-panel select,
+  .search-row button,
+  .filter-row button,
+  .user-filter-row button,
+  .account-filter-row button,
+  .building-filter-row button,
+  .building-user-filter-row button,
+  .equipment-filter-row button,
+  .building-equipment-filter-row button,
+  .admin-equipment-filter-row button,
+  .month-filter-row button,
+  .filter-bar button,
+  .instant-filter-bar button,
+  .instant-account-filter button,
+  .account-search-control button,
+  .invoice-search-tools button,
+  .invoice-filter-panel button,
+  .cashflow-filter-card button,
+  .resident-directory-control-panel button,
+  .pending-member-control-panel button,
+  .building-user-control-panel button {
+    flex-basis: 100%;
+    width: 100%;
+  }
+}
+
+/* Account directory pages wrap their controls one level deeper, so keep them aligned with shared filter bars. */
+.account-control-panel,
+.account-search-only-panel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: none;
+  min-height: 58px;
+}
+
+.account-control-panel .account-search-control,
+.account-search-only-panel .account-search-control,
+.account-control-panel .instant-search-control,
+.account-search-only-panel .instant-search-control {
+  flex: 1 1 auto;
+  min-width: 240px;
+  width: 100%;
+  max-width: none;
+}
+
+.account-control-panel input,
+.account-search-only-panel input,
+.account-control-panel select,
+.account-search-only-panel select,
+.account-control-panel button,
+.account-search-only-panel button {
+  min-height: 42px;
+  height: 42px;
+}
+
+html[data-theme="dark"] .account-control-panel,
+html[data-theme="dark"] .account-search-only-panel {
+  border-color: rgba(132, 164, 188, 0.22);
+  background: rgba(13, 27, 43, 0.82);
+  box-shadow: none;
+}
+
+html[data-theme="dark"] .account-control-panel input,
+html[data-theme="dark"] .account-search-only-panel input,
+html[data-theme="dark"] .account-control-panel select,
+html[data-theme="dark"] .account-search-only-panel select {
+  color: var(--color-text);
+  border-color: rgba(132, 164, 188, 0.32);
+  background: rgba(8, 18, 31, 0.74);
+}
+
+html[data-theme="dark"] .account-control-panel input::placeholder,
+html[data-theme="dark"] .account-search-only-panel input::placeholder {
+  color: rgba(164, 178, 193, 0.72);
+}
+
+html[data-theme="dark"] .account-control-panel button,
+html[data-theme="dark"] .account-search-only-panel button {
+  color: var(--color-text);
+  border-color: rgba(132, 164, 188, 0.32);
+  background: rgba(10, 24, 39, 0.88);
+}
+
+@media (max-width: 720px) {
+  .account-control-panel,
+  .account-search-only-panel {
+    align-items: stretch;
+    flex-wrap: wrap;
+  }
+
+  .account-control-panel .account-search-control,
+  .account-search-only-panel .account-search-control,
+  .account-control-panel .instant-search-control,
+  .account-search-only-panel .instant-search-control,
+  .account-control-panel input,
+  .account-search-only-panel input,
+  .account-control-panel select,
+  .account-search-only-panel select,
+  .account-control-panel button,
+  .account-search-only-panel button {
+    flex-basis: 100%;
+    width: 100%;
+  }
+}
+
+.icon-action-btn {
+  width: 32px;
+  min-width: 32px;
+  height: 32px;
+  min-height: 32px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  line-height: 1;
+}
+
+.icon-action-btn svg {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+}
+
+/* Keep dense action icons readable across light and dark themes. */
+.table-actions .icon-action-button,
+.row-actions .icon-action-button,
+.equipment-icon-actions .icon-action-button,
+.feedback-card-actions .icon-action-button,
+.feedback-review-actions .icon-action-button,
+.notification-row-actions .icon-action-button,
+.feedback-icon-action,
+.icon-action-btn {
+  border: 1px solid var(--color-border-soft);
+  color: var(--color-text-muted);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-xs);
+}
+
+.table-actions .icon-action-button:hover:not(:disabled),
+.row-actions .icon-action-button:hover:not(:disabled),
+.equipment-icon-actions .icon-action-button:hover:not(:disabled),
+.feedback-card-actions .icon-action-button:hover:not(:disabled),
+.feedback-review-actions .icon-action-button:hover:not(:disabled),
+.notification-row-actions .icon-action-button:hover:not(:disabled),
+.feedback-icon-action:hover:not(:disabled),
+.icon-action-btn:hover:not(:disabled),
+.table-actions .icon-action-button:focus-visible,
+.row-actions .icon-action-button:focus-visible,
+.equipment-icon-actions .icon-action-button:focus-visible,
+.feedback-card-actions .icon-action-button:focus-visible,
+.feedback-review-actions .icon-action-button:focus-visible,
+.notification-row-actions .icon-action-button:focus-visible,
+.feedback-icon-action:focus-visible,
+.icon-action-btn:focus-visible {
+  border-color: rgba(36, 125, 131, 0.36);
+  color: var(--color-primary);
+  background: var(--color-primary-soft);
+  box-shadow: var(--shadow-xs);
+}
+
+html[data-theme="dark"] .table-actions .icon-action-button,
+html[data-theme="dark"] .row-actions .icon-action-button,
+html[data-theme="dark"] .equipment-icon-actions .icon-action-button,
+html[data-theme="dark"] .feedback-card-actions .icon-action-button,
+html[data-theme="dark"] .feedback-review-actions .icon-action-button,
+html[data-theme="dark"] .notification-row-actions .icon-action-button,
+html[data-theme="dark"] .feedback-icon-action,
+html[data-theme="dark"] .icon-action-btn {
+  border-color: rgba(132, 164, 188, 0.26);
+  color: rgba(220, 232, 245, 0.82);
+  background: rgba(14, 29, 47, 0.86);
+  box-shadow: none;
+}
+
+html[data-theme="dark"] .table-actions .icon-action-button:hover:not(:disabled),
+html[data-theme="dark"] .row-actions .icon-action-button:hover:not(:disabled),
+html[data-theme="dark"] .equipment-icon-actions .icon-action-button:hover:not(:disabled),
+html[data-theme="dark"] .feedback-card-actions .icon-action-button:hover:not(:disabled),
+html[data-theme="dark"] .feedback-review-actions .icon-action-button:hover:not(:disabled),
+html[data-theme="dark"] .notification-row-actions .icon-action-button:hover:not(:disabled),
+html[data-theme="dark"] .feedback-icon-action:hover:not(:disabled),
+html[data-theme="dark"] .icon-action-btn:hover:not(:disabled),
+html[data-theme="dark"] .table-actions .icon-action-button:focus-visible,
+html[data-theme="dark"] .row-actions .icon-action-button:focus-visible,
+html[data-theme="dark"] .equipment-icon-actions .icon-action-button:focus-visible,
+html[data-theme="dark"] .feedback-card-actions .icon-action-button:focus-visible,
+html[data-theme="dark"] .feedback-review-actions .icon-action-button:focus-visible,
+html[data-theme="dark"] .notification-row-actions .icon-action-button:focus-visible,
+html[data-theme="dark"] .feedback-icon-action:focus-visible,
+html[data-theme="dark"] .icon-action-btn:focus-visible {
+  border-color: rgba(45, 212, 191, 0.46);
+  color: #67e8f9;
+  background: rgba(45, 212, 191, 0.14);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
+}
+
+html[data-theme="dark"] .feedback-icon-action.is-active,
+html[data-theme="dark"] .feedback-icon-action[aria-pressed="true"] {
+  border-color: rgba(45, 212, 191, 0.5);
+  color: #67e8f9;
+  background: rgba(45, 212, 191, 0.16);
+  box-shadow: inset 0 0 0 1px rgba(45, 212, 191, 0.12);
+}

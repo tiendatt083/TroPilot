@@ -14,6 +14,7 @@ export default function ServiceFeeTable({
   renderActions,
   showBuilding = false,
   showFeeType = true,
+  variant = 'cards',
   className = '',
   emptyMessage,
   getKey = (serviceFee) => serviceFee.id,
@@ -26,6 +27,62 @@ export default function ServiceFeeTable({
 }) {
   const { t } = useTranslation();
   const hasActions = Boolean(renderActions);
+
+  if (variant === 'table') {
+    return (
+      <div className={`table-wrap service-fee-table-wrap ${className}`.trim()}>
+        <table className="data-table service-fee-table">
+          <thead>
+            <tr>
+              <th>{nameLabel || t('tables.common.name')}</th>
+              {showBuilding && <th>{t('tables.common.building')}</th>}
+              {showFeeType && <th>{t('tables.common.feeType')}</th>}
+              <th>{methodLabel || t('tables.common.calculation')}</th>
+              <th>{priceLabel || t('tables.common.unitPrice')}</th>
+              <th>{t('tables.common.status')}</th>
+              {hasActions && <th>{t('tables.common.actions')}</th>}
+            </tr>
+          </thead>
+          <tbody>
+            {serviceFees.map((serviceFee) => {
+              const active = getActive(serviceFee);
+              const description = getDescription?.(serviceFee);
+
+              return (
+                <tr key={getKey(serviceFee)}>
+                  <td>
+                    <strong>{serviceFee.name}</strong>
+                    {description && <small>{description}</small>}
+                  </td>
+                  {showBuilding && (
+                    <td>
+                      {serviceFee.buildingCode || t('common.noBuilding')}
+                      {serviceFee.buildingName ? ` - ${serviceFee.buildingName}` : ''}
+                    </td>
+                  )}
+                  {showFeeType && <td>{formatEnumLabel(t, 'feeType', serviceFee.feeType)}</td>}
+                  <td>{formatEnumLabel(t, 'calculationType', serviceFee.calculationType)}</td>
+                  <td>
+                    <strong>{formatNumber(serviceFee.unitPrice)}</strong>
+                  </td>
+                  <td>
+                    <span className={`status-pill status-${active ? 'active' : 'inactive'}`}>
+                      {getStatusLabel ? getStatusLabel(serviceFee) : active ? t('common.active') : t('common.inactive')}
+                    </span>
+                  </td>
+                  {hasActions && <td>{renderActions(serviceFee)}</td>}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+        {serviceFees.length === 0 && (
+          <div className="empty-state flat-empty-state">{emptyMessage || t('tables.serviceFees.empty')}</div>
+        )}
+      </div>
+    );
+  }
+
   const classes = [
     'service-fee-list',
     hasActions ? 'service-fee-list-has-actions' : 'service-fee-list-readonly',

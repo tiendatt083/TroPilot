@@ -179,9 +179,13 @@ function MonthlyUsageChart({ rows, t }) {
         emptyText={t('dashboard.resident.empty.noChartData')}
         rows={rows.map((row) => ({ ...row, label: row.label }))}
         series={[
-          { key: 'electricity', label: t('dashboard.resident.charts.electricity'), color: 'info' },
-          { key: 'water', label: t('dashboard.resident.charts.water'), color: 'cyan' }
+          { key: 'electricity', label: t('dashboard.resident.charts.electricity'), color: 'warning' },
+          { key: 'water', label: t('dashboard.resident.charts.water'), color: 'paid' }
         ]}
+        tooltipFormatter={(value, item) => {
+          const unit = item.key === 'electricity' ? 'kWh' : 'm³';
+          return `${item.label}: ${formatNumber(value)} ${unit}`;
+        }}
         valueFormatter={(value) => formatNumber(value)}
       />
     </ChartPanel>
@@ -260,6 +264,7 @@ export default function ResidentDashboardPage() {
   const recentMaintenanceRequests = dashboard?.recentMaintenanceRequests || [];
   const monthlyRows = useMemo(() => buildMonthlyRows(invoiceHistory, utilityHistory), [invoiceHistory, utilityHistory]);
   const monthlySummary = useMemo(() => getMonthlySummary(monthlyRows), [monthlyRows]);
+  const currencyUnit = t('invoices.currencyUnit', { defaultValue: 'đ' });
   const metrics = dashboard
     ? [
         { label: t('dashboard.resident.metrics.approvedMembers'), value: formatNumber(dashboard.approvedMemberCount), tone: 'success' },
@@ -317,7 +322,7 @@ export default function ResidentDashboardPage() {
               </div>
               <div>
                 <span>{t('dashboard.resident.labels.depositAmount')}</span>
-                <strong>{formatNumber(currentRoom.depositAmount)}</strong>
+                <strong>{formatMoney(currentRoom.depositAmount, currencyUnit)}</strong>
               </div>
               <div>
                 <span>{t('dashboard.resident.labels.contractStatus')}</span>

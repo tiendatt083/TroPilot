@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as notificationApi from '../features/notifications/api.js';
 import ActionDialog from './common/ActionDialog.jsx';
-import LineIcon from './common/LineIcon.jsx';
 import ManagementPageHero from './common/ManagementPageHero.jsx';
 import NotificationInboxList from './NotificationInboxList.jsx';
 import NotificationPaginationControls from './NotificationPaginationControls.jsx';
@@ -25,16 +24,6 @@ function NotificationDetailDialog({ notification, onClose }) {
     >
       {notification && (
         <div className="user-notification-detail">
-          <div className="user-notification-detail-status">
-            <span className={`notification-state-icon ${notification.read ? 'is-read' : 'is-unread'}`}>
-              <LineIcon name={notification.read ? 'checkShield' : 'bell'} />
-            </span>
-            <div>
-              <span>{t('tables.notifications.readStatus')}</span>
-              <strong>{t(`enum.readStatus.${notification.read ? 'READ' : 'UNREAD'}`)}</strong>
-            </div>
-          </div>
-
           <div className="notification-detail-meta">
             <div>
               <span>{t('resident.notifications.sender')}</span>
@@ -119,7 +108,7 @@ export default function UserNotificationPage({ descriptionKey = 'resident.notifi
   };
 
   return (
-    <section className="content-section notification-page-shell">
+    <section className="content-section notification-page-shell resident-notification-page">
       <ManagementPageHero
         description={t(descriptionKey, { defaultValue: t('resident.notifications.description') })}
         title={t('navigation.notifications')}

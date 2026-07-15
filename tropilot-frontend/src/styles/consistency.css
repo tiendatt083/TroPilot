@@ -389,6 +389,118 @@ html[data-theme="dark"] .staff-shell .staff-building-workspace-shell .building-w
   font-weight: 600;
 }
 
+.resident-invoice-page .invoice-table-wrap {
+  margin-top: var(--space-4);
+}
+
+.resident-invoice-page .data-table tbody td,
+.resident-invoice-page .data-table tbody td strong,
+.resident-invoice-page .data-table tbody .table-subtext,
+.resident-invoice-page .data-table tbody .status-pill,
+.resident-invoice-page .data-table tbody [class*="invoice-status-"] {
+  font-weight: var(--font-weight-regular);
+}
+
+.resident-notification-page .notification-inbox-list {
+  gap: 0.34rem;
+  margin-top: var(--space-4);
+}
+
+.resident-notification-page .notification-inbox-item,
+.resident-notification-page .notification-inbox-item:hover:not(:disabled) {
+  min-height: 52px;
+  padding: 0.52rem 0.72rem;
+}
+
+.resident-notification-page .notification-event-icon {
+  width: 30px;
+  height: 30px;
+}
+
+.resident-notification-page .notification-state-icon {
+  width: 29px;
+  height: 29px;
+}
+
+.resident-notification-page .notification-state-icon.is-read {
+  color: #7d8794;
+  border-color: rgba(125, 135, 148, 0.2);
+  background: rgba(125, 135, 148, 0.1);
+}
+
+.resident-notification-page .notification-state-icon.is-unread {
+  color: var(--color-primary);
+  border-color: rgba(36, 125, 131, 0.2);
+  background: var(--color-primary-soft);
+}
+
+.resident-member-page .member-workspace {
+  margin-top: var(--space-4);
+}
+
+.resident-vehicle-page .vehicle-workspace {
+  margin-top: var(--space-4);
+}
+
+.resident-contract-page > .detail-panel {
+  margin-top: var(--space-4);
+}
+
+.resident-contract-page > .detail-panel > div > span {
+  color: #000000;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.resident-contract-page > .detail-panel > div > strong {
+  color: var(--color-text);
+  font-weight: var(--font-weight-regular);
+}
+
+.resident-contract-page > .detail-panel .status-pill {
+  font-weight: var(--font-weight-regular);
+  text-transform: none;
+}
+
+.resident-contract-page > .detail-panel .contract-status-confirmed {
+  color: var(--color-success);
+  background: var(--color-success-bg);
+}
+
+.resident-contract-page > .detail-panel .contract-status-need-update {
+  color: var(--color-danger);
+  background: var(--color-danger-bg);
+}
+
+.resident-contract-page > .detail-panel .contract-status-not-uploaded {
+  color: var(--color-text-muted);
+  background: var(--color-input-disabled);
+}
+
+.resident-contract-page > .detail-panel .contract-status-uploaded,
+.resident-contract-page > .detail-panel .contract-status-pending-confirmation {
+  color: var(--color-info);
+  background: var(--color-info-bg);
+}
+
+.resident-contract-page .contract-confirm-dialog-body {
+  display: grid;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.resident-contract-page .contract-confirm-dialog-body p {
+  margin: 0;
+  color: var(--color-text);
+  font-size: var(--font-size-md);
+  line-height: 1.55;
+}
+
+.resident-contract-page .contract-confirm-dialog-actions {
+  justify-content: flex-end;
+  margin-top: 0;
+}
+
 .table-actions,
 .row-actions,
 .equipment-icon-actions,
@@ -549,4 +661,677 @@ html[data-theme="dark"] .staff-shell .staff-building-workspace-shell .building-w
   textarea {
     min-height: 36px;
   }
+}
+
+/* Final shared search/filter polish, especially for dark mode pages. */
+.instant-search-control input,
+.instant-clear-button,
+.search-row input,
+.search-row select,
+.filter-row input,
+.filter-row select,
+.user-filter-row input,
+.user-filter-row select,
+.account-search-control input,
+.account-search-control select,
+.building-filter-row input,
+.building-filter-row select,
+.building-user-filter-row input,
+.building-user-filter-row select,
+.building-equipment-filter-row input,
+.building-equipment-filter-row select,
+.equipment-filter-row input,
+.equipment-filter-row select,
+.admin-equipment-filter-row input,
+.admin-equipment-filter-row select,
+.month-filter-row input,
+.month-filter-row select,
+.cashflow-filter-card input,
+.cashflow-filter-card select,
+.invoice-filter-panel input,
+.invoice-filter-panel select,
+.invoice-search-tools input,
+.invoice-search-tools select,
+.search-row button,
+.filter-row button,
+.user-filter-row button,
+.filter-bar button,
+.month-filter-row button,
+.building-filter-row button,
+.equipment-filter-row button,
+.admin-equipment-filter-row button,
+.invoice-search-tools button {
+  height: 42px;
+  min-height: 42px;
+}
+
+.instant-search-control input {
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 2.35rem;
+}
+
+.search-row,
+.filter-row,
+.user-filter-row,
+.filter-bar,
+.instant-filter-bar,
+.account-search-control,
+.invoice-search-tools,
+.building-filter-row,
+.building-user-filter-row,
+.building-equipment-filter-row,
+.equipment-filter-row,
+.admin-equipment-filter-row,
+.month-filter-row,
+.resident-directory-control-panel,
+.pending-member-control-panel,
+.building-user-control-panel {
+  width: 100%;
+  max-width: none;
+}
+
+.instant-filter-bar .instant-search-control,
+.account-search-control .instant-search-control,
+.invoice-search-tools .instant-search-control,
+.filter-bar .instant-search-control,
+.search-row .instant-search-control,
+.filter-row .instant-search-control,
+.user-filter-row .instant-search-control {
+  flex: 1 1 auto;
+  min-width: 240px;
+  max-width: none;
+}
+
+.search-row > input,
+.filter-row > input,
+.user-filter-row > input,
+.filter-bar > input,
+.building-filter-row > input,
+.building-user-filter-row > input,
+.building-equipment-filter-row > input,
+.equipment-filter-row > input,
+.admin-equipment-filter-row > input,
+.month-filter-row > input,
+.invoice-search-field {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 240px;
+  max-width: none;
+}
+
+.instant-filter-bar > select,
+.filter-bar > select,
+.search-row > select,
+.filter-row > select,
+.user-filter-row > select {
+  flex: 0 0 auto;
+  min-width: 180px;
+}
+
+.instant-clear-button,
+.search-row button,
+.filter-row button,
+.user-filter-row button,
+.filter-bar button,
+.month-filter-row button,
+.building-filter-row button,
+.equipment-filter-row button {
+  flex: 0 0 auto;
+}
+
+@media (max-width: 720px) {
+  .search-row,
+  .filter-row,
+  .user-filter-row,
+  .filter-bar,
+  .instant-filter-bar,
+  .account-search-control,
+  .invoice-search-tools {
+    align-items: stretch;
+    flex-wrap: wrap;
+  }
+
+  .instant-filter-bar .instant-search-control,
+  .account-search-control .instant-search-control,
+  .invoice-search-tools .instant-search-control,
+  .filter-bar .instant-search-control,
+  .search-row .instant-search-control,
+  .filter-row .instant-search-control,
+  .user-filter-row .instant-search-control {
+    flex-basis: 100%;
+    min-width: 100%;
+  }
+
+  .instant-filter-bar > select,
+  .filter-bar > select,
+  .search-row > select,
+  .filter-row > select,
+  .user-filter-row > select,
+  .instant-clear-button,
+  .search-row button,
+  .filter-row button,
+  .user-filter-row button,
+  .filter-bar button {
+    width: 100%;
+  }
+}
+
+html[data-theme="dark"] .search-row,
+html[data-theme="dark"] .filter-row,
+html[data-theme="dark"] .user-filter-row,
+html[data-theme="dark"] .account-search-control,
+html[data-theme="dark"] .instant-account-filter,
+html[data-theme="dark"] .filter-bar,
+html[data-theme="dark"] .instant-filter-bar,
+html[data-theme="dark"] .month-filter-row,
+html[data-theme="dark"] .building-filter-row,
+html[data-theme="dark"] .building-user-filter-row,
+html[data-theme="dark"] .building-equipment-filter-row,
+html[data-theme="dark"] .equipment-filter-row,
+html[data-theme="dark"] .admin-equipment-filter-row,
+html[data-theme="dark"] .invoice-filter-panel,
+html[data-theme="dark"] .invoice-search-tools,
+html[data-theme="dark"] .cashflow-filter-card,
+html[data-theme="dark"] .resident-directory-control-panel,
+html[data-theme="dark"] .pending-member-control-panel,
+html[data-theme="dark"] .building-user-control-panel {
+  border-color: rgba(125, 164, 190, 0.24);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0)),
+    rgba(17, 31, 49, 0.88);
+  box-shadow:
+    0 14px 34px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+html[data-theme="dark"] .instant-search-control {
+  color: var(--color-text);
+}
+
+html[data-theme="dark"] .instant-search-icon {
+  color: #91a8bd;
+}
+
+html[data-theme="dark"] .instant-search-control input,
+html[data-theme="dark"] .search-row input,
+html[data-theme="dark"] .search-row select,
+html[data-theme="dark"] .filter-row input,
+html[data-theme="dark"] .filter-row select,
+html[data-theme="dark"] .user-filter-row input,
+html[data-theme="dark"] .user-filter-row select,
+html[data-theme="dark"] .account-search-control input,
+html[data-theme="dark"] .account-search-control select,
+html[data-theme="dark"] .building-filter-row input,
+html[data-theme="dark"] .building-filter-row select,
+html[data-theme="dark"] .building-user-filter-row input,
+html[data-theme="dark"] .building-user-filter-row select,
+html[data-theme="dark"] .building-equipment-filter-row input,
+html[data-theme="dark"] .building-equipment-filter-row select,
+html[data-theme="dark"] .equipment-filter-row input,
+html[data-theme="dark"] .equipment-filter-row select,
+html[data-theme="dark"] .admin-equipment-filter-row input,
+html[data-theme="dark"] .admin-equipment-filter-row select,
+html[data-theme="dark"] .month-filter-row input,
+html[data-theme="dark"] .month-filter-row select,
+html[data-theme="dark"] .cashflow-filter-card input,
+html[data-theme="dark"] .cashflow-filter-card select,
+html[data-theme="dark"] .invoice-filter-panel input,
+html[data-theme="dark"] .invoice-filter-panel select,
+html[data-theme="dark"] .invoice-search-tools input,
+html[data-theme="dark"] .invoice-search-tools select {
+  color: var(--color-text);
+  border-color: rgba(132, 164, 188, 0.32);
+  background: rgba(8, 18, 31, 0.74);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+html[data-theme="dark"] .instant-search-control input::placeholder,
+html[data-theme="dark"] .search-row input::placeholder,
+html[data-theme="dark"] .filter-row input::placeholder,
+html[data-theme="dark"] .user-filter-row input::placeholder,
+html[data-theme="dark"] .account-search-control input::placeholder,
+html[data-theme="dark"] .building-filter-row input::placeholder,
+html[data-theme="dark"] .equipment-filter-row input::placeholder,
+html[data-theme="dark"] .invoice-filter-panel input::placeholder,
+html[data-theme="dark"] .invoice-search-tools input::placeholder {
+  color: rgba(164, 178, 193, 0.72);
+}
+
+html[data-theme="dark"] .instant-search-control input:focus,
+html[data-theme="dark"] .search-row input:focus,
+html[data-theme="dark"] .search-row select:focus,
+html[data-theme="dark"] .filter-row input:focus,
+html[data-theme="dark"] .filter-row select:focus,
+html[data-theme="dark"] .user-filter-row input:focus,
+html[data-theme="dark"] .user-filter-row select:focus,
+html[data-theme="dark"] .account-search-control input:focus,
+html[data-theme="dark"] .account-search-control select:focus,
+html[data-theme="dark"] .building-filter-row input:focus,
+html[data-theme="dark"] .building-filter-row select:focus,
+html[data-theme="dark"] .equipment-filter-row input:focus,
+html[data-theme="dark"] .equipment-filter-row select:focus,
+html[data-theme="dark"] .month-filter-row input:focus,
+html[data-theme="dark"] .month-filter-row select:focus,
+html[data-theme="dark"] .invoice-filter-panel input:focus,
+html[data-theme="dark"] .invoice-filter-panel select:focus,
+html[data-theme="dark"] .invoice-search-tools input:focus,
+html[data-theme="dark"] .invoice-search-tools select:focus {
+  border-color: rgba(69, 166, 169, 0.68);
+  background: rgba(10, 24, 39, 0.96);
+  box-shadow:
+    0 0 0 3px rgba(69, 166, 169, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+html[data-theme="dark"] .instant-clear-button {
+  color: var(--color-text);
+  border-color: rgba(132, 164, 188, 0.32);
+  background: rgba(10, 24, 39, 0.88);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+html[data-theme="dark"] .instant-clear-button:hover {
+  color: var(--color-primary-hover);
+  border-color: rgba(69, 166, 169, 0.55);
+  background: rgba(19, 48, 55, 0.9);
+}
+
+html[data-theme="dark"] select option {
+  color: var(--color-text);
+  background: var(--color-input);
+}
+
+html[data-theme="dark"] input:-webkit-autofill {
+  -webkit-text-fill-color: var(--color-text);
+  caret-color: var(--color-text);
+  box-shadow: 0 0 0 1000px var(--color-input) inset;
+}
+
+/* Staff dark-mode normalization ---------------------------------------------------- */
+[data-theme="dark"] {
+  --staff-surface: #121e30;
+  --staff-surface-soft: #17263a;
+  --staff-surface-raised: #1a2a40;
+  --staff-surface-hover: #1d3148;
+  --staff-border: rgba(132, 164, 188, 0.24);
+  --staff-border-strong: rgba(92, 213, 211, 0.32);
+  --staff-text: #f4f8fb;
+  --staff-muted: #a7b8ca;
+  --staff-accent: #5bd5d2;
+  --staff-accent-soft: rgba(91, 213, 210, 0.13);
+}
+
+html[data-theme="dark"] :is(
+  .staff-dashboard-page,
+  .staff-profile-page,
+  .staff-maintenance-page,
+  .staff-building-ops-dashboard
+) :is(h1, h2, h3, h4, strong, th, td, .title, .value) {
+  color: var(--staff-text);
+}
+
+html[data-theme="dark"] :is(
+  .staff-dashboard-page,
+  .staff-profile-page,
+  .staff-maintenance-page,
+  .staff-building-ops-dashboard
+) :is(p, small, dt, .table-subtext, .subtitle, .description, .meta, .label) {
+  color: var(--staff-muted);
+}
+
+html[data-theme="dark"] .staff-dashboard-page .dashboard-hero,
+html[data-theme="dark"] .staff-profile-page .management-page-hero {
+  border-color: rgba(91, 213, 210, 0.18);
+  color: var(--staff-text);
+  background:
+    radial-gradient(circle at 78% 28%, rgba(91, 213, 210, 0.18), transparent 28%),
+    linear-gradient(135deg, #111e34 0%, #1b2d49 58%, #203d58 100%);
+  box-shadow:
+    0 20px 46px rgba(0, 0, 0, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+html[data-theme="dark"] .staff-dashboard-page .dashboard-hero :is(h1, span, p),
+html[data-theme="dark"] .staff-profile-page .management-page-hero :is(h1, span, p) {
+  color: inherit;
+}
+
+html[data-theme="dark"] .staff-dashboard-page .dashboard-hero p,
+html[data-theme="dark"] .staff-profile-page .management-page-hero p {
+  color: rgba(239, 246, 255, 0.84);
+}
+
+html[data-theme="dark"] .staff-priority-panel,
+html[data-theme="dark"] .staff-workload-panel,
+html[data-theme="dark"] .staff-dashboard-page .dashboard-card,
+html[data-theme="dark"] .staff-priority-card,
+html[data-theme="dark"] .staff-workload-row,
+html[data-theme="dark"] .staff-profile-page .profile-summary-card,
+html[data-theme="dark"] .staff-profile-page .profile-detail-item {
+  border-color: var(--staff-border);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0)),
+    var(--staff-surface);
+  box-shadow:
+    0 14px 34px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+html[data-theme="dark"] .staff-priority-card,
+html[data-theme="dark"] .staff-workload-row,
+html[data-theme="dark"] .staff-profile-page .profile-detail-item {
+  background:
+    linear-gradient(180deg, rgba(91, 213, 210, 0.055), rgba(255, 255, 255, 0.02)),
+    var(--staff-surface-raised);
+}
+
+html[data-theme="dark"] .staff-dashboard-page .dashboard-section-header h2,
+html[data-theme="dark"] .staff-dashboard-page .staff-priority-card span,
+html[data-theme="dark"] .staff-dashboard-page .staff-workload-row strong,
+html[data-theme="dark"] .staff-profile-page .profile-identity-copy h2,
+html[data-theme="dark"] .staff-profile-page .profile-detail-item strong {
+  color: var(--staff-text);
+}
+
+html[data-theme="dark"] .staff-dashboard-page .dashboard-section-header p,
+html[data-theme="dark"] .staff-dashboard-page .staff-priority-card small,
+html[data-theme="dark"] .staff-dashboard-page .staff-workload-row span,
+html[data-theme="dark"] .staff-profile-page .profile-identity-copy p,
+html[data-theme="dark"] .staff-profile-page .section-eyebrow,
+html[data-theme="dark"] .staff-profile-page .profile-detail-item > div > span {
+  color: var(--staff-muted);
+}
+
+html[data-theme="dark"] .staff-dashboard-page .staff-priority-card:hover,
+html[data-theme="dark"] .staff-profile-page .profile-detail-item:hover {
+  border-color: var(--staff-border-strong);
+  color: var(--staff-accent);
+  background:
+    linear-gradient(180deg, rgba(91, 213, 210, 0.08), rgba(255, 255, 255, 0.025)),
+    var(--staff-surface-hover);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.24);
+}
+
+html[data-theme="dark"] .staff-priority-icon,
+html[data-theme="dark"] .staff-profile-page .profile-avatar,
+html[data-theme="dark"] .staff-profile-page .profile-detail-icon {
+  border-color: var(--staff-border-strong);
+  color: var(--staff-accent);
+  background: var(--staff-accent-soft);
+  box-shadow: none;
+}
+
+html[data-theme="dark"] .staff-priority-card-danger .staff-priority-icon {
+  color: #ff8b8b;
+  background: rgba(255, 107, 107, 0.14);
+  border-color: rgba(255, 139, 139, 0.3);
+}
+
+html[data-theme="dark"] .staff-priority-card-warning .staff-priority-icon {
+  color: #ffc15e;
+  background: rgba(255, 177, 30, 0.14);
+  border-color: rgba(255, 193, 94, 0.3);
+}
+
+html[data-theme="dark"] .staff-profile-page .profile-identity-row {
+  border-color: var(--staff-border);
+}
+
+html[data-theme="dark"] .staff-profile-page .profile-role-pill {
+  color: var(--staff-text);
+  background: var(--staff-accent-soft);
+  box-shadow: inset 0 0 0 1px var(--staff-border-strong);
+}
+/* Resident dark-mode normalization -------------------------------------------------- */
+[data-theme="dark"] {
+  --resident-bg: #08111f;
+  --resident-surface: #121e30;
+  --resident-surface-soft: #17263a;
+  --resident-surface-raised: #1a2a40;
+  --resident-surface-hover: #1d3148;
+  --resident-border: rgba(132, 164, 188, 0.24);
+  --resident-border-strong: rgba(92, 213, 211, 0.32);
+  --resident-text: #f4f8fb;
+  --resident-muted: #a7b8ca;
+  --resident-accent: #5bd5d2;
+  --resident-accent-soft: rgba(91, 213, 210, 0.13);
+}
+
+html[data-theme="dark"] :is(
+  .resident-dashboard-page,
+  .resident-notification-page,
+  .resident-invoice-page,
+  .resident-cost-page,
+  .resident-member-page,
+  .resident-vehicle-page,
+  .resident-feedback-page,
+  .resident-equipment-page,
+  .resident-contract-page,
+  .resident-profile-page,
+  .resident-invoice-workspace
+) :is(h1, h2, h3, h4, strong, th, td, .title, .value) {
+  color: var(--resident-text);
+}
+
+html[data-theme="dark"] :is(
+  .resident-dashboard-page,
+  .resident-notification-page,
+  .resident-invoice-page,
+  .resident-cost-page,
+  .resident-member-page,
+  .resident-vehicle-page,
+  .resident-feedback-page,
+  .resident-equipment-page,
+  .resident-contract-page,
+  .resident-profile-page,
+  .resident-invoice-workspace
+) :is(p, small, dt, .table-subtext, .subtitle, .description, .meta, .label) {
+  color: var(--resident-muted);
+}
+
+html[data-theme="dark"] :is(.resident-notification-page, .resident-invoice-page) .management-page-hero,
+html[data-theme="dark"] .resident-profile-page .management-page-hero,
+html[data-theme="dark"] .resident-dashboard-page .dashboard-hero {
+  border-color: rgba(91, 213, 210, 0.18);
+  color: var(--resident-text);
+  background:
+    radial-gradient(circle at 78% 28%, rgba(91, 213, 210, 0.18), transparent 28%),
+    linear-gradient(135deg, #111e34 0%, #1b2d49 58%, #203d58 100%);
+  box-shadow:
+    0 20px 46px rgba(0, 0, 0, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+html[data-theme="dark"] .resident-dashboard-page .dashboard-hero .dashboard-card,
+html[data-theme="dark"] .resident-insight-item,
+html[data-theme="dark"] .resident-dashboard-page .dashboard-detail-panel,
+html[data-theme="dark"] .resident-dashboard-page .dashboard-panel,
+html[data-theme="dark"] .resident-cost-card,
+html[data-theme="dark"] .resident-cost-panel,
+html[data-theme="dark"] .resident-fee-row,
+html[data-theme="dark"] .resident-notification-page .notification-inbox-item,
+html[data-theme="dark"] .resident-notification-page .notification-read-button,
+html[data-theme="dark"] .resident-notification-page .user-notification-detail-status,
+html[data-theme="dark"] .resident-notification-page .notification-detail-meta,
+html[data-theme="dark"] .resident-notification-page .notification-detail-content,
+html[data-theme="dark"] .resident-invoice-page .table-wrap,
+html[data-theme="dark"] .resident-profile-page .profile-summary-card,
+html[data-theme="dark"] .resident-profile-page .profile-detail-item {
+  border-color: var(--resident-border);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0)),
+    var(--resident-surface);
+  box-shadow:
+    0 14px 34px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+html[data-theme="dark"] .resident-dashboard-page .dashboard-hero .dashboard-card {
+  background:
+    linear-gradient(180deg, rgba(91, 213, 210, 0.08), rgba(255, 255, 255, 0.025)),
+    var(--resident-surface-raised);
+}
+
+html[data-theme="dark"] .resident-dashboard-page .dashboard-card span,
+html[data-theme="dark"] .resident-dashboard-page .dashboard-card small,
+html[data-theme="dark"] .resident-insight-item span {
+  color: var(--resident-muted);
+}
+
+html[data-theme="dark"] .resident-dashboard-page .dashboard-card strong,
+html[data-theme="dark"] .resident-insight-item strong {
+  color: var(--resident-text);
+}
+
+html[data-theme="dark"] .resident-dashboard-page .dashboard-detail-panel > div > span {
+  color: var(--resident-text);
+  font-weight: 850;
+}
+
+html[data-theme="dark"] .resident-contract-page > .detail-panel > div > span {
+  color: var(--resident-text);
+}
+
+html[data-theme="dark"] .resident-dashboard-page .dashboard-card-primary,
+html[data-theme="dark"] .resident-dashboard-page .dashboard-card-success,
+html[data-theme="dark"] .resident-dashboard-page .dashboard-card-warning,
+html[data-theme="dark"] .resident-dashboard-page .dashboard-card-danger {
+  border-left-color: var(--resident-accent);
+}
+
+html[data-theme="dark"] .resident-dashboard-page .shared-chart-icon {
+  border-color: var(--resident-border-strong);
+  color: var(--resident-accent);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.025)),
+    var(--resident-accent-soft);
+}
+
+html[data-theme="dark"] .resident-dashboard-page .shared-chart-title > div > span {
+  color: var(--resident-accent);
+}
+
+html[data-theme="dark"] .resident-dashboard-page .shared-horizontal-track i {
+  background: linear-gradient(90deg, #18b894, #0f9f82);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.18) inset,
+    0 8px 18px rgba(24, 184, 148, 0.22);
+}
+
+html[data-theme="dark"] .resident-insight-item::before {
+  background: linear-gradient(180deg, var(--resident-accent), #6f8ff2);
+}
+
+html[data-theme="dark"] .resident-cost-card-icon,
+html[data-theme="dark"] .resident-cost-row-icon,
+html[data-theme="dark"] .resident-profile-page .profile-avatar,
+html[data-theme="dark"] .resident-profile-page .profile-detail-icon,
+html[data-theme="dark"] .resident-notification-page .notification-event-icon,
+html[data-theme="dark"] .resident-notification-page .notification-state-icon {
+  border-color: var(--resident-border-strong);
+  color: var(--resident-accent);
+  background: var(--resident-accent-soft);
+  box-shadow: none;
+}
+
+html[data-theme="dark"] .resident-notification-page .notification-state-icon.is-read {
+  color: #9aa6b2;
+  border-color: rgba(154, 166, 178, 0.26);
+  background: rgba(154, 166, 178, 0.12);
+}
+
+html[data-theme="dark"] .resident-notification-page .notification-state-icon.is-unread {
+  color: var(--resident-accent);
+  border-color: var(--resident-border-strong);
+  background: var(--resident-accent-soft);
+}
+
+html[data-theme="dark"] .resident-notification-page .notification-inbox-item:hover:not(:disabled),
+html[data-theme="dark"] .resident-notification-page .notification-inbox-item:focus-visible,
+html[data-theme="dark"] .resident-fee-row:hover,
+html[data-theme="dark"] .resident-profile-page .profile-detail-item:hover {
+  border-color: var(--resident-border-strong);
+  background:
+    linear-gradient(180deg, rgba(91, 213, 210, 0.08), rgba(255, 255, 255, 0.025)),
+    var(--resident-surface-hover);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.24);
+}
+
+html[data-theme="dark"] .resident-notification-page .notification-inbox-item.is-unread {
+  border-color: rgba(91, 213, 210, 0.36);
+  background:
+    linear-gradient(90deg, rgba(91, 213, 210, 0.15), transparent 34%),
+    var(--resident-surface);
+}
+
+html[data-theme="dark"] .resident-notification-page .notification-inbox-content,
+html[data-theme="dark"] .resident-notification-page .notification-inbox-content:hover:not(:disabled) {
+  color: var(--resident-text);
+  background: transparent;
+  box-shadow: none;
+}
+
+html[data-theme="dark"] .resident-notification-page .notification-inbox-message,
+html[data-theme="dark"] .resident-notification-page .notification-inbox-time,
+html[data-theme="dark"] .resident-notification-page .notification-inbox-meta {
+  color: var(--resident-muted);
+}
+
+html[data-theme="dark"] .resident-notification-page .notification-pagination,
+html[data-theme="dark"] .resident-invoice-page .notification-pagination {
+  border-color: var(--resident-border);
+  color: var(--resident-muted);
+  background: var(--resident-surface);
+  box-shadow: none;
+}
+
+html[data-theme="dark"] .resident-invoice-page .data-table {
+  color: var(--resident-text);
+  background: var(--resident-surface);
+}
+
+html[data-theme="dark"] .resident-invoice-page .data-table th {
+  color: #c6d4e4;
+  border-color: var(--resident-border);
+  background: #17263a;
+  box-shadow: inset 0 -1px 0 var(--resident-border);
+}
+
+html[data-theme="dark"] .resident-invoice-page .data-table td {
+  border-color: rgba(132, 164, 188, 0.16);
+  background: var(--resident-surface);
+}
+
+html[data-theme="dark"] .resident-invoice-page .data-table tbody tr:hover td {
+  background: var(--resident-surface-hover);
+}
+
+html[data-theme="dark"] .resident-invoice-page .icon-action-button {
+  border-color: rgba(132, 164, 188, 0.26);
+  color: #c5d4e3;
+  background: rgba(23, 38, 58, 0.9);
+  box-shadow: none;
+}
+
+html[data-theme="dark"] .resident-invoice-page .icon-action-button:hover,
+html[data-theme="dark"] .resident-invoice-page .icon-action-button:focus-visible {
+  border-color: rgba(91, 213, 210, 0.46);
+  color: var(--resident-accent);
+  background: var(--resident-accent-soft);
+}
+
+html[data-theme="dark"] .resident-profile-page .profile-identity-row {
+  border-color: var(--resident-border);
+}
+
+html[data-theme="dark"] .resident-profile-page .section-eyebrow,
+html[data-theme="dark"] .resident-profile-page .profile-detail-item > div > span {
+  color: var(--resident-muted);
+}
+
+html[data-theme="dark"] .resident-profile-page .profile-role-pill {
+  color: var(--resident-text);
+  background: var(--resident-accent-soft);
+  box-shadow: inset 0 0 0 1px var(--resident-border-strong);
 }

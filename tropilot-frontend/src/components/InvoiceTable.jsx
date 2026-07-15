@@ -12,7 +12,7 @@ function formatNumber(value, locale) {
     : value;
 }
 
-export default function InvoiceTable({ invoices, renderActions, detailPathBase }) {
+export default function InvoiceTable({ invoices, renderActions, detailPathBase, hideSubtext = false }) {
   const { t, i18n } = useTranslation();
   const hasActions = Boolean(renderActions || detailPathBase);
   const locale = String(i18n.resolvedLanguage || i18n.language || '').startsWith('en') ? 'en-US' : 'vi-VN';
@@ -32,18 +32,20 @@ export default function InvoiceTable({ invoices, renderActions, detailPathBase }
           </tr>
         </thead>
         <tbody>
-          {invoices.map((invoice) => (
+          {invoices.map((invoice, index) => (
             <tr key={invoice.id}>
-              <td className="invoice-id-cell">{invoice.id}</td>
+              <td className="invoice-id-cell">{index + 1}</td>
               <td className="invoice-number-cell">
                 <strong>{formatInvoiceCode(invoice)}</strong>
-                <span className="table-subtext">{formatDisplayMonth(invoice.month)}</span>
+                {!hideSubtext && <span className="table-subtext">{formatDisplayMonth(invoice.month)}</span>}
               </td>
               <td>
                 <strong>{formatRoomLabel(invoice) || formatRoomCode(invoice)}</strong>
-                <span className="table-subtext">
-                  {[invoice.buildingCode, invoice.residentHeadName].filter(Boolean).join(' - ')}
-                </span>
+                {!hideSubtext && (
+                  <span className="table-subtext">
+                    {[invoice.buildingCode, invoice.residentHeadName].filter(Boolean).join(' - ')}
+                  </span>
+                )}
               </td>
               <td className="invoice-amount-cell">
                 {formatInvoiceCurrency(invoice.totalAmount, locale, t('buildingInvoices.currencyUnit'))}

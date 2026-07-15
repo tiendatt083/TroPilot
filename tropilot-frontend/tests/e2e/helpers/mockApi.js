@@ -359,6 +359,7 @@ async function handleApiRoute(route, state) {
 
   if (method === 'GET' && path === '/api/staff/dashboard') {
     return fulfillJson(route, success({
+      totalRooms: state.rooms.length,
       assignedTasks: 1,
       overdueTasks: 0,
       roomsNeedingUtilityReading: 1,

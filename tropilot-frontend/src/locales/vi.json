@@ -755,14 +755,14 @@
   },
   "buildingBilling": {
     "eyebrow": "Lập hóa đơn của tòa nhà",
-    "title": "Chỉ số tiện ích và hóa đơn",
+    "title": "Chỉ số điện nước và hóa đơn",
     "description": "Ghi hoặc cập nhật chỉ số phòng, sau đó tạo hóa đơn phòng trong cùng một khu vực làm việc.",
     "loading": "Đang tải dữ liệu lập hóa đơn...",
     "loadError": "Không thể tải dữ liệu lập hóa đơn",
-    "readingCreated": "Đã tạo chỉ số tiện ích thành công.",
-    "readingCreateError": "Không thể tạo chỉ số tiện ích",
-    "readingUpdated": "Đã cập nhật chỉ số tiện ích thành công.",
-    "readingUpdateError": "Không thể cập nhật chỉ số tiện ích",
+    "readingCreated": "Đã tạo chỉ số điện nước thành công.",
+    "readingCreateError": "Không thể tạo chỉ số điện nước",
+    "readingUpdated": "Đã cập nhật chỉ số điện nước thành công.",
+    "readingUpdateError": "Không thể cập nhật chỉ số điện nước",
     "invoiceGenerated": "Đã tạo hóa đơn thành công.",
     "invoiceGenerateError": "Không thể tạo hóa đơn",
     "invoiceLoadError": "Không thể tải hóa đơn",
@@ -773,7 +773,7 @@
     "invoiceGeneration": "Tạo hóa đơn",
     "newInvoice": "Hóa đơn mới",
     "billingRecords": "Dữ liệu lập hóa đơn",
-    "utilityReadings": "Chỉ số tiện ích",
+    "utilityReadings": "Chỉ số điện nước",
     "invoices": "Hóa đơn"
   },
   "buildingUtilityReadings": {
@@ -972,7 +972,7 @@
       "USER_DELETED": "Xóa người dùng",
       "PROFILE_UPDATED": "Cập nhật hồ sơ",
       "USER_PASSWORD_RESET": "Tạo lại mật khẩu người dùng",
-      "UTILITY_READING_RECORDED": "Ghi chỉ số tiện ích",
+      "UTILITY_READING_RECORDED": "Ghi chỉ số điện nước",
       "FEEDBACK_STATUS_UPDATED": "Cập nhật trạng thái phản hồi",
       "SYSTEM_CONTACT_UPDATED": "Cập nhật liên hệ hệ thống"
     },
@@ -1007,7 +1007,7 @@
       "rejectedRoomMember": "Đã từ chối thành viên phòng {{member}} trong phòng {{room}}",
       "uploadedContract": "Đã tải hợp đồng cho phòng {{room}}",
       "confirmedContract": "Đã xác nhận hợp đồng cho phòng {{room}}",
-      "recordedUtilityReading": "Đã ghi chỉ số tiện ích cho phòng {{room}} ngày {{date}}",
+      "recordedUtilityReading": "Đã ghi chỉ số điện nước cho phòng {{room}} ngày {{date}}",
       "generatedInvoice": "Đã tạo hóa đơn cho phòng {{room}} tháng {{month}}",
       "deletedInvoice": "Đã xóa hóa đơn của phòng {{room}} tháng {{month}}",
       "uploadedPaymentProof": "Đã tải bằng chứng thanh toán cho hóa đơn {{invoice}}",
@@ -1262,6 +1262,8 @@
         "priorityDescription": "Các nhóm việc quan trọng được gom lại để xử lý nhanh.",
         "taskTitle": "Khối lượng công việc",
         "taskDescription": "Công việc được giao và mục quá hạn cần xử lý ngay.",
+        "operationOverviewTitle": "Tổng quan vận hành",
+        "operationOverviewDescription": "Biểu đồ tóm tắt chỉ số điện nước và công việc.",
         "operationsTitle": "Hàng đợi vận hành",
         "operationsDescription": "Các nghiệp vụ tòa nhà cần nhân viên xử lý.",
         "expenseTitle": "Hoạt động chi phí",
@@ -1272,12 +1274,25 @@
       "metrics": {
         "assignedTasks": "Công việc được giao",
         "overdueTasks": "Công việc quá hạn",
-        "roomsNeedingUtilityReading": "Phòng cần ghi chỉ số tiện ích",
+        "roomsNeedingUtilityReading": "Phòng cần ghi chỉ số điện nước",
         "pendingPaymentConfirmations": "Thanh toán chờ xác nhận",
         "activeMaintenanceRequests": "Yêu cầu bảo trì đang xử lý",
         "createdExpenses": "Chi phí đã tạo",
-        "utilityReadingsDue": "Chỉ số tiện ích cần ghi",
+        "utilityReadingsDue": "Chỉ số điện nước cần ghi",
         "paymentChecks": "Thanh toán cần kiểm tra"
+      },
+      "charts": {
+        "utilityReadings": "Chỉ số điện nước",
+        "utilityReadingsHelper": "Phòng còn cần ghi trong kỳ hiện tại",
+        "workload": "Công việc",
+        "workloadHelper": "Việc được giao và số quá hạn",
+        "expenses": "Chi phí",
+        "expensesHelper": "Chi phí đã được tạo bởi nhân viên",
+        "recorded": "Đã ghi",
+        "needReading": "Cần ghi",
+        "assigned": "Được giao",
+        "overdue": "Quá hạn",
+        "created": "Đã tạo"
       },
       "quick": {
         "tasks": "Công việc",
@@ -1288,7 +1303,8 @@
         "taskHelper": "Xem danh sách công việc",
         "utilityHelper": "Ghi điện nước theo phòng",
         "paymentHelper": "Kiểm tra xác nhận thanh toán",
-        "maintenanceHelper": "Theo dõi yêu cầu bảo trì"
+        "maintenanceHelper": "Theo dõi yêu cầu bảo trì",
+        "expenseHelper": "Xem chi phí đã tạo"
       }
     },
     "resident": {
@@ -1436,9 +1452,13 @@
     "period": "Thời hạn hợp đồng",
     "status": "Trạng thái hợp đồng",
     "rentalStatus": "Trạng thái thuê",
-    "open": "Mở hợp đồng",
+    "open": "Xem hợp đồng",
     "noFile": "Chưa tải tệp lên",
     "confirmViewed": "Xác nhận đã xem",
+    "confirmedViewed": "Đã xác nhận",
+    "confirmDialogTitle": "Xác nhận hợp đồng",
+    "confirmDialogMessage": "Bạn xác nhận hợp đồng đã đúng thông tin, đúng yêu cầu và không có sai sót?",
+    "confirmDialogAccept": "Đồng ý",
     "reportIssue": "Báo lỗi",
     "noCurrent": "Không tìm thấy hợp đồng thuê hiện tại.",
     "upload": {
@@ -1595,6 +1615,7 @@
     "residentDescription": "Quản lý xe đã đăng ký và gửi yêu cầu đăng ký xe mới.",
     "requestEyebrow": "Yêu cầu mới",
     "requestTitle": "Yêu cầu đăng ký xe",
+    "registerButton": "Đăng ký xe",
     "loading": "Đang tải xe...",
     "loadError": "Không thể tải danh sách xe",
     "submitted": "Đã gửi đăng ký xe để duyệt thành công.",
@@ -1682,6 +1703,7 @@
       "loadError": "Không thể tải thành viên phòng",
       "newEyebrow": "Thành viên mới",
       "editEyebrow": "Sửa thành viên",
+      "addButton": "Thêm thành viên",
       "addTitle": "Thêm thành viên phòng",
       "submitted": "Đã gửi thành viên phòng để duyệt thành công.",
       "submitError": "Không thể gửi thành viên phòng",
@@ -1712,13 +1734,14 @@
       "currentBuilding": "Tòa nhà hiện tại",
       "roomSummary": "Phòng {{room}}",
       "currencySuffix": "đ",
-      "perMonth": "mỗi tháng",
+      "perMonth": "Mỗi tháng",
       "notConfigured": "Chưa cấu hình",
       "waitingForSetup": "Chưa có mức phí",
-      "fromLatestInvoice": "theo hóa đơn gần nhất",
+      "fromLatestInvoice": "Theo hóa đơn gần nhất",
       "serviceCount": "{{count}} phí",
-      "activeFees": "đang áp dụng",
+      "activeFees": "Đang áp dụng",
       "feeListTitle": "Các khoản phí đang áp dụng",
+      "feeNameColumn": "Tên chi phí",
       "empty": "Chưa có khoản phí dịch vụ nào được cấu hình.",
       "cards": {
         "roomPrice": "Giá phòng",
@@ -1727,10 +1750,10 @@
         "services": "Chi phí dịch vụ"
       },
       "calculationUnits": {
-        "FIXED": "mỗi phòng",
-        "BY_USAGE": "theo số sử dụng",
-        "BY_PERSON": "mỗi người",
-        "BY_QUANTITY": "theo số lượng"
+        "FIXED": "Theo phòng",
+        "BY_USAGE": "Theo mức dùng",
+        "BY_PERSON": "Theo người",
+        "BY_QUANTITY": "Theo số lượng"
       }
     }
   },
@@ -2339,7 +2362,7 @@
       "empty": "Không tìm thấy xe."
     },
     "utilityReadings": {
-      "empty": "Không tìm thấy chỉ số tiện ích.",
+      "empty": "Không tìm thấy chỉ số điện nước.",
       "usage": "Mức dùng",
       "notEdited": "Chưa chỉnh sửa"
     },

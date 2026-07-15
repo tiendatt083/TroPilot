@@ -116,7 +116,7 @@ export default function BuildingVehicleWorkspace({ getVehicles, canManage = fals
       {loading ? (
         <div className="empty-state">{t('workspace.vehicles.loading')}</div>
       ) : (
-        <VehicleTable vehicles={vehicles} renderActions={renderActions} />
+        <VehicleTable vehicles={vehicles} renderActions={renderActions} variant="building" />
       )}
     </div>
   );

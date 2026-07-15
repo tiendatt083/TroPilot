@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as feedbackApi from '../../features/notifications/feedbackApi.js';
 import FeedbackTable from '../../components/FeedbackTable.jsx';
-import PageHeader from '../../components/PageHeader.jsx';
 import ActionDialog from '../../components/common/ActionDialog.jsx';
 import ManagementPageHero from '../../components/common/ManagementPageHero.jsx';
 import { FEEDBACK_TYPE_OPTIONS } from '../../utils/feedbackOptions.js';
@@ -144,7 +143,6 @@ export default function ResidentFeedbackPage() {
       </ActionDialog>
 
       <section className="building-section">
-        <PageHeader eyebrow={t('resident.eyebrow')} title={t('resident.feedback.historyTitle')} />
         {loading ? (
           <div className="empty-state">{t('resident.feedback.loading')}</div>
         ) : (

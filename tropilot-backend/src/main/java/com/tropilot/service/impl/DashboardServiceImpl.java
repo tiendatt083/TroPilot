@@ -146,6 +146,7 @@ public class DashboardServiceImpl implements DashboardService {
         );
 
         return StaffDashboardResponse.builder()
+                .totalRooms(roomRepository.count())
                 .assignedTasks(taskRepository.countByAssignedTo_IdAndStatusIn(staffId, activeTaskStatuses))
                 .overdueTasks(taskRepository.countByAssignedTo_IdAndDeadlineBeforeAndStatusIn(
                         staffId,

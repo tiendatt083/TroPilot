@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import * as dashboardApi from '../../features/buildings/dashboardApi.js';
 import LineIcon from '../../components/common/LineIcon.jsx';
+import { CHART_COLORS, ChartPanel, DonutChart } from '../../components/common/DashboardCharts.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
 
 function formatNumber(value) {
@@ -12,11 +13,17 @@ function formatNumber(value) {
     : value;
 }
 
+function toNumber(value) {
+  const numberValue = Number(value ?? 0);
+  return Number.isFinite(numberValue) ? numberValue : 0;
+}
+
 export default function StaffDashboardPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [dashboard, setDashboard] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
+  const locale = String(i18n.resolvedLanguage || i18n.language).startsWith('en') ? 'en-US' : 'vi-VN';
 
   useEffect(() => {
     let active = true;
@@ -44,26 +51,49 @@ export default function StaffDashboardPage() {
     };
   }, [t]);
 
-  const workloadMetrics = dashboard
+  const totalRooms = toNumber(dashboard?.totalRooms);
+  const roomsNeedReading = toNumber(dashboard?.roomsNeedingUtilityReading);
+  const roomsRecorded = Math.max(totalRooms - roomsNeedReading, 0);
+  const overdueTasks = toNumber(dashboard?.overdueTasks);
+  const assignedTasks = toNumber(dashboard?.assignedTasks);
+  const activeAssignedTasks = Math.max(assignedTasks - overdueTasks, 0);
+  const overviewCharts = dashboard
     ? [
-        { label: t('dashboard.staff.metrics.assignedTasks'), value: formatNumber(dashboard.assignedTasks), tone: 'primary', featured: true },
-        { label: t('dashboard.staff.metrics.overdueTasks'), value: formatNumber(dashboard.overdueTasks), tone: 'danger' }
+        {
+          icon: 'activity',
+          title: t('dashboard.staff.charts.utilityReadings'),
+          value: formatNumber(totalRooms),
+          items: [
+            {
+              label: t('dashboard.staff.charts.recorded'),
+              value: roomsRecorded,
+              color: CHART_COLORS.paid
+            },
+            {
+              label: t('dashboard.staff.charts.needReading'),
+              value: roomsNeedReading,
+              color: CHART_COLORS.violet
+            }
+          ]
+        },
+        {
+          icon: 'checkShield',
+          title: t('dashboard.staff.charts.workload'),
+          value: formatNumber(assignedTasks),
+          items: [
+            {
+              label: t('dashboard.staff.charts.assigned'),
+              value: activeAssignedTasks,
+              color: CHART_COLORS.info
+            },
+            {
+              label: t('dashboard.staff.charts.overdue'),
+              value: overdueTasks,
+              color: CHART_COLORS.unpaid
+            }
+          ]
+        }
       ]
-    : [];
-  const operationsMetrics = dashboard
-    ? [
-        { label: t('dashboard.staff.metrics.roomsNeedingUtilityReading'), value: formatNumber(dashboard.roomsNeedingUtilityReading), tone: 'warning' },
-        { label: t('dashboard.staff.metrics.pendingPaymentConfirmations'), value: formatNumber(dashboard.pendingPaymentConfirmations), tone: 'warning' },
-        { label: t('dashboard.staff.metrics.activeMaintenanceRequests'), value: formatNumber(dashboard.activeMaintenanceRequests), tone: 'primary' }
-      ]
-    : [];
-  const financeMetrics = dashboard
-    ? [
-        { label: t('dashboard.staff.metrics.createdExpenses'), value: formatNumber(dashboard.createdExpenses), tone: 'primary' }
-      ]
-    : [];
-  const overviewMetrics = dashboard
-    ? [...workloadMetrics, ...operationsMetrics, ...financeMetrics]
     : [];
   const priorityItems = dashboard
     ? [
@@ -98,16 +128,17 @@ export default function StaffDashboardPage() {
           helper: t('dashboard.staff.quick.maintenanceHelper'),
           to: '/staff/maintenance',
           tone: 'primary'
+        },
+        {
+          icon: 'fileText',
+          label: t('dashboard.staff.metrics.createdExpenses'),
+          value: formatNumber(dashboard.createdExpenses),
+          helper: t('dashboard.staff.quick.expenseHelper'),
+          to: '/staff/expenses',
+          tone: 'primary'
         }
       ]
     : [];
-  const quickActions = [
-    { icon: 'checkShield', label: t('dashboard.staff.quick.tasks'), to: '/staff/tasks' },
-    { icon: 'activity', label: t('dashboard.staff.quick.utilityReadings'), to: '/staff/utility-readings' },
-    { icon: 'wallet', label: t('dashboard.staff.quick.payments'), to: '/staff/payments/pending' },
-    { icon: 'tool', label: t('dashboard.staff.quick.maintenance'), to: '/staff/maintenance' },
-    { icon: 'fileText', label: t('dashboard.staff.quick.expenses'), to: '/staff/expenses' }
-  ];
 
   return (
     <section className="content-section dashboard-page staff-dashboard-page">
@@ -138,10 +169,10 @@ export default function StaffDashboardPage() {
                     <LineIcon name={item.icon} />
                   </span>
                   <div>
-                    <strong>{item.value}</strong>
                     <span>{item.label}</span>
                     <small>{item.helper}</small>
                   </div>
+                  <strong className="staff-priority-value">{item.value}</strong>
                 </Link>
               ))}
             </div>
@@ -151,31 +182,15 @@ export default function StaffDashboardPage() {
             <section className="staff-workload-panel">
               <div className="dashboard-section-header">
                 <div>
-                  <h2>{t('dashboard.staff.sections.taskTitle')}</h2>
-                  <p>{t('dashboard.staff.sections.taskDescription')}</p>
+                  <h2>{t('dashboard.staff.sections.operationOverviewTitle')}</h2>
+                  <p>{t('dashboard.staff.sections.operationOverviewDescription')}</p>
                 </div>
               </div>
-              <div className="staff-workload-list">
-                {overviewMetrics.map((metric) => (
-                  <div className={`staff-workload-row staff-workload-row-${metric.tone || 'primary'}`} key={metric.label}>
-                    <span>{metric.label}</span>
-                    <strong>{metric.value}</strong>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            <section className="staff-quick-actions-panel">
-              <div>
-                <h2>{t('dashboard.staff.sections.quickActionTitle')}</h2>
-                <p>{t('dashboard.staff.sections.quickActionDescription')}</p>
-              </div>
-              <div className="staff-quick-action-list">
-                {quickActions.map((action) => (
-                  <Link className="staff-quick-action" key={action.to} to={action.to}>
-                    <LineIcon name={action.icon} />
-                    <span>{action.label}</span>
-                  </Link>
+              <div className="staff-operations-chart-grid">
+                {overviewCharts.map((chart) => (
+                  <ChartPanel className="staff-dashboard-chart-panel" icon={chart.icon} key={chart.title} title={chart.title}>
+                    <DonutChart center={chart.value} items={chart.items} locale={locale} />
+                  </ChartPanel>
                 ))}
               </div>
             </section>

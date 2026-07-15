@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import LineIcon from './LineIcon.jsx';
 
 export const CHART_COLORS = {
@@ -72,7 +73,13 @@ export function ChartLegend({ items }) {
   );
 }
 
-export function GroupedBarChart({ emptyText, rows, series, valueFormatter = (value) => value }) {
+export function GroupedBarChart({
+  emptyText,
+  rows,
+  series,
+  tooltipFormatter = null,
+  valueFormatter = (value) => value
+}) {
   const maxValue = Math.max(
     ...rows.flatMap((row) => series.map((item) => toNumber(row[item.key]))),
     1
@@ -92,16 +99,21 @@ export function GroupedBarChart({ emptyText, rows, series, valueFormatter = (val
               {series.map((item) => {
                 const value = toNumber(row[item.key]);
                 const height = Math.max(4, Math.round((value / maxValue) * 100));
+                const tooltipText = tooltipFormatter
+                  ? tooltipFormatter(value, item, row)
+                  : `${item.label}: ${valueFormatter(value)}`;
 
                 return (
                   <span
+                    aria-label={tooltipText}
                     className="shared-bar"
+                    data-tooltip={tooltipText}
+                    data-tooltip-follow="true"
                     key={item.key}
                     style={{
                       '--chart-color': getColor(item.color),
                       height: `${height}%`
                     }}
-                    title={`${item.label}: ${valueFormatter(value)}`}
                   />
                 );
               })}
@@ -148,15 +160,24 @@ export function DonutChart({ center, items, locale = 'vi-VN' }) {
         <div>{center}</div>
       </div>
       <div className="shared-donut-legend">
-        {items.map((item) => (
-          <span key={item.key || item.label}>
-            <i style={{ backgroundColor: getColor(item.color) }} />
-            {item.label}
-            <strong>{toNumber(item.value).toLocaleString(locale, { maximumFractionDigits: 2 })}</strong>
-          </span>
-        ))}
+        {items.map((item) => {
+          const content = (
+            <>
+              <i style={{ backgroundColor: getColor(item.color) }} />
+              {item.label}
+              <strong>{toNumber(item.value).toLocaleString(locale, { maximumFractionDigits: 2 })}</strong>
+            </>
+          );
+
+          return item.to ? (
+            <Link className="shared-donut-legend-action" key={item.key || item.label} to={item.to}>
+              {content}
+            </Link>
+          ) : (
+            <span key={item.key || item.label}>{content}</span>
+          );
+        })}
       </div>
     </div>
   );
 }
-

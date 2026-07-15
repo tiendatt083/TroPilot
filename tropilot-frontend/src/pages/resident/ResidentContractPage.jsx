@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as contractApi from '../../features/contracts/api.js';
 import ContractFileHistoryList from '../../components/ContractFileHistoryList.jsx';
+import ActionDialog from '../../components/common/ActionDialog.jsx';
 import ManagementPageHero from '../../components/common/ManagementPageHero.jsx';
 import { getContractStatusClass } from '../../utils/contractStatusOptions.js';
 import { formatDisplayDate } from '../../utils/dateFormat.js';
@@ -16,6 +17,10 @@ function formatNumber(value) {
     : value;
 }
 
+function isConfirmedContract(contract) {
+  return contract?.contractStatus === 'CONFIRMED';
+}
+
 export default function ResidentContractPage() {
   const { t } = useTranslation();
   const [contract, setContract] = useState(null);
@@ -23,6 +28,7 @@ export default function ResidentContractPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
 
   const loadContract = async () => {
     setError('');
@@ -47,6 +53,7 @@ export default function ResidentContractPage() {
     try {
       const response = await contractApi.confirmResidentContract(contract.id);
       setContract(response.data);
+      setConfirmDialogOpen(false);
       setMessage(t('contracts.confirmed'));
     } catch (apiError) {
       setError(apiError.response?.data?.message || t('contracts.confirmError'));
@@ -76,7 +83,7 @@ export default function ResidentContractPage() {
   }
 
   return (
-    <section className="content-section">
+    <section className="content-section resident-contract-page">
       <ManagementPageHero
         description={t('contracts.residentDescription')}
         title={t('contracts.title')}
@@ -132,13 +139,17 @@ export default function ResidentContractPage() {
                 {t('contracts.noFile')}
               </button>
             )}
-            <button type="button" disabled={processing || !contract.contractFileUrl} onClick={handleConfirm}>
-              {t('contracts.confirmViewed')}
+            <button
+              type="button"
+              disabled={processing || !contract.contractFileUrl || isConfirmedContract(contract)}
+              onClick={() => setConfirmDialogOpen(true)}
+            >
+              {isConfirmedContract(contract) ? t('contracts.confirmedViewed') : t('contracts.confirmViewed')}
             </button>
             <button
               className="secondary-button inline-button"
               type="button"
-              disabled={processing}
+              disabled={processing || isConfirmedContract(contract)}
               onClick={handleReportIssue}
             >
               {t('contracts.reportIssue')}
@@ -146,6 +157,31 @@ export default function ResidentContractPage() {
           </div>
 
           <ContractFileHistoryList files={contract.previousContractFiles} />
+
+          <ActionDialog
+            className="resident-contract-confirm-dialog"
+            labelledBy="resident-contract-confirm-title"
+            open={confirmDialogOpen}
+            title={t('contracts.confirmDialogTitle')}
+            onClose={() => !processing && setConfirmDialogOpen(false)}
+          >
+            <div className="contract-confirm-dialog-body">
+              <p>{t('contracts.confirmDialogMessage')}</p>
+              <div className="button-row contract-confirm-dialog-actions">
+                <button
+                  className="secondary-button inline-button"
+                  type="button"
+                  disabled={processing}
+                  onClick={() => setConfirmDialogOpen(false)}
+                >
+                  {t('common.cancel')}
+                </button>
+                <button type="button" disabled={processing} onClick={handleConfirm}>
+                  {t('contracts.confirmDialogAccept')}
+                </button>
+              </div>
+            </div>
+          </ActionDialog>
         </>
       ) : (
         <div className="empty-state">{t('contracts.noCurrent')}</div>

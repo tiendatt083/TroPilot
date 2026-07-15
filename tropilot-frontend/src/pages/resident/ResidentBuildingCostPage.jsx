@@ -22,28 +22,15 @@ function formatMoney(value, t) {
   return `${numberValue.toLocaleString('vi-VN', { maximumFractionDigits: 2 })} ${t('resident.buildingCosts.currencySuffix')}`;
 }
 
-function getFeeTone(feeType) {
-  if (feeType === 'ELECTRICITY') {
-    return 'electricity';
+function formatServiceName(name) {
+  const normalized = String(name || '').trim();
+
+  if (!normalized) {
+    return '';
   }
 
-  if (feeType === 'WATER') {
-    return 'water';
-  }
-
-  return 'service';
-}
-
-function getFeeIcon(feeType) {
-  if (feeType === 'ELECTRICITY') {
-    return 'activity';
-  }
-
-  if (feeType === 'WATER') {
-    return 'monitor';
-  }
-
-  return 'wallet';
+  const sentenceCase = normalized.toLocaleLowerCase('vi-VN');
+  return sentenceCase.charAt(0).toLocaleUpperCase('vi-VN') + sentenceCase.slice(1);
 }
 
 function getCalculationUnit(calculationType, t, fallback) {
@@ -206,7 +193,7 @@ export default function ResidentBuildingCostPage() {
     },
     {
       key: 'water',
-      icon: 'monitor',
+      icon: 'droplet',
       tone: 'water',
       label: t('resident.buildingCosts.cards.water'),
       value: feeGroups.waterFee ? formatMoney(feeGroups.waterFee.unitPrice, t) : t('resident.buildingCosts.notConfigured'),
@@ -255,35 +242,36 @@ export default function ResidentBuildingCostPage() {
           <article className="dashboard-panel resident-cost-panel">
             <div className="resident-cost-panel-header">
               <div>
-                <span>{t('resident.buildingCosts.activeFees')}</span>
                 <h2>{t('resident.buildingCosts.feeListTitle')}</h2>
               </div>
               <strong>{t('resident.buildingCosts.serviceCount', { count: serviceFees.length })}</strong>
             </div>
             {serviceFees.length > 0 ? (
-              <div className="resident-fee-list" role="list">
-                {serviceFees.map((fee) => (
-                  <div className="resident-fee-row" key={fee.id} role="listitem">
-                    <div className="resident-fee-service">
-                      <span className={`resident-cost-row-icon resident-cost-row-icon-${getFeeTone(fee.feeType)}`}>
-                        <LineIcon className="resident-cost-icon" name={getFeeIcon(fee.feeType)} />
-                      </span>
-                      <div>
-                        <strong>{fee.name}</strong>
-                        <span>{formatEnumLabel(t, 'feeType', fee.feeType)}</span>
-                      </div>
-                    </div>
-                    <div className="resident-fee-method">
-                      <span>{t('tables.common.calculation')}</span>
-                      <strong>{getCalculationUnit(fee.calculationType, t, fee.fallbackNote)}</strong>
-                    </div>
-                    <div className="resident-fee-price">
-                      <span>{t('tables.common.amount')}</span>
-                      <strong>{formatMoney(fee.unitPrice, t)}</strong>
-                    </div>
-                    <span className="status-pill status-active">{t('common.active')}</span>
-                  </div>
-                ))}
+              <div className="table-wrap resident-fee-table-wrap">
+                <table className="data-table resident-fee-table">
+                  <thead>
+                    <tr>
+                      <th>{t('resident.buildingCosts.feeNameColumn')}</th>
+                      <th>{t('tables.common.calculation')}</th>
+                      <th>{t('tables.common.amount')}</th>
+                      <th>{t('tables.common.status')}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {serviceFees.map((fee) => (
+                      <tr key={fee.id}>
+                        <td className="resident-fee-name-cell">
+                          <strong>{formatServiceName(fee.name)}</strong>
+                        </td>
+                        <td>{getCalculationUnit(fee.calculationType, t, fee.fallbackNote)}</td>
+                        <td className="resident-fee-price-cell">{formatMoney(fee.unitPrice, t)}</td>
+                        <td className="resident-fee-status-cell">
+                          <span className="status-pill status-active">{t('common.active')}</span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             ) : (
               <div className="empty-state flat-empty-state">{t('resident.buildingCosts.empty')}</div>

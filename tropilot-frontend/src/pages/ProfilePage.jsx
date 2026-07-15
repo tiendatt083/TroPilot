@@ -130,9 +130,15 @@ export default function ProfilePage() {
       value: getStatusLabel(t, user?.status)
     }
   ];
+  const pageClassName = [
+    'content-section',
+    'profile-page',
+    user?.role === 'STAFF' ? 'staff-profile-page' : '',
+    user?.role === 'RESIDENT_HEAD' ? 'resident-profile-page' : ''
+  ].filter(Boolean).join(' ');
 
   return (
-    <section className="content-section profile-page">
+    <section className={pageClassName}>
       <ManagementPageHero
         actions={(
           <button className="button-link profile-hero-edit-button" type="button" onClick={handleEdit}>

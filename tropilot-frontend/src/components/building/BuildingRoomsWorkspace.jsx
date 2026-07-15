@@ -4,6 +4,7 @@ import { Link, useOutletContext } from 'react-router-dom';
 import RoomForm from '../RoomForm.jsx';
 import ActionDialog from '../common/ActionDialog.jsx';
 import FilterBar from '../common/FilterBar.jsx';
+import LineIcon from '../common/LineIcon.jsx';
 import { formatNumber } from '../../utils/numberFormat.js';
 import { formatRoomCode } from '../../utils/roomDisplay.js';
 import { ROOM_STATUS_OPTIONS } from '../../utils/roomStatusOptions.js';
@@ -181,8 +182,13 @@ export default function BuildingRoomsWorkspace({
                   </td>
                   <td>
                     <div className="table-actions">
-                      <Link className="secondary-link compact-link" to={`${roomBasePath}/${room.id}`}>
-                        {canManage ? t('workspace.rooms.manage') : t('common.view')}
+                      <Link
+                        className="btn btn-outline icon-action-btn"
+                        to={`${roomBasePath}/${room.id}`}
+                        title={canManage ? t('workspace.rooms.manage') : t('common.view')}
+                        aria-label={canManage ? t('workspace.rooms.manage') : t('common.view')}
+                      >
+                        <LineIcon name={canManage ? 'settings' : 'eye'} size={16} />
                       </Link>
                     </div>
                   </td>

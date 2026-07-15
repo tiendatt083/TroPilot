@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import {
   getTaskStatusClass,
 } from '../utils/taskOptions.js';
+import LineIcon from './common/LineIcon.jsx';
 import { formatDateTime, formatEnumLabel } from '../utils/i18nFormat.js';
 import { formatRoomLabel } from '../utils/roomDisplay.js';
 
@@ -58,8 +59,13 @@ export default function TaskTable({ tasks, detailBasePath, showAssignedStaff = t
                 </span>
               </td>
               <td>
-                <Link className="secondary-link compact-link" to={`${detailBasePath}/${task.id}`}>
-                  {t('common.view')}
+                <Link
+                  className="table-icon-button"
+                  to={`${detailBasePath}/${task.id}`}
+                  aria-label={t('common.view')}
+                  title={t('common.view')}
+                >
+                  <LineIcon name="eye" size={16} />
                 </Link>
               </td>
             </tr>

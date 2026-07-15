@@ -5,6 +5,7 @@ import * as contractApi from '../../features/contracts/api.js';
 import ActionDialog from '../../components/common/ActionDialog.jsx';
 import ContractFileHistoryList from '../../components/ContractFileHistoryList.jsx';
 import ContractUploadForm from '../../components/ContractUploadForm.jsx';
+import LineIcon from '../../components/common/LineIcon.jsx';
 import { getContractStatusClass } from '../../utils/contractStatusOptions.js';
 import { formatDisplayDate } from '../../utils/dateFormat.js';
 import { resolveFileUrl } from '../../utils/fileUrl.js';
@@ -167,12 +168,14 @@ export default function AdminBuildingContractPage() {
                       </td>
                       <td>
                         <button
-                          className="secondary-button compact-button"
+                          className="table-icon-button"
                           type="button"
                           disabled={loadingDetailId === contract.id}
                           onClick={() => handleView(contract)}
+                          aria-label={t('common.view')}
+                          title={t('common.view')}
                         >
-                          {t('common.view')}
+                          <LineIcon name="eye" size={16} />
                         </button>
                       </td>
                     </tr>

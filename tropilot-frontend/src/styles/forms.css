@@ -1050,13 +1050,15 @@
 }
 
 .invoice-search-tools {
-  justify-content: flex-end;
+  justify-content: flex-start;
+  width: 100%;
 }
 
 .invoice-search-field {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
-  width: min(360px, 100%);
+  flex: 1 1 auto;
+  width: 100%;
   min-width: 240px;
   align-items: center;
   gap: 0.55rem;
@@ -1107,6 +1109,11 @@
   background: #eef3f8;
 }
 
+.invoice-table th:first-child,
+.invoice-table th:last-child {
+  text-align: center;
+}
+
 .invoice-table td {
   padding-top: 0.9rem;
   padding-bottom: 0.9rem;
@@ -1135,8 +1142,17 @@
   white-space: nowrap;
 }
 
-.invoice-action-cell .icon-table-actions {
-  justify-content: flex-start;
+.invoice-action-cell {
+  text-align: center;
+}
+
+.invoice-action-cell .icon-action-button {
+  margin-inline: auto;
+}
+
+.invoice-action-cell .icon-table-actions,
+.invoice-action-cell .table-actions {
+  justify-content: center;
 }
 
 @media (max-width: 1180px) {
@@ -3328,47 +3344,52 @@ html[data-theme="dark"] .staff-maintenance-page .maintenance-card-meta {
 }
 
 .vehicle-table-wrap-resident {
-  overflow: visible;
+  overflow-x: auto;
 }
 
 .vehicle-table-resident {
   width: 100%;
+  min-width: 780px;
   table-layout: fixed;
 }
 
 .vehicle-table-resident th,
 .vehicle-table-resident td {
   vertical-align: middle;
+  white-space: nowrap;
 }
 
-.vehicle-table-resident th:nth-child(1),
-.vehicle-table-resident td:nth-child(1) {
+.vehicle-table-resident .vehicle-col-plate {
   width: 18%;
 }
 
-.vehicle-table-resident th:nth-child(2),
-.vehicle-table-resident td:nth-child(2) {
-  width: 16%;
+.vehicle-table-resident .vehicle-col-type {
+  width: 18%;
 }
 
-.vehicle-table-resident th:nth-child(3),
-.vehicle-table-resident td:nth-child(3) {
-  width: 22%;
+.vehicle-table-resident .vehicle-col-owner {
+  width: 24%;
 }
 
-.vehicle-table-resident th:nth-child(4),
-.vehicle-table-resident td:nth-child(4) {
-  width: 16%;
+.vehicle-table-resident .vehicle-col-date {
+  width: 18%;
+}
+
+.vehicle-table-resident .vehicle-col-status {
+  width: 14%;
+}
+
+.vehicle-table-resident .vehicle-col-actions {
+  width: 8%;
 }
 
 .vehicle-table-resident th:nth-child(5),
 .vehicle-table-resident td:nth-child(5) {
-  width: 14%;
+  text-align: center;
 }
 
 .vehicle-table-resident th:last-child,
 .vehicle-table-resident td:last-child {
-  width: 14%;
   text-align: right;
 }
 
@@ -3681,6 +3702,49 @@ html[data-theme="dark"] .staff-maintenance-page .maintenance-card-meta {
 
 .additional-service-table-wrap {
   align-self: stretch;
+}
+
+.service-fee-table-wrap,
+.vehicle-table-wrap-building {
+  overflow-x: auto;
+}
+
+.service-fee-table,
+.vehicle-table-building {
+  min-width: 820px;
+}
+
+.vehicle-table-building {
+  min-width: 1040px;
+}
+
+.service-fee-table td strong,
+.vehicle-table-building td strong {
+  display: block;
+  color: var(--color-text);
+  font-weight: var(--font-weight-strong);
+  line-height: 1.35;
+}
+
+.service-fee-table td small,
+.vehicle-table-building td small {
+  display: block;
+  margin-top: 0.18rem;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.3;
+}
+
+.service-fee-table th:last-child,
+.service-fee-table td:last-child,
+.vehicle-table-building th:last-child,
+.vehicle-table-building td:last-child {
+  text-align: right;
+}
+
+.vehicle-table-building .table-actions {
+  justify-content: flex-end;
 }
 
 .staff-expense-workspace {
@@ -4374,8 +4438,10 @@ html[data-theme="dark"] .staff-maintenance-page .maintenance-card-meta {
 .month-filter-row,
 .building-filter-row,
 .equipment-filter-row {
-  align-items: end;
+  display: flex;
+  align-items: center;
   gap: var(--space-2);
+  width: 100%;
   margin-bottom: var(--space-3);
   border-color: var(--color-border-soft);
   border-radius: var(--radius-lg);
@@ -4385,10 +4451,10 @@ html[data-theme="dark"] .staff-maintenance-page .maintenance-card-meta {
 }
 
 .instant-filter-bar {
-  display: grid;
-  grid-template-columns: minmax(240px, 1fr) auto;
-  align-items: end;
+  display: flex;
+  align-items: center;
   gap: var(--space-2);
+  width: 100%;
   margin-bottom: var(--space-3);
 }
 
@@ -4403,7 +4469,8 @@ html[data-theme="dark"] .staff-maintenance-page .maintenance-card-meta {
 .account-search-control.instant-filter-bar,
 .invoice-search-tools.instant-filter-bar {
   display: flex;
-  grid-template-columns: none;
+  align-items: center;
+  width: 100%;
   margin-bottom: 0;
 }
 
@@ -4420,7 +4487,9 @@ html[data-theme="dark"] .staff-maintenance-page .maintenance-card-meta {
 
 .instant-search-control {
   position: relative;
-  min-width: 0;
+  flex: 1 1 auto;
+  min-width: 240px;
+  max-width: none;
 }
 
 .instant-search-icon {
@@ -4439,8 +4508,8 @@ html[data-theme="dark"] .staff-maintenance-page .maintenance-card-meta {
 
 .instant-search-control input {
   width: 100%;
-  height: 35px;
-  min-height: 35px;
+  height: 42px;
+  min-height: 42px;
   border-color: rgba(127, 154, 177, 0.34);
   border-radius: 12px;
   padding-top: 0;
@@ -4463,42 +4532,10 @@ html[data-theme="dark"] .staff-maintenance-page .maintenance-card-meta {
   outline: none;
 }
 
-.instant-search-suggestions {
-  position: absolute;
-  z-index: 40;
-  top: calc(100% + 6px);
-  right: 0;
-  left: 0;
-  max-height: 240px;
-  overflow-y: auto;
-  border: 1px solid var(--color-border-soft);
-  border-radius: var(--radius-md);
-  padding: 0.28rem;
-  background: var(--color-surface);
-  box-shadow: var(--shadow-md);
-}
-
-.instant-search-suggestions button {
-  display: block;
-  width: 100%;
-  min-height: 34px;
-  border: 0;
-  border-radius: var(--radius-sm);
-  padding: 0.44rem 0.62rem;
-  color: var(--color-text);
-  background: transparent;
-  text-align: left;
-  font-weight: var(--font-weight-medium);
-}
-
-.instant-search-suggestions button:hover {
-  color: var(--color-primary-dark);
-  background: rgba(45, 147, 152, 0.1);
-}
-
 .instant-clear-button {
-  height:35px;
-  min-height: 35px;
+  flex: 0 0 auto;
+  height: 42px;
+  min-height: 42px;
   display: inline-flex;
   align-items: center;
   justify-content: center;

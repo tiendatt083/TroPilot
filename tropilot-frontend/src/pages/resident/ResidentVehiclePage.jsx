@@ -91,12 +91,14 @@ export default function ResidentVehiclePage() {
     <div className="table-actions">
       {canRequestCancel(vehicle) ? (
         <button
-          className="secondary-button compact-button"
+          aria-label={t('common.cancel')}
+          className="icon-action-button icon-action-danger"
+          data-tooltip={t('common.cancel')}
           type="button"
           disabled={processingId === vehicle.id}
           onClick={() => handleRequestCancel(vehicle)}
         >
-          {t('common.cancel')}
+          <LineIcon name="close" />
         </button>
       ) : (
         <span className="muted-text">{t('vehicles.noAction')}</span>
@@ -105,13 +107,13 @@ export default function ResidentVehiclePage() {
   );
 
   return (
-    <section className="content-section">
+    <section className="content-section resident-vehicle-page">
       <ManagementPageHero
         actions={
           !showRequestForm && (
             <button className="button-link hero-action-button" type="button" onClick={() => setShowRequestForm(true)}>
               <LineIcon name="plus" />
-              {t('vehicles.requestTitle')}
+              {t('vehicles.registerButton')}
             </button>
           )
         }

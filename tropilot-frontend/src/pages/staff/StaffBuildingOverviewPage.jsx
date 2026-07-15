@@ -9,7 +9,7 @@ import * as expenseApi from '../../features/payments/expenseApi.js';
 import * as paymentApi from '../../features/payments/api.js';
 import * as utilityReadingApi from '../../features/invoices/utilityReadingApi.js';
 import LineIcon from '../../components/common/LineIcon.jsx';
-import { CHART_COLORS, ChartPanel, DonutChart, HorizontalBarChart } from '../../components/common/DashboardCharts.jsx';
+import { CHART_COLORS, ChartPanel, DonutChart } from '../../components/common/DashboardCharts.jsx';
 import { formatDisplayDate } from '../../utils/dateFormat.js';
 import { translateInterfaceText } from '../../utils/interfaceTranslations.js';
 import { formatNumber } from '../../utils/numberFormat.js';
@@ -103,6 +103,11 @@ function unwrapResponseData(response, fallback) {
   return response?.data ?? response ?? fallback;
 }
 
+function getCurrentMonthValue() {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+}
+
 function getUtilityPendingRooms(overview) {
   return toNumber(
     overview?.pendingRooms ??
@@ -149,7 +154,7 @@ function getExpenseTitle(item, language) {
 function KpiCard({ helper, icon, label, tone, value }) {
   return (
     <article className={`ops-kpi-card ops-kpi-${tone || 'primary'}`}>
-      <span>
+      <span className="ops-kpi-icon">
         <LineIcon name={icon} />
       </span>
       <div>
@@ -256,6 +261,7 @@ export default function StaffBuildingOverviewPage() {
   useEffect(() => {
     let active = true;
     const buildingFilter = { buildingId: building.id };
+    const utilityOverviewFilter = { ...buildingFilter, month: getCurrentMonthValue() };
 
     async function loadSummary() {
       setLoading(true);
@@ -277,7 +283,7 @@ export default function StaffBuildingOverviewPage() {
             maintenanceApi.getStaffMaintenanceRequests(buildingFilter),
             expenseApi.getStaffExpenses(buildingFilter),
             paymentApi.getPendingPayments(buildingFilter),
-            utilityReadingApi.getStaffUtilityReadingOverview(buildingFilter),
+            utilityReadingApi.getStaffUtilityReadingOverview(utilityOverviewFilter),
             taskApi.getStaffTasks()
           ]);
 
@@ -326,7 +332,7 @@ export default function StaffBuildingOverviewPage() {
     const roomsNeedingUtilityReading = getUtilityPendingRooms(summary.utilityOverview);
     const totalExpenseAmount = summary.expenses.reduce((total, expense) => total + toNumber(expense.amount), 0);
     const attentionCount =
-      openMaintenance + openTasks + overdueTasks + pendingExpenses + pendingPaymentConfirmations + roomsNeedingUtilityReading;
+      openMaintenance + overdueTasks + pendingExpenses + pendingPaymentConfirmations + roomsNeedingUtilityReading;
     const occupancyPercent = getPercent(occupiedRooms, summary.rooms.length);
 
     return {
@@ -351,27 +357,13 @@ export default function StaffBuildingOverviewPage() {
     return <div className="empty-state">{copy(language, 'Đang tải tổng quan tòa nhà...', 'Loading building overview...')}</div>;
   }
 
-  const kpis = [
+  const todayKpis = [
     {
-      icon: 'dashboard',
-      tone: 'primary',
-      label: copy(language, 'Tổng phòng', 'Total rooms'),
-      value: formatNumber(summary.rooms.length),
-      helper: copy(language, 'Số phòng trong tòa', 'Rooms in this building')
-    },
-    {
-      icon: 'home',
-      tone: 'success',
-      label: copy(language, 'Phòng đang thuê', 'Occupied rooms'),
-      value: formatNumber(dashboardData.occupiedRooms),
-      helper: `${formatNumber(dashboardData.occupancyPercent)}% ${copy(language, 'tỷ lệ thuê', 'occupancy')}`
-    },
-    {
-      icon: 'building',
+      icon: 'activity',
       tone: 'cyan',
-      label: copy(language, 'Phòng trống', 'Empty rooms'),
-      value: formatNumber(dashboardData.emptyRooms),
-      helper: copy(language, 'Có thể cho thuê', 'Ready to rent')
+      label: copy(language, 'Tỷ lệ thuê', 'Occupancy rate'),
+      value: `${formatNumber(dashboardData.occupancyPercent)}%`,
+      helper: copy(language, 'Tình trạng lấp đầy', 'Current occupancy')
     },
     {
       icon: 'car',
@@ -381,46 +373,11 @@ export default function StaffBuildingOverviewPage() {
       helper: copy(language, 'Xe đã đăng ký', 'Registered vehicles')
     },
     {
-      icon: 'tool',
-      tone: 'warning',
-      label: copy(language, 'Bảo trì đang mở', 'Open maintenance'),
-      value: formatNumber(dashboardData.openMaintenance),
-      helper: `${formatNumber(dashboardData.completedMaintenance)} ${copy(language, 'đã hoàn thành', 'completed')}`
-    },
-    {
-      icon: 'activity',
-      tone: 'danger',
-      label: copy(language, 'Công việc đang mở', 'Open tasks'),
-      value: formatNumber(dashboardData.openTasks),
-      helper: `${formatNumber(dashboardData.overdueTasks)} ${copy(language, 'quá hạn', 'overdue')}`
-    },
-    {
-      icon: 'activity',
-      tone: 'warning',
-      label: copy(language, 'Chỉ số cần ghi', 'Readings due'),
-      value: formatNumber(dashboardData.roomsNeedingUtilityReading),
-      helper: copy(language, 'Phòng chưa ghi tháng này', 'Rooms missing this month')
-    },
-    {
-      icon: 'wallet',
-      tone: 'cyan',
-      label: copy(language, 'Thanh toán cần kiểm tra', 'Payments to verify'),
-      value: formatNumber(dashboardData.pendingPaymentConfirmations),
-      helper: copy(language, 'Chờ xác nhận thanh toán', 'Waiting for confirmation')
-    },
-    {
       icon: 'wallet',
       tone: 'success',
       label: copy(language, 'Chi phí đã tạo', 'Created expenses'),
       value: formatMoney(dashboardData.totalExpenseAmount, language),
       helper: `${formatNumber(summary.expenses.length)} ${copy(language, 'bản ghi', 'records')}`
-    },
-    {
-      icon: 'fileText',
-      tone: 'warning',
-      label: copy(language, 'Chi phí chờ duyệt', 'Pending expenses'),
-      value: formatNumber(dashboardData.pendingExpenses),
-      helper: copy(language, 'Cần admin xử lý', 'Awaiting admin review')
     }
   ];
 
@@ -431,22 +388,41 @@ export default function StaffBuildingOverviewPage() {
   ];
 
   const workDistributionItems = [
-    { key: 'maintenance', label: copy(language, 'Bảo trì đang mở', 'Open maintenance'), value: dashboardData.openMaintenance, color: CHART_COLORS.warning },
-    { key: 'tasks', label: copy(language, 'Công việc đang mở', 'Open tasks'), value: dashboardData.openTasks, color: CHART_COLORS.info },
-    { key: 'readings', label: copy(language, 'Chỉ số cần ghi', 'Readings due'), value: dashboardData.roomsNeedingUtilityReading, color: CHART_COLORS.violet },
-    { key: 'payments', label: copy(language, 'Thanh toán cần kiểm tra', 'Payments to verify'), value: dashboardData.pendingPaymentConfirmations, color: CHART_COLORS.paid },
-    { key: 'expenses', label: copy(language, 'Chi phí chờ duyệt', 'Pending expenses'), value: dashboardData.pendingExpenses, color: CHART_COLORS.paid },
-    { key: 'overdue', label: copy(language, 'Công việc quá hạn', 'Overdue tasks'), value: dashboardData.overdueTasks, color: CHART_COLORS.unpaid }
-  ];
-
-  const workloadRows = [
-    { key: 'readings', label: copy(language, 'Chỉ số cần ghi', 'Readings due'), value: dashboardData.roomsNeedingUtilityReading },
-    { key: 'payments', label: copy(language, 'Thanh toán cần kiểm tra', 'Payments to verify'), value: dashboardData.pendingPaymentConfirmations },
-    { key: 'maintenance', label: copy(language, 'Bảo trì đang mở', 'Open maintenance'), value: dashboardData.openMaintenance },
-    { key: 'tasks', label: copy(language, 'Công việc đang mở', 'Open tasks'), value: dashboardData.openTasks },
-    { key: 'overdue', label: copy(language, 'Công việc quá hạn', 'Overdue tasks'), value: dashboardData.overdueTasks },
-    { key: 'expenses', label: copy(language, 'Chi phí chờ duyệt', 'Pending expenses'), value: dashboardData.pendingExpenses },
-    { key: 'vehicles', label: copy(language, 'Xe đang hoạt động', 'Active vehicles'), value: dashboardData.activeVehicles }
+    {
+      key: 'maintenance',
+      label: copy(language, 'Bảo trì đang mở', 'Open maintenance'),
+      value: dashboardData.openMaintenance,
+      color: CHART_COLORS.warning,
+      to: `/staff/buildings/${building.id}/maintenance`
+    },
+    {
+      key: 'readings',
+      label: copy(language, 'Chỉ số điện nước cần ghi', 'Readings due'),
+      value: dashboardData.roomsNeedingUtilityReading,
+      color: CHART_COLORS.violet,
+      to: `/staff/buildings/${building.id}/utility-readings`
+    },
+    {
+      key: 'payments',
+      label: copy(language, 'Thanh toán cần kiểm tra', 'Payments to verify'),
+      value: dashboardData.pendingPaymentConfirmations,
+      color: CHART_COLORS.paid,
+      to: '/staff/payments/pending'
+    },
+    {
+      key: 'expenses',
+      label: copy(language, 'Chi phí chờ duyệt', 'Pending expenses'),
+      value: dashboardData.pendingExpenses,
+      color: CHART_COLORS.cyan,
+      to: `/staff/buildings/${building.id}/expenses`
+    },
+    {
+      key: 'overdue',
+      label: copy(language, 'Công việc quá hạn', 'Overdue tasks'),
+      value: dashboardData.overdueTasks,
+      color: CHART_COLORS.unpaid,
+      to: `/staff/buildings/${building.id}/tasks`
+    }
   ];
 
   const recentMaintenance = sortRecent(summary.maintenanceRequests).slice(0, 4).map((item) => ({
@@ -489,31 +465,26 @@ export default function StaffBuildingOverviewPage() {
       {error && <div className="alert error-alert">{error}</div>}
 
       <div className="ops-dashboard-workspace">
-        <section className="ops-overview-panel">
-          <div className="ops-overview-title">
-            <div>
-              <span>{copy(language, 'Tổng quan', 'Overview')}</span>
-              <h2>{copy(language, 'Vận hành hôm nay', 'Today operations')}</h2>
+        <section className="ops-panel staff-building-today-panel">
+          <PanelTitle
+            icon="building"
+            subtitle={copy(language, 'Biểu đồ phòng và các chỉ số vận hành chính.', 'Room chart and key operation metrics.')}
+            title={copy(language, 'Vận hành hôm nay', 'Today operations')}
+          />
+          <div className="staff-building-today-layout">
+            <div className="staff-building-room-status-card">
+              <h3>{copy(language, 'Tình trạng phòng', 'Room status')}</h3>
+              <DonutChart center={formatNumber(summary.rooms.length)} items={roomStatusItems} locale={locale} />
             </div>
-            <strong>
-              {formatNumber(dashboardData.attentionCount)} {copy(language, 'mục cần theo dõi', 'items to follow')}
-            </strong>
-          </div>
-          <div className="ops-kpi-grid">
-            {kpis.map((item) => (
-              <KpiCard key={item.label} {...item} />
-            ))}
+            <div className="staff-building-today-kpis">
+              {todayKpis.map((item) => (
+                <KpiCard key={item.label} {...item} />
+              ))}
+            </div>
           </div>
         </section>
 
-        <div className="ops-chart-grid">
-          <DonutPanel
-            center={formatNumber(summary.rooms.length)}
-            icon="building"
-            items={roomStatusItems}
-            locale={locale}
-            title={copy(language, 'Tình trạng phòng', 'Room status')}
-          />
+        <div className="ops-chart-grid staff-building-action-grid">
           <DonutPanel
             center={formatNumber(dashboardData.attentionCount)}
             icon="activity"
@@ -521,20 +492,6 @@ export default function StaffBuildingOverviewPage() {
             locale={locale}
             title={copy(language, 'Phân bổ việc cần xử lý', 'Work distribution')}
           />
-        </div>
-
-        <div className="ops-chart-grid staff-building-detail-grid">
-          <ChartPanel
-            className="staff-building-horizontal-chart"
-            icon="barChart"
-            title={copy(language, 'Khối lượng vận hành', 'Operation workload')}
-          >
-            <HorizontalBarChart
-              emptyText={copy(language, 'Không có dữ liệu vận hành.', 'No operation data.')}
-              rows={workloadRows}
-              valueFormatter={(value) => formatNumber(value)}
-            />
-          </ChartPanel>
           <ProfilePanel building={building} language={language} occupancyPercent={dashboardData.occupancyPercent} />
         </div>
 

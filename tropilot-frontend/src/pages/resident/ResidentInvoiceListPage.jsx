@@ -37,7 +37,7 @@ export default function ResidentInvoiceListPage() {
   }, []);
 
   return (
-    <section className="content-section">
+    <section className="content-section resident-invoice-page">
       <ManagementPageHero
         description={t('resident.invoices.description')}
         title={t('resident.invoices.title')}
@@ -48,7 +48,7 @@ export default function ResidentInvoiceListPage() {
       {loading ? (
         <div className="empty-state">{t('resident.invoices.loading')}</div>
       ) : (
-        <InvoiceTable invoices={invoices} detailPathBase="/resident/invoices" />
+        <InvoiceTable invoices={invoices} detailPathBase="/resident/invoices" hideSubtext />
       )}
     </section>
   );

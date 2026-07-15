@@ -149,13 +149,13 @@ export default function ResidentMemberPage() {
       : 'new-member';
 
   return (
-    <section className="content-section">
+    <section className="content-section resident-member-page">
       <ManagementPageHero
         actions={
           !showForm && (
             <button className="button-link hero-action-button" type="button" onClick={handleOpenCreateForm}>
               <LineIcon name="plus" />
-              {t('resident.members.addTitle')}
+              {t('resident.members.addButton')}
             </button>
           )
         }
@@ -227,28 +227,34 @@ export default function ResidentMemberPage() {
                         <div className="table-actions">
                           {member.status === 'LEFT' ? (
                             <button
-                              className="secondary-button compact-button"
+                              aria-label={t('resident.members.addAgain')}
+                              className="icon-action-button"
+                              data-tooltip={t('resident.members.addAgain')}
                               type="button"
                               onClick={() => handleRequestAgain(member)}
                             >
-                              {t('resident.members.addAgain')}
+                              <LineIcon name="refresh" />
                             </button>
                           ) : (
                             <>
                               <button
-                                className="secondary-button compact-button"
+                                aria-label={t('common.edit')}
+                                className="icon-action-button"
+                                data-tooltip={t('common.edit')}
                                 type="button"
                                 onClick={() => handleEdit(member)}
                               >
-                                {t('common.edit')}
+                                <LineIcon name="edit" />
                               </button>
                               <button
-                                className="secondary-button compact-button"
+                                aria-label={t('resident.members.leave')}
+                                className="icon-action-button icon-action-danger"
+                                data-tooltip={t('resident.members.leave')}
                                 type="button"
                                 disabled={leavingId === member.id}
                                 onClick={() => handleLeave(member)}
                               >
-                                {t('resident.members.leave')}
+                                <LineIcon name="close" />
                               </button>
                             </>
                           )}
