@@ -269,8 +269,7 @@ export default function ResidentDashboardPage() {
     ? [
         { label: t('dashboard.resident.metrics.approvedMembers'), value: formatNumber(dashboard.approvedMemberCount), tone: 'success' },
         { label: t('dashboard.resident.metrics.activeVehicles'), value: formatNumber(activeVehicles.length), tone: 'primary' },
-        { label: t('dashboard.resident.metrics.unreadNotifications'), value: formatNumber(dashboard.unreadNotifications), tone: 'warning' },
-        { label: t('dashboard.resident.metrics.recentMaintenanceRequests'), value: formatNumber(recentMaintenanceRequests.length), tone: 'primary' }
+        { label: t('dashboard.resident.metrics.recentMaintenanceRequests'), value: formatNumber(recentMaintenanceRequests.length), tone: 'violet' }
       ]
     : [];
 

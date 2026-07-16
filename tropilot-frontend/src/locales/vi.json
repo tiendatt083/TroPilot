@@ -1301,7 +1301,7 @@
         "maintenance": "Bảo trì",
         "expenses": "Chi phí",
         "taskHelper": "Xem danh sách công việc",
-        "utilityHelper": "Ghi điện nước theo phòng",
+        "utilityHelper": "Chọn tòa nhà để ghi chỉ số",
         "paymentHelper": "Kiểm tra xác nhận thanh toán",
         "maintenanceHelper": "Theo dõi yêu cầu bảo trì",
         "expenseHelper": "Xem chi phí đã tạo"
@@ -1312,7 +1312,7 @@
       "eyebrow": "Chủ hộ",
       "loading": "Đang tải bảng điều khiển...",
       "loadError": "Không thể tải bảng điều khiển chủ hộ",
-      "heroDescription": "Tổng quan trạng thái phòng, hợp đồng, hóa đơn, xe và bảo trì của phòng được phân.",
+      "heroDescription": "Tổng quan phòng đang thuê",
       "metrics": {
         "approvedMembers": "Thành viên đã duyệt",
         "activeVehicles": "Xe đang hoạt động",

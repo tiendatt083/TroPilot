@@ -2,9 +2,15 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import * as dashboardApi from '../../features/buildings/dashboardApi.js';
+import * as taskApi from '../../features/maintenance/taskApi.js';
+import * as expenseApi from '../../features/payments/expenseApi.js';
 import LineIcon from '../../components/common/LineIcon.jsx';
 import { CHART_COLORS, ChartPanel, DonutChart } from '../../components/common/DashboardCharts.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
+import { getExpenseStatusClass } from '../../utils/expenseOptions.js';
+import { formatDateTime, formatEnumLabel } from '../../utils/i18nFormat.js';
+import { formatRoomCode, formatRoomLabel } from '../../utils/roomDisplay.js';
+import { getTaskStatusClass } from '../../utils/taskOptions.js';
 
 function formatNumber(value) {
   const numberValue = Number(value ?? 0);
@@ -18,9 +24,40 @@ function toNumber(value) {
   return Number.isFinite(numberValue) ? numberValue : 0;
 }
 
+function getRecentDateValue(item) {
+  return item?.createdAt || item?.updatedAt || item?.deadline || item?.dueDate || '';
+}
+
+function sortRecent(items) {
+  return [...items].sort((left, right) => new Date(getRecentDateValue(right)) - new Date(getRecentDateValue(left)));
+}
+
+function formatMoney(value, locale) {
+  const numberValue = Number(value ?? 0);
+  return Number.isFinite(numberValue)
+    ? `${numberValue.toLocaleString(locale, { maximumFractionDigits: 0 })} đ`
+    : value;
+}
+
+function taskRoomText(task, t) {
+  if (!task.roomCode) {
+    return task.buildingId || task.buildingCode
+      ? t('forms.task.generalBuildingTask')
+      : t('forms.task.noRoomLinked');
+  }
+
+  return formatRoomLabel(task);
+}
+
+function expenseRoomText(expense, t) {
+  return expense.roomCode ? formatRoomCode(expense) : t('common.notLinked');
+}
+
 export default function StaffDashboardPage() {
   const { t, i18n } = useTranslation();
   const [dashboard, setDashboard] = useState(null);
+  const [recentTasks, setRecentTasks] = useState([]);
+  const [recentExpenses, setRecentExpenses] = useState([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const locale = String(i18n.resolvedLanguage || i18n.language).startsWith('en') ? 'en-US' : 'vi-VN';
@@ -28,11 +65,16 @@ export default function StaffDashboardPage() {
   useEffect(() => {
     let active = true;
 
-    dashboardApi
-      .getStaffDashboard()
-      .then((response) => {
+    Promise.all([
+      dashboardApi.getStaffDashboard(),
+      taskApi.getStaffTasks(),
+      expenseApi.getStaffExpenses()
+    ])
+      .then(([dashboardResponse, tasksResponse, expensesResponse]) => {
         if (active) {
-          setDashboard(response.data);
+          setDashboard(dashboardResponse.data);
+          setRecentTasks(sortRecent(tasksResponse.data || []).slice(0, 5));
+          setRecentExpenses(sortRecent(expensesResponse.data || []).slice(0, 5));
         }
       })
       .catch((apiError) => {
@@ -110,15 +152,7 @@ export default function StaffDashboardPage() {
           label: t('dashboard.staff.metrics.utilityReadingsDue'),
           value: formatNumber(dashboard.roomsNeedingUtilityReading),
           helper: t('dashboard.staff.quick.utilityHelper'),
-          to: '/staff/utility-readings',
-          tone: 'warning'
-        },
-        {
-          icon: 'wallet',
-          label: t('dashboard.staff.metrics.paymentChecks'),
-          value: formatNumber(dashboard.pendingPaymentConfirmations),
-          helper: t('dashboard.staff.quick.paymentHelper'),
-          to: '/staff/payments/pending',
+          to: '/staff/buildings',
           tone: 'warning'
         },
         {
@@ -192,6 +226,90 @@ export default function StaffDashboardPage() {
                     <DonutChart center={chart.value} items={chart.items} locale={locale} />
                   </ChartPanel>
                 ))}
+              </div>
+            </section>
+          </div>
+
+          <div className="staff-dashboard-table-grid">
+            <section className="staff-dashboard-table-panel">
+              <div className="staff-dashboard-table-title">
+                <span>
+                  <LineIcon name="checkShield" />
+                </span>
+                <h2>Công việc gần đây</h2>
+              </div>
+              <div className="staff-dashboard-table-wrap">
+                <table className="staff-dashboard-compact-table">
+                  <thead>
+                    <tr>
+                      <th>Công việc</th>
+                      <th>Phòng</th>
+                      <th>Hạn</th>
+                      <th>Trạng thái</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {recentTasks.map((task) => (
+                      <tr key={task.id}>
+                        <td>
+                          <div className="staff-dashboard-table-primary">
+                            <Link to={`/staff/tasks/${task.id}`}>{task.title}</Link>
+                            <span>{formatEnumLabel(t, 'taskType', task.taskType)}</span>
+                          </div>
+                        </td>
+                        <td>{taskRoomText(task, t)}</td>
+                        <td>{formatDateTime(task.deadline, t)}</td>
+                        <td>
+                          <span className={getTaskStatusClass(task.status)}>
+                            {formatEnumLabel(t, 'taskStatus', task.status)}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {!recentTasks.length && <div className="empty-state flat-empty-state">Chưa có công việc.</div>}
+              </div>
+            </section>
+
+            <section className="staff-dashboard-table-panel">
+              <div className="staff-dashboard-table-title">
+                <span>
+                  <LineIcon name="wallet" />
+                </span>
+                <h2>Chi phí đã tạo gần đây</h2>
+              </div>
+              <div className="staff-dashboard-table-wrap">
+                <table className="staff-dashboard-compact-table">
+                  <thead>
+                    <tr>
+                      <th>Chi phí</th>
+                      <th>Phòng</th>
+                      <th>Số tiền</th>
+                      <th>Trạng thái</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {recentExpenses.map((expense) => (
+                      <tr key={expense.id}>
+                        <td>
+                          <div className="staff-dashboard-table-primary">
+                            <strong>{expense.expenseCode || expense.content || 'Chi phí'}</strong>
+                            <span>{formatEnumLabel(t, 'expenseType', expense.expenseType)}</span>
+                          </div>
+                        </td>
+                        <td>{expenseRoomText(expense, t)}</td>
+                        <td>{formatMoney(expense.amount, locale)}</td>
+                        <td>
+                          <span className={getExpenseStatusClass(expense.status)}>
+                            {formatEnumLabel(t, 'expenseStatus', expense.status)}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {!recentExpenses.length && <div className="empty-state flat-empty-state">Chưa có chi phí.</div>}
               </div>
             </section>
           </div>

@@ -23,10 +23,11 @@ export default function BuildingWorkspaceLayout({
   const [deleting, setDeleting] = useState(false);
   const [openGroupId, setOpenGroupId] = useState(null);
   const buildingPath = `${basePath}/${id}`;
+  const isStaffWorkspace = basePath.startsWith('/staff');
   const shellClasses = [
     'content-section',
     'building-workspace-shell',
-    basePath.startsWith('/admin') ? 'admin-building-workspace-shell' : 'staff-building-workspace-shell'
+    isStaffWorkspace ? 'staff-building-workspace-shell' : 'admin-building-workspace-shell'
   ].join(' ');
   const navigationGroups = useMemo(() => normalizeNavigationGroups(tabs), [tabs]);
   const activeGroupId = useMemo(
@@ -110,12 +111,18 @@ export default function BuildingWorkspaceLayout({
     return <div className="empty-state">{error || t('buildingWorkspace.notFound')}</div>;
   }
 
+  const staffHeroMeta = `${building.address || t('common.notProvided', { defaultValue: 'Chưa cung cấp' })} - ${building.floors || 0} tầng`;
+
   return (
     <section className={shellClasses}>
       <div className="building-workspace-sticky-header">
         <div className="page-title-row">
-          <PageHeader eyebrow={t(eyebrowKey)} title={`${building.buildingCode} - ${building.name}`} />
+          <PageHeader
+            eyebrow={t(eyebrowKey)}
+            title={`${building.buildingCode} - ${building.name}`}
+          />
           <div className="button-row">
+            {isStaffWorkspace && <span className="building-workspace-hero-plain-meta">{staffHeroMeta}</span>}
             <Link className="secondary-link" to={listPath}>
               {t('buildingWorkspace.allBuildings')}
             </Link>

@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import * as roomApi from '../../features/rooms/api.js';
 import useRoomRouteContext from '../../features/rooms/useRoomRouteContext.js';
-import PageHeader from '../../components/PageHeader.jsx';
 import { formatRoomCode } from '../../utils/roomDisplay.js';
 import { formatEnumLabel } from '../../utils/i18nFormat.js';
 
@@ -60,9 +59,12 @@ export default function StaffRoomDetailPage() {
   }
 
   return (
-    <section className="content-section">
-      <div className="page-title-row">
-        <PageHeader eyebrow={formatRoomCode(room)} title={room.roomName} />
+    <section className="content-section staff-room-detail-page">
+      <div className="staff-room-detail-toolbar">
+        <div>
+          <span className="staff-room-detail-code">{formatRoomCode(room)}</span>
+          <h2>{room.roomName}</h2>
+        </div>
         <Link className="secondary-link" to={roomBasePath}>
           {t('roomManagement.backToRooms')}
         </Link>
@@ -70,34 +72,34 @@ export default function StaffRoomDetailPage() {
 
       {error && <div className="alert error-alert">{error}</div>}
 
-      <div className="detail-panel">
+      <div className="detail-panel staff-room-detail-panel">
         <div>
           <span>{t('tables.common.building')}</span>
-          <strong>
+          <span className="staff-room-detail-value">
             {room.buildingCode} - {room.buildingName}
-          </strong>
+          </span>
         </div>
         <div>
           <span>{t('tables.common.status')}</span>
-          <strong>
+          <span className="staff-room-detail-value">
             <span className={statusClass(room.status)}>{formatEnumLabel(t, 'roomStatus', room.status)}</span>
-          </strong>
+          </span>
         </div>
         <div>
           <span>{t('tables.common.floor')}</span>
-          <strong>{room.floor}</strong>
+          <span className="staff-room-detail-value">{room.floor}</span>
         </div>
         <div>
           <span>{t('roomManagement.maximumOccupants')}</span>
-          <strong>{room.maxOccupants}</strong>
+          <span className="staff-room-detail-value">{room.maxOccupants}</span>
         </div>
         <div>
           <span>{t('tables.common.price')}</span>
-          <strong>{formatNumber(room.price)}</strong>
+          <span className="staff-room-detail-value">{formatNumber(room.price)}</span>
         </div>
         <div>
           <span>{t('tables.common.area')}</span>
-          <strong>{formatNumber(room.area)}</strong>
+          <span className="staff-room-detail-value">{formatNumber(room.area)}</span>
         </div>
         <div className="detail-wide">
           <span>{t('tables.common.description')}</span>

@@ -1301,7 +1301,7 @@
         "maintenance": "Maintenance",
         "expenses": "Expenses",
         "taskHelper": "Open the task list",
-        "utilityHelper": "Record utility readings by room",
+        "utilityHelper": "Choose a building to record readings",
         "paymentHelper": "Review payment confirmations",
         "maintenanceHelper": "Track maintenance requests",
         "expenseHelper": "Open created expenses"
@@ -1312,7 +1312,7 @@
       "eyebrow": "Head Resident",
       "loading": "Loading dashboard...",
       "loadError": "Resident dashboard could not be loaded",
-      "heroDescription": "Room status, contract, invoice, vehicle, and maintenance overview for your assigned room.",
+      "heroDescription": "Overview of the rented room.",
       "metrics": {
         "approvedMembers": "Approved members",
         "activeVehicles": "Active vehicles",

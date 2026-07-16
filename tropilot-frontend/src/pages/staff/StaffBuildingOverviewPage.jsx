@@ -6,7 +6,6 @@ import * as taskApi from '../../features/maintenance/taskApi.js';
 import * as vehicleApi from '../../features/residents/vehicleApi.js';
 import * as roomApi from '../../features/rooms/api.js';
 import * as expenseApi from '../../features/payments/expenseApi.js';
-import * as paymentApi from '../../features/payments/api.js';
 import * as utilityReadingApi from '../../features/invoices/utilityReadingApi.js';
 import LineIcon from '../../components/common/LineIcon.jsx';
 import { CHART_COLORS, ChartPanel, DonutChart } from '../../components/common/DashboardCharts.jsx';
@@ -19,7 +18,6 @@ const emptySummary = {
   vehicles: [],
   maintenanceRequests: [],
   expenses: [],
-  pendingPayments: [],
   utilityOverview: null,
   tasks: []
 };
@@ -190,38 +188,6 @@ function DonutPanel({ center, icon, items, locale, title }) {
   );
 }
 
-function ProfilePanel({ building, language, occupancyPercent }) {
-  const buildingName = building.name || building.address || building.buildingCode;
-  const description = building.description || copy(language, 'Chưa có mô tả.', 'No description yet.');
-
-  return (
-    <section className="ops-panel staff-building-profile-panel">
-      <PanelTitle icon="building" title={copy(language, 'Hồ sơ tòa nhà', 'Building profile')} />
-      <div className="staff-building-profile-body">
-        <div className="staff-building-profile-copy">
-          <span>{building.buildingCode}</span>
-          <strong>{buildingName}</strong>
-          <p>{description}</p>
-        </div>
-        <div className="staff-building-profile-facts">
-          <div>
-            <span>{copy(language, 'Địa chỉ', 'Address')}</span>
-            <strong>{building.address || copy(language, 'Chưa cung cấp', 'Not provided')}</strong>
-          </div>
-          <div>
-            <span>{copy(language, 'Số tầng', 'Floors')}</span>
-            <strong>{formatNumber(building.floors || 0)}</strong>
-          </div>
-          <div>
-            <span>{copy(language, 'Tỷ lệ thuê', 'Occupancy')}</span>
-            <strong>{formatNumber(occupancyPercent)}%</strong>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
 function RecentListPanel({ emptyText, icon, language, rows, title }) {
   return (
     <section className="ops-panel staff-building-recent-panel">
@@ -241,6 +207,47 @@ function RecentListPanel({ emptyText, icon, language, rows, title }) {
               <span className={getStatusClass(row.status)}>{getStatusLabel(row.status, language)}</span>
             </article>
           ))}
+        </div>
+      ) : (
+        <div className="empty-state flat-empty-state staff-building-empty-panel">{emptyText}</div>
+      )}
+    </section>
+  );
+}
+
+function ExpenseTablePanel({ emptyText, icon, language, rows, title }) {
+  return (
+    <section className="ops-panel staff-building-expense-panel">
+      <PanelTitle icon={icon} title={title} />
+      {rows.length ? (
+        <div className="staff-building-expense-table-wrap">
+          <table className="staff-building-expense-table">
+            <thead>
+              <tr>
+                <th>{copy(language, 'Chi phí', 'Expense')}</th>
+                <th>{copy(language, 'Phòng', 'Room')}</th>
+                <th>{copy(language, 'Số tiền', 'Amount')}</th>
+                <th>{copy(language, 'Trạng thái', 'Status')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row) => (
+                <tr key={row.key}>
+                  <td>
+                    <div className="staff-building-expense-name">
+                      <strong>{row.title}</strong>
+                      <span>{row.category}</span>
+                    </div>
+                  </td>
+                  <td>{row.room}</td>
+                  <td>{row.amount}</td>
+                  <td>
+                    <span className={getStatusClass(row.status)}>{getStatusLabel(row.status, language)}</span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       ) : (
         <div className="empty-state flat-empty-state staff-building-empty-panel">{emptyText}</div>
@@ -273,7 +280,6 @@ export default function StaffBuildingOverviewPage() {
           vehiclesResponse,
           maintenanceResponse,
           expensesResponse,
-          pendingPaymentsResponse,
           utilityOverviewResponse,
           tasksResponse
         ] =
@@ -282,7 +288,6 @@ export default function StaffBuildingOverviewPage() {
             vehicleApi.getStaffVehicles(buildingFilter),
             maintenanceApi.getStaffMaintenanceRequests(buildingFilter),
             expenseApi.getStaffExpenses(buildingFilter),
-            paymentApi.getPendingPayments(buildingFilter),
             utilityReadingApi.getStaffUtilityReadingOverview(utilityOverviewFilter),
             taskApi.getStaffTasks()
           ]);
@@ -296,7 +301,6 @@ export default function StaffBuildingOverviewPage() {
           vehicles: vehiclesResponse.data || [],
           maintenanceRequests: maintenanceResponse.data || [],
           expenses: expensesResponse.data || [],
-          pendingPayments: unwrapResponseData(pendingPaymentsResponse, []),
           utilityOverview: unwrapResponseData(utilityOverviewResponse, null),
           tasks: (tasksResponse.data || []).filter((task) => matchesBuilding(task, building))
         });
@@ -328,11 +332,9 @@ export default function StaffBuildingOverviewPage() {
     const openTasks = countByStatus(summary.tasks, ['NEW', 'IN_PROGRESS', 'OVERDUE']);
     const overdueTasks = countByStatus(summary.tasks, ['OVERDUE']);
     const pendingExpenses = countByStatus(summary.expenses, ['PENDING']);
-    const pendingPaymentConfirmations = summary.pendingPayments.length;
     const roomsNeedingUtilityReading = getUtilityPendingRooms(summary.utilityOverview);
     const totalExpenseAmount = summary.expenses.reduce((total, expense) => total + toNumber(expense.amount), 0);
-    const attentionCount =
-      openMaintenance + overdueTasks + pendingExpenses + pendingPaymentConfirmations + roomsNeedingUtilityReading;
+    const attentionCount = openMaintenance + overdueTasks + pendingExpenses + roomsNeedingUtilityReading;
     const occupancyPercent = getPercent(occupiedRooms, summary.rooms.length);
 
     return {
@@ -347,7 +349,6 @@ export default function StaffBuildingOverviewPage() {
       openTasks,
       overdueTasks,
       pendingExpenses,
-      pendingPaymentConfirmations,
       roomsNeedingUtilityReading,
       totalExpenseAmount
     };
@@ -403,13 +404,6 @@ export default function StaffBuildingOverviewPage() {
       to: `/staff/buildings/${building.id}/utility-readings`
     },
     {
-      key: 'payments',
-      label: copy(language, 'Thanh toán cần kiểm tra', 'Payments to verify'),
-      value: dashboardData.pendingPaymentConfirmations,
-      color: CHART_COLORS.paid,
-      to: '/staff/payments/pending'
-    },
-    {
       key: 'expenses',
       label: copy(language, 'Chi phí chờ duyệt', 'Pending expenses'),
       value: dashboardData.pendingExpenses,
@@ -452,12 +446,10 @@ export default function StaffBuildingOverviewPage() {
   const recentExpenses = sortRecent(summary.expenses).slice(0, 4).map((item) => ({
     key: `expense-${item.id || item.expenseCode || item.code}`,
     title: getExpenseTitle(item, language),
+    category: item.category || item.type || copy(language, 'Chi phí', 'Expense'),
+    room: getRoomCode(item, copy(language, 'Việc chung tòa nhà', 'Building-wide')),
+    amount: formatMoney(item.amount, language),
     status: item.status,
-    meta: [
-      getRoomCode(item, copy(language, 'Việc chung tòa nhà', 'Building-wide')),
-      item.category || item.type || copy(language, 'Chi phí', 'Expense'),
-      formatMoney(item.amount, language)
-    ]
   }));
 
   return (
@@ -492,7 +484,13 @@ export default function StaffBuildingOverviewPage() {
             locale={locale}
             title={copy(language, 'Phân bổ việc cần xử lý', 'Work distribution')}
           />
-          <ProfilePanel building={building} language={language} occupancyPercent={dashboardData.occupancyPercent} />
+          <RecentListPanel
+            emptyText={copy(language, 'Chưa có công việc.', 'No tasks yet.')}
+            icon="checkShield"
+            language={language}
+            rows={recentTasks}
+            title={copy(language, 'Công việc gần đây', 'Recent tasks')}
+          />
         </div>
 
         <div className="ops-recent-grid staff-building-recent-grid">
@@ -503,17 +501,7 @@ export default function StaffBuildingOverviewPage() {
             rows={recentMaintenance}
             title={copy(language, 'Bảo trì gần đây', 'Recent maintenance')}
           />
-          <RecentListPanel
-            emptyText={copy(language, 'Chưa có công việc.', 'No tasks yet.')}
-            icon="checkShield"
-            language={language}
-            rows={recentTasks}
-            title={copy(language, 'Công việc gần đây', 'Recent tasks')}
-          />
-        </div>
-
-        <div className="ops-recent-grid ops-recent-grid-single">
-          <RecentListPanel
+          <ExpenseTablePanel
             emptyText={copy(language, 'Chưa có chi phí.', 'No expenses yet.')}
             icon="wallet"
             language={language}
