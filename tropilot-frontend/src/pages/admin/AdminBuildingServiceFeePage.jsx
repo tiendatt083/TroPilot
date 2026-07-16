@@ -3,9 +3,11 @@ import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
 import * as serviceFeeApi from '../../features/invoices/serviceFeeApi.js';
 import ActionDialog from '../../components/common/ActionDialog.jsx';
+import FilterBar from '../../components/common/FilterBar.jsx';
 import LineIcon from '../../components/common/LineIcon.jsx';
 import ServiceFeeTable from '../../components/ServiceFeeTable.jsx';
 import { isServiceFeeActive } from '../../utils/serviceFeeOptions.js';
+import { normalizeSearchText } from '../../utils/searchText.js';
 
 const utilityFeeConfigs = [
   {
@@ -40,6 +42,42 @@ const emptyAdditionalForm = {
   calculationType: 'FIXED'
 };
 
+const emptyFilters = {
+  search: '',
+  status: ''
+};
+
+function getServiceFeeRowStatus(serviceFeeRow) {
+  if (!serviceFeeRow.serviceFee) {
+    return 'NOT_CONFIGURED';
+  }
+
+  return isServiceFeeActive(serviceFeeRow.serviceFee) ? 'ACTIVE' : 'INACTIVE';
+}
+
+function serviceFeeRowMatchesSearch(serviceFeeRow, searchValue, t) {
+  if (!searchValue) {
+    return true;
+  }
+
+  const status = getServiceFeeRowStatus(serviceFeeRow);
+  const searchableValues = [
+    serviceFeeRow.name,
+    serviceFeeRow.serviceFee?.name,
+    serviceFeeRow.serviceFee?.feeType,
+    serviceFeeRow.serviceFee?.calculationType,
+    serviceFeeRow.calculationType,
+    serviceFeeRow.unitPrice,
+    status === 'NOT_CONFIGURED'
+      ? t('buildingServiceFees.notConfigured')
+      : status === 'ACTIVE'
+        ? t('common.active')
+        : t('common.inactive')
+  ];
+
+  return searchableValues.some((value) => normalizeSearchText(value).includes(searchValue));
+}
+
 function findPreferredFeeByType(serviceFees, feeType) {
   const matchingFees = serviceFees.filter((serviceFee) => serviceFee.feeType === feeType);
   return matchingFees.find(isServiceFeeActive) || matchingFees[0] || null;
@@ -59,6 +97,7 @@ export default function AdminBuildingServiceFeePage() {
   const [loading, setLoading] = useState(true);
   const [savingServiceFees, setSavingServiceFees] = useState(false);
   const [processingId, setProcessingId] = useState(null);
+  const [filters, setFilters] = useState(emptyFilters);
 
   const utilityFees = useMemo(
     () => ({
@@ -105,6 +144,14 @@ export default function AdminBuildingServiceFeePage() {
 
     return [...utilityRows, ...otherRows];
   }, [additionalFees, t, utilityFees]);
+  const filteredServiceFeeRows = useMemo(() => {
+    const searchValue = normalizeSearchText(filters.search);
+
+    return serviceFeeRows.filter((serviceFeeRow) => (
+      serviceFeeRowMatchesSearch(serviceFeeRow, searchValue, t)
+      && (!filters.status || getServiceFeeRowStatus(serviceFeeRow) === filters.status)
+    ));
+  }, [filters, serviceFeeRows, t]);
 
   const formCalculationTypes = editingUtilityConfig ? utilityCalculationTypes : additionalCalculationTypes;
 
@@ -269,6 +316,10 @@ export default function AdminBuildingServiceFeePage() {
     setServiceFormOpen(true);
   };
 
+  const handleClearFilters = () => {
+    setFilters(emptyFilters);
+  };
+
   const handleToggle = async (serviceFee) => {
     setProcessingId(serviceFee.id);
     setMessage('');
@@ -375,12 +426,36 @@ export default function AdminBuildingServiceFeePage() {
         <div className="empty-state">{t('buildingServiceFees.loading')}</div>
       ) : (
         <section className="building-service-fee-page">
+          <FilterBar
+            as="div"
+            className="workspace-filter-row"
+            searchAriaLabel={t('workspace.filters.searchAria')}
+            searchPlaceholder={t('workspace.filters.searchPlaceholder')}
+            searchValue={filters.search}
+            filters={[
+              {
+                name: 'status',
+                value: filters.status,
+                ariaLabel: t('workspace.filters.statusAria'),
+                onChange: (value) => setFilters((current) => ({ ...current, status: value })),
+                options: [
+                  { value: '', label: t('workspace.filters.allStatuses') },
+                  { value: 'ACTIVE', label: t('common.active') },
+                  { value: 'INACTIVE', label: t('common.inactive') },
+                  { value: 'NOT_CONFIGURED', label: t('buildingServiceFees.notConfigured') }
+                ]
+              }
+            ]}
+            clearLabel={t('common.clear')}
+            onClear={handleClearFilters}
+            onSearchChange={(value) => setFilters((current) => ({ ...current, search: value }))}
+          />
           <div className="settings-card additional-service-card">
             <div className="additional-service-layout additional-service-list-only">
               <ServiceFeeTable
                 className="building-service-fee-list"
                 variant="table"
-                serviceFees={serviceFeeRows}
+                serviceFees={filteredServiceFeeRows}
                 showFeeType={false}
                 nameLabel={t('buildingServiceFees.additional.name')}
                 priceLabel={t('buildingServiceFees.priceColumn')}

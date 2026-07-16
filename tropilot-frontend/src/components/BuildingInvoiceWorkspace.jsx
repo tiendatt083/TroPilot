@@ -382,7 +382,6 @@ export default function BuildingInvoiceWorkspace({ role = 'admin' }) {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [loadingDetailId, setLoadingDetailId] = useState(null);
 
@@ -503,12 +502,6 @@ export default function BuildingInvoiceWorkspace({ role = 'admin' }) {
     setSinglePreview(null);
     setSinglePreviewKey('');
     setBulkPreview(null);
-  };
-
-  const handleRefresh = async () => {
-    setRefreshing(true);
-    await loadData();
-    setRefreshing(false);
   };
 
   const handleClearInvoiceFilters = () => {
@@ -893,23 +886,6 @@ export default function BuildingInvoiceWorkspace({ role = 'admin' }) {
       ) : (
         <section className="invoice-record-section">
           <div className="invoice-filter-panel">
-            <div className="invoice-status-filter">
-              <label htmlFor="invoiceStatusFilter">{t('buildingInvoices.filters.statusLabel')}</label>
-              <select
-                id="invoiceStatusFilter"
-                value={statusFilter}
-                onChange={(event) => setStatusFilter(event.target.value)}
-              >
-                {INVOICE_STATUS_FILTERS.map((status) => (
-                  <option key={status} value={status}>
-                    {status === 'ALL'
-                      ? t('buildingInvoices.filters.allStatuses')
-                      : formatEnumLabel(t, 'invoiceStatus', status)}
-                  </option>
-                ))}
-              </select>
-            </div>
-
             <FilterBar
               as="div"
               className="invoice-search-tools"
@@ -926,6 +902,22 @@ export default function BuildingInvoiceWorkspace({ role = 'admin' }) {
               suggestionItems={invoices}
               actions={(
                 <>
+                  <div className="invoice-status-filter">
+                    <select
+                      id="invoiceStatusFilter"
+                      aria-label={t('buildingInvoices.filters.statusLabel')}
+                      value={statusFilter}
+                      onChange={(event) => setStatusFilter(event.target.value)}
+                    >
+                      {INVOICE_STATUS_FILTERS.map((status) => (
+                        <option key={status} value={status}>
+                          {status === 'ALL'
+                            ? t('buildingInvoices.filters.allStatuses')
+                            : formatEnumLabel(t, 'invoiceStatus', status)}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                   <button
                     className="secondary-button inline-button invoice-sort-button"
                     type="button"
@@ -933,15 +925,6 @@ export default function BuildingInvoiceWorkspace({ role = 'admin' }) {
                   >
                     {sortDirection === 'desc' ? <ArrowDownIcon /> : <ArrowUpIcon />}
                     {sortDirection === 'desc' ? t('buildingInvoices.filters.newest') : t('buildingInvoices.filters.oldest')}
-                  </button>
-                  <button
-                    aria-label={t('buildingInvoices.actions.refresh')}
-                    className="secondary-button inline-button invoice-refresh-button"
-                    type="button"
-                    disabled={refreshing}
-                    onClick={handleRefresh}
-                  >
-                    <RefreshIcon />
                   </button>
                 </>
               )}
@@ -1011,17 +994,6 @@ function ArrowUpIcon() {
     <svg aria-hidden="true" viewBox="0 0 24 24">
       <path d="M12 19V5" />
       <path d="m7 10 5-5 5 5" />
-    </svg>
-  );
-}
-
-function RefreshIcon() {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24">
-      <path d="M21 12a9 9 0 0 1-15.2 6.5" />
-      <path d="M3 12A9 9 0 0 1 18.2 5.5" />
-      <path d="M18 2v4h-4" />
-      <path d="M6 22v-4h4" />
     </svg>
   );
 }

@@ -132,7 +132,7 @@ export default function BuildingWorkspaceLayout({
               </Link>
             )}
             {actions.canCreateRoom && (
-              <Link className="button-link" to={`/admin/rooms/create?buildingId=${building.id}`}>
+              <Link className="button-link" to={`${buildingPath}/rooms/create`}>
                 {t('buildingWorkspace.createRoom')}
               </Link>
             )}

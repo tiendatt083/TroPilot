@@ -126,9 +126,9 @@
     "description": "Sử dụng các thông tin dưới đây để liên hệ với đơn vị quản lý",
     "summaryTitle": "Thông tin đơn vị quản lý",
     "editTitle": "Chỉnh sửa thông tin liên hệ",
-      "phoneListTitle": "Số điện thoại",
-      "phoneEditorTitle": "Danh sách số liên hệ",
-      "workingHoursRange": "{{start}} đến {{end}}",
+    "phoneListTitle": "Số điện thoại",
+    "phoneEditorTitle": "Danh sách số liên hệ",
+    "workingHoursRange": "{{start}} đến {{end}}",
     "passwordHelp": "Nhập mật khẩu hiện tại để xác nhận thay đổi thông tin liên hệ của hệ thống.",
     "sections": {
       "details": "Thông tin liên hệ",
@@ -137,10 +137,10 @@
     },
     "fields": {
       "email": "Email liên hệ",
-        "officeAddress": "Địa chỉ văn phòng",
-        "workingHours": "Thời gian làm việc",
-        "workingStartTime": "Giờ bắt đầu làm việc",
-        "workingEndTime": "Giờ kết thúc làm việc",
+      "officeAddress": "Địa chỉ văn phòng",
+      "workingHours": "Thời gian làm việc",
+      "workingStartTime": "Giờ bắt đầu làm việc",
+      "workingEndTime": "Giờ kết thúc làm việc",
       "phoneName": "Tên hiển thị",
       "phoneNumber": "Số điện thoại",
       "currentPassword": "Mật khẩu hiện tại"
@@ -149,15 +149,15 @@
       "addPhone": "Thêm số điện thoại",
       "removePhone": "Xóa",
       "removePhoneNamed": "Xóa số điện thoại {{name}}",
-      "save": "Lưu thông tin liên hệ",
+      "save": "Lưu",
       "saving": "Đang lưu thông tin liên hệ..."
     },
     "messages": {
       "loading": "Đang tải thông tin liên hệ...",
       "loadError": "Không thể tải thông tin liên hệ",
-        "notConfigured": "Đơn vị quản lý chưa cập nhật thông tin liên hệ.",
-        "invalidWorkingHours": "Giờ kết thúc phải sau giờ bắt đầu làm việc.",
-        "updated": "Đã cập nhật thông tin liên hệ của hệ thống.",
+      "notConfigured": "Đơn vị quản lý chưa cập nhật thông tin liên hệ.",
+      "invalidWorkingHours": "Giờ kết thúc phải sau giờ bắt đầu làm việc.",
+      "updated": "Đã cập nhật thông tin liên hệ của hệ thống.",
       "updateError": "Không thể cập nhật thông tin liên hệ của hệ thống"
     }
   },
@@ -257,7 +257,7 @@
     "summary": "Quản lý {{count}} chủ hộ và thành viên đang thuộc các phòng trong hệ thống ",
     "filters": {
       "searchAria": "Tìm kiếm cư dân",
-      "searchPlaceholder": "Tìm theo chủ hộ, thành viên, email, số điện thoại hoặc phòng",
+      "searchPlaceholder": "Tìm kiếm...",
       "buildingAria": "Lọc cư dân theo tòa nhà",
       "allBuildings": "Tất cả tòa nhà"
     },
@@ -339,18 +339,25 @@
     "summary": "Duyệt các thành viên phòng do chủ hộ gửi lên ({{count}} hồ sơ)",
     "filters": {
       "searchAria": "Tìm kiếm thành viên chờ duyệt",
-      "searchPlaceholder": "Tìm theo tên, email, số điện thoại, chủ hộ hoặc phòng"
+      "searchPlaceholder": "Tìm kiếm..."
     },
     "columns": {
       "id": "ID",
       "name": "Tên thành viên",
-      "headResident": "Thành viên của chủ hộ",
+      "phone": "Số điện thoại",
+      "role": "Vai trò",
+      "headResident": "Chủ hộ",
+      "building": "Tòa",
       "room": "Phòng",
       "actions": "Thao tác"
     },
     "actions": {
+      "exportExcel": "Xuất",
       "approve": "Duyệt",
       "reject": "Từ chối"
+    },
+    "export": {
+      "sheetName": "Thành viên chờ duyệt"
     },
     "messages": {
       "loading": "Đang tải thành viên chờ duyệt...",
@@ -359,7 +366,8 @@
       "approveError": "Không thể duyệt thành viên",
       "rejected": "Đã từ chối thành viên {{name}}.",
       "rejectError": "Không thể từ chối thành viên",
-      "empty": "Không có thành viên nào đang chờ duyệt."
+      "empty": "Không có thành viên nào đang chờ duyệt.",
+      "exportEmpty": "Không có thành viên chờ duyệt để xuất."
     }
   },
   "userCreate": {
@@ -561,7 +569,7 @@
     "filters": {
       "building": "Tòa nhà",
       "searchAria": "Tìm kiếm thiết bị",
-      "searchPlaceholder": "Tìm theo mã, tên, phòng hoặc vị trí",
+      "searchPlaceholder": "Tìm kiếm...",
       "scope": "Phạm vi",
       "room": "Phòng",
       "condition": "Tình trạng",
@@ -705,7 +713,7 @@
       "sheetName": "Nguoi dung"
     },
     "filters": {
-      "searchPlaceholder": "Tìm theo tên, email, số điện thoại hoặc phòng",
+      "searchPlaceholder": "Tìm kiếm...",
       "searchAria": "Tìm kiếm người dùng của tòa nhà",
       "roleAria": "Lọc theo vai trò",
       "statusAria": "Lọc theo trạng thái",
@@ -902,6 +910,8 @@
     "Initial_refundable_deposit": "Tiền cọc ban đầu",
     "Electricity_usage": "Điện tiêu thụ",
     "Water_usage": "Nước tiêu thụ",
+    "No_electricity_charge_this_month": "Không tính tiền điện tháng này",
+    "No_water_charge_this_month": "Không tính tiền nước tháng này",
     "Additional_charge": "Phí phát sinh",
     "Extra_room_charge": "Khoản thu thêm của phòng",
     "Electricity_charged_by_occupant": "Tiền điện tính theo số người",
@@ -934,7 +944,7 @@
     "loadError": "Không thể tải nhật ký hoạt động",
     "empty": "Không tìm thấy nhật ký hoạt động.",
     "notAvailable": "Không có dữ liệu",
-    "filterPlaceholder": "Tìm kiếm theo thao tác, mô tả hoặc người dùng",
+    "filterPlaceholder": "Tìm kiếm...",
     "filterAriaLabel": "Tìm kiếm nhật ký hoạt động",
     "pagination": {
       "summary": "Hiển thị {{from}}-{{to}} / {{total}} nhật ký",
@@ -1107,6 +1117,8 @@
       "eyebrow": "Tổng quan",
       "todayOperations": "Vận hành hôm nay",
       "trackedItems": "{{count}} mục cần theo dõi",
+      "remainingDays_one": "{{count}} ngày",
+      "remainingDays_other": "{{count}} ngày",
       "loadingAdmin": "Đang tải dữ liệu tổng quan...",
       "emptyAdmin": "Chưa có dữ liệu dashboard.",
       "adminLoadError": "Không thể tải dữ liệu tổng quan quản trị.",
@@ -1164,6 +1176,7 @@
       "helpers": {
         "managedBuildings": "Tòa nhà đang quản lý",
         "managedRooms": "Số phòng đang quản lý",
+        "occupiedRooms": "Tổng phòng đã thuê",
         "residentProfiles": "Hồ sơ người thuê",
         "runningDevices": "Thiết bị vận hành",
         "needsReview": "Cần theo dõi",
@@ -1200,9 +1213,11 @@
         "title": "Tổng hợp theo tòa",
         "area": "Tòa",
         "rooms": "Phòng",
+        "occupiedRooms": "Phòng đã thuê",
+        "emptyRooms": "Phòng trống",
         "residents": "Người thuê",
-        "unpaid": "Chưa thu",
-        "paid": "Đã thu",
+        "unpaid": "Chưa thanh toán",
+        "paid": "Đã thanh toán",
         "empty": "Chưa có dữ liệu tòa."
       },
       "charts": {
@@ -1221,10 +1236,13 @@
         "followUp": "Theo dõi",
         "title": "Tiêu đề",
         "room": "Phòng",
+        "resident": "Người thuê",
         "status": "Trạng thái",
         "invoiceCode": "Mã HĐ",
         "amount": "Tổng tiền",
         "dueDate": "Hạn",
+        "endDate": "Ngày hết hạn",
+        "remainingDays": "Còn lại",
         "description": "Mô tả",
         "equipment": "Thiết bị",
         "startDate": "Ngày bắt đầu",
@@ -1232,6 +1250,7 @@
         "cost": "Chi phí"
       },
       "empty": {
+        "expiringContracts": "Không có hợp đồng nào sắp hết hạn trong 30 ngày tới.",
         "recentFeedbacks": "Chưa có phản hồi gần đây.",
         "recentInvoices": "Chưa có hóa đơn gần đây.",
         "recentMaintenance": "Chưa có lịch bảo trì gần đây."
@@ -1245,6 +1264,7 @@
         "tracking": "Đang theo dõi"
       },
       "recent": {
+        "expiringContracts": "Hợp đồng sắp hết hạn",
         "feedbacks": "Phản hồi gần đây",
         "invoices": "Hóa đơn gần đây",
         "maintenance": "Lịch bảo trì gần đây"
@@ -1790,7 +1810,7 @@
     "deleteError": "Không thể xóa phòng",
     "deleteConfirm": "Xóa phòng {{room}}?",
     "searchAria": "Tìm kiếm phòng",
-    "searchPlaceholder": "Tìm theo mã hoặc tên",
+    "searchPlaceholder": "Tìm kiếm...",
     "buildingFilterAria": "Lọc theo tòa nhà",
     "statusFilterAria": "Lọc theo trạng thái",
     "allBuildings": "Tất cả tòa nhà",
@@ -1961,6 +1981,12 @@
     "reject": "Từ chối"
   },
   "workspace": {
+    "filters": {
+      "searchAria": "Tìm kiếm trong danh sách",
+      "searchPlaceholder": "Tìm kiếm...",
+      "statusAria": "Lọc theo trạng thái",
+      "allStatuses": "Tất cả trạng thái"
+    },
     "buildings": {
       "loading": "Đang tải tòa nhà...",
       "loadError": "Không thể tải tòa nhà",
@@ -1969,13 +1995,16 @@
       "deleteConfirm": "Xóa tòa nhà {{code}}?",
       "deleteTitle": "Xóa tòa nhà",
       "create": "Tạo tòa nhà",
+      "exportExcel": "Xuất",
+      "exportSheetName": "Tòa nhà",
+      "exportEmpty": "Không có tòa nhà để xuất.",
       "created": "Đã tạo tòa nhà thành công.",
       "createError": "Không thể tạo tòa nhà",
       "editTitle": "Sửa tòa nhà",
       "updated": "Đã cập nhật tòa nhà thành công.",
       "updateError": "Không thể cập nhật tòa nhà",
       "searchAria": "Tìm kiếm tòa nhà",
-      "searchPlaceholder": "Tìm theo mã hoặc tên",
+      "searchPlaceholder": "Tìm kiếm...",
       "caption": "Tòa nhà",
       "empty": "Không tìm thấy tòa nhà.",
       "manage": "Quản lý",
@@ -1992,7 +2021,7 @@
       "deleteConfirm": "Xóa phòng {{code}}?",
       "create": "Tạo phòng",
       "searchAria": "Tìm kiếm phòng trong tòa nhà",
-      "searchPlaceholder": "Tìm theo mã hoặc tên",
+      "searchPlaceholder": "Tìm kiếm...",
       "statusAria": "Lọc phòng theo trạng thái",
       "allStatuses": "Tất cả trạng thái",
       "empty": "Không tìm thấy phòng.",
@@ -2375,114 +2404,114 @@
     }
   },
   "details": {
-      "selectMaintenanceRequest": "Chọn một yêu cầu bảo trì để xem chi tiết.",
-      "selectTask": "Chọn một công việc để xem chi tiết.",
-      "title": "Tiêu đề",
-      "staffEmail": "Email nhân viên",
-      "issueImage": "Ảnh sự cố",
-      "resultImage": "Ảnh kết quả",
-      "viewImage": "Xem ảnh",
-      "noResultNote": "Chưa có ghi chú kết quả."
+    "selectMaintenanceRequest": "Chọn một yêu cầu bảo trì để xem chi tiết.",
+    "selectTask": "Chọn một công việc để xem chi tiết.",
+    "title": "Tiêu đề",
+    "staffEmail": "Email nhân viên",
+    "issueImage": "Ảnh sự cố",
+    "resultImage": "Ảnh kết quả",
+    "viewImage": "Xem ảnh",
+    "noResultNote": "Chưa có ghi chú kết quả."
   },
   "forms": {
-      "assignment": {
-        "selectHeadResident": "Chọn chủ hộ",
-        "noHeadResidents": "Không có chủ hộ đang hoạt động",
-        "startDate": "Ngày bắt đầu",
-        "endDate": "Ngày kết thúc",
-        "assigning": "Đang gán...",
-        "submit": "Gán chủ hộ"
-      },
-      "room": {
-        "selectBuilding": "Chọn tòa nhà",
-        "noBuildings": "Không có tòa nhà",
-        "roomCode": "Mã phòng",
-        "roomName": "Tên phòng"
-      },
-      "building": {
-        "buildingCode": "Mã tòa nhà",
-        "buildingName": "Tên tòa nhà",
-        "address": "Địa chỉ",
-        "floors": "Số tầng"
-      },
-      "invoice": {
-        "creationDate": "Ngày lập hóa đơn",
-        "invoiceMonth": "Tháng lập hóa đơn",
-        "generate": "Tạo hóa đơn",
-        "generating": "Đang tạo..."
-      },
-      "payment": {
-        "proofImage": "Ảnh bằng chứng thanh toán",
-        "note": "Ghi chú thanh toán",
-        "optionalNote": "Ghi chú thanh toán không bắt buộc",
-        "uploading": "Đang tải lên...",
-        "uploadProof": "Tải bằng chứng thanh toán"
-      },
-      "member": {
-        "fullName": "Họ và tên",
-        "phone": "Số điện thoại",
-        "email": "Gmail",
-        "relationship": "Quan hệ",
-        "dateOfBirth": "Ngày sinh",
-        "moveInDate": "Ngày chuyển vào"
-      },
-      "serviceFee": {
-        "serviceFeeName": "Tên phí dịch vụ",
-        "calculationType": "Cách tính phí",
-        "selectVehicleType": "Chọn loại xe",
-        "noSpecificVehicleType": "Không chọn loại xe cụ thể"
-      },
-      "task": {
-        "taskType": "Loại công việc",
-        "selectStaff": "Chọn nhân viên",
-        "roomScope": "Phòng / phạm vi",
-        "selectRoom": "Chọn phòng",
-        "generalBuildingTask": "Công việc chung của tòa nhà",
-        "noRoomLinked": "Không gắn phòng cụ thể"
-      },
-      "expense": {
-        "taskReference": "Mã công việc liên quan",
-        "maintenanceRequestReference": "Mã yêu cầu bảo trì liên quan",
-        "expenseType": "Loại chi phí",
-        "proofImage": "Ảnh bằng chứng",
-        "creating": "Đang tạo...",
-        "create": "Tạo chi phí"
-      },
-      "utilityReading": {
-        "selectRoom": "Chọn phòng",
-        "electricitySectionTitle": "Chỉ số điện",
-        "electricitySectionDescription": "Chỉ số cũ được lấy từ kỳ trước, chỉ nhập chỉ số mới và ảnh bằng chứng.",
-        "oldElectricity": "Chỉ số điện cũ",
-        "newElectricity": "Chỉ số điện mới",
-        "electricityUnit": "kWh",
-        "electricityEvidenceImage": "Ảnh bằng chứng điện (không bắt buộc)",
-        "waterSectionTitle": "Chỉ số nước",
-        "waterSectionDescription": "Chỉ số cũ được lấy từ kỳ trước, chỉ nhập chỉ số mới và ảnh bằng chứng.",
-        "oldWater": "Chỉ số nước cũ",
-        "newWater": "Chỉ số nước mới",
-        "waterUnit": "m3",
-        "waterEvidenceImage": "Ảnh bằng chứng nước (không bắt buộc)",
-        "automaticReading": "Đồng bộ chỉ số",
-        "mockSource": "Nguồn dữ liệu mô phỏng",
-        "mockApi": "MOCK API",
-        "fetchReadings": "Lấy chỉ số",
-        "fetchMeterShort": "Lấy chỉ số",
-        "fetchElectricity": "Lấy chỉ số điện",
-        "fetchWater": "Lấy chỉ số nước",
-        "fetchingReadings": "Đang lấy...",
-        "fetchError": "Không thể lấy chỉ số tự động",
-        "electricityFetchError": "Không thể lấy chỉ số điện tự động",
-        "waterFetchError": "Không thể lấy chỉ số nước tự động",
-        "electricityIncrease": "Điện",
-        "waterIncrease": "Nước",
-        "allowedImageTypes": "Loại ảnh cho phép: jpg, jpeg, png. Dung lượng tối đa: 10 MB.",
-        "readingDateHelp": "Ngày này áp dụng cho cả chỉ số điện và nước.",
-        "previousMonthEvidence": "Bằng chứng tháng trước",
-        "noPreviousEvidence": "Không tìm thấy bằng chứng chỉ số tháng trước cho phòng này.",
-        "previousElectricityImage": "Ảnh điện tháng trước",
-        "previousWaterImage": "Ảnh nước tháng trước",
-        "previousElectricityAlt": "Bằng chứng đồng hồ điện tháng trước",
-        "previousWaterAlt": "Bằng chứng đồng hồ nước tháng trước"
-      }
+    "assignment": {
+      "selectHeadResident": "Chọn chủ hộ",
+      "noHeadResidents": "Không có chủ hộ đang hoạt động",
+      "startDate": "Ngày bắt đầu",
+      "endDate": "Ngày kết thúc",
+      "assigning": "Đang gán...",
+      "submit": "Gán chủ hộ"
+    },
+    "room": {
+      "selectBuilding": "Chọn tòa nhà",
+      "noBuildings": "Không có tòa nhà",
+      "roomCode": "Mã phòng",
+      "roomName": "Tên phòng"
+    },
+    "building": {
+      "buildingCode": "Mã tòa nhà",
+      "buildingName": "Tên tòa nhà",
+      "address": "Địa chỉ",
+      "floors": "Số tầng"
+    },
+    "invoice": {
+      "creationDate": "Ngày lập hóa đơn",
+      "invoiceMonth": "Tháng lập hóa đơn",
+      "generate": "Tạo hóa đơn",
+      "generating": "Đang tạo..."
+    },
+    "payment": {
+      "proofImage": "Ảnh bằng chứng thanh toán",
+      "note": "Ghi chú thanh toán",
+      "optionalNote": "Ghi chú thanh toán không bắt buộc",
+      "uploading": "Đang tải lên...",
+      "uploadProof": "Tải lên bằng chứng thanh toán"
+    },
+    "member": {
+      "fullName": "Họ và tên",
+      "phone": "Số điện thoại",
+      "email": "Gmail",
+      "relationship": "Quan hệ",
+      "dateOfBirth": "Ngày sinh",
+      "moveInDate": "Ngày chuyển vào"
+    },
+    "serviceFee": {
+      "serviceFeeName": "Tên phí dịch vụ",
+      "calculationType": "Cách tính phí",
+      "selectVehicleType": "Chọn loại xe",
+      "noSpecificVehicleType": "Không chọn loại xe cụ thể"
+    },
+    "task": {
+      "taskType": "Loại công việc",
+      "selectStaff": "Chọn nhân viên",
+      "roomScope": "Phòng / phạm vi",
+      "selectRoom": "Chọn phòng",
+      "generalBuildingTask": "Công việc chung của tòa nhà",
+      "noRoomLinked": "Không gắn phòng cụ thể"
+    },
+    "expense": {
+      "taskReference": "Mã công việc liên quan",
+      "maintenanceRequestReference": "Mã yêu cầu bảo trì liên quan",
+      "expenseType": "Loại chi phí",
+      "proofImage": "Ảnh bằng chứng",
+      "creating": "Đang tạo...",
+      "create": "Tạo chi phí"
+    },
+    "utilityReading": {
+      "selectRoom": "Chọn phòng",
+      "electricitySectionTitle": "Chỉ số điện",
+      "electricitySectionDescription": "Chỉ số cũ được lấy từ kỳ trước, chỉ nhập chỉ số mới và ảnh bằng chứng.",
+      "oldElectricity": "Chỉ số điện cũ",
+      "newElectricity": "Chỉ số điện mới",
+      "electricityUnit": "kwh",
+      "electricityEvidenceImage": "Ảnh bằng chứng điện (không bắt buộc)",
+      "waterSectionTitle": "Chỉ số nước",
+      "waterSectionDescription": "Chỉ số cũ được lấy từ kỳ trước, chỉ nhập chỉ số mới và ảnh bằng chứng.",
+      "oldWater": "Chỉ số nước cũ",
+      "newWater": "Chỉ số nước mới",
+      "waterUnit": "m3",
+      "waterEvidenceImage": "Ảnh bằng chứng nước (không bắt buộc)",
+      "automaticReading": "Đồng bộ chỉ số",
+      "mockSource": "Nguồn dữ liệu mô phỏng",
+      "mockApi": "mock api",
+      "fetchReadings": "Lấy chỉ số",
+      "fetchMeterShort": "Lấy chỉ số",
+      "fetchElectricity": "Lấy chỉ số điện",
+      "fetchWater": "Lấy chỉ số nước",
+      "fetchingReadings": "Đang lấy...",
+      "fetchError": "Không thể lấy chỉ số tự động",
+      "electricityFetchError": "Không thể lấy chỉ số điện tự động",
+      "waterFetchError": "Không thể lấy chỉ số nước tự động",
+      "electricityIncrease": "Điện",
+      "waterIncrease": "Nước",
+      "allowedImageTypes": "Loại ảnh cho phép: jpg, jpeg, png. Dung lượng tối đa: 10 MB.",
+      "readingDateHelp": "Ngày này áp dụng cho cả chỉ số điện và nước.",
+      "previousMonthEvidence": "Bằng chứng tháng trước",
+      "noPreviousEvidence": "Không tìm thấy bằng chứng chỉ số tháng trước cho phòng này.",
+      "previousElectricityImage": "Ảnh điện tháng trước",
+      "previousWaterImage": "Ảnh nước tháng trước",
+      "previousElectricityAlt": "Bằng chứng đồng hồ điện tháng trước",
+      "previousWaterAlt": "Bằng chứng đồng hồ nước tháng trước"
     }
+  }
 }

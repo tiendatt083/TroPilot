@@ -20,7 +20,8 @@ public interface BuildingRepository extends JpaRepository<Building, Long> {
             select building from Building building
             where lower(building.buildingCode) like lower(concat('%', :search, '%'))
                or lower(building.name) like lower(concat('%', :search, '%'))
+               or lower(building.address) like lower(concat('%', :search, '%'))
             order by building.createdAt desc
             """)
-    List<Building> searchByCodeOrName(@Param("search") String search);
+    List<Building> searchByCodeNameOrAddress(@Param("search") String search);
 }

@@ -1,13 +1,43 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
 import * as maintenanceApi from '../../features/maintenance/api.js';
 import * as adminUserApi from '../../features/users/api.js';
+import FilterBar from '../../components/common/FilterBar.jsx';
 import MaintenanceAssignmentAction from '../../components/MaintenanceAssignmentAction.jsx';
 import MaintenanceRequestTable from '../../components/MaintenanceRequestTable.jsx';
+import { formatEnumLabel } from '../../utils/i18nFormat.js';
+import { MAINTENANCE_STATUS_OPTIONS } from '../../utils/maintenanceOptions.js';
+import { normalizeSearchText } from '../../utils/searchText.js';
 
 function activeStaff(users) {
   return users.filter((user) => user.role === 'STAFF' && user.status === 'ACTIVE');
+}
+
+const emptyFilters = {
+  search: '',
+  status: ''
+};
+
+function requestMatchesSearch(request, searchValue) {
+  if (!searchValue) {
+    return true;
+  }
+
+  const searchableValues = [
+    request.title,
+    request.content,
+    request.roomCode,
+    request.roomName,
+    request.requestedByName,
+    request.residentHeadName,
+    request.assignedToName,
+    request.equipmentCode,
+    request.equipmentName,
+    request.status
+  ];
+
+  return searchableValues.some((value) => normalizeSearchText(value).includes(searchValue));
 }
 
 export default function AdminBuildingMaintenancePage() {
@@ -20,8 +50,17 @@ export default function AdminBuildingMaintenancePage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [processingId, setProcessingId] = useState(null);
+  const [filters, setFilters] = useState(emptyFilters);
 
   const buildingFilter = { buildingId: building.id };
+  const filteredRequests = useMemo(() => {
+    const searchValue = normalizeSearchText(filters.search);
+
+    return requests.filter((request) => (
+      requestMatchesSearch(request, searchValue)
+      && (!filters.status || request.status === filters.status)
+    ));
+  }, [filters, requests]);
 
   const loadData = async () => {
     setError('');
@@ -90,6 +129,10 @@ export default function AdminBuildingMaintenancePage() {
     />
   );
 
+  const handleClearFilters = () => {
+    setFilters(emptyFilters);
+  };
+
   return (
     <div className="building-workspace">
       <div className="building-section-header">
@@ -102,7 +145,34 @@ export default function AdminBuildingMaintenancePage() {
       {loading ? (
         <div className="empty-state">{t('maintenance.loading')}</div>
       ) : (
-        <MaintenanceRequestTable requests={requests} renderActions={renderActions} />
+        <>
+          <FilterBar
+            as="div"
+            className="workspace-filter-row"
+            searchAriaLabel={t('workspace.filters.searchAria')}
+            searchPlaceholder={t('workspace.filters.searchPlaceholder')}
+            searchValue={filters.search}
+            filters={[
+              {
+                name: 'status',
+                value: filters.status,
+                ariaLabel: t('workspace.filters.statusAria'),
+                onChange: (value) => setFilters((current) => ({ ...current, status: value })),
+                options: [
+                  { value: '', label: t('workspace.filters.allStatuses') },
+                  ...MAINTENANCE_STATUS_OPTIONS.map((option) => ({
+                    value: option.value,
+                    label: formatEnumLabel(t, 'maintenanceStatus', option.value)
+                  }))
+                ]
+              }
+            ]}
+            clearLabel={t('common.clear')}
+            onClear={handleClearFilters}
+            onSearchChange={(value) => setFilters((current) => ({ ...current, search: value }))}
+          />
+          <MaintenanceRequestTable requests={filteredRequests} renderActions={renderActions} />
+        </>
       )}
     </div>
   );

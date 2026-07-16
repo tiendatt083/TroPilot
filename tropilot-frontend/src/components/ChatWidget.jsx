@@ -27,6 +27,17 @@ function createMessage(id, role, content) {
   return { id, role, content };
 }
 
+function normalizeChatReply(content) {
+  return String(content ?? '')
+    .replace(/\*\*(.*?)\*\*/gs, '$1')
+    .replace(/__(.*?)__/gs, '$1')
+    .replace(/`([^`]+)`/g, '$1')
+    .replace(/^#{1,6}\s+/gm, '')
+    .replace(/^\s*[-*]\s+/gm, '')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
 function getErrorKey(error) {
   if (error.response?.status === 403) {
     return 'chat.errors.assignmentRequired';
@@ -94,7 +105,7 @@ export default function ChatWidget() {
       const assistantMessage = createMessage(
         nextMessageId.current++,
         'assistant',
-        response.data.reply
+        normalizeChatReply(response.data.reply)
       );
       setMessages((current) => [...current, assistantMessage]);
     } catch (requestError) {
@@ -178,7 +189,7 @@ export default function ChatWidget() {
                 key={message.id}
               >
                 <span>{message.role === 'user' ? t('chat.you') : t('chat.assistant')}</span>
-                <p>{message.content}</p>
+                <p>{message.role === 'assistant' ? normalizeChatReply(message.content) : message.content}</p>
               </div>
             ))}
 
@@ -244,11 +255,18 @@ export default function ChatWidget() {
         onClick={() => setOpen((current) => !current)}
       >
         <span className="chat-launcher-icon" aria-hidden="true">
-          <span />
-          <span />
-          <span />
+          <ChatBubbleIcon />
         </span>
       </button>
     </div>
+  );
+}
+
+function ChatBubbleIcon() {
+  return (
+    <svg viewBox="0 0 28 28" role="presentation" focusable="false">
+      <path d="M7.2 19.7H6.4c-1.8 0-3.2-1.5-3.2-3.3V8.7c0-1.8 1.4-3.3 3.2-3.3h15.2c1.8 0 3.2 1.5 3.2 3.3v7.7c0 1.8-1.4 3.3-3.2 3.3h-6.3l-5.4 3.4c-.7.4-1.6-.1-1.6-.9v-2.5H7.2Z" />
+      <path d="M8.6 11.5h10.8M8.6 15h6.6" />
+    </svg>
   );
 }

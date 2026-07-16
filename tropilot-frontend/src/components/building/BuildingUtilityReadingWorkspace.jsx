@@ -150,7 +150,7 @@ export default function BuildingUtilityReadingWorkspace({
       )}
 
       <ActionDialog
-        className="action-dialog-wide"
+        className="action-dialog-wide utility-reading-dialog"
         eyebrow={editingReading ? t('buildingUtilityReadings.editReading') : ''}
         labelledBy="utility-reading-dialog-title"
         open={formOpen}

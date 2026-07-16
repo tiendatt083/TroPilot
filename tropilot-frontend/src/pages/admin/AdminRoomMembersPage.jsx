@@ -98,7 +98,7 @@ export default function AdminRoomMembersPage() {
   }
 
   return (
-    <section className="content-section">
+    <section className="content-section admin-room-members-page">
       <div className="page-title-row">
         <PageHeader eyebrow={formatRoomCode(room) || t('tables.common.room')} title={t('roomManagement.membersTitle')} />
         <div className="button-row">
@@ -140,7 +140,13 @@ export default function AdminRoomMembersPage() {
                   <span className={statusClass('APPROVED')}>{t('roomManagement.active')}</span>
                 </td>
                 <td>
-                  <span className="muted-text">{t('roomManagement.noAction')}</span>
+                  <span
+                    aria-label={t('roomManagement.noAction')}
+                    className="icon-action-static"
+                    title={t('roomManagement.noAction')}
+                  >
+                    <MinusIcon />
+                  </span>
                 </td>
               </tr>
             )}
@@ -159,26 +165,36 @@ export default function AdminRoomMembersPage() {
                 </td>
                 <td>
                   {member.status === 'PENDING' ? (
-                    <div className="table-actions">
+                    <div className="table-actions icon-table-actions room-member-action-icons">
                       <button
-                        className="secondary-button compact-button"
+                        aria-label={t('pendingMemberReview.actions.approve')}
+                        className="icon-action-button icon-action-success"
+                        data-tooltip={t('pendingMemberReview.actions.approve')}
                         type="button"
                         disabled={processingId === member.id}
                         onClick={() => handleApprove(member)}
                       >
-                        {t('pendingMemberReview.actions.approve')}
+                        <CheckIcon />
                       </button>
                       <button
-                        className="secondary-button compact-button"
+                        aria-label={t('pendingMemberReview.actions.reject')}
+                        className="icon-action-button icon-action-danger"
+                        data-tooltip={t('pendingMemberReview.actions.reject')}
                         type="button"
                         disabled={processingId === member.id}
                         onClick={() => handleReject(member)}
                       >
-                        {t('pendingMemberReview.actions.reject')}
+                        <CloseIcon />
                       </button>
                     </div>
                   ) : (
-                    <span className="muted-text">{t('roomManagement.noAction')}</span>
+                    <span
+                      aria-label={t('roomManagement.noAction')}
+                      className="icon-action-static"
+                      title={t('roomManagement.noAction')}
+                    >
+                      <MinusIcon />
+                    </span>
                   )}
                 </td>
               </tr>
@@ -190,5 +206,30 @@ export default function AdminRoomMembersPage() {
         )}
       </div>
     </section>
+  );
+}
+
+function CheckIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24">
+      <path d="M20 6 9 17l-5-5" />
+    </svg>
+  );
+}
+
+function CloseIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24">
+      <path d="M18 6 6 18" />
+      <path d="m6 6 12 12" />
+    </svg>
+  );
+}
+
+function MinusIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24">
+      <path d="M5 12h14" />
+    </svg>
   );
 }

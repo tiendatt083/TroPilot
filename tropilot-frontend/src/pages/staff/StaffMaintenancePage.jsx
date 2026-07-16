@@ -1,14 +1,42 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useOutletContext } from 'react-router-dom';
 import * as maintenanceApi from '../../features/maintenance/api.js';
 import ActionDialog from '../../components/common/ActionDialog.jsx';
+import FilterBar from '../../components/common/FilterBar.jsx';
 import LineIcon from '../../components/common/LineIcon.jsx';
 import MaintenanceRequestDetail from '../../components/MaintenanceRequestDetail.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
 import { formatDateTime, formatEnumLabel } from '../../utils/i18nFormat.js';
-import { getMaintenanceStatusClass } from '../../utils/maintenanceOptions.js';
+import { getMaintenanceStatusClass, MAINTENANCE_STATUS_OPTIONS } from '../../utils/maintenanceOptions.js';
 import { formatRoomCode } from '../../utils/roomDisplay.js';
+import { normalizeSearchText } from '../../utils/searchText.js';
+
+const emptyFilters = {
+  search: '',
+  status: ''
+};
+
+function requestMatchesSearch(request, searchValue) {
+  if (!searchValue) {
+    return true;
+  }
+
+  const searchableValues = [
+    request.title,
+    request.content,
+    request.roomCode,
+    request.roomName,
+    request.requestedByName,
+    request.residentHeadName,
+    request.equipmentCode,
+    request.equipmentName,
+    request.status,
+    request.createdAt
+  ];
+
+  return searchableValues.some((value) => normalizeSearchText(value).includes(searchValue));
+}
 
 export default function StaffMaintenancePage() {
   const { t } = useTranslation();
@@ -21,11 +49,20 @@ export default function StaffMaintenancePage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
+  const [filters, setFilters] = useState(emptyFilters);
   const [completionForm, setCompletionForm] = useState({
     resultNote: '',
     resultImage: null
   });
   const [rejectNote, setRejectNote] = useState('');
+  const filteredRequests = useMemo(() => {
+    const searchValue = normalizeSearchText(filters.search);
+
+    return requests.filter((request) => (
+      requestMatchesSearch(request, searchValue)
+      && (!filters.status || request.status === filters.status)
+    ));
+  }, [filters, requests]);
 
   const loadRequests = async () => {
     setError('');
@@ -134,6 +171,10 @@ export default function StaffMaintenancePage() {
     setDetailOpen(false);
   };
 
+  const handleClearFilters = () => {
+    setFilters(emptyFilters);
+  };
+
   return (
     <section className={`${building ? 'building-workspace' : 'content-section'} staff-maintenance-page`}>
       {building ? (
@@ -153,59 +194,86 @@ export default function StaffMaintenancePage() {
       {loading ? (
         <div className="empty-state">{t('maintenance.loading')}</div>
       ) : (
-        <section className="maintenance-card-list maintenance-card-list-polished">
-          {requests.map((request) => (
-            <button
-              className="maintenance-card"
-              key={request.id}
-              type="button"
-              onClick={() => openRequestDetail(request)}
-            >
-              <span className="maintenance-card-accent" aria-hidden="true" />
-              <span className="maintenance-card-main">
-                <span className="maintenance-card-type">
-                  {request.equipmentId ? t('navigation.equipment') : t('tables.common.request')}
-                </span>
-                <strong>{request.title}</strong>
-                <small>{request.content || t('common.notProvided')}</small>
-              </span>
-              <span className="maintenance-card-meta-grid">
-                <span className="maintenance-card-meta">
-                  <span>
-                    <LineIcon name="home" />
-                    {t('tables.common.room')}
+        <>
+          <FilterBar
+            as="div"
+            className="workspace-filter-row"
+            searchAriaLabel={t('workspace.filters.searchAria')}
+            searchPlaceholder={t('workspace.filters.searchPlaceholder')}
+            searchValue={filters.search}
+            filters={[
+              {
+                name: 'status',
+                value: filters.status,
+                ariaLabel: t('workspace.filters.statusAria'),
+                onChange: (value) => setFilters((current) => ({ ...current, status: value })),
+                options: [
+                  { value: '', label: t('workspace.filters.allStatuses') },
+                  ...MAINTENANCE_STATUS_OPTIONS.map((option) => ({
+                    value: option.value,
+                    label: formatEnumLabel(t, 'maintenanceStatus', option.value)
+                  }))
+                ]
+              }
+            ]}
+            clearLabel={t('common.clear')}
+            onClear={handleClearFilters}
+            onSearchChange={(value) => setFilters((current) => ({ ...current, search: value }))}
+          />
+          <section className="maintenance-card-list maintenance-card-list-polished">
+            {filteredRequests.map((request) => (
+              <button
+                className="maintenance-card"
+                key={request.id}
+                type="button"
+                onClick={() => openRequestDetail(request)}
+              >
+                <span className="maintenance-card-accent" aria-hidden="true" />
+                <span className="maintenance-card-main">
+                  <span className="maintenance-card-type">
+                    {request.equipmentId ? t('navigation.equipment') : t('tables.common.request')}
                   </span>
-                  <strong>{request.roomId ? formatRoomCode(request) : t('equipment.scopes.BUILDING')}</strong>
+                  <strong>{request.title}</strong>
+                  <small>{request.content || t('common.notProvided')}</small>
                 </span>
-                <span className="maintenance-card-meta">
-                  <span>
-                    <LineIcon name="user" />
-                    {t('tables.common.requestedBy')}
+                <span className="maintenance-card-meta-grid">
+                  <span className="maintenance-card-meta">
+                    <span>
+                      <LineIcon name="home" />
+                      {t('tables.common.room')}
+                    </span>
+                    <strong>{request.roomId ? formatRoomCode(request) : t('equipment.scopes.BUILDING')}</strong>
                   </span>
-                  <strong>{request.requestedByName || request.residentHeadName || t('common.notProvided')}</strong>
-                </span>
-                <span className="maintenance-card-meta">
-                  <span>
-                    <LineIcon name="calendar" />
-                    {t('tables.common.created')}
+                  <span className="maintenance-card-meta">
+                    <span>
+                      <LineIcon name="user" />
+                      {t('tables.common.requestedBy')}
+                    </span>
+                    <strong>{request.requestedByName || request.residentHeadName || t('common.notProvided')}</strong>
                   </span>
-                  <strong>{formatDateTime(request.createdAt, t)}</strong>
+                  <span className="maintenance-card-meta">
+                    <span>
+                      <LineIcon name="calendar" />
+                      {t('tables.common.created')}
+                    </span>
+                    <strong>{formatDateTime(request.createdAt, t)}</strong>
+                  </span>
                 </span>
-              </span>
-              <span className="maintenance-card-state">
-                <span className={getMaintenanceStatusClass(request.status)}>
-                  {formatEnumLabel(t, 'maintenanceStatus', request.status)}
+                <span className="maintenance-card-state">
+                  <span className={getMaintenanceStatusClass(request.status)}>
+                    {formatEnumLabel(t, 'maintenanceStatus', request.status)}
+                  </span>
+                  <span className="maintenance-card-view icon-action-button" aria-hidden="true">
+                    <LineIcon name="eye" />
+                  </span>
                 </span>
-                <span className="maintenance-card-view icon-action-button" aria-hidden="true">
-                  <LineIcon name="eye" />
-                </span>
-              </span>
-            </button>
-          ))}
-          {requests.length === 0 && (
-            <div className="empty-state flat-empty-state">{t('tables.maintenanceRequests.empty')}</div>
-          )}
-        </section>
+              </button>
+            ))}
+            {filteredRequests.length === 0 && (
+              <div className="empty-state flat-empty-state">{t('tables.maintenanceRequests.empty')}</div>
+            )}
+          </section>
+        </>
       )}
 
       <ActionDialog

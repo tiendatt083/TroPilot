@@ -10,6 +10,7 @@ import ModalCloseButton from '../../components/common/ModalCloseButton.jsx';
 import { addMonthsToDateInput, formatDateInputValue, formatDisplayDate } from '../../utils/dateFormat.js';
 import { exportRowsToExcel } from '../../utils/excelExport.js';
 import { formatRoomCode, formatRoomLabel } from '../../utils/roomDisplay.js';
+import { normalizeSearchText } from '../../utils/searchText.js';
 
 const emptyFilters = {
   search: '',
@@ -26,7 +27,7 @@ const emptyAssignmentForm = {
 };
 
 function normalizeSearchValue(value) {
-  return String(value || '').trim().toLowerCase();
+  return normalizeSearchText(value);
 }
 
 function recordMatchesSearch(record, searchValue) {
@@ -374,6 +375,7 @@ export default function AdminBuildingUserPage() {
           showMoveInDate
           showRole
           showRoom
+          showRoomNameSubtext={false}
           showStatus={false}
           showTemporaryPassword={false}
           useIconActions

@@ -10,7 +10,7 @@ export default function AdminBuildingRoomsPage() {
       getRooms={roomApi.getAdminRooms}
       createRoom={roomApi.createAdminRoom}
       roomBasePath={`/admin/buildings/${building.id}/rooms`}
-      createRoomPath="/admin/rooms/create"
+      createRoomPath={`/admin/buildings/${building.id}/rooms/create`}
       canManage
     />
   );

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import * as buildingApi from '../../features/buildings/api.js';
 import * as roomApi from '../../features/rooms/api.js';
@@ -10,8 +10,9 @@ import { translateInterfaceText } from '../../utils/interfaceTranslations.js';
 export default function AdminRoomCreatePage() {
   useTranslation();
   const navigate = useNavigate();
+  const { id: routeBuildingId } = useParams();
   const [searchParams] = useSearchParams();
-  const selectedBuildingId = searchParams.get('buildingId') || '';
+  const selectedBuildingId = routeBuildingId || searchParams.get('buildingId') || '';
   const [buildings, setBuildings] = useState([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -48,8 +49,8 @@ export default function AdminRoomCreatePage() {
     setLoading(true);
 
     try {
-      const response = await roomApi.createAdminRoom(payload);
-      navigate(selectedBuildingId ? `/admin/buildings/${selectedBuildingId}/rooms` : `/admin/rooms/${response.data.id}`, {
+      await roomApi.createAdminRoom(payload);
+      navigate(selectedBuildingId ? `/admin/buildings/${selectedBuildingId}/rooms` : '/admin/buildings', {
         replace: true,
         state: { message: translateInterfaceText('Room created successfully.') }
       });
@@ -64,12 +65,20 @@ export default function AdminRoomCreatePage() {
     () => (selectedBuildingId ? { buildingId: selectedBuildingId } : undefined),
     [selectedBuildingId]
   );
+  const availableBuildings = useMemo(
+    () => (
+      selectedBuildingId
+        ? buildings.filter((building) => String(building.id) === String(selectedBuildingId))
+        : buildings
+    ),
+    [buildings, selectedBuildingId]
+  );
 
   return (
     <section className="content-section narrow-section">
       <div className="page-title-row">
         <PageHeader eyebrow={translateInterfaceText('Administrator')} title={translateInterfaceText('Create room')} />
-        <Link className="secondary-link" to={selectedBuildingId ? `/admin/buildings/${selectedBuildingId}/rooms` : '/admin/rooms'}>
+        <Link className="secondary-link" to={selectedBuildingId ? `/admin/buildings/${selectedBuildingId}/rooms` : '/admin/buildings'}>
           {translateInterfaceText('Back to rooms')}
         </Link>
       </div>
@@ -83,7 +92,7 @@ export default function AdminRoomCreatePage() {
         <div className="empty-state">{translateInterfaceText('Loading buildings...')}</div>
       ) : (
         <RoomForm
-          buildingOptions={buildings}
+          buildingOptions={availableBuildings}
           initialValues={initialRoomValues}
           loading={loading}
           submitLabel={translateInterfaceText('Create room')}

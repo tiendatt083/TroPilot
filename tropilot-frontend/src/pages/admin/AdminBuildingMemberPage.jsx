@@ -185,7 +185,7 @@ export default function AdminBuildingMemberPage() {
                   <td>
                     <Link
                       className="secondary-link compact-link"
-                      to={`/admin/buildings/${building.id}/rooms/${member.roomId}/members`}
+                      to={`/admin/buildings/${building.id}/rooms/${member.roomId}`}
                     >
                       {formatRoomCode(member)}
                     </Link>

@@ -1,16 +1,46 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
 import * as taskApi from '../../features/maintenance/taskApi.js';
 import * as roomApi from '../../features/rooms/api.js';
 import * as adminUserApi from '../../features/users/api.js';
 import ActionDialog from '../../components/common/ActionDialog.jsx';
+import FilterBar from '../../components/common/FilterBar.jsx';
 import TaskForm from '../../components/TaskForm.jsx';
 import TaskQuickViewDialog from '../../components/TaskQuickViewDialog.jsx';
 import TaskTable from '../../components/TaskTable.jsx';
+import { formatEnumLabel } from '../../utils/i18nFormat.js';
+import { normalizeSearchText } from '../../utils/searchText.js';
+import { TASK_STATUS_OPTIONS } from '../../utils/taskOptions.js';
 
 function activeStaff(users) {
   return users.filter((user) => user.role === 'STAFF' && user.status === 'ACTIVE');
+}
+
+const emptyFilters = {
+  search: '',
+  status: ''
+};
+
+function taskMatchesSearch(task, searchValue) {
+  if (!searchValue) {
+    return true;
+  }
+
+  const searchableValues = [
+    task.title,
+    task.description,
+    task.roomCode,
+    task.roomName,
+    task.buildingCode,
+    task.assignedToName,
+    task.assignedToEmail,
+    task.taskType,
+    task.status,
+    task.deadline
+  ];
+
+  return searchableValues.some((value) => normalizeSearchText(value).includes(searchValue));
 }
 
 export default function AdminBuildingTaskPage() {
@@ -28,8 +58,17 @@ export default function AdminBuildingTaskPage() {
   const [selectedTask, setSelectedTask] = useState(null);
   const [detailMessage, setDetailMessage] = useState('');
   const [detailError, setDetailError] = useState('');
+  const [filters, setFilters] = useState(emptyFilters);
 
   const buildingFilter = { buildingId: building.id };
+  const filteredTasks = useMemo(() => {
+    const searchValue = normalizeSearchText(filters.search);
+
+    return tasks.filter((task) => (
+      taskMatchesSearch(task, searchValue)
+      && (!filters.status || task.status === filters.status)
+    ));
+  }, [filters, tasks]);
 
   const loadData = async () => {
     setError('');
@@ -106,6 +145,10 @@ export default function AdminBuildingTaskPage() {
     }
   };
 
+  const handleClearFilters = () => {
+    setFilters(emptyFilters);
+  };
+
   return (
     <div className="building-workspace">
       <div className="building-section-header">
@@ -124,12 +167,37 @@ export default function AdminBuildingTaskPage() {
         <div className="empty-state">{t('taskManagement.loading')}</div>
       ) : (
         <section className="task-workspace task-workspace-list-only">
-          <TaskTable tasks={tasks} detailBasePath={`/admin/buildings/${building.id}/tasks`} onViewTask={setSelectedTask} />
+          <FilterBar
+            as="div"
+            className="workspace-filter-row"
+            searchAriaLabel={t('workspace.filters.searchAria')}
+            searchPlaceholder={t('workspace.filters.searchPlaceholder')}
+            searchValue={filters.search}
+            filters={[
+              {
+                name: 'status',
+                value: filters.status,
+                ariaLabel: t('workspace.filters.statusAria'),
+                onChange: (value) => setFilters((current) => ({ ...current, status: value })),
+                options: [
+                  { value: '', label: t('workspace.filters.allStatuses') },
+                  ...TASK_STATUS_OPTIONS.map((option) => ({
+                    value: option.value,
+                    label: formatEnumLabel(t, 'taskStatus', option.value)
+                  }))
+                ]
+              }
+            ]}
+            clearLabel={t('common.clear')}
+            onClear={handleClearFilters}
+            onSearchChange={(value) => setFilters((current) => ({ ...current, search: value }))}
+          />
+          <TaskTable tasks={filteredTasks} detailBasePath={`/admin/buildings/${building.id}/tasks`} onViewTask={setSelectedTask} />
         </section>
       )}
 
       <ActionDialog
-        className="action-dialog-wide"
+        className="action-dialog-wide task-create-dialog"
         eyebrow={t('taskManagement.create')}
         labelledBy="task-create-dialog-title"
         open={isCreating}

@@ -54,7 +54,7 @@ public class BuildingServiceImpl implements BuildingService {
         String normalizedSearch = normalizeOptionalText(search);
         List<Building> buildings = normalizedSearch == null
                 ? buildingRepository.findAllByOrderByCreatedAtDesc()
-                : buildingRepository.searchByCodeOrName(normalizedSearch);
+                : buildingRepository.searchByCodeNameOrAddress(normalizedSearch);
 
         return buildings.stream()
                 .map(buildingMapper::toResponse)

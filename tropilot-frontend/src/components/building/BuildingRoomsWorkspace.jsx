@@ -109,7 +109,7 @@ export default function BuildingRoomsWorkspace({
       <div className="building-section-header">
         <span className="page-eyebrow">{t('workspace.rooms.eyebrow')}</span>
         {canManage && createRoomPath && !canUseDialogForm && (
-          <Link className="button-link" to={`${createRoomPath}?buildingId=${building.id}`}>
+          <Link className="button-link" to={createRoomPath}>
             {t('workspace.rooms.create')}
           </Link>
         )}

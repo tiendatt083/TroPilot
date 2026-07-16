@@ -1599,3 +1599,179 @@ html[data-theme="dark"] .feedback-icon-action[aria-pressed="true"] {
   background: rgba(45, 212, 191, 0.16);
   box-shadow: inset 0 0 0 1px rgba(45, 212, 191, 0.12);
 }
+
+/* Dark workspace normalization: keep operational pages readable and avoid light cards. */
+html[data-theme="dark"] :is(
+  .content-section,
+  .building-workspace,
+  .admin-dashboard-page,
+  .building-ops-dashboard,
+  .main-panel
+) {
+  color: var(--color-text);
+}
+
+html[data-theme="dark"] :is(
+  .table-wrap,
+  .data-table,
+  .detail-panel,
+  .dashboard-section-panel,
+  .dashboard-card,
+  .dashboard-panel,
+  .shared-chart-panel,
+  .home-analytics-card,
+  .home-table-card,
+  .ops-panel,
+  .ops-recent-panel,
+  .utility-reading-overview,
+  .utility-reading-meter-donut,
+  .action-dialog,
+  .action-dialog > .panel-form,
+  .action-dialog > form,
+  .action-dialog .invoice-composer-panel,
+  .action-dialog .invoice-detail-panel,
+  .action-dialog .receipt-detail-panel,
+  .action-dialog .building-contract-detail-column,
+  .workspace-tabs,
+  .building-filter-row,
+  .workspace-filter-row,
+  .account-control-panel
+) {
+  border-color: rgba(132, 164, 188, 0.24);
+  color: var(--color-text);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0)),
+    var(--color-surface);
+  box-shadow:
+    0 14px 34px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+html[data-theme="dark"] :is(
+  .data-table thead,
+  .data-table th,
+  .home-table-card thead,
+  .home-table-card th,
+  .shared-chart-header,
+  .dashboard-card-header,
+  .contact-phone-table-head
+) {
+  border-color: rgba(132, 164, 188, 0.22);
+  color: #c9d9ea;
+  background: rgba(25, 38, 56, 0.92);
+}
+
+html[data-theme="dark"] :is(
+  .data-table td,
+  .data-table tbody tr,
+  .home-table-card td,
+  .shared-chart-title h2,
+  .dashboard-panel h2,
+  .detail-panel strong,
+  .detail-panel p,
+  .detail-panel td,
+  .admin-room-detail-page .detail-panel,
+  .admin-room-detail-page .detail-panel span,
+  .admin-room-detail-page .detail-panel strong,
+  .admin-room-detail-page .detail-panel p,
+  .admin-room-members-page .count-summary,
+  .admin-room-members-page .data-table tbody strong,
+  .admin-room-members-page .data-table tbody td
+) {
+  border-color: rgba(132, 164, 188, 0.18);
+  color: var(--color-text);
+}
+
+html[data-theme="dark"] :is(
+  .table-subtext,
+  .muted-text,
+  .detail-panel span,
+  .dashboard-list span:not(.status-pill),
+  .shared-chart-title > div > span,
+  .shared-chart-legend,
+  .shared-donut-legend span,
+  .shared-donut-legend a,
+  .home-chart-legend,
+  .utility-reading-month-control span,
+  .utility-reading-table .table-subtext,
+  .utility-reading-meter-cell small
+) {
+  color: var(--color-text-muted);
+}
+
+html[data-theme="dark"] :is(
+  .shared-chart-icon,
+  .resident-cost-card-icon,
+  .resident-cost-row-icon,
+  .icon-action-button,
+  .icon-action-static,
+  .contact-remove-phone-button.icon-action-button
+) {
+  border-color: rgba(91, 213, 210, 0.28);
+  color: #67e8f9;
+  background:
+    linear-gradient(180deg, rgba(91, 213, 210, 0.1), rgba(91, 213, 210, 0.035)),
+    rgba(14, 29, 47, 0.92);
+  box-shadow: none;
+}
+
+html[data-theme="dark"] :is(.icon-action-button, .icon-action-static) svg {
+  color: currentColor;
+  stroke: currentColor;
+}
+
+html[data-theme="dark"] :is(
+  .shared-donut > div,
+  .home-donut > div
+) {
+  color: var(--color-text);
+  background: #101b2d;
+  box-shadow:
+    inset 0 0 0 1px rgba(132, 164, 188, 0.18),
+    0 10px 28px rgba(0, 0, 0, 0.2);
+}
+
+html[data-theme="dark"] :is(
+  .shared-donut-legend span,
+  .shared-donut-legend a,
+  .home-chart-legend div,
+  .utility-reading-status-donut .shared-donut-legend span
+) {
+  border-color: rgba(132, 164, 188, 0.14);
+  color: #d7e3ee;
+  background: rgba(25, 38, 56, 0.78);
+}
+
+html[data-theme="dark"] :is(.shared-donut-legend strong, .home-chart-legend strong) {
+  color: var(--color-text);
+}
+
+html[data-theme="dark"] .shared-bar-chart {
+  background:
+    repeating-linear-gradient(to top, transparent 0 47px, rgba(255, 255, 255, 0.075) 48px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.052) 1px, transparent 1px);
+  background-size: auto, calc((100% - 2rem) / 6) 100%;
+}
+
+html[data-theme="dark"] .utility-reading-meter-donut {
+  background:
+    radial-gradient(circle at 12% 18%, rgba(91, 213, 210, 0.13), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0)),
+    var(--color-surface);
+}
+
+html[data-theme="dark"] :is(input, select, textarea) {
+  color: var(--color-text);
+  background: var(--color-input);
+  border-color: rgba(132, 164, 188, 0.3);
+}
+
+html[data-theme="dark"] :is(input::placeholder, textarea::placeholder) {
+  color: #8fa0b4;
+}
+
+html[data-theme="dark"] :is(.secondary-link, .secondary-button) {
+  border-color: rgba(132, 164, 188, 0.26);
+  color: var(--color-text);
+  background: rgba(25, 38, 56, 0.9);
+}

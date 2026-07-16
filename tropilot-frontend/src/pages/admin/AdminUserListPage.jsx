@@ -6,11 +6,12 @@ import AdminUserCreateDialog from '../../components/AdminUserCreateDialog.jsx';
 import FilterBar from '../../components/common/FilterBar.jsx';
 import ManagementPageHero from '../../components/common/ManagementPageHero.jsx';
 import { exportRowsToExcel } from '../../utils/excelExport.js';
+import { normalizeSearchText } from '../../utils/searchText.js';
 
 const MANAGED_ACCOUNT_ROLES = new Set(['ADMIN', 'STAFF']);
 
 function normalize(value) {
-  return String(value || '').trim().toLowerCase();
+  return normalizeSearchText(value);
 }
 
 function buildExportFileName() {

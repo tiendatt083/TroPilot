@@ -8,6 +8,7 @@ import AdminUserCreateDialog from '../../components/AdminUserCreateDialog.jsx';
 import FilterBar from '../../components/common/FilterBar.jsx';
 import { formatDisplayDate } from '../../utils/dateFormat.js';
 import { exportRowsToExcel } from '../../utils/excelExport.js';
+import { normalizeSearchText } from '../../utils/searchText.js';
 
 const emptyFilters = {
   search: '',
@@ -15,7 +16,7 @@ const emptyFilters = {
 };
 
 function normalize(value) {
-  return String(value || '').trim().toLowerCase();
+  return normalizeSearchText(value);
 }
 
 function createResidentRecords(users, members) {

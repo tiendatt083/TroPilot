@@ -3,10 +3,12 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import * as memberApi from '../../features/residents/api.js';
 import FilterBar from '../../components/common/FilterBar.jsx';
+import { exportRowsToExcel } from '../../utils/excelExport.js';
 import { formatRoomCode } from '../../utils/roomDisplay.js';
+import { normalizeSearchText } from '../../utils/searchText.js';
 
 function normalize(value) {
-  return String(value || '').trim().toLowerCase();
+  return normalizeSearchText(value);
 }
 
 function memberMatchesSearch(member, searchValue) {
@@ -25,6 +27,31 @@ function memberMatchesSearch(member, searchValue) {
     member.buildingCode,
     member.buildingName
   ].some((value) => normalize(value).includes(searchValue));
+}
+
+function buildExportFileName() {
+  const now = new Date();
+  const day = String(now.getDate()).padStart(2, '0');
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const year = now.getFullYear();
+
+  return `tropilot-pending-members-${day}-${month}-${year}.xlsx`;
+}
+
+function formatBuildingLabel(member, fallback) {
+  if (member.buildingCode && member.buildingName) {
+    return `${member.buildingCode} - ${member.buildingName}`;
+  }
+
+  return member.buildingCode || member.buildingName || fallback;
+}
+
+function buildRoomDetailPath(member) {
+  if (!member.buildingId || !member.roomId) {
+    return '';
+  }
+
+  return `/admin/buildings/${member.buildingId}/rooms/${member.roomId}`;
 }
 
 export default function AdminPendingMembersPage() {
@@ -88,12 +115,44 @@ export default function AdminPendingMembersPage() {
     }
   };
 
+  const handleExport = () => {
+    setMessage('');
+    setError('');
+
+    if (filteredMembers.length === 0) {
+      setError(t('pendingMemberReview.messages.exportEmpty'));
+      return;
+    }
+
+    const rows = filteredMembers.map((member, index) => ({
+      [t('pendingMemberReview.columns.id')]: index + 1,
+      [t('pendingMemberReview.columns.name')]: member.fullName || t('common.notProvided'),
+      [t('userCreate.fields.email')]: member.email || t('common.notProvided'),
+      [t('pendingMemberReview.columns.phone')]: member.phone || t('common.notProvided'),
+      [t('pendingMemberReview.columns.role')]: t('buildingUsers.roles.roomMember'),
+      [t('pendingMemberReview.columns.headResident')]: member.residentHeadName || t('common.notProvided'),
+      [t('pendingMemberReview.columns.building')]: formatBuildingLabel(member, t('common.notProvided')),
+      [t('pendingMemberReview.columns.room')]: formatRoomCode(member)
+    }));
+
+    exportRowsToExcel({
+      rows,
+      fileName: buildExportFileName(),
+      sheetName: t('pendingMemberReview.export.sheetName')
+    });
+  };
+
   return (
     <section className="content-section pending-member-review-page modern-user-page">
       <div className="account-page-hero">
         <div>
           <h1>{t('pendingMemberReview.title')}</h1>
           <p>{t('pendingMemberReview.summary', { count: members.length })}</p>
+        </div>
+        <div className="page-action-row">
+          <button className="secondary-button inline-button" type="button" onClick={handleExport}>
+            {t('pendingMemberReview.actions.exportExcel')}
+          </button>
         </div>
       </div>
 
@@ -131,67 +190,76 @@ export default function AdminPendingMembersPage() {
               <tr>
                 <th>{t('pendingMemberReview.columns.id')}</th>
                 <th>{t('pendingMemberReview.columns.name')}</th>
-                <th>{t('userManagement.columns.role')}</th>
+                <th>{t('pendingMemberReview.columns.phone')}</th>
+                <th>{t('pendingMemberReview.columns.role')}</th>
                 <th>{t('pendingMemberReview.columns.headResident')}</th>
+                <th>{t('pendingMemberReview.columns.building')}</th>
                 <th>{t('pendingMemberReview.columns.room')}</th>
                 <th>{t('pendingMemberReview.columns.actions')}</th>
               </tr>
             </thead>
             <tbody>
-              {filteredMembers.map((member, index) => (
-                <tr key={member.id}>
-                  <td className="account-sequence-cell">{index + 1}</td>
-                  <td>
-                    <strong>{member.fullName}</strong>
-                    <span className="table-subtext">
-                      {member.phone || t('common.notProvided')}
-                    </span>
-                    <span className="table-subtext">
-                      {member.email || t('common.notProvided')}
-                    </span>
-                  </td>
-                  <td>
-                    <span className="role-pill role-room-member">
-                      {t('buildingUsers.roles.roomMember')}
-                    </span>
-                  </td>
-                  <td>
-                    <strong>{member.residentHeadName}</strong>
-                    <span className="table-subtext">
-                      {member.residentHeadEmail || t('common.notProvided')}
-                    </span>
-                  </td>
-                  <td>
-                    <Link className="secondary-link compact-link" to={`/admin/rooms/${member.roomId}/members`}>
-                      {formatRoomCode(member)}
-                    </Link>
-                  </td>
-                  <td>
-                    <div className="table-actions icon-table-actions pending-member-action-icons">
-                      <button
-                        aria-label={t('pendingMemberReview.actions.approve')}
-                        className="icon-action-button icon-action-success"
-                        data-tooltip={t('pendingMemberReview.actions.approve')}
-                        type="button"
-                        disabled={processingId === member.id}
-                        onClick={() => handleApprove(member)}
-                      >
-                        <CheckIcon />
-                      </button>
-                      <button
-                        aria-label={t('pendingMemberReview.actions.reject')}
-                        className="icon-action-button icon-action-danger"
-                        data-tooltip={t('pendingMemberReview.actions.reject')}
-                        type="button"
-                        disabled={processingId === member.id}
-                        onClick={() => handleReject(member)}
-                      >
-                        <CloseIcon />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+              {filteredMembers.map((member, index) => {
+                const roomDetailPath = buildRoomDetailPath(member);
+
+                return (
+                  <tr key={member.id}>
+                    <td className="account-sequence-cell">{index + 1}</td>
+                    <td>
+                      <strong>{member.fullName}</strong>
+                      <span className="table-subtext">
+                        {member.email || t('common.notProvided')}
+                      </span>
+                    </td>
+                    <td>{member.phone || t('common.notProvided')}</td>
+                    <td>
+                      <span className="role-pill role-room-member">
+                        {t('buildingUsers.roles.roomMember')}
+                      </span>
+                    </td>
+                    <td>
+                      <strong>{member.residentHeadName}</strong>
+                      <span className="table-subtext">
+                        {member.residentHeadEmail || t('common.notProvided')}
+                      </span>
+                    </td>
+                    <td>{formatBuildingLabel(member, t('common.notProvided'))}</td>
+                    <td>
+                      {roomDetailPath ? (
+                        <Link className="secondary-link compact-link" to={roomDetailPath}>
+                          {formatRoomCode(member)}
+                        </Link>
+                      ) : (
+                        t('common.notProvided')
+                      )}
+                    </td>
+                    <td>
+                      <div className="table-actions icon-table-actions pending-member-action-icons">
+                        <button
+                          aria-label={t('pendingMemberReview.actions.approve')}
+                          className="icon-action-button icon-action-success"
+                          data-tooltip={t('pendingMemberReview.actions.approve')}
+                          type="button"
+                          disabled={processingId === member.id}
+                          onClick={() => handleApprove(member)}
+                        >
+                          <CheckIcon />
+                        </button>
+                        <button
+                          aria-label={t('pendingMemberReview.actions.reject')}
+                          className="icon-action-button icon-action-danger"
+                          data-tooltip={t('pendingMemberReview.actions.reject')}
+                          type="button"
+                          disabled={processingId === member.id}
+                          onClick={() => handleReject(member)}
+                        >
+                          <CloseIcon />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
           {filteredMembers.length === 0 && (

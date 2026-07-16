@@ -205,6 +205,31 @@
   width: 190px;
 }
 
+.building-user-modern-page .account-directory-table th,
+.building-user-modern-page .account-directory-table td {
+  padding-top: 0.48rem;
+  padding-bottom: 0.48rem;
+  line-height: 1.32;
+}
+
+.building-user-modern-page .account-directory-table td:first-child {
+  padding-left: 0.9rem;
+}
+
+.building-user-modern-page .account-directory-table td:last-child {
+  padding-right: 0.9rem;
+}
+
+.building-user-modern-page .account-directory-table .compact-link {
+  min-height: 28px;
+  padding: 0.3rem 0.56rem;
+}
+
+.building-user-modern-page .account-directory-table .role-pill {
+  min-height: 24px;
+  padding-block: 0.18rem;
+}
+
 .building-actions-column,
 .building-actions-cell {
   width: 132px;
@@ -507,7 +532,7 @@
 }
 
 .pending-member-review-table {
-  min-width: 860px;
+  min-width: 1040px;
 }
 
 .pending-member-review-table th:first-child,
@@ -517,19 +542,27 @@
 }
 
 .pending-member-review-table th:nth-child(2) {
-  width: 26%;
+  width: 22%;
 }
 
 .pending-member-review-table th:nth-child(3) {
-  width: 14%;
+  width: 12%;
 }
 
 .pending-member-review-table th:nth-child(4) {
-  width: 24%;
+  width: 10%;
 }
 
 .pending-member-review-table th:nth-child(5) {
   width: 18%;
+}
+
+.pending-member-review-table th:nth-child(6) {
+  width: 14%;
+}
+
+.pending-member-review-table th:nth-child(7) {
+  width: 10%;
 }
 
 .pending-member-review-table th:last-child {

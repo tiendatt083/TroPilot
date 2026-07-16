@@ -45,12 +45,14 @@ export default function AdminBuildingReceiptPage() {
 
   const renderActions = (receipt) => (
     <button
-      className="secondary-button compact-button"
+      aria-label={t('common.view')}
+      className="icon-action-button"
+      data-tooltip={t('common.view')}
       type="button"
       disabled={loadingDetailId === receipt.id}
       onClick={() => handleView(receipt)}
     >
-      {t('common.view')}
+      <EyeIcon />
     </button>
   );
 
@@ -71,7 +73,7 @@ export default function AdminBuildingReceiptPage() {
       )}
 
       <ActionDialog
-        className="action-dialog-wide"
+        className="action-dialog-wide receipt-detail-dialog"
         eyebrow={selectedReceipt?.receiptCode || t('workspace.receipts.eyebrow')}
         labelledBy="building-receipt-detail-dialog-title"
         open={Boolean(selectedReceipt)}
@@ -81,5 +83,14 @@ export default function AdminBuildingReceiptPage() {
         <ReceiptDetail receipt={selectedReceipt} />
       </ActionDialog>
     </div>
+  );
+}
+
+function EyeIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24">
+      <path d="M2.5 12s3.4-6 9.5-6 9.5 6 9.5 6-3.4 6-9.5 6-9.5-6-9.5-6Z" />
+      <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+    </svg>
   );
 }

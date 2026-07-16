@@ -1,12 +1,42 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
 import * as vehicleApi from '../../features/residents/vehicleApi.js';
+import FilterBar from '../common/FilterBar.jsx';
 import LineIcon from '../common/LineIcon.jsx';
 import VehicleTable from '../VehicleTable.jsx';
+import { formatEnumLabel } from '../../utils/i18nFormat.js';
+import { normalizeSearchText } from '../../utils/searchText.js';
+
+const emptyFilters = {
+  search: '',
+  status: ''
+};
 
 function hasVehicleActions(vehicle) {
   return vehicle.status === 'PENDING' || vehicle.status === 'ACTIVE';
+}
+
+function vehicleMatchesSearch(vehicle, searchValue) {
+  if (!searchValue) {
+    return true;
+  }
+
+  const searchableValues = [
+    vehicle.licensePlate,
+    vehicle.vehicleType,
+    vehicle.roomCode,
+    vehicle.roomName,
+    vehicle.ownerName,
+    vehicle.ownerType,
+    vehicle.brand,
+    vehicle.color,
+    vehicle.status,
+    vehicle.startDate,
+    vehicle.endDate
+  ];
+
+  return searchableValues.some((value) => normalizeSearchText(value).includes(searchValue));
 }
 
 export default function BuildingVehicleWorkspace({ getVehicles, canManage = false }) {
@@ -17,8 +47,20 @@ export default function BuildingVehicleWorkspace({ getVehicles, canManage = fals
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [processingId, setProcessingId] = useState(null);
+  const [filters, setFilters] = useState(emptyFilters);
 
   const buildingFilter = { buildingId: building.id };
+  const filteredVehicles = useMemo(() => {
+    const searchValue = normalizeSearchText(filters.search);
+
+    return vehicles.filter((vehicle) => (
+      vehicleMatchesSearch(vehicle, searchValue)
+      && (!filters.status || vehicle.status === filters.status)
+    ));
+  }, [filters, vehicles]);
+  const vehicleStatusOptions = useMemo(() => (
+    Array.from(new Set(vehicles.map((vehicle) => vehicle.status).filter(Boolean)))
+  ), [vehicles]);
 
   const loadVehicles = async () => {
     setError('');
@@ -106,6 +148,10 @@ export default function BuildingVehicleWorkspace({ getVehicles, canManage = fals
       )
     : undefined;
 
+  const handleClearFilters = () => {
+    setFilters(emptyFilters);
+  };
+
   return (
     <div className="building-workspace">
       <div className="building-section-header">
@@ -116,7 +162,34 @@ export default function BuildingVehicleWorkspace({ getVehicles, canManage = fals
       {loading ? (
         <div className="empty-state">{t('workspace.vehicles.loading')}</div>
       ) : (
-        <VehicleTable vehicles={vehicles} renderActions={renderActions} variant="building" />
+        <>
+          <FilterBar
+            as="div"
+            className="workspace-filter-row"
+            searchAriaLabel={t('workspace.filters.searchAria')}
+            searchPlaceholder={t('workspace.filters.searchPlaceholder')}
+            searchValue={filters.search}
+            filters={[
+              {
+                name: 'status',
+                value: filters.status,
+                ariaLabel: t('workspace.filters.statusAria'),
+                onChange: (value) => setFilters((current) => ({ ...current, status: value })),
+                options: [
+                  { value: '', label: t('workspace.filters.allStatuses') },
+                  ...vehicleStatusOptions.map((status) => ({
+                    value: status,
+                    label: formatEnumLabel(t, 'vehicleStatus', status)
+                  }))
+                ]
+              }
+            ]}
+            clearLabel={t('common.clear')}
+            onClear={handleClearFilters}
+            onSearchChange={(value) => setFilters((current) => ({ ...current, search: value }))}
+          />
+          <VehicleTable vehicles={filteredVehicles} renderActions={renderActions} variant="building" />
+        </>
       )}
     </div>
   );

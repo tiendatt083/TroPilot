@@ -101,6 +101,7 @@ public class InvoiceMapper {
                 .id(item.getId())
                 .serviceFeeId(serviceFee == null ? null : serviceFee.getId())
                 .itemName(item.getItemName())
+                .calculationType(serviceFee == null ? null : serviceFee.getCalculationType().name())
                 .quantity(item.getQuantity())
                 .unitPrice(item.getUnitPrice())
                 .amount(item.getAmount())

@@ -271,7 +271,7 @@ export default function UtilityReadingForm({
             value={form.editReason}
             onChange={handleChange}
             maxLength={1000}
-            rows="4"
+            rows="3"
             required
           />
         </>
@@ -317,11 +317,23 @@ function ElectricityReadingSubform({
             <button
               className="secondary-button utility-reading-fetch-button"
               type="button"
+              aria-label={
+                fetching
+                  ? t('forms.utilityReading.fetchingReadings')
+                  : t('forms.utilityReading.fetchMeterShort')
+              }
+              title={
+                fetching
+                  ? t('forms.utilityReading.fetchingReadings')
+                  : t('forms.utilityReading.fetchMeterShort')
+              }
               onClick={onFetch}
               disabled={loading || fetching || !form.roomId || !form.readingDate}
             >
               <LineIcon name="refresh" />
-              {fetching ? t('forms.utilityReading.fetchingReadings') : t('forms.utilityReading.fetchMeterShort')}
+              <span className="visually-hidden">
+                {fetching ? t('forms.utilityReading.fetchingReadings') : t('forms.utilityReading.fetchMeterShort')}
+              </span>
             </button>
           </span>
         )}
@@ -392,11 +404,23 @@ function WaterReadingSubform({
             <button
               className="secondary-button utility-reading-fetch-button"
               type="button"
+              aria-label={
+                fetching
+                  ? t('forms.utilityReading.fetchingReadings')
+                  : t('forms.utilityReading.fetchMeterShort')
+              }
+              title={
+                fetching
+                  ? t('forms.utilityReading.fetchingReadings')
+                  : t('forms.utilityReading.fetchMeterShort')
+              }
               onClick={onFetch}
               disabled={loading || fetching || !form.roomId || !form.readingDate}
             >
               <LineIcon name="refresh" />
-              {fetching ? t('forms.utilityReading.fetchingReadings') : t('forms.utilityReading.fetchMeterShort')}
+              <span className="visually-hidden">
+                {fetching ? t('forms.utilityReading.fetchingReadings') : t('forms.utilityReading.fetchMeterShort')}
+              </span>
             </button>
           </span>
         )}
@@ -456,12 +480,7 @@ function MeterDisplay({ label, value }) {
 
 function PreviousReadingEvidence({ previousReading, t }) {
   if (!previousReading) {
-    return (
-      <div className="previous-reading-panel">
-        <strong>{t('forms.utilityReading.previousMonthEvidence')}</strong>
-        <span className="table-subtext">{t('forms.utilityReading.noPreviousEvidence')}</span>
-      </div>
-    );
+    return null;
   }
 
   const electricityImageUrl = previousReading.electricityImageUrl
@@ -470,6 +489,10 @@ function PreviousReadingEvidence({ previousReading, t }) {
   const waterImageUrl = previousReading.waterImageUrl
     ? resolveFileUrl(previousReading.waterImageUrl)
     : null;
+
+  if (!electricityImageUrl && !waterImageUrl) {
+    return null;
+  }
 
   return (
     <div className="previous-reading-panel">
@@ -482,15 +505,15 @@ function PreviousReadingEvidence({ previousReading, t }) {
       </div>
       <div className="previous-reading-images">
         {electricityImageUrl && (
-          <a className="previous-reading-image-link" href={electricityImageUrl} target="_blank" rel="noreferrer">
-            <span>{t('forms.utilityReading.previousElectricityImage')}</span>
-            <img src={electricityImageUrl} alt={t('forms.utilityReading.previousElectricityAlt')} />
+          <a className="secondary-link compact-link previous-reading-image-link" href={electricityImageUrl} target="_blank" rel="noreferrer">
+            <LineIcon name="eye" />
+            {t('forms.utilityReading.previousElectricityImage')}
           </a>
         )}
         {waterImageUrl && (
-          <a className="previous-reading-image-link" href={waterImageUrl} target="_blank" rel="noreferrer">
-            <span>{t('forms.utilityReading.previousWaterImage')}</span>
-            <img src={waterImageUrl} alt={t('forms.utilityReading.previousWaterAlt')} />
+          <a className="secondary-link compact-link previous-reading-image-link" href={waterImageUrl} target="_blank" rel="noreferrer">
+            <LineIcon name="eye" />
+            {t('forms.utilityReading.previousWaterImage')}
           </a>
         )}
       </div>

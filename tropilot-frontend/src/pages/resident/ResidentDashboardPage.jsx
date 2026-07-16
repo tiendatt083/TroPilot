@@ -395,8 +395,8 @@ export default function ResidentDashboardPage() {
             </article>
           </div>
 
-          <div className="dashboard-two-column">
-            <article className="dashboard-panel">
+          <div className="dashboard-two-column resident-dashboard-compact-list-grid">
+            <article className="dashboard-panel resident-compact-list-panel">
               <h2>{t('dashboard.resident.labels.activeVehicles')}</h2>
               {activeVehicles.length > 0 ? (
                 <ul className="dashboard-list">
@@ -414,7 +414,7 @@ export default function ResidentDashboardPage() {
               )}
             </article>
 
-            <article className="dashboard-panel">
+            <article className="dashboard-panel resident-compact-list-panel">
               <h2>{t('dashboard.resident.labels.recentMaintenanceRequests')}</h2>
               {recentMaintenanceRequests.length > 0 ? (
                 <ul className="dashboard-list">

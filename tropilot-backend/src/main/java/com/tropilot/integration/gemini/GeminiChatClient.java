@@ -64,6 +64,8 @@ public class GeminiChatClient {
             concisely but still include the related record list required by the count and summary rule above.
             Answer in the same language as the user's latest message. If the latest message is Vietnamese, answer in Vietnamese.
             If the latest message is English, answer in English.
+            Use plain text only. Do not use Markdown, asterisks, bold markers, tables, or bullet symbols.
+            Write compact paragraphs or short plain lines when listing details.
             Keep answers practical and focused. Do not add unsupported assumptions.
             """;
 

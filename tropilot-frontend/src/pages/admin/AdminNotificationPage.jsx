@@ -261,7 +261,7 @@ export default function AdminNotificationPage() {
       {error && <div className="alert error-alert">{error}</div>}
 
       <ActionDialog
-        className="action-dialog-wide"
+        className="action-dialog-wide notification-create-dialog"
         eyebrow={t('notifications.adminEyebrow')}
         labelledBy="admin-notification-create-dialog-title"
         open={composerOpen}

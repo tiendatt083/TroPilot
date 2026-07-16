@@ -12,6 +12,7 @@ public class InvoiceItemResponse {
     private Long id;
     private Long serviceFeeId;
     private String itemName;
+    private String calculationType;
     private BigDecimal quantity;
     private BigDecimal unitPrice;
     private BigDecimal amount;

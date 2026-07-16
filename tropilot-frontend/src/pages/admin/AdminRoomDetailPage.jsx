@@ -209,7 +209,7 @@ export default function AdminRoomDetailPage() {
   const canAssignHead = !hasHeadResident && room.status === 'EMPTY';
 
   return (
-    <section className="content-section">
+    <section className="content-section admin-room-detail-page">
       <div className="page-title-row">
         <PageHeader eyebrow={formatRoomCode(room)} title={room.roomName} />
         <div className="button-row">

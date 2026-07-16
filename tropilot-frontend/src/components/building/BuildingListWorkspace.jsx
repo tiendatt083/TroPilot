@@ -9,6 +9,29 @@ import EmptyState from '../common/EmptyState.jsx';
 import FilterBar from '../common/FilterBar.jsx';
 import ManagementPageHero from '../common/ManagementPageHero.jsx';
 import PageHeader from '../common/PageHeader.jsx';
+import { exportRowsToExcel } from '../../utils/excelExport.js';
+import { normalizeSearchText } from '../../utils/searchText.js';
+
+function buildingMatchesSearch(building, searchValue) {
+  if (!searchValue) {
+    return true;
+  }
+
+  return [
+    building.buildingCode,
+    building.name,
+    building.address
+  ].some((value) => normalizeSearchText(value).includes(searchValue));
+}
+
+function buildExportFileName() {
+  const now = new Date();
+  const day = String(now.getDate()).padStart(2, '0');
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const year = now.getFullYear();
+
+  return `tropilot-buildings-${day}-${month}-${year}.xlsx`;
+}
 
 export default function BuildingListWorkspace({
   getBuildings,
@@ -40,8 +63,9 @@ export default function BuildingListWorkspace({
     setError('');
 
     try {
-      const response = await getBuildings(searchValue);
-      setBuildings(response.data);
+      const response = await getBuildings();
+      const searchText = normalizeSearchText(searchValue);
+      setBuildings((response.data || []).filter((building) => buildingMatchesSearch(building, searchText)));
     } catch (apiError) {
       setError(apiError.response?.data?.message || t('workspace.buildings.loadError'));
     } finally {
@@ -142,6 +166,29 @@ export default function BuildingListWorkspace({
     }
   };
 
+  const handleExport = () => {
+    setMessage('');
+    setError('');
+
+    if (buildings.length === 0) {
+      setError(t('workspace.buildings.exportEmpty'));
+      return;
+    }
+
+    const rows = buildings.map((building) => ({
+      [t('tables.common.code')]: building.buildingCode || t('common.notProvided'),
+      [t('tables.common.name')]: building.name || t('common.notProvided'),
+      [t('buildingOverview.fields.address')]: building.address || t('common.notProvided'),
+      [t('buildingOverview.fields.floors')]: building.floors ?? t('common.notProvided')
+    }));
+
+    exportRowsToExcel({
+      rows,
+      fileName: buildExportFileName(),
+      sheetName: t('workspace.buildings.exportSheetName')
+    });
+  };
+
   const columns = [
     { key: 'buildingCode', header: t('tables.common.code') },
     { key: 'name', header: t('tables.common.name') },
@@ -200,8 +247,8 @@ export default function BuildingListWorkspace({
       )
     }
   ];
-  const createAction = canManage && (
-    canUseDialogForm ? (
+  const createAction = canManage
+    ? (canUseDialogForm ? (
       <button className="button-link" type="button" onClick={handleOpenCreate}>
         {t('workspace.buildings.create')}
       </button>
@@ -209,7 +256,15 @@ export default function BuildingListWorkspace({
       <Link className="button-link" to={createPath}>
         {t('workspace.buildings.create')}
       </Link>
-    ) : null
+    ) : null)
+    : null;
+  const buildingActions = canManage && (
+    <>
+      <button className="secondary-button inline-button" type="button" onClick={handleExport}>
+        {t('workspace.buildings.exportExcel')}
+      </button>
+      {createAction}
+    </>
   );
 
   return (
@@ -218,7 +273,7 @@ export default function BuildingListWorkspace({
         <ManagementPageHero
           title={t('buildingManagement.adminTitle')}
           description={t('buildingManagement.summary', { count: buildings.length })}
-          actions={createAction}
+          actions={buildingActions}
         />
       ) : (
         <div className="page-title-row">

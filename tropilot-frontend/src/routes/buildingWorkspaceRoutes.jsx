@@ -18,6 +18,7 @@ import AdminBuildingTaskPage from '../pages/admin/AdminBuildingTaskPage.jsx';
 import AdminBuildingUserPage from '../pages/admin/AdminBuildingUserPage.jsx';
 import AdminBuildingUtilityReadingPage from '../pages/admin/AdminBuildingUtilityReadingPage.jsx';
 import AdminBuildingVehiclePage from '../pages/admin/AdminBuildingVehiclePage.jsx';
+import AdminRoomCreatePage from '../pages/admin/AdminRoomCreatePage.jsx';
 import AdminRoomDetailPage from '../pages/admin/AdminRoomDetailPage.jsx';
 import AdminRoomEditPage from '../pages/admin/AdminRoomEditPage.jsx';
 import AdminRoomMembersPage from '../pages/admin/AdminRoomMembersPage.jsx';
@@ -36,6 +37,7 @@ export const adminBuildingWorkspaceRoutes = (
   <Route path="buildings/:id" element={<AdminBuildingWorkspaceLayout />}>
     <Route index element={<AdminBuildingDetailPage />} />
     <Route path="rooms" element={<AdminBuildingRoomsPage />} />
+    <Route path="rooms/create" element={<AdminRoomCreatePage />} />
     <Route path="rooms/:roomId" element={<AdminRoomDetailPage />} />
     <Route path="rooms/:roomId/edit" element={<AdminRoomEditPage />} />
     <Route path="rooms/:roomId/members" element={<AdminRoomMembersPage />} />

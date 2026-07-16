@@ -16,6 +16,7 @@ export default function AdminAccountDirectoryTable({
   showPhoneColumn = true,
   showRole = false,
   showRoom = false,
+  showRoomNameSubtext = true,
   showStatus = true,
   showTemporaryPassword = true,
   showMembersInline = false,
@@ -110,7 +111,12 @@ export default function AdminAccountDirectoryTable({
                   <td>{account.email}</td>
                   {showRoom && (
                     <td>
-                      <RoomCell account={account} getRoomUrl={getRoomUrl} t={t} />
+                      <RoomCell
+                        account={account}
+                        getRoomUrl={getRoomUrl}
+                        showRoomNameSubtext={showRoomNameSubtext}
+                        t={t}
+                      />
                     </td>
                   )}
                   {showRole && (
@@ -225,7 +231,7 @@ function IconTableActions({ account, allowDelete, deleting, onDelete, onView, t 
   );
 }
 
-function RoomCell({ account, getRoomUrl, t }) {
+function RoomCell({ account, getRoomUrl, showRoomNameSubtext = true, t }) {
   const label = formatRoom(account, t);
   const roomName = formatRoomName(account);
   const roomUrl = typeof getRoomUrl === 'function' ? getRoomUrl(account) : '';
@@ -239,7 +245,7 @@ function RoomCell({ account, getRoomUrl, t }) {
       ) : (
         <span>{label}</span>
       )}
-      {roomName && roomName !== label && (
+      {showRoomNameSubtext && roomName && roomName !== label && (
         <span className="table-subtext">{roomName}</span>
       )}
     </>

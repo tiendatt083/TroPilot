@@ -403,12 +403,38 @@ html[data-theme="dark"] .staff-shell .staff-building-workspace-shell .building-w
   margin-top: var(--space-4);
 }
 
+.resident-invoice-detail-page .resident-invoice-workspace {
+  margin-top: var(--space-4);
+}
+
 .resident-invoice-page .data-table tbody td,
 .resident-invoice-page .data-table tbody td strong,
 .resident-invoice-page .data-table tbody .table-subtext,
 .resident-invoice-page .data-table tbody .status-pill,
 .resident-invoice-page .data-table tbody [class*="invoice-status-"] {
   font-weight: var(--font-weight-regular);
+}
+
+.resident-invoice-detail-page .invoice-detail-panel .detail-panel span,
+.resident-invoice-detail-page .payment-panel .page-header span,
+.resident-invoice-detail-page .invoice-item-table th {
+  font-weight: var(--font-weight-medium);
+  text-transform: none;
+}
+
+.resident-invoice-detail-page .invoice-detail-panel .detail-panel strong,
+.resident-invoice-detail-page .invoice-detail-panel .detail-panel .status-pill,
+.resident-invoice-detail-page .invoice-item-table td,
+.resident-invoice-detail-page .invoice-item-table td strong,
+.resident-invoice-detail-page .payment-panel .empty-state,
+.resident-invoice-detail-page .payment-panel .data-table td {
+  font-weight: var(--font-weight-regular);
+}
+
+.resident-invoice-detail-page .payment-panel .page-header h1,
+.resident-invoice-detail-page .payment-panel .page-header h2,
+.resident-invoice-detail-page .payment-panel .page-header h3 {
+  font-weight: var(--font-weight-medium);
 }
 
 .resident-notification-page .notification-inbox-list {
@@ -457,9 +483,9 @@ html[data-theme="dark"] .staff-shell .staff-building-workspace-shell .building-w
 }
 
 .resident-contract-page > .detail-panel > div > span {
-  color: #000000;
-  font-weight: 850;
-  text-transform: uppercase;
+  color: var(--color-text);
+  font-weight: var(--font-weight-medium);
+  text-transform: none;
 }
 
 .resident-contract-page > .detail-panel > div > strong {
@@ -509,6 +535,55 @@ html[data-theme="dark"] .staff-shell .staff-building-workspace-shell .building-w
 .resident-contract-page .contract-confirm-dialog-actions {
   justify-content: flex-end;
   margin-top: 0;
+}
+
+.resident-dashboard-page :is(.detail-panel, .dashboard-detail-panel, .data-table, .dashboard-panel),
+.resident-contract-page :is(.detail-panel, .data-table),
+.resident-invoice-page :is(.detail-panel, .data-table),
+.resident-cost-page :is(.detail-panel, .data-table, .resident-cost-panel),
+.resident-member-page :is(.detail-panel, .data-table),
+.resident-vehicle-page :is(.detail-panel, .data-table),
+.resident-feedback-page :is(.detail-panel, .data-table),
+.resident-equipment-page :is(.detail-panel, .data-table),
+.resident-profile-page :is(.detail-panel, .data-table) {
+  font-weight: var(--font-weight-regular);
+}
+
+.resident-dashboard-page :is(.detail-panel span, .dashboard-detail-panel span, .data-table th),
+.resident-contract-page :is(.detail-panel span, .data-table th),
+.resident-invoice-page :is(.detail-panel span, .data-table th),
+.resident-cost-page :is(.detail-panel span, .data-table th),
+.resident-member-page :is(.detail-panel span, .data-table th),
+.resident-vehicle-page :is(.detail-panel span, .data-table th),
+.resident-feedback-page :is(.detail-panel span, .data-table th),
+.resident-equipment-page :is(.detail-panel span, .data-table th),
+.resident-profile-page :is(.detail-panel span, .data-table th) {
+  font-weight: var(--font-weight-medium);
+  text-transform: none;
+}
+
+.resident-dashboard-page :is(.detail-panel strong, .dashboard-detail-panel strong, .data-table td strong),
+.resident-contract-page :is(.detail-panel strong, .data-table td strong),
+.resident-invoice-page :is(.detail-panel strong, .data-table td strong),
+.resident-cost-page :is(.detail-panel strong, .data-table td strong),
+.resident-member-page :is(.detail-panel strong, .data-table td strong),
+.resident-vehicle-page :is(.detail-panel strong, .data-table td strong),
+.resident-feedback-page :is(.detail-panel strong, .data-table td strong),
+.resident-equipment-page :is(.detail-panel strong, .data-table td strong),
+.resident-profile-page :is(.detail-panel strong, .data-table td strong) {
+  font-weight: var(--font-weight-regular);
+}
+
+.resident-dashboard-page :is(.status-pill, button, .button-link, .secondary-button, .secondary-link),
+.resident-contract-page :is(.status-pill, button, .button-link, .secondary-button, .secondary-link),
+.resident-invoice-page :is(.status-pill, button, .button-link, .secondary-button, .secondary-link),
+.resident-cost-page :is(.status-pill, button, .button-link, .secondary-button, .secondary-link),
+.resident-member-page :is(.status-pill, button, .button-link, .secondary-button, .secondary-link),
+.resident-vehicle-page :is(.status-pill, button, .button-link, .secondary-button, .secondary-link),
+.resident-feedback-page :is(.status-pill, button, .button-link, .secondary-button, .secondary-link),
+.resident-equipment-page :is(.status-pill, button, .button-link, .secondary-button, .secondary-link),
+.resident-profile-page :is(.status-pill, button, .button-link, .secondary-button, .secondary-link) {
+  font-weight: var(--font-weight-medium);
 }
 
 .table-actions,
@@ -1344,4 +1419,368 @@ html[data-theme="dark"] .resident-profile-page .profile-role-pill {
   color: var(--resident-text);
   background: var(--resident-accent-soft);
   box-shadow: inset 0 0 0 1px var(--resident-border-strong);
+}
+
+.equipment-page .building-equipment-filter-row {
+  gap: 0.45rem;
+}
+
+.equipment-page .building-equipment-filter-row .instant-search-control {
+  flex: 1 1 720px;
+  min-width: 360px;
+}
+
+.equipment-page .building-equipment-filter-row select {
+  flex: 0 0 160px;
+  width: 160px;
+  min-width: 140px;
+  max-width: 170px;
+  padding-left: 0.76rem;
+  padding-right: 1.9rem;
+}
+
+.equipment-page .building-equipment-filter-row select[name="condition"] {
+  flex-basis: 180px;
+  width: 180px;
+  max-width: 190px;
+}
+
+.equipment-page .building-equipment-filter-row .instant-clear-button {
+  padding-right: 0.78rem;
+  padding-left: 0.78rem;
+  font-weight: 400;
+}
+
+@media (max-width: 980px) {
+  .equipment-page .building-equipment-filter-row .instant-search-control,
+  .equipment-page .building-equipment-filter-row select,
+  .equipment-page .building-equipment-filter-row select[name="condition"] {
+    flex: 1 1 100%;
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.building-workspace,
+.modern-user-page {
+  gap: var(--space-4);
+}
+
+.building-section {
+  gap: var(--space-3);
+}
+
+.building-section + .building-section {
+  padding-top: var(--space-4);
+}
+
+.building-section-header {
+  align-items: center;
+}
+
+.page-title-row {
+  margin-bottom: var(--space-4);
+  padding-bottom: 0.85rem;
+}
+
+.compact-title-row {
+  padding-bottom: 0.72rem;
+}
+
+.search-row,
+.filter-row,
+.user-filter-row,
+.account-filter-row,
+.building-filter-row,
+.building-user-filter-row,
+.equipment-filter-row,
+.building-equipment-filter-row,
+.admin-equipment-filter-row,
+.month-filter-row,
+.filter-bar,
+.instant-filter-bar,
+.instant-account-filter,
+.account-search-control,
+.invoice-search-tools,
+.invoice-filter-panel,
+.cashflow-filter-card,
+.resident-directory-control-panel,
+.pending-member-control-panel,
+.building-user-control-panel,
+.account-control-panel,
+.account-search-only-panel {
+  min-height: 52px;
+}
+
+.instant-filter-bar:not(.invoice-search-tools):not(.account-search-control),
+.account-control-panel,
+.account-search-only-panel {
+  padding: 0.58rem;
+}
+
+.search-row input,
+.filter-row input,
+.user-filter-row input,
+.account-filter-row input,
+.building-filter-row input,
+.building-user-filter-row input,
+.equipment-filter-row input,
+.building-equipment-filter-row input,
+.admin-equipment-filter-row input,
+.month-filter-row input,
+.filter-bar input,
+.instant-filter-bar input,
+.instant-account-filter input,
+.account-search-control input,
+.invoice-search-tools input,
+.invoice-filter-panel input,
+.cashflow-filter-card input,
+.resident-directory-control-panel input,
+.pending-member-control-panel input,
+.building-user-control-panel input,
+.account-control-panel input,
+.account-search-only-panel input,
+.search-row select,
+.filter-row select,
+.user-filter-row select,
+.account-filter-row select,
+.building-filter-row select,
+.building-user-filter-row select,
+.equipment-filter-row select,
+.building-equipment-filter-row select,
+.admin-equipment-filter-row select,
+.month-filter-row select,
+.filter-bar select,
+.instant-filter-bar select,
+.instant-account-filter select,
+.account-search-control select,
+.invoice-filter-panel select,
+.cashflow-filter-card select,
+.resident-directory-control-panel select,
+.pending-member-control-panel select,
+.building-user-control-panel select,
+.account-control-panel select,
+.account-search-only-panel select,
+.search-row button,
+.filter-row button,
+.user-filter-row button,
+.account-filter-row button,
+.building-filter-row button,
+.building-user-filter-row button,
+.equipment-filter-row button,
+.building-equipment-filter-row button,
+.admin-equipment-filter-row button,
+.month-filter-row button,
+.filter-bar button,
+.instant-filter-bar button,
+.instant-account-filter button,
+.account-search-control button,
+.invoice-search-tools button,
+.invoice-filter-panel button,
+.cashflow-filter-card button,
+.resident-directory-control-panel button,
+.pending-member-control-panel button,
+.building-user-control-panel button,
+.account-control-panel button,
+.account-search-only-panel button,
+.instant-clear-button,
+.compact-clear-filter {
+  height: 40px;
+  min-height: 40px;
+}
+
+.utility-reading-dialog {
+  width: min(700px, calc(100vw - 48px));
+  max-height: min(90vh, 820px);
+  padding: 1rem;
+}
+
+.utility-reading-dialog .utility-reading-shared-form {
+  grid-template-columns: minmax(220px, 360px) minmax(150px, 165px);
+}
+
+.utility-reading-dialog .utility-meter-reading-row {
+  grid-template-columns: repeat(2, minmax(0, 220px));
+  justify-content: start;
+}
+
+.utility-reading-dialog .utility-meter-field,
+.utility-reading-dialog .meter-readonly-value,
+.utility-reading-dialog .utility-reading-meter-value-input {
+  width: 100%;
+}
+
+.utility-reading-dialog .utility-reading-entry-form textarea {
+  min-height: 68px;
+}
+
+@media (max-width: 720px) {
+  .utility-reading-dialog .utility-reading-shared-form,
+  .utility-reading-dialog .utility-meter-reading-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.task-create-dialog {
+  width: min(760px, calc(100vw - 48px));
+  padding: 1rem;
+}
+
+.task-create-dialog .account-modal-header {
+  padding-bottom: 0.72rem;
+}
+
+.task-create-dialog .account-modal-header h2 {
+  margin-top: 0.12rem;
+  font-size: 1.35rem;
+}
+
+.task-create-dialog .task-form {
+  gap: 0.65rem;
+  padding: 0.9rem;
+}
+
+.task-create-dialog .task-form .form-grid {
+  gap: 0.6rem;
+}
+
+.task-create-dialog .task-form label {
+  margin-bottom: 0.28rem;
+  font-size: 0.82rem;
+  font-weight: 650;
+}
+
+.task-create-dialog .task-form input,
+.task-create-dialog .task-form select {
+  height: 38px;
+  min-height: 38px;
+  padding-top: 0.42rem;
+  padding-bottom: 0.42rem;
+}
+
+.task-create-dialog .task-form textarea {
+  min-height: 104px;
+  padding: 0.55rem 0.65rem;
+}
+
+.task-create-dialog .task-form > button[type="submit"] {
+  min-height: 38px;
+  margin-top: 0.3rem;
+}
+
+.invoice-modern-page .invoice-table tbody td,
+.invoice-modern-page .invoice-table tbody td strong,
+.invoice-modern-page .invoice-table .invoice-id-cell,
+.invoice-modern-page .invoice-table .invoice-number-cell strong,
+.invoice-modern-page .invoice-table .invoice-amount-cell {
+  font-weight: var(--font-weight-regular);
+}
+
+.invoice-modern-page .invoice-table tbody td {
+  color: var(--color-text);
+}
+
+.invoice-action-dialog .invoice-preview-panel,
+.invoice-action-dialog .invoice-preview-panel strong,
+.invoice-action-dialog .invoice-preview-summary-grid strong,
+.invoice-action-dialog .invoice-preview-item-table td,
+.invoice-action-dialog .invoice-preview-item-table td strong,
+.invoice-action-dialog .invoice-preview-item-amount,
+.invoice-action-dialog .invoice-bulk-summary strong,
+.invoice-action-dialog .invoice-bulk-table-heading strong,
+.invoice-action-dialog .invoice-bulk-table td,
+.invoice-action-dialog .invoice-bulk-table td strong {
+  font-weight: var(--font-weight-regular);
+}
+
+.invoice-action-dialog .invoice-preview-header > strong {
+  font-weight: var(--font-weight-medium);
+}
+
+.invoice-action-dialog .invoice-preview-header span,
+.invoice-action-dialog .invoice-preview-summary-grid span,
+.invoice-action-dialog .invoice-bulk-summary span,
+.invoice-action-dialog .invoice-bulk-table-heading span,
+.invoice-action-dialog .invoice-preview-notes span,
+.invoice-action-dialog .invoice-create-form-grid label {
+  font-weight: var(--font-weight-medium);
+  text-transform: none;
+}
+
+.invoice-action-dialog .invoice-command-panel > .primary-action-button,
+.invoice-action-dialog .invoice-create-form-grid > button[type="submit"] {
+  display: inline-flex;
+  min-height: 46px;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0;
+}
+
+.invoice-action-dialog .invoice-create-form-grid > button[type="submit"] {
+  width: 100%;
+}
+
+.invoice-action-dialog .invoice-command-panel > .primary-action-button {
+  width: calc(100% - 1.7rem);
+  margin-inline: 0.85rem;
+}
+
+.invoice-action-dialog .invoice-detail-panel .detail-panel span,
+.invoice-action-dialog .invoice-detail-panel .invoice-item-table th {
+  font-weight: var(--font-weight-medium);
+}
+
+.invoice-action-dialog .invoice-detail-panel .detail-panel strong,
+.invoice-action-dialog .invoice-detail-panel .detail-panel strong .status-pill,
+.invoice-action-dialog .invoice-detail-panel .invoice-item-table td,
+.invoice-action-dialog .invoice-detail-panel .invoice-item-table td strong {
+  font-weight: var(--font-weight-regular);
+}
+
+.invoice-modern-page .invoice-filter-panel {
+  display: block;
+}
+
+.invoice-modern-page .invoice-search-tools {
+  display: flex;
+  width: 100%;
+}
+
+.invoice-modern-page .invoice-search-tools .instant-search-control {
+  flex: 1 1 auto;
+  min-width: 260px;
+}
+
+.invoice-modern-page .invoice-status-filter {
+  flex: 0 0 170px;
+}
+
+.invoice-modern-page .invoice-status-filter select {
+  width: 100%;
+  min-width: 0;
+}
+
+.receipt-detail-dialog .receipt-detail-panel .detail-panel span,
+.receipt-detail-dialog .receipt-detail-panel .detail-panel strong,
+.receipt-detail-dialog .receipt-detail-panel .detail-panel p,
+.receipt-detail-dialog .receipt-detail-panel .status-pill {
+  font-weight: var(--font-weight-regular);
+}
+
+.receipt-table td:last-child,
+.expense-table td:last-child {
+  text-align: center;
+}
+
+.receipt-table td:last-child .icon-action-button,
+.expense-table td:last-child .icon-action-button {
+  margin-inline: auto;
+}
+
+@media (max-width: 720px) {
+  .invoice-modern-page .invoice-status-filter,
+  .invoice-modern-page .invoice-sort-button,
+  .invoice-modern-page .instant-clear-button {
+    width: 100%;
+  }
 }

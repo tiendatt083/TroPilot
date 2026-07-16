@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as buildingApi from '../../api/buildingApi.js';
+import * as contractApi from '../../api/contractApi.js';
 import * as equipmentApi from '../../api/equipmentApi.js';
 import * as feedbackApi from '../../api/feedbackApi.js';
 import * as invoiceApi from '../../api/invoiceApi.js';
@@ -20,6 +21,7 @@ const EMPTY_INSIGHTS = {
   feedbacks: [],
   maintenanceRequests: [],
   equipment: [],
+  contracts: [],
   buildingUsers: []
 };
 
@@ -118,6 +120,24 @@ function getInvoiceCode(invoice) {
   return `HD-${month}-${String(invoice.id || '').padStart(3, '0')}`;
 }
 
+function getDaysUntil(value) {
+  if (!value) {
+    return null;
+  }
+
+  const target = new Date(value);
+
+  if (!Number.isFinite(target.getTime())) {
+    return null;
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  target.setHours(0, 0, 0, 0);
+
+  return Math.ceil((target.getTime() - today.getTime()) / 86_400_000);
+}
+
 function getRoomLabel(record, fallback) {
   return record.roomCode || record.roomName || fallback;
 }
@@ -138,6 +158,17 @@ function getBuildingName(building) {
   return [building.name, building.buildingCode ? `(${building.buildingCode})` : '']
     .filter(Boolean)
     .join(' ');
+}
+
+function isActiveResidentOccupant(user) {
+  const recordType = String(user.recordType || '');
+  const role = String(user.role || '');
+  const status = String(user.status || '');
+
+  return (
+    (recordType === 'USER_ACCOUNT' && role === 'RESIDENT_HEAD' && status === 'ACTIVE')
+    || (recordType === 'ROOM_MEMBER' && status === 'APPROVED')
+  );
 }
 
 function getStatusClass(prefix, status) {
@@ -183,8 +214,7 @@ function buildBuildingRows(buildings, rooms, invoices, buildingUsers, locale, cu
     const buildingInvoices = invoices.filter((invoice) => String(invoice.buildingId) === String(building.id));
     const residentCount = buildingUsers.filter((user) => (
       String(user.buildingId) === String(building.id)
-      && String(user.role || '').includes('RESIDENT')
-      && user.status !== 'LEFT'
+      && isActiveResidentOccupant(user)
     )).length;
     const collected = buildingInvoices
       .filter((invoice) => invoice.status === 'PAID')
@@ -197,6 +227,8 @@ function buildBuildingRows(buildings, rooms, invoices, buildingUsers, locale, cu
       id: building.id,
       name: getBuildingName(building),
       rooms: buildingRooms.length,
+      occupiedRooms: buildingRooms.filter((room) => room.status === 'OCCUPIED').length,
+      emptyRooms: buildingRooms.filter((room) => room.status === 'EMPTY').length,
       residents: residentCount,
       debt: formatCurrency(debt, locale, currencyLabel),
       collected: formatCurrency(collected, locale, currencyLabel)
@@ -239,7 +271,7 @@ function PanelTitle({ icon, title, action }) {
 
 function BuildingSummaryTable({ rows, t }) {
   return (
-    <section className="ops-panel ops-building-summary-panel">
+    <section className="ops-panel ops-building-summary-panel ops-building-summary-panel-wide">
       <PanelTitle icon="building" title={t('dashboard.ops.buildingSummary.title')} />
       <div className="ops-table-scroll">
         <table className="ops-data-table">
@@ -247,6 +279,8 @@ function BuildingSummaryTable({ rows, t }) {
             <tr>
               <th>{t('dashboard.ops.buildingSummary.area')}</th>
               <th>{t('dashboard.ops.buildingSummary.rooms')}</th>
+              <th>{t('dashboard.ops.buildingSummary.occupiedRooms')}</th>
+              <th>{t('dashboard.ops.buildingSummary.emptyRooms')}</th>
               <th>{t('dashboard.ops.buildingSummary.residents')}</th>
               <th>{t('dashboard.ops.buildingSummary.unpaid')}</th>
               <th>{t('dashboard.ops.buildingSummary.paid')}</th>
@@ -257,13 +291,15 @@ function BuildingSummaryTable({ rows, t }) {
               <tr key={row.id}>
                 <td><strong>{row.name}</strong></td>
                 <td>{row.rooms}</td>
+                <td>{row.occupiedRooms}</td>
+                <td>{row.emptyRooms}</td>
                 <td>{row.residents}</td>
                 <td>{row.debt}</td>
                 <td>{row.collected}</td>
               </tr>
             )) : (
               <tr>
-                <td colSpan="5">{t('dashboard.ops.buildingSummary.empty')}</td>
+                <td colSpan="7">{t('dashboard.ops.buildingSummary.empty')}</td>
               </tr>
             )}
           </tbody>
@@ -288,10 +324,10 @@ function MonthlyRevenueChart({ rows, locale, t }) {
   );
 }
 
-function DonutPanel({ center, icon, locale, segments, title }) {
+function DonutPanel({ center, icon, locale, segments, title, valueFormatter = null }) {
   return (
     <ChartPanel className="ops-donut-panel" icon={icon} title={title}>
-      <DonutChart center={center} items={segments} locale={locale} />
+      <DonutChart center={center} items={segments} locale={locale} valueFormatter={valueFormatter} />
     </ChartPanel>
   );
 }
@@ -347,6 +383,7 @@ export default function AdminDashboardPage() {
         dashboardResult,
         buildingsResult,
         roomsResult,
+        contractsResult,
         feedbacksResult,
         maintenanceResult,
         equipmentResult
@@ -354,6 +391,7 @@ export default function AdminDashboardPage() {
         dashboardApi.getAdminDashboard(),
         buildingApi.getAdminBuildings(),
         roomApi.getAdminRooms(),
+        contractApi.getAdminContracts(),
         feedbackApi.getAdminFeedbacks(),
         maintenanceApi.getAdminMaintenanceRequests(),
         equipmentApi.getAdminEquipment()
@@ -376,6 +414,7 @@ export default function AdminDashboardPage() {
       setInsights({
         buildings,
         rooms: unwrap(roomsResult, []),
+        contracts: unwrap(contractsResult, []),
         invoices: buildingInvoiceResults.flatMap((result) => unwrap(result, [])),
         feedbacks: unwrap(feedbacksResult, []),
         maintenanceRequests: unwrap(maintenanceResult, []),
@@ -406,6 +445,13 @@ export default function AdminDashboardPage() {
 
   const todayText = formatLongDate(new Date(), locale);
   const monthlyRevenue = useMemo(() => buildMonthlyRevenue(insights.invoices), [insights.invoices]);
+  const expiringContracts = useMemo(
+    () => insights.contracts
+      .map((contract) => ({ ...contract, remainingDays: getDaysUntil(contract.endDate) }))
+      .filter((contract) => contract.remainingDays !== null && contract.remainingDays >= 0 && contract.remainingDays <= 30)
+      .sort((left, right) => left.remainingDays - right.remainingDays || getDateTime(left.endDate) - getDateTime(right.endDate)),
+    [insights.contracts]
+  );
   const buildingRows = useMemo(
     () => buildBuildingRows(
       insights.buildings,
@@ -444,7 +490,8 @@ export default function AdminDashboardPage() {
   const trackedItems = toNumber(dashboard?.unpaidInvoices)
     + toNumber(dashboard?.pendingMaintenanceRequests)
     + toNumber(dashboard?.unresolvedFeedbacks)
-    + toNumber(dashboard?.totalPendingRoomMembers);
+    + toNumber(dashboard?.totalPendingRoomMembers)
+    + expiringContracts.length;
   const kpis = [
     {
       icon: 'building',
@@ -459,6 +506,13 @@ export default function AdminDashboardPage() {
       value: formatNumber(dashboard?.totalRooms, locale),
       label: t('dashboard.ops.labels.totalRooms'),
       helper: t('dashboard.ops.helpers.managedRooms')
+    },
+    {
+      icon: 'home',
+      tone: 'success',
+      value: formatNumber(dashboard?.occupiedRooms, locale),
+      label: t('dashboard.ops.labels.occupiedRooms'),
+      helper: t('dashboard.ops.helpers.occupiedRooms')
     },
     {
       icon: 'users',
@@ -526,12 +580,11 @@ export default function AdminDashboardPage() {
         <div className="ops-dashboard-workspace">
           <section className="ops-overview-panel">
             <div className="ops-overview-title">
-              <div>
-                <span>{t('dashboard.ops.eyebrow')}</span>
-                <h2>{t('dashboard.ops.todayOperations')}</h2>
-              </div>
-              <strong>{t('dashboard.ops.trackedItems', { count: formatNumber(trackedItems, locale) })}</strong>
+            <div>
+              <span>{t('dashboard.ops.eyebrow')}</span>
+              <h2>{t('dashboard.ops.todayOperations')}</h2>
             </div>
+          </div>
             <div className="ops-kpi-grid">
               {kpis.map((metric) => (
                 <KpiCard key={metric.label} {...metric} />
@@ -545,11 +598,12 @@ export default function AdminDashboardPage() {
             <MonthlyRevenueChart rows={monthlyRevenue} locale={locale} t={t} />
             <DonutPanel
               center={`${getPercent(paymentPaidValue, paymentTotal)}%`}
-              icon="chartPulse"
-              locale={locale}
-              segments={paymentSegments}
-              title={t('dashboard.ops.charts.paymentRate')}
-            />
+            icon="chartPulse"
+            locale={locale}
+            segments={paymentSegments}
+            title={t('dashboard.ops.charts.paymentRate')}
+            valueFormatter={(value) => formatCurrency(value, locale, currencyLabel)}
+          />
           </div>
 
           <div className="ops-chart-grid">
@@ -570,6 +624,28 @@ export default function AdminDashboardPage() {
           </div>
 
           <div className="ops-recent-grid">
+            <RecentTable
+              columns={[
+                {
+                  key: 'room',
+                  label: t('dashboard.ops.columns.room'),
+                  render: (row) => (
+                    <strong>{[row.buildingCode, row.roomCode].filter(Boolean).join(' - ') || t('dashboard.ops.fallback.noRoom')}</strong>
+                  )
+                },
+                { key: 'resident', label: t('dashboard.ops.columns.resident'), render: (row) => row.residentHeadName || t('dashboard.ops.fallback.notSet') },
+                { key: 'endDate', label: t('dashboard.ops.columns.endDate'), render: (row) => formatDisplayDate(row.endDate, t('dashboard.ops.fallback.notSet')) },
+                {
+                  key: 'remainingDays',
+                  label: t('dashboard.ops.columns.remainingDays'),
+                  render: (row) => t('dashboard.ops.remainingDays', { count: row.remainingDays })
+                }
+              ]}
+              emptyText={t('dashboard.ops.empty.expiringContracts')}
+              icon="fileText"
+              rows={expiringContracts}
+              title={t('dashboard.ops.recent.expiringContracts')}
+            />
             <RecentTable
               columns={[
                 { key: 'title', label: t('dashboard.ops.columns.title'), render: (row) => <strong>{row.title || row.content || t('dashboard.ops.fallback.noTitle')}</strong> },
@@ -609,9 +685,6 @@ export default function AdminDashboardPage() {
               rows={recentInvoices}
               title={t('dashboard.ops.recent.invoices')}
             />
-          </div>
-
-          <div className="ops-recent-grid ops-recent-grid-single">
             <RecentTable
               columns={[
                 { key: 'title', label: t('dashboard.ops.columns.description'), render: (row) => <strong>{row.title || row.content || t('dashboard.ops.fallback.noDescription')}</strong> },

@@ -4,7 +4,6 @@ import { Link, useParams } from 'react-router-dom';
 import * as invoiceApi from '../../features/invoices/api.js';
 import * as paymentApi from '../../features/payments/api.js';
 import { InvoiceDetail } from '../../features/invoices/components/index.js';
-import PageHeader from '../../components/PageHeader.jsx';
 import ManagementPageHero from '../../components/common/ManagementPageHero.jsx';
 import { PaymentProofUploadForm, PaymentTable } from '../../features/payments/components/index.js';
 import useInvoicePaymentPolling from '../../hooks/useInvoicePaymentPolling.js';
@@ -92,7 +91,7 @@ export default function ResidentInvoiceDetailPage() {
   const canUploadPayment = invoice && ['UNPAID', 'REJECTED'].includes(invoice.status);
 
   return (
-    <section className="content-section">
+    <section className="content-section resident-invoice-page resident-invoice-detail-page">
       <ManagementPageHero
         actions={(
           <Link className="secondary-link" to="/resident/invoices">
@@ -107,23 +106,18 @@ export default function ResidentInvoiceDetailPage() {
       {error && <div className="alert error-alert">{error}</div>}
 
       <section className="resident-invoice-workspace">
-        <InvoiceDetail invoice={invoice} showPaymentInstructions />
-
-        {invoice && (
-          <div className="payment-panel">
-            <PageHeader eyebrow={t('resident.invoices.paymentEyebrow')} title={t('resident.invoices.paymentProof')} />
-            {canUploadPayment ? (
-              <PaymentProofUploadForm invoiceId={invoice.id} loading={uploading} onSubmit={handlePaymentUpload} />
-            ) : (
-              <div className="empty-state">
-                {t('resident.invoices.proofUnavailable')}
-              </div>
-            )}
-          </div>
-        )}
+        <InvoiceDetail
+          invoice={invoice}
+          paymentUploadSlot={
+            canUploadPayment ? (
+              <PaymentProofUploadForm compact invoiceId={invoice.id} loading={uploading} onSubmit={handlePaymentUpload} />
+            ) : null
+          }
+          showPaymentInstructions
+        />
 
         <div className="payment-panel">
-          <PageHeader eyebrow={t('resident.invoices.paymentEyebrow')} title={t('resident.invoices.paymentStatus')} />
+          <h2>{t('resident.invoices.paymentStatus')}</h2>
           <PaymentTable payments={payments} />
         </div>
       </section>

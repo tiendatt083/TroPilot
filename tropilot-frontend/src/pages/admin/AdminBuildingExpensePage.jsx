@@ -69,24 +69,28 @@ export default function AdminBuildingExpensePage() {
   };
 
   const renderActions = (expense) => (
-    <div className="table-action-group">
+    <div className="table-action-group icon-table-actions">
       {expense.status === 'PENDING' && (
         <button
-          className="compact-button"
+          aria-label={t('common.approve')}
+          className="icon-action-button icon-action-success"
+          data-tooltip={t('common.approve')}
           type="button"
           disabled={approvingId === expense.id}
           onClick={() => handleApprove(expense)}
         >
-          {t('common.approve')}
+          <CheckIcon />
         </button>
       )}
       <button
-        className="secondary-button compact-button"
+        aria-label={t('common.cancel')}
+        className="icon-action-button icon-action-danger"
+        data-tooltip={t('common.cancel')}
         type="button"
         disabled={expense.status === 'CANCELLED' || cancellingId === expense.id}
         onClick={() => handleCancel(expense)}
       >
-        {t('common.cancel')}
+        <XIcon />
       </button>
     </div>
   );
@@ -106,5 +110,22 @@ export default function AdminBuildingExpensePage() {
         <ExpenseTable expenses={expenses} renderActions={renderActions} />
       )}
     </div>
+  );
+}
+
+function CheckIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24">
+      <path d="m5 13 4 4L19 7" />
+    </svg>
+  );
+}
+
+function XIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24">
+      <path d="M18 6 6 18" />
+      <path d="m6 6 12 12" />
+    </svg>
   );
 }

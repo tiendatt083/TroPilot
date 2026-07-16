@@ -1,22 +1,49 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
 import * as contractApi from '../../features/contracts/api.js';
 import ActionDialog from '../../components/common/ActionDialog.jsx';
 import ContractFileHistoryList from '../../components/ContractFileHistoryList.jsx';
 import ContractUploadForm from '../../components/ContractUploadForm.jsx';
+import FilterBar from '../../components/common/FilterBar.jsx';
 import LineIcon from '../../components/common/LineIcon.jsx';
 import { getContractStatusClass } from '../../utils/contractStatusOptions.js';
 import { formatDisplayDate } from '../../utils/dateFormat.js';
 import { resolveFileUrl } from '../../utils/fileUrl.js';
 import { formatEnumLabel } from '../../utils/i18nFormat.js';
 import { formatRoomCode, formatRoomLabel } from '../../utils/roomDisplay.js';
+import { normalizeSearchText } from '../../utils/searchText.js';
 
 function formatNumber(value) {
   const numberValue = Number(value);
   return Number.isFinite(numberValue)
     ? numberValue.toLocaleString('en-US', { maximumFractionDigits: 2 })
     : value;
+}
+
+const emptyFilters = {
+  search: '',
+  status: ''
+};
+
+function contractMatchesSearch(contract, searchValue) {
+  if (!searchValue) {
+    return true;
+  }
+
+  const searchableValues = [
+    contract.roomCode,
+    contract.roomName,
+    contract.buildingCode,
+    contract.residentHeadName,
+    contract.residentHeadEmail,
+    contract.contractStatus,
+    contract.rentalStatus,
+    contract.startDate,
+    contract.endDate
+  ];
+
+  return searchableValues.some((value) => normalizeSearchText(value).includes(searchValue));
 }
 
 export default function AdminBuildingContractPage() {
@@ -30,8 +57,20 @@ export default function AdminBuildingContractPage() {
   const [loadingDetailId, setLoadingDetailId] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [showUploadForm, setShowUploadForm] = useState(false);
+  const [filters, setFilters] = useState(emptyFilters);
 
   const buildingFilter = { buildingId: building.id };
+  const filteredContracts = useMemo(() => {
+    const searchValue = normalizeSearchText(filters.search);
+
+    return contracts.filter((contract) => (
+      contractMatchesSearch(contract, searchValue)
+      && (!filters.status || contract.contractStatus === filters.status)
+    ));
+  }, [contracts, filters]);
+  const contractStatusOptions = useMemo(() => (
+    Array.from(new Set(contracts.map((contract) => contract.contractStatus).filter(Boolean)))
+  ), [contracts]);
 
   const loadContracts = async () => {
     setError('');
@@ -106,6 +145,10 @@ export default function AdminBuildingContractPage() {
     setShowUploadForm(true);
   };
 
+  const handleClearFilters = () => {
+    setFilters(emptyFilters);
+  };
+
   const hasSelectedContractFile = Boolean(selectedContract?.contractFileUrl);
   const shouldShowUploadForm = Boolean(selectedContract) && (!hasSelectedContractFile || showUploadForm);
 
@@ -123,6 +166,31 @@ export default function AdminBuildingContractPage() {
       ) : (
         <section className="building-contract-workspace">
           <div className="building-contract-list-panel">
+            <FilterBar
+              as="div"
+              className="workspace-filter-row"
+              searchAriaLabel={t('workspace.filters.searchAria')}
+              searchPlaceholder={t('workspace.filters.searchPlaceholder')}
+              searchValue={filters.search}
+              filters={[
+                {
+                  name: 'status',
+                  value: filters.status,
+                  ariaLabel: t('workspace.filters.statusAria'),
+                  onChange: (value) => setFilters((current) => ({ ...current, status: value })),
+                  options: [
+                    { value: '', label: t('workspace.filters.allStatuses') },
+                    ...contractStatusOptions.map((status) => ({
+                      value: status,
+                      label: formatEnumLabel(t, 'contractStatus', status)
+                    }))
+                  ]
+                }
+              ]}
+              clearLabel={t('common.clear')}
+              onClear={handleClearFilters}
+              onSearchChange={(value) => setFilters((current) => ({ ...current, search: value }))}
+            />
             <div className="table-wrap building-contract-table-wrap">
               <table className="data-table">
                 <colgroup>
@@ -144,7 +212,7 @@ export default function AdminBuildingContractPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {contracts.map((contract) => (
+                  {filteredContracts.map((contract) => (
                     <tr key={contract.id}>
                       <td>
                         <div className="table-primary-cell">
@@ -182,7 +250,7 @@ export default function AdminBuildingContractPage() {
                   ))}
                 </tbody>
               </table>
-              {contracts.length === 0 && <div className="empty-state flat-empty-state">{t('contracts.listEmpty')}</div>}
+              {filteredContracts.length === 0 && <div className="empty-state flat-empty-state">{t('contracts.listEmpty')}</div>}
             </div>
           </div>
 

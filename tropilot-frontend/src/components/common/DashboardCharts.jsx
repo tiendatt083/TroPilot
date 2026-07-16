@@ -20,22 +20,22 @@ function getColor(color) {
   return CHART_COLORS[color] || color || CHART_COLORS.info;
 }
 
-function buildDonutGradient(items) {
-  const total = items.reduce((sum, item) => sum + toNumber(item.value), 0);
+function getPercent(value, total) {
+  const totalValue = toNumber(total);
 
-  if (total <= 0) {
-    return 'conic-gradient(#d7e0e5 0deg 360deg)';
+  if (totalValue <= 0) {
+    return 0;
   }
 
-  let cursor = 0;
-  const stops = items.map((item) => {
-    const start = cursor;
-    const size = (toNumber(item.value) / total) * 360;
-    cursor += size;
-    return `${getColor(item.color)} ${start}deg ${cursor}deg`;
-  });
+  return Math.round((toNumber(value) / totalValue) * 100);
+}
 
-  return `conic-gradient(${stops.join(', ')})`;
+function formatDonutValue(value, locale, valueFormatter) {
+  if (valueFormatter) {
+    return valueFormatter(value);
+  }
+
+  return toNumber(value).toLocaleString(locale, { maximumFractionDigits: 2 });
 }
 
 export function ChartPanel({ action, children, className = '', eyebrow, icon, title }) {
@@ -143,7 +143,12 @@ export function HorizontalBarChart({ emptyText, labelKey = 'label', rows, valueF
           <div className="shared-horizontal-row" key={row.key || row.month || row[labelKey]}>
             <span>{row[labelKey]}</span>
             <div className="shared-horizontal-track">
-              <i style={{ width: `${width}%` }} />
+              <i
+                aria-label={`${row[labelKey]}: ${valueFormatter(value)}`}
+                data-tooltip={`${row[labelKey]}: ${valueFormatter(value)}`}
+                data-tooltip-follow="true"
+                style={{ width: `${width}%` }}
+              />
             </div>
             <strong>{valueFormatter(value)}</strong>
           </div>
@@ -153,10 +158,68 @@ export function HorizontalBarChart({ emptyText, labelKey = 'label', rows, valueF
   );
 }
 
-export function DonutChart({ center, items, locale = 'vi-VN' }) {
+export function DonutChart({ center, items, locale = 'vi-VN', tooltipFormatter = null, valueFormatter = null }) {
+  const total = items.reduce((sum, item) => sum + toNumber(item.value), 0);
+  const getTooltipText = (item) => {
+    if (tooltipFormatter) {
+      return tooltipFormatter(item, total);
+    }
+
+    const value = toNumber(item.value);
+    return `${item.label}: ${formatDonutValue(value, locale, valueFormatter)} (${getPercent(value, total)}%)`;
+  };
+  let cursor = 0;
+  const radius = 38;
+  const circumference = 2 * Math.PI * radius;
+  const segments = total > 0
+    ? items.map((item) => {
+      const value = toNumber(item.value);
+      const percent = (value / total) * 100;
+      const segment = {
+        item,
+        percent,
+        dashArray: `${(percent / 100) * circumference} ${circumference}`,
+        dashOffset: -((cursor / 100) * circumference),
+        tooltipText: getTooltipText(item)
+      };
+
+      cursor += percent;
+      return segment;
+    }).filter((segment) => segment.percent > 0)
+    : [];
+
   return (
     <div className="shared-donut-layout">
-      <div className="shared-donut" style={{ background: buildDonutGradient(items) }}>
+      <div className="shared-donut">
+        <svg aria-hidden="true" className="shared-donut-svg" viewBox="0 0 100 100">
+          {segments.length ? segments.map((segment) => (
+            <circle
+              className="shared-donut-segment"
+              cx="50"
+              cy="50"
+              data-tooltip={segment.tooltipText}
+              data-tooltip-follow="true"
+              fill="none"
+              key={segment.item.key || segment.item.label}
+              r={radius}
+              stroke={getColor(segment.item.color)}
+              strokeDasharray={segment.dashArray}
+              strokeDashoffset={segment.dashOffset}
+              strokeWidth="24"
+              transform="rotate(-90 50 50)"
+            />
+          )) : (
+            <circle
+              className="shared-donut-empty"
+              cx="50"
+              cy="50"
+              fill="none"
+              r={radius}
+              stroke="#d7e0e5"
+              strokeWidth="24"
+            />
+          )}
+        </svg>
         <div>{center}</div>
       </div>
       <div className="shared-donut-legend">
@@ -165,16 +228,24 @@ export function DonutChart({ center, items, locale = 'vi-VN' }) {
             <>
               <i style={{ backgroundColor: getColor(item.color) }} />
               {item.label}
-              <strong>{toNumber(item.value).toLocaleString(locale, { maximumFractionDigits: 2 })}</strong>
+              <strong>{formatDonutValue(item.value, locale, valueFormatter)}</strong>
             </>
           );
 
           return item.to ? (
-            <Link className="shared-donut-legend-action" key={item.key || item.label} to={item.to}>
+            <Link
+              className="shared-donut-legend-action"
+              key={item.key || item.label}
+              to={item.to}
+            >
               {content}
             </Link>
           ) : (
-            <span key={item.key || item.label}>{content}</span>
+            <span
+              key={item.key || item.label}
+            >
+              {content}
+            </span>
           );
         })}
       </div>

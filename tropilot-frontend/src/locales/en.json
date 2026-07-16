@@ -126,9 +126,9 @@
     "description": "Use the information below to contact the management team.",
     "summaryTitle": "Management contact",
     "editTitle": "Edit contact information",
-      "phoneListTitle": "Phone numbers",
-      "phoneEditorTitle": "Contact phone numbers",
-      "workingHoursRange": "{{start}} to {{end}}",
+    "phoneListTitle": "Phone numbers",
+    "phoneEditorTitle": "Contact phone numbers",
+    "workingHoursRange": "{{start}} to {{end}}",
     "passwordHelp": "Enter your current password to confirm changes to system contact information.",
     "sections": {
       "details": "Contact details",
@@ -137,10 +137,10 @@
     },
     "fields": {
       "email": "Contact email",
-        "officeAddress": "Office address",
-        "workingHours": "Working hours",
-        "workingStartTime": "Working start time",
-        "workingEndTime": "Working end time",
+      "officeAddress": "Office address",
+      "workingHours": "Working hours",
+      "workingStartTime": "Working start time",
+      "workingEndTime": "Working end time",
       "phoneName": "Display name",
       "phoneNumber": "Phone number",
       "currentPassword": "Current password"
@@ -149,15 +149,15 @@
       "addPhone": "Add phone number",
       "removePhone": "Remove",
       "removePhoneNamed": "Remove phone number {{name}}",
-      "save": "Save contact information",
+      "save": "Save",
       "saving": "Saving contact information..."
     },
     "messages": {
       "loading": "Loading contact information...",
       "loadError": "Contact information could not be loaded",
-        "notConfigured": "The property management team has not published contact information yet.",
-        "invalidWorkingHours": "Working end time must be after working start time.",
-        "updated": "System contact information updated successfully.",
+      "notConfigured": "The property management team has not published contact information yet.",
+      "invalidWorkingHours": "Working end time must be after working start time.",
+      "updated": "System contact information updated successfully.",
       "updateError": "System contact information could not be updated"
     }
   },
@@ -257,7 +257,7 @@
     "summary": "Manage {{count}} head residents and household members assigned to rooms",
     "filters": {
       "searchAria": "Search residents",
-      "searchPlaceholder": "Search by head resident, member, email, phone, or room",
+      "searchPlaceholder": "Search...",
       "buildingAria": "Filter residents by building",
       "allBuildings": "All buildings"
     },
@@ -339,18 +339,25 @@
     "summary": "Review room members submitted by Head Residents ({{count}} records)",
     "filters": {
       "searchAria": "Search pending members",
-      "searchPlaceholder": "Search by name, email, phone, Head Resident, or room"
+      "searchPlaceholder": "Search..."
     },
     "columns": {
       "id": "ID",
       "name": "Member name",
+      "phone": "Phone",
+      "role": "Role",
       "headResident": "Head resident",
+      "building": "Building",
       "room": "Room",
       "actions": "Actions"
     },
     "actions": {
+      "exportExcel": "Export",
       "approve": "Approve",
       "reject": "Reject"
+    },
+    "export": {
+      "sheetName": "Pending members"
     },
     "messages": {
       "loading": "Loading pending members...",
@@ -359,7 +366,8 @@
       "approveError": "Room member could not be approved",
       "rejected": "{{name}} was rejected successfully.",
       "rejectError": "Room member could not be rejected",
-      "empty": "No pending members found."
+      "empty": "No pending members found.",
+      "exportEmpty": "No pending members to export."
     }
   },
   "userCreate": {
@@ -561,7 +569,7 @@
     "filters": {
       "building": "Building",
       "searchAria": "Search equipment",
-      "searchPlaceholder": "Search by code, name, room, or location",
+      "searchPlaceholder": "Search...",
       "scope": "Scope",
       "room": "Room",
       "condition": "Condition",
@@ -705,7 +713,7 @@
       "sheetName": "Users"
     },
     "filters": {
-      "searchPlaceholder": "Search by name, email, phone, or room",
+      "searchPlaceholder": "Search...",
       "searchAria": "Search building users",
       "roleAria": "Filter by role",
       "statusAria": "Filter by status",
@@ -902,6 +910,8 @@
     "Initial_refundable_deposit": "Initial refundable deposit",
     "Electricity_usage": "Electricity usage",
     "Water_usage": "Water usage",
+    "No_electricity_charge_this_month": "No electricity charge this month",
+    "No_water_charge_this_month": "No water charge this month",
     "Additional_charge": "Additional charge",
     "Extra_room_charge": "Extra room charge",
     "Electricity_charged_by_occupant": "Electricity charged by occupant",
@@ -934,7 +944,7 @@
     "loadError": "Activity logs could not be loaded",
     "empty": "No activity logs found.",
     "notAvailable": "Not available",
-    "filterPlaceholder": "Search by action, description, or user",
+    "filterPlaceholder": "Search...",
     "filterAriaLabel": "Search activity logs",
     "pagination": {
       "summary": "Showing {{from}}-{{to}} of {{total}} logs",
@@ -1107,6 +1117,8 @@
       "eyebrow": "Overview",
       "todayOperations": "Today's operations",
       "trackedItems": "{{count}} items to review",
+      "remainingDays_one": "{{count}} day",
+      "remainingDays_other": "{{count}} days",
       "loadingAdmin": "Loading overview...",
       "emptyAdmin": "No dashboard data.",
       "adminLoadError": "Admin dashboard could not be loaded.",
@@ -1164,6 +1176,7 @@
       "helpers": {
         "managedBuildings": "Managed buildings",
         "managedRooms": "Managed rooms",
+        "occupiedRooms": "Total occupied rooms",
         "residentProfiles": "Resident records",
         "runningDevices": "Operating equipment",
         "needsReview": "Needs review",
@@ -1200,6 +1213,8 @@
         "title": "Building summary",
         "area": "Building",
         "rooms": "Rooms",
+        "occupiedRooms": "Occupied rooms",
+        "emptyRooms": "Empty rooms",
         "residents": "Residents",
         "unpaid": "Unpaid",
         "paid": "Paid",
@@ -1221,10 +1236,13 @@
         "followUp": "Follow-up",
         "title": "Title",
         "room": "Room",
+        "resident": "Resident",
         "status": "Status",
         "invoiceCode": "Invoice code",
         "amount": "Amount",
         "dueDate": "Due date",
+        "endDate": "End date",
+        "remainingDays": "Remaining",
         "description": "Description",
         "equipment": "Equipment",
         "startDate": "Start date",
@@ -1232,6 +1250,7 @@
         "cost": "Cost"
       },
       "empty": {
+        "expiringContracts": "No contracts expire in the next 30 days.",
         "recentFeedbacks": "No recent feedback.",
         "recentInvoices": "No recent invoices.",
         "recentMaintenance": "No recent maintenance schedule."
@@ -1245,6 +1264,7 @@
         "tracking": "Tracking"
       },
       "recent": {
+        "expiringContracts": "Expiring contracts",
         "feedbacks": "Recent feedback",
         "invoices": "Recent invoices",
         "maintenance": "Recent maintenance"
@@ -1790,7 +1810,7 @@
     "deleteError": "Room could not be deleted",
     "deleteConfirm": "Delete room {{room}}?",
     "searchAria": "Search rooms",
-    "searchPlaceholder": "Search by code or name",
+    "searchPlaceholder": "Search...",
     "buildingFilterAria": "Filter by building",
     "statusFilterAria": "Filter by status",
     "allBuildings": "All buildings",
@@ -1961,6 +1981,12 @@
     "reject": "Reject"
   },
   "workspace": {
+    "filters": {
+      "searchAria": "Search this list",
+      "searchPlaceholder": "Search...",
+      "statusAria": "Filter by status",
+      "allStatuses": "All statuses"
+    },
     "buildings": {
       "loading": "Loading buildings...",
       "loadError": "Buildings could not be loaded",
@@ -1969,13 +1995,16 @@
       "deleteConfirm": "Delete building {{code}}?",
       "deleteTitle": "Delete building",
       "create": "Create building",
+      "exportExcel": "Export",
+      "exportSheetName": "Buildings",
+      "exportEmpty": "No buildings to export.",
       "created": "Building has been created.",
       "createError": "Building could not be created",
       "editTitle": "Edit building",
       "updated": "Building has been updated.",
       "updateError": "Building could not be updated",
       "searchAria": "Search buildings",
-      "searchPlaceholder": "Search by code or name",
+      "searchPlaceholder": "Search...",
       "caption": "Buildings",
       "empty": "No buildings found.",
       "manage": "Manage",
@@ -1992,7 +2021,7 @@
       "deleteConfirm": "Delete room {{code}}?",
       "create": "Create room",
       "searchAria": "Search rooms in this building",
-      "searchPlaceholder": "Search by code or name",
+      "searchPlaceholder": "Search...",
       "statusAria": "Filter rooms by status",
       "allStatuses": "All statuses",
       "empty": "No rooms found.",
@@ -2375,114 +2404,114 @@
     }
   },
   "details": {
-      "selectMaintenanceRequest": "Select a maintenance request to view details.",
-      "selectTask": "Select a task to view details.",
-      "title": "Title",
-      "staffEmail": "Staff email",
-      "issueImage": "Issue image",
-      "resultImage": "Result image",
-      "viewImage": "View image",
-      "noResultNote": "No result note provided."
+    "selectMaintenanceRequest": "Select a maintenance request to view details.",
+    "selectTask": "Select a task to view details.",
+    "title": "Title",
+    "staffEmail": "Staff email",
+    "issueImage": "Issue image",
+    "resultImage": "Result image",
+    "viewImage": "View image",
+    "noResultNote": "No result note provided."
   },
   "forms": {
-      "assignment": {
-        "selectHeadResident": "Select Head Resident",
-        "noHeadResidents": "No active Head Residents available",
-        "startDate": "Start date",
-        "endDate": "End date",
-        "assigning": "Assigning...",
-        "submit": "Assign Head Resident"
-      },
-      "room": {
-        "selectBuilding": "Select building",
-        "noBuildings": "No buildings available",
-        "roomCode": "Room code",
-        "roomName": "Room name"
-      },
-      "building": {
-        "buildingCode": "Building code",
-        "buildingName": "Building name",
-        "address": "Address",
-        "floors": "Floors"
-      },
-      "invoice": {
-        "creationDate": "Invoice creation date",
-        "invoiceMonth": "Invoice month",
-        "generate": "Generate invoice",
-        "generating": "Generating..."
-      },
-      "payment": {
-        "proofImage": "Payment proof image",
-        "note": "Payment note",
-        "optionalNote": "Optional payment note",
-        "uploading": "Uploading...",
-        "uploadProof": "Upload payment proof"
-      },
-      "member": {
-        "fullName": "Full name",
-        "phone": "Phone",
-        "email": "Email",
-        "relationship": "Relationship",
-        "dateOfBirth": "Date of birth",
-        "moveInDate": "Move-in date"
-      },
-      "serviceFee": {
-        "serviceFeeName": "Service fee name",
-        "calculationType": "Calculation type",
-        "selectVehicleType": "Select vehicle type",
-        "noSpecificVehicleType": "No specific vehicle type"
-      },
-      "task": {
-        "taskType": "Task type",
-        "selectStaff": "Select staff",
-        "roomScope": "Room / scope",
-        "selectRoom": "Select room",
-        "generalBuildingTask": "General building task",
-        "noRoomLinked": "No specific room"
-      },
-      "expense": {
-        "taskReference": "Task reference",
-        "maintenanceRequestReference": "Maintenance request reference",
-        "expenseType": "Expense type",
-        "proofImage": "Proof image",
-        "creating": "Creating...",
-        "create": "Create expense"
-      },
-      "utilityReading": {
-        "selectRoom": "Select room",
-        "electricitySectionTitle": "Electricity reading",
-        "electricitySectionDescription": "The old reading is carried from the previous period. Enter only the new reading and evidence image.",
-        "oldElectricity": "Old electricity",
-        "newElectricity": "New electricity",
-        "electricityUnit": "kWh",
-        "electricityEvidenceImage": "Electricity evidence image (optional)",
-        "waterSectionTitle": "Water reading",
-        "waterSectionDescription": "The old reading is carried from the previous period. Enter only the new reading and evidence image.",
-        "oldWater": "Old water",
-        "newWater": "New water",
-        "waterUnit": "m3",
-        "waterEvidenceImage": "Water evidence image (optional)",
-        "automaticReading": "Reading sync",
-        "mockSource": "Simulated data source",
-        "mockApi": "MOCK API",
-        "fetchReadings": "Fetch readings",
-        "fetchMeterShort": "Fetch",
-        "fetchElectricity": "Fetch electricity",
-        "fetchWater": "Fetch water",
-        "fetchingReadings": "Fetching...",
-        "fetchError": "Automatic readings could not be fetched",
-        "electricityFetchError": "Electricity reading could not be fetched",
-        "waterFetchError": "Water reading could not be fetched",
-        "electricityIncrease": "Electricity",
-        "waterIncrease": "Water",
-        "allowedImageTypes": "Allowed image types: jpg, jpeg, png. Maximum size: 10 MB.",
-        "readingDateHelp": "This date applies to both electricity and water readings.",
-        "previousMonthEvidence": "Previous month evidence",
-        "noPreviousEvidence": "No previous reading evidence found for this room.",
-        "previousElectricityImage": "Previous electricity image",
-        "previousWaterImage": "Previous water image",
-        "previousElectricityAlt": "Previous electricity meter evidence",
-        "previousWaterAlt": "Previous water meter evidence"
-      }
+    "assignment": {
+      "selectHeadResident": "Select Head Resident",
+      "noHeadResidents": "No active Head Residents available",
+      "startDate": "Start date",
+      "endDate": "End date",
+      "assigning": "Assigning...",
+      "submit": "Assign Head Resident"
+    },
+    "room": {
+      "selectBuilding": "Select building",
+      "noBuildings": "No buildings available",
+      "roomCode": "Room code",
+      "roomName": "Room name"
+    },
+    "building": {
+      "buildingCode": "Building code",
+      "buildingName": "Building name",
+      "address": "Address",
+      "floors": "Floors"
+    },
+    "invoice": {
+      "creationDate": "Invoice creation date",
+      "invoiceMonth": "Invoice month",
+      "generate": "Generate invoice",
+      "generating": "Generating..."
+    },
+    "payment": {
+      "proofImage": "Payment proof image",
+      "note": "Payment note",
+      "optionalNote": "Optional payment note",
+      "uploading": "Uploading...",
+      "uploadProof": "Upload payment proof"
+    },
+    "member": {
+      "fullName": "Full name",
+      "phone": "Phone",
+      "email": "Email",
+      "relationship": "Relationship",
+      "dateOfBirth": "Date of birth",
+      "moveInDate": "Move-in date"
+    },
+    "serviceFee": {
+      "serviceFeeName": "Service fee name",
+      "calculationType": "Calculation type",
+      "selectVehicleType": "Select vehicle type",
+      "noSpecificVehicleType": "No specific vehicle type"
+    },
+    "task": {
+      "taskType": "Task type",
+      "selectStaff": "Select staff",
+      "roomScope": "Room / scope",
+      "selectRoom": "Select room",
+      "generalBuildingTask": "General building task",
+      "noRoomLinked": "No specific room"
+    },
+    "expense": {
+      "taskReference": "Task reference",
+      "maintenanceRequestReference": "Maintenance request reference",
+      "expenseType": "Expense type",
+      "proofImage": "Proof image",
+      "creating": "Creating...",
+      "create": "Create expense"
+    },
+    "utilityReading": {
+      "selectRoom": "Select room",
+      "electricitySectionTitle": "Electricity reading",
+      "electricitySectionDescription": "The old reading is carried from the previous period. Enter only the new reading and evidence image.",
+      "oldElectricity": "Old electricity",
+      "newElectricity": "New electricity",
+      "electricityUnit": "kwh",
+      "electricityEvidenceImage": "Electricity evidence image (optional)",
+      "waterSectionTitle": "Water reading",
+      "waterSectionDescription": "The old reading is carried from the previous period. Enter only the new reading and evidence image.",
+      "oldWater": "Old water",
+      "newWater": "New water",
+      "waterUnit": "m3",
+      "waterEvidenceImage": "Water evidence image (optional)",
+      "automaticReading": "Reading sync",
+      "mockSource": "Simulated data source",
+      "mockApi": "mock api",
+      "fetchReadings": "Fetch readings",
+      "fetchMeterShort": "Fetch",
+      "fetchElectricity": "Fetch electricity",
+      "fetchWater": "Fetch water",
+      "fetchingReadings": "Fetching...",
+      "fetchError": "Automatic readings could not be fetched",
+      "electricityFetchError": "Electricity reading could not be fetched",
+      "waterFetchError": "Water reading could not be fetched",
+      "electricityIncrease": "Electricity",
+      "waterIncrease": "Water",
+      "allowedImageTypes": "Allowed image types: jpg, jpeg, png. Maximum size: 10 MB.",
+      "readingDateHelp": "This date applies to both electricity and water readings.",
+      "previousMonthEvidence": "Previous month evidence",
+      "noPreviousEvidence": "No previous reading evidence found for this room.",
+      "previousElectricityImage": "Previous electricity image",
+      "previousWaterImage": "Previous water image",
+      "previousElectricityAlt": "Previous electricity meter evidence",
+      "previousWaterAlt": "Previous water meter evidence"
     }
+  }
 }
