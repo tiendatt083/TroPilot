@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import DashboardMetricGrid from './DashboardMetricGrid.jsx';
+import UtilityReadingStatusDonut from './UtilityReadingStatusDonut.jsx';
 
 const emptyOverview = {
   totalRooms: 0,
@@ -16,26 +16,6 @@ export default function UtilityReadingOverview({
 }) {
   const { t } = useTranslation();
   const overviewData = overview || emptyOverview;
-  const metrics = [
-    {
-      label: t('buildingUtilityReadings.metrics.totalRooms'),
-      value: overviewData.totalRooms
-    },
-    {
-      label: t('buildingUtilityReadings.metrics.recordedRooms'),
-      value: overviewData.recordedRooms,
-      tone: 'success'
-    },
-    {
-      label: t('buildingUtilityReadings.metrics.pendingRooms'),
-      value: overviewData.pendingRooms,
-      tone: 'warning'
-    },
-    {
-      label: t('buildingUtilityReadings.metrics.emptyRooms'),
-      value: overviewData.emptyRooms
-    }
-  ];
 
   const handleMonthChange = (event) => {
     const nextMonth = event.target.value;
@@ -61,7 +41,7 @@ export default function UtilityReadingOverview({
           required
         />
       </div>
-      <DashboardMetricGrid metrics={metrics} compact />
+      <UtilityReadingStatusDonut overview={overviewData} />
     </section>
   );
 }

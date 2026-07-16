@@ -7,6 +7,7 @@ import * as adminUserApi from '../../features/users/api.js';
 import ActionDialog from '../../components/common/ActionDialog.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
 import TaskForm from '../../components/TaskForm.jsx';
+import TaskQuickViewDialog from '../../components/TaskQuickViewDialog.jsx';
 import TaskTable from '../../components/TaskTable.jsx';
 
 function activeStaff(users) {
@@ -26,6 +27,9 @@ export default function AdminTaskListPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [formError, setFormError] = useState('');
   const [formVersion, setFormVersion] = useState(0);
+  const [selectedTask, setSelectedTask] = useState(null);
+  const [detailMessage, setDetailMessage] = useState('');
+  const [detailError, setDetailError] = useState('');
 
   const loadData = async () => {
     const [tasksResponse, usersResponse, roomsResponse] = await Promise.all([
@@ -83,6 +87,40 @@ export default function AdminTaskListPage() {
     }
   };
 
+  const handleUpdate = async (payload) => {
+    if (!selectedTask) {
+      return false;
+    }
+
+    setSaving(true);
+    setDetailMessage('');
+    setDetailError('');
+    setMessage('');
+    setError('');
+
+    try {
+      const response = await taskApi.updateAdminTask(selectedTask.id, payload);
+      const updatedTask = response.data;
+      setSelectedTask(updatedTask);
+      setTasks((currentTasks) => currentTasks.map((task) => (task.id === updatedTask.id ? updatedTask : task)));
+      setDetailMessage(t('taskManagement.updated'));
+      return true;
+    } catch (apiError) {
+      setDetailError(apiError.response?.data?.message || t('taskManagement.updateError'));
+      return false;
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const closeDetail = () => {
+    if (!saving) {
+      setSelectedTask(null);
+      setDetailMessage('');
+      setDetailError('');
+    }
+  };
+
   return (
     <section className="content-section">
       <div className="page-title-row">
@@ -98,7 +136,7 @@ export default function AdminTaskListPage() {
       {loading ? (
         <div className="empty-state">{t('taskManagement.loading')}</div>
       ) : (
-        <TaskTable tasks={tasks} detailBasePath="/admin/tasks" />
+        <TaskTable tasks={tasks} detailBasePath="/admin/tasks" onViewTask={setSelectedTask} />
       )}
 
       <ActionDialog
@@ -125,6 +163,19 @@ export default function AdminTaskListPage() {
           onSubmit={handleSubmit}
         />
       </ActionDialog>
+
+      <TaskQuickViewDialog
+        error={detailError}
+        loading={saving}
+        message={detailMessage}
+        open={Boolean(selectedTask)}
+        rooms={rooms}
+        roomPlaceholder={t('forms.task.noRoomLinked')}
+        staffUsers={staffUsers}
+        task={selectedTask}
+        onClose={closeDetail}
+        onSubmit={handleUpdate}
+      />
     </section>
   );
 }

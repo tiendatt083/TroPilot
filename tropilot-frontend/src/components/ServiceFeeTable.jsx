@@ -70,7 +70,11 @@ export default function ServiceFeeTable({
                       {getStatusLabel ? getStatusLabel(serviceFee) : active ? t('common.active') : t('common.inactive')}
                     </span>
                   </td>
-                  {hasActions && <td>{renderActions(serviceFee)}</td>}
+                  {hasActions && (
+                    <td>
+                      <div className="table-actions">{renderActions(serviceFee)}</div>
+                    </td>
+                  )}
                 </tr>
               );
             })}

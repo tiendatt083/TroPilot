@@ -265,7 +265,7 @@
       "id": "ID",
       "login": "Email đăng nhập",
       "fullName": "Họ và tên",
-      "household": "Căn hộ / Chủ hộ"
+      "household": "Phòng / Chủ hộ"
     },
     "actions": {
       "create": "Thêm người dùng",
@@ -657,6 +657,7 @@
     "additionalTitle": "Dịch vụ trên hóa đơn",
     "additionalDescription": "Điện và nước là phí mặc định không thể xóa; các dịch vụ khác có thể thêm, tắt hoặc xóa.",
     "calculationMethod": "Phương thức tính",
+    "priceColumn": "Giá tiền",
     "notConfigured": "Chưa cấu hình",
     "saveDefaultFees": "Lưu phí mặc định",
     "addService": "Thêm dịch vụ",
@@ -805,7 +806,7 @@
     "title": "Hóa đơn trong tòa nhà này",
     "description": "Xem trước hóa đơn trước khi tạo, sau đó tạo hóa đơn cho một phòng hoặc toàn bộ phòng đủ điều kiện trong tòa nhà này.",
     "managementTitle": "Quản lý hóa đơn",
-    "managementSummary": "Quản lý hóa đơn thu phí căn hộ ({{count}} hóa đơn)",
+    "managementSummary": "Quản lý hóa đơn thu phí phòng ({{count}} hóa đơn)",
     "loading": "Đang tải hóa đơn...",
     "loadError": "Không thể tải hóa đơn của tòa nhà",
     "generated": "Đã tạo hóa đơn thành công.",
@@ -840,7 +841,7 @@
     "columns": {
       "id": "ID",
       "invoiceNumber": "Số hóa đơn",
-      "apartment": "Căn hộ"
+      "apartment": "Phòng"
     },
     "export": {
       "sheetName": "Hoa don"

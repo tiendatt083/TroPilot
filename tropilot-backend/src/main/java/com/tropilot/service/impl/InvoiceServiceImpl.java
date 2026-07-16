@@ -603,7 +603,17 @@ public class InvoiceServiceImpl implements InvoiceService {
             return;
         }
 
-        throw new BadRequestException("Electricity and water fees must be calculated by usage or by person");
+        if (serviceFee.getCalculationType() == CalculationType.FIXED) {
+            addServiceFeeItem(
+                    invoice,
+                    serviceFee,
+                    ONE,
+                    feeType == FeeType.ELECTRICITY ? "Electricity fixed by room" : "Water fixed by room"
+            );
+            return;
+        }
+
+        throw new BadRequestException("Electricity and water fees must be fixed, calculated by usage, or calculated by person");
     }
 
     private void addFixedFeeItems(Invoice invoice, List<ServiceFee> activeFees) {

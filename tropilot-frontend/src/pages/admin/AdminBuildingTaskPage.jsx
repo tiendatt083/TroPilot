@@ -6,6 +6,7 @@ import * as roomApi from '../../features/rooms/api.js';
 import * as adminUserApi from '../../features/users/api.js';
 import ActionDialog from '../../components/common/ActionDialog.jsx';
 import TaskForm from '../../components/TaskForm.jsx';
+import TaskQuickViewDialog from '../../components/TaskQuickViewDialog.jsx';
 import TaskTable from '../../components/TaskTable.jsx';
 
 function activeStaff(users) {
@@ -24,6 +25,9 @@ export default function AdminBuildingTaskPage() {
   const [saving, setSaving] = useState(false);
   const [formVersion, setFormVersion] = useState(0);
   const [isCreating, setIsCreating] = useState(false);
+  const [selectedTask, setSelectedTask] = useState(null);
+  const [detailMessage, setDetailMessage] = useState('');
+  const [detailError, setDetailError] = useState('');
 
   const buildingFilter = { buildingId: building.id };
 
@@ -68,6 +72,40 @@ export default function AdminBuildingTaskPage() {
     }
   };
 
+  const handleUpdate = async (payload) => {
+    if (!selectedTask) {
+      return false;
+    }
+
+    setSaving(true);
+    setDetailMessage('');
+    setDetailError('');
+    setMessage('');
+    setError('');
+
+    try {
+      const response = await taskApi.updateAdminTask(selectedTask.id, payload, buildingFilter);
+      const updatedTask = response.data;
+      setSelectedTask(updatedTask);
+      setTasks((currentTasks) => currentTasks.map((task) => (task.id === updatedTask.id ? updatedTask : task)));
+      setDetailMessage(t('taskManagement.updated'));
+      return true;
+    } catch (apiError) {
+      setDetailError(apiError.response?.data?.message || t('taskManagement.updateError'));
+      return false;
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const closeDetail = () => {
+    if (!saving) {
+      setSelectedTask(null);
+      setDetailMessage('');
+      setDetailError('');
+    }
+  };
+
   return (
     <div className="building-workspace">
       <div className="building-section-header">
@@ -86,7 +124,7 @@ export default function AdminBuildingTaskPage() {
         <div className="empty-state">{t('taskManagement.loading')}</div>
       ) : (
         <section className="task-workspace task-workspace-list-only">
-          <TaskTable tasks={tasks} detailBasePath={`/admin/buildings/${building.id}/tasks`} />
+          <TaskTable tasks={tasks} detailBasePath={`/admin/buildings/${building.id}/tasks`} onViewTask={setSelectedTask} />
         </section>
       )}
 
@@ -112,6 +150,19 @@ export default function AdminBuildingTaskPage() {
           onSubmit={handleSubmit}
         />
       </ActionDialog>
+
+      <TaskQuickViewDialog
+        error={detailError}
+        loading={saving}
+        message={detailMessage}
+        open={Boolean(selectedTask)}
+        rooms={rooms}
+        roomPlaceholder={t('forms.task.generalBuildingTask')}
+        staffUsers={staffUsers}
+        task={selectedTask}
+        onClose={closeDetail}
+        onSubmit={handleUpdate}
+      />
     </div>
   );
 }

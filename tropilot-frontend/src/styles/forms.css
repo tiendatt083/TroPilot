@@ -39,6 +39,30 @@
   overflow-wrap: anywhere;
 }
 
+.staff-room-detail-page {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.staff-room-detail-panel span {
+  color: #020617;
+}
+
+.staff-room-detail-panel > div > span:first-child {
+  font-weight: 650;
+}
+
+.staff-room-detail-panel .staff-room-detail-value,
+.staff-room-detail-panel p {
+  color: #020617;
+  font-weight: var(--font-weight-regular);
+  text-transform: none;
+}
+
+.staff-room-detail-panel .status-pill {
+  font-weight: 600;
+}
+
 .detail-wide {
   grid-column: 1 / -1;
 }
@@ -123,6 +147,62 @@
 
 .utility-reading-month-control input {
   width: min(220px, 100%);
+}
+
+.utility-reading-status-donut {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.utility-reading-meter-donut {
+  min-width: 0;
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-md);
+  padding: clamp(0.85rem, 1.8vw, 1rem);
+  background:
+    radial-gradient(circle at 12% 18%, rgba(36, 125, 131, 0.1), transparent 32%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(248, 252, 252, 0.96));
+}
+
+.utility-reading-meter-donut-electricity {
+  border-top: 3px solid var(--color-warning);
+}
+
+.utility-reading-meter-donut-water {
+  border-top: 3px solid var(--color-success);
+}
+
+.utility-reading-meter-donut h3 {
+  margin: 0 0 0.75rem;
+  color: var(--color-text);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-strong);
+}
+
+.utility-reading-status-donut .shared-donut-layout {
+  grid-template-columns: minmax(110px, 150px) minmax(0, 1fr);
+  gap: clamp(0.85rem, 1.8vw, 1.2rem);
+  min-height: 0;
+  padding: 0;
+}
+
+.utility-reading-status-donut .shared-donut {
+  width: min(150px, 100%);
+}
+
+.utility-reading-status-donut .shared-donut > div {
+  font-size: clamp(1rem, 1.6vw, 1.24rem);
+}
+
+.utility-reading-status-donut .shared-donut-legend {
+  gap: 0.55rem;
+}
+
+.utility-reading-status-donut .shared-donut-legend span {
+  padding: 0.58rem 0.7rem;
+  color: var(--color-text);
+  background: rgba(244, 248, 248, 0.9);
 }
 
 .building-utility-action-row {
@@ -424,6 +504,10 @@
 }
 
 @media (max-width: 1180px) {
+  .utility-reading-status-donut {
+    grid-template-columns: 1fr;
+  }
+
   .utility-reading-row {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -439,6 +523,19 @@
 }
 
 @media (max-width: 640px) {
+  .utility-reading-month-control {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .utility-reading-status-donut .shared-donut-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .utility-reading-status-donut .shared-donut {
+    width: min(150px, 100%);
+  }
+
   .building-utility-action-row {
     justify-content: stretch;
   }
@@ -1781,6 +1878,124 @@
 .maintenance-actions-panel {
   display: grid;
   gap: 1rem;
+}
+
+.task-quick-dialog {
+  width: min(920px, calc(100vw - 2rem));
+}
+
+.task-quick-view,
+.task-quick-edit {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.task-quick-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-md);
+  padding: 0.85rem 1rem;
+  background:
+    linear-gradient(135deg, rgba(234, 250, 250, 0.86), rgba(255, 255, 255, 0.96));
+}
+
+.task-quick-summary > div {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.task-quick-label,
+.task-quick-detail-item span {
+  color: var(--color-text-muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.task-quick-edit-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 38px;
+  padding-inline: 1rem;
+}
+
+.task-quick-edit-button .line-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.task-quick-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.task-quick-detail-item {
+  display: grid;
+  gap: 0.35rem;
+  min-width: 0;
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-sm);
+  padding: 0.8rem;
+  background: var(--color-surface);
+}
+
+.task-quick-detail-item-wide {
+  grid-column: 1 / -1;
+}
+
+.task-quick-detail-item p {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.task-quick-edit .panel-form {
+  margin-top: 0;
+}
+
+.task-quick-secondary-button {
+  min-height: 42px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+  background: var(--color-surface);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.task-quick-secondary-button:hover:not(:disabled) {
+  border-color: rgba(36, 125, 131, 0.35);
+  color: var(--color-primary);
+  background: rgba(236, 250, 250, 0.78);
+}
+
+html[data-theme='dark'] .task-quick-summary,
+html[data-theme='dark'] .task-quick-detail-item,
+html[data-theme='dark'] .task-quick-secondary-button {
+  background: var(--color-surface);
+}
+
+@media (max-width: 780px) {
+  .task-quick-summary {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .task-quick-detail-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .assignment-action-row {
@@ -3714,6 +3929,15 @@ html[data-theme="dark"] .staff-maintenance-page .maintenance-card-meta {
   min-width: 820px;
 }
 
+.building-service-fee-list.service-fee-table-wrap {
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xs);
+}
+
+.building-service-fee-list .service-fee-table {
+  min-width: 760px;
+}
+
 .vehicle-table-building {
   min-width: 1040px;
 }
@@ -3743,6 +3967,7 @@ html[data-theme="dark"] .staff-maintenance-page .maintenance-card-meta {
   text-align: right;
 }
 
+.service-fee-table .table-actions,
 .vehicle-table-building .table-actions {
   justify-content: flex-end;
 }

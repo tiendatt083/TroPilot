@@ -20,8 +20,8 @@ const utilityFeeConfigs = [
   }
 ];
 
-const utilityCalculationTypes = ['BY_USAGE', 'BY_PERSON'];
-const additionalCalculationTypes = ['FIXED', 'BY_PERSON'];
+const utilityCalculationTypes = ['BY_USAGE', 'BY_PERSON', 'FIXED'];
+const additionalCalculationTypes = ['FIXED', 'BY_USAGE', 'BY_PERSON'];
 
 const emptyUtilityForm = {
   electricity: {
@@ -379,10 +379,11 @@ export default function AdminBuildingServiceFeePage() {
             <div className="additional-service-layout additional-service-list-only">
               <ServiceFeeTable
                 className="building-service-fee-list"
+                variant="table"
                 serviceFees={serviceFeeRows}
                 showFeeType={false}
                 nameLabel={t('buildingServiceFees.additional.name')}
-                priceLabel={t('buildingServiceFees.additional.unitPrice')}
+                priceLabel={t('buildingServiceFees.priceColumn')}
                 methodLabel={t('buildingServiceFees.calculationMethod')}
                 emptyMessage={t('buildingServiceFees.additional.empty')}
                 getKey={(serviceFeeRow) => serviceFeeRow.key}

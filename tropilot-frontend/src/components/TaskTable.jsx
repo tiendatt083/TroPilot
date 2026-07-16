@@ -17,7 +17,7 @@ function roomText(task, t) {
   return formatRoomLabel(task);
 }
 
-export default function TaskTable({ tasks, detailBasePath, showAssignedStaff = true }) {
+export default function TaskTable({ tasks, detailBasePath, onViewTask, showAssignedStaff = true }) {
   const { t } = useTranslation();
 
   return (
@@ -39,7 +39,6 @@ export default function TaskTable({ tasks, detailBasePath, showAssignedStaff = t
             <tr key={task.id}>
               <td>
                 <strong>{task.title}</strong>
-                <span className="table-subtext">{task.content}</span>
               </td>
               <td>
                 <strong>{roomText(task, t)}</strong>
@@ -59,14 +58,26 @@ export default function TaskTable({ tasks, detailBasePath, showAssignedStaff = t
                 </span>
               </td>
               <td>
-                <Link
-                  className="table-icon-button"
-                  to={`${detailBasePath}/${task.id}`}
-                  aria-label={t('common.view')}
-                  title={t('common.view')}
-                >
-                  <LineIcon name="eye" size={16} />
-                </Link>
+                {onViewTask ? (
+                  <button
+                    className="table-icon-button"
+                    type="button"
+                    aria-label={t('common.view')}
+                    title={t('common.view')}
+                    onClick={() => onViewTask(task)}
+                  >
+                    <LineIcon name="eye" size={16} />
+                  </button>
+                ) : (
+                  <Link
+                    className="table-icon-button"
+                    to={`${detailBasePath}/${task.id}`}
+                    aria-label={t('common.view')}
+                    title={t('common.view')}
+                  >
+                    <LineIcon name="eye" size={16} />
+                  </Link>
+                )}
               </td>
             </tr>
           ))}

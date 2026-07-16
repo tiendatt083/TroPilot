@@ -657,6 +657,7 @@
     "additionalTitle": "Invoice services",
     "additionalDescription": "Electricity and water are default fees that cannot be deleted; other services can be added, disabled, or deleted.",
     "calculationMethod": "Calculation method",
+    "priceColumn": "Price",
     "notConfigured": "Not configured",
     "saveDefaultFees": "Save default fees",
     "addService": "Add service",
@@ -805,7 +806,7 @@
     "title": "Invoices in this building",
     "description": "Preview invoices before creating them, then generate one room invoice or all eligible room invoices in this building.",
     "managementTitle": "Invoice management",
-    "managementSummary": "Manage apartment fee invoices ({{count}} invoices)",
+    "managementSummary": "Manage room fee invoices ({{count}} invoices)",
     "loading": "Loading invoices...",
     "loadError": "Building invoices could not be loaded",
     "generated": "Invoice generated successfully.",
@@ -840,7 +841,7 @@
     "columns": {
       "id": "ID",
       "invoiceNumber": "Invoice number",
-      "apartment": "Apartment"
+      "apartment": "Room"
     },
     "export": {
       "sheetName": "Invoices"

@@ -1,9 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
 import * as roomApi from '../../features/rooms/api.js';
 import useRoomRouteContext from '../../features/rooms/useRoomRouteContext.js';
-import { formatRoomCode } from '../../utils/roomDisplay.js';
 import { formatEnumLabel } from '../../utils/i18nFormat.js';
 
 function formatNumber(value) {
@@ -19,7 +17,7 @@ function statusClass(status) {
 
 export default function StaffRoomDetailPage() {
   const { t } = useTranslation();
-  const { roomBasePath, roomId } = useRoomRouteContext('staff');
+  const { roomId } = useRoomRouteContext('staff');
   const [room, setRoom] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
@@ -60,16 +58,6 @@ export default function StaffRoomDetailPage() {
 
   return (
     <section className="content-section staff-room-detail-page">
-      <div className="staff-room-detail-toolbar">
-        <div>
-          <span className="staff-room-detail-code">{formatRoomCode(room)}</span>
-          <h2>{room.roomName}</h2>
-        </div>
-        <Link className="secondary-link" to={roomBasePath}>
-          {t('roomManagement.backToRooms')}
-        </Link>
-      </div>
-
       {error && <div className="alert error-alert">{error}</div>}
 
       <div className="detail-panel staff-room-detail-panel">

@@ -84,6 +84,23 @@ class ServiceFeeServiceImplTest {
     }
 
     @Test
+    void createUtilityFeeAllowsFixedCalculation() {
+        Building building = BusinessRuleTestFixtures.building();
+        ServiceFeeUpsertRequest request = request("Water", FeeType.WATER, CalculationType.FIXED);
+        ServiceFeeResponse mappedResponse = ServiceFeeResponse.builder().id(11L).build();
+
+        when(buildingRepository.findById(building.getId())).thenReturn(Optional.of(building));
+        when(serviceFeeRepository.save(any(ServiceFee.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(serviceFeeMapper.toResponse(any(ServiceFee.class))).thenReturn(mappedResponse);
+
+        service.createBuildingServiceFee(building.getId(), request);
+
+        ArgumentCaptor<ServiceFee> feeCaptor = ArgumentCaptor.forClass(ServiceFee.class);
+        verify(serviceFeeRepository).save(feeCaptor.capture());
+        assertThat(feeCaptor.getValue().getCalculationType()).isEqualTo(CalculationType.FIXED);
+    }
+
+    @Test
     void activateUtilityFeeRejectsDuplicateActiveTypeInBuilding() {
         Building building = BusinessRuleTestFixtures.building();
         ServiceFee waterFee = BusinessRuleTestFixtures.serviceFee(

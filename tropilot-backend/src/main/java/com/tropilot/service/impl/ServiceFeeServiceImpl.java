@@ -199,14 +199,16 @@ public class ServiceFeeServiceImpl implements ServiceFeeService {
 
         if ((feeType == FeeType.ELECTRICITY || feeType == FeeType.WATER)
                 && calculationType != CalculationType.BY_USAGE
+                && calculationType != CalculationType.FIXED
                 && calculationType != CalculationType.BY_PERSON) {
-            throw new BadRequestException("Electricity and water fees must be calculated by usage or by person");
+            throw new BadRequestException("Electricity and water fees must be fixed, calculated by usage, or calculated by person");
         }
 
         if (feeType == FeeType.OTHER
                 && calculationType != CalculationType.FIXED
+                && calculationType != CalculationType.BY_USAGE
                 && calculationType != CalculationType.BY_PERSON) {
-            throw new BadRequestException("Additional services must be fixed or calculated by person");
+            throw new BadRequestException("Additional services must be fixed, calculated by usage, or calculated by person");
         }
 
         if (normalizeOptionalText(vehicleType) != null) {
