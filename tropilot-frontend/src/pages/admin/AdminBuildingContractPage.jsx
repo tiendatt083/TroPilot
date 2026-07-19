@@ -255,7 +255,7 @@ export default function AdminBuildingContractPage() {
           </div>
 
           <ActionDialog
-            className="action-dialog-wide"
+            className="action-dialog-wide contract-detail-dialog"
             eyebrow={selectedContract ? formatRoomCode(selectedContract) : t('contracts.adminEyebrow')}
             labelledBy="building-contract-detail-dialog-title"
             open={Boolean(selectedContract)}
@@ -269,7 +269,7 @@ export default function AdminBuildingContractPage() {
           >
             {selectedContract && (
               <div className="building-contract-detail-column">
-              <section className="detail-panel">
+              <section className="detail-panel contract-detail-summary">
                 <div>
                   <span>{t('tables.common.room')}</span>
                   <strong>{formatRoomLabel(selectedContract)}</strong>
@@ -323,7 +323,7 @@ export default function AdminBuildingContractPage() {
                   <div className="button-row">
                     {hasSelectedContractFile && (
                       <a
-                        className="button-link"
+                        className="secondary-button inline-button contract-file-action"
                         href={resolveFileUrl(selectedContract.contractFileUrl)}
                         target="_blank"
                         rel="noreferrer"
@@ -332,13 +332,13 @@ export default function AdminBuildingContractPage() {
                       </a>
                     )}
                     {hasSelectedContractFile && !showUploadForm && (
-                      <button className="secondary-button inline-button" type="button" onClick={handleChangeContract}>
+                      <button className="secondary-button inline-button contract-file-action" type="button" onClick={handleChangeContract}>
                         {t('contracts.change')}
                       </button>
                     )}
                     {hasSelectedContractFile && showUploadForm && (
                       <button
-                        className="secondary-button inline-button"
+                        className="secondary-button inline-button contract-file-action"
                         type="button"
                         disabled={uploading}
                         onClick={() => setShowUploadForm(false)}

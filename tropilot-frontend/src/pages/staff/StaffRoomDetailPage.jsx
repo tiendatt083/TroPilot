@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useOutletContext } from 'react-router-dom';
 import * as roomApi from '../../features/rooms/api.js';
 import useRoomRouteContext from '../../features/rooms/useRoomRouteContext.js';
 import { formatEnumLabel } from '../../utils/i18nFormat.js';
@@ -11,6 +12,14 @@ function formatNumber(value) {
     : value;
 }
 
+function formatMoney(value) {
+  return `${formatNumber(value)} đ`;
+}
+
+function formatArea(value) {
+  return `${formatNumber(value)} m2`;
+}
+
 function statusClass(status) {
   return `status-pill room-status-${status.toLowerCase()}`;
 }
@@ -18,6 +27,7 @@ function statusClass(status) {
 export default function StaffRoomDetailPage() {
   const { t } = useTranslation();
   const { roomId } = useRoomRouteContext('staff');
+  const { building } = useOutletContext() || {};
   const [room, setRoom] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
@@ -56,16 +66,22 @@ export default function StaffRoomDetailPage() {
     return <div className="empty-state">{error || t('roomManagement.notFound')}</div>;
   }
 
+  const buildingAddress = room.buildingAddress || building?.address || t('common.notProvided');
+
   return (
     <section className="content-section staff-room-detail-page">
       {error && <div className="alert error-alert">{error}</div>}
 
-      <div className="detail-panel staff-room-detail-panel">
+      <div className="detail-panel staff-room-detail-panel room-detail-card">
         <div>
           <span>{t('tables.common.building')}</span>
           <span className="staff-room-detail-value">
             {room.buildingCode} - {room.buildingName}
           </span>
+        </div>
+        <div>
+          <span>{t('forms.building.address')}</span>
+          <span className="staff-room-detail-value">{buildingAddress}</span>
         </div>
         <div>
           <span>{t('tables.common.status')}</span>
@@ -83,11 +99,11 @@ export default function StaffRoomDetailPage() {
         </div>
         <div>
           <span>{t('tables.common.price')}</span>
-          <span className="staff-room-detail-value">{formatNumber(room.price)}</span>
+          <span className="staff-room-detail-value room-detail-metric">{formatMoney(room.price)}</span>
         </div>
         <div>
           <span>{t('tables.common.area')}</span>
-          <span className="staff-room-detail-value">{formatNumber(room.area)}</span>
+          <span className="staff-room-detail-value room-detail-metric">{formatArea(room.area)}</span>
         </div>
         <div className="detail-wide">
           <span>{t('tables.common.description')}</span>

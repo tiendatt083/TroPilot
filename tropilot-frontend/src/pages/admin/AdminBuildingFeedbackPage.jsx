@@ -33,8 +33,8 @@ function defaultDeadlineValue() {
   return toDateInputValue(date);
 }
 
-function taskTypeForFeedback(feedback) {
-  return feedback.type === 'MAINTENANCE' ? 'MAINTENANCE' : 'FEEDBACK_HANDLING';
+function taskTypeForFeedback() {
+  return 'OTHER';
 }
 
 function toDeadlinePayload(dateValue) {

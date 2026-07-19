@@ -221,9 +221,12 @@ export default function AdminBuildingServiceFeePage() {
 
   const handleAdditionalChange = (event) => {
     const { name, value } = event.target;
+
+    const nextValue = name === 'unitPrice' ? value.replace(/\D/g, '') : value;
+
     setAdditionalForm((current) => ({
       ...current,
-      [name]: value
+      [name]: nextValue
     }));
   };
 
@@ -483,7 +486,7 @@ export default function AdminBuildingServiceFeePage() {
       )}
 
       <ActionDialog
-        className="action-dialog"
+        className="action-dialog service-fee-editor-dialog"
         eyebrow={t('buildingServiceFees.eyebrow')}
         labelledBy="service-fee-dialog-title"
         open={serviceFormOpen}
@@ -491,59 +494,75 @@ export default function AdminBuildingServiceFeePage() {
         onClose={handleCancelServiceEdit}
       >
         <form className="panel-form additional-service-form" onSubmit={handleSaveServiceFees}>
-                <label htmlFor="additionalServiceName">{t('buildingServiceFees.additional.name')}</label>
-                <input
-                  id="additionalServiceName"
-                  name="name"
-                  value={additionalForm.name}
-                  onChange={handleAdditionalChange}
-                  maxLength={120}
-                  disabled={Boolean(editingUtilityConfig)}
-                  required={!editingUtilityConfig && hasServiceDraft}
-                />
+          <div className="additional-service-field">
+            <label htmlFor="additionalServiceName">{t('buildingServiceFees.additional.name')}</label>
+            <input
+              id="additionalServiceName"
+              name="name"
+              value={additionalForm.name}
+              onChange={handleAdditionalChange}
+              maxLength={120}
+              disabled={Boolean(editingUtilityConfig)}
+              required={!editingUtilityConfig && hasServiceDraft}
+            />
+          </div>
 
-                <label htmlFor="additionalServiceUnitPrice">{t('buildingServiceFees.additional.unitPrice')}</label>
-                <input
-                  id="additionalServiceUnitPrice"
-                  name="unitPrice"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={additionalForm.unitPrice}
-                  onChange={handleAdditionalChange}
-                  required={hasServiceDraft}
-                />
+          <div className="additional-service-field">
+            <label htmlFor="additionalServiceUnitPrice">
+              {t('buildingServiceFees.additional.unitPrice')} <span className="field-unit-note">(đ)</span>
+            </label>
+            <div className="unit-input money-input">
+              <input
+                className="unit-input-control"
+                id="additionalServiceUnitPrice"
+                name="unitPrice"
+                type="tel"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                value={additionalForm.unitPrice}
+                onChange={handleAdditionalChange}
+                placeholder="0"
+                autoComplete="off"
+                required={hasServiceDraft}
+              />
+              <span className="unit-input-suffix">đ</span>
+            </div>
+          </div>
 
-                <label htmlFor="additionalServiceCalculationType">
-                  {t('buildingServiceFees.calculationMethod')}
-                </label>
-                <select
-                  id="additionalServiceCalculationType"
-                  name="calculationType"
-                  value={additionalForm.calculationType}
-                  onChange={handleAdditionalChange}
-                  required
-                >
-                  {formCalculationTypes.map((calculationType) => (
-                    <option key={calculationType} value={calculationType}>
-                      {t(`buildingServiceFees.methods.${calculationType}`)}
-                    </option>
-                  ))}
-                </select>
+          <div className="additional-service-field">
+            <label htmlFor="additionalServiceCalculationType">
+              {t('buildingServiceFees.calculationMethod')}
+            </label>
+            <select
+              id="additionalServiceCalculationType"
+              name="calculationType"
+              value={additionalForm.calculationType}
+              onChange={handleAdditionalChange}
+              required
+            >
+              {formCalculationTypes.map((calculationType) => (
+                <option key={calculationType} value={calculationType}>
+                  {t(`buildingServiceFees.methods.${calculationType}`)}
+                </option>
+              ))}
+            </select>
+          </div>
 
-                <button type="submit" disabled={savingServiceFees || !hasServiceDraft}>
-                  {savingServiceFees ? t('common.saving') : t('buildingServiceFees.save')}
-                </button>
-                {(editingUtilityConfig || editingAdditionalFee) && (
-                  <button
-                    className="secondary-button"
-                    type="button"
-                    disabled={savingServiceFees}
-                    onClick={handleCancelServiceEdit}
-                  >
-                    {t('buildingServiceFees.cancelEdit')}
-                  </button>
-                )}
+          <div className="additional-service-actions">
+            {(editingUtilityConfig || editingAdditionalFee) && (
+              <button
+                className="secondary-button"
+                type="button"
+                disabled={savingServiceFees}
+                onClick={handleCancelServiceEdit}
+              >
+                {t('buildingServiceFees.cancelEdit')}
+              </button>
+            )}
+            <button type="submit" disabled={savingServiceFees || !hasServiceDraft}>
+              {savingServiceFees ? t('common.saving') : t('buildingServiceFees.save')}
+            </button>
+          </div>
         </form>
       </ActionDialog>
     </div>

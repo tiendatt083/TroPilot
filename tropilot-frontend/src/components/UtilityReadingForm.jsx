@@ -192,7 +192,7 @@ export default function UtilityReadingForm({
   return (
     <form className="panel-form utility-reading-entry-form" onSubmit={handleSubmit}>
       <div className="utility-reading-shared-form">
-        <div>
+        <div className="utility-reading-room-field">
           <label htmlFor="roomId">{t('tables.common.room')}</label>
           <select
             id="roomId"
@@ -215,8 +215,8 @@ export default function UtilityReadingForm({
           </select>
         </div>
 
-        <div>
-          <label htmlFor="readingDate">{t('tables.common.readingDate')}</label>
+        <div className="utility-reading-date-field">
+          <label htmlFor="readingDate">{t('forms.utilityReading.readingDateShort')}</label>
           <input
             id="readingDate"
             name="readingDate"
@@ -260,21 +260,19 @@ export default function UtilityReadingForm({
         />
       </div>
 
-      <p className="muted-text">{t('forms.utilityReading.allowedImageTypes')}</p>
-
       {editing && (
-        <>
-          <label htmlFor="editReason">{t('tables.common.editReason')}</label>
+        <div className="utility-reading-reason-field">
+          <label htmlFor="editReason">{t('forms.utilityReading.editReasonShort')}</label>
           <textarea
             id="editReason"
             name="editReason"
             value={form.editReason}
             onChange={handleChange}
             maxLength={1000}
-            rows="3"
+            rows="2"
             required
           />
-        </>
+        </div>
       )}
 
       <div className="button-row form-button-row">

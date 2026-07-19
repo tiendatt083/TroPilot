@@ -16,6 +16,7 @@ public class RoomMapper {
                 .buildingId(building.getId())
                 .buildingCode(building.getBuildingCode())
                 .buildingName(building.getName())
+                .buildingAddress(building.getAddress())
                 .roomCode(room.getRoomCode())
                 .roomName(room.getRoomName())
                 .floor(room.getFloor())

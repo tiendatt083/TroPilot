@@ -17,7 +17,21 @@ function roomText(task, t) {
   return formatRoomLabel(task);
 }
 
-export default function TaskTable({ tasks, detailBasePath, onViewTask, showAssignedStaff = true }) {
+function buildingText(task, t) {
+  if (task.buildingCode && task.buildingName) {
+    return `${task.buildingCode} - ${task.buildingName}`;
+  }
+
+  return task.buildingName || task.buildingCode || t('common.noBuilding');
+}
+
+export default function TaskTable({
+  detailBasePath,
+  onViewTask,
+  showAssignedStaff = true,
+  showBuilding = false,
+  tasks
+}) {
   const { t } = useTranslation();
 
   return (
@@ -26,6 +40,7 @@ export default function TaskTable({ tasks, detailBasePath, onViewTask, showAssig
         <thead>
           <tr>
             <th>{t('tables.tasks.title')}</th>
+            {showBuilding && <th>{t('tables.common.building')}</th>}
             <th>{t('tables.common.room')}</th>
             {showAssignedStaff && <th>{t('tables.common.assignedStaff')}</th>}
             <th>{t('tables.common.type')}</th>
@@ -40,9 +55,16 @@ export default function TaskTable({ tasks, detailBasePath, onViewTask, showAssig
               <td>
                 <strong>{task.title}</strong>
               </td>
+              {showBuilding && (
+                <td>
+                  <strong>{buildingText(task, t)}</strong>
+                </td>
+              )}
               <td>
                 <strong>{roomText(task, t)}</strong>
-                <span className="table-subtext">{task.buildingCode || t('common.noBuilding')}</span>
+                {!showBuilding && (
+                  <span className="table-subtext">{task.buildingCode || t('common.noBuilding')}</span>
+                )}
               </td>
               {showAssignedStaff && (
                 <td>

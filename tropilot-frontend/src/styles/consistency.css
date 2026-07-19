@@ -466,7 +466,7 @@ html[data-theme="dark"] .staff-shell .staff-building-workspace-shell .building-w
 
 .resident-notification-page .notification-state-icon.is-unread {
   color: var(--color-primary);
-  border-color: rgba(36, 125, 131, 0.2);
+  border-color: rgba(63, 130, 246, 0.2);
   background: var(--color-primary-soft);
 }
 
@@ -1590,19 +1590,27 @@ html[data-theme="dark"] .resident-profile-page .profile-role-pill {
 }
 
 .utility-reading-dialog {
-  width: min(660px, calc(100vw - 48px));
-  max-height: min(90vh, 820px);
-  padding: 1rem;
+  width: min(600px, calc(100vw - 48px));
+  max-height: min(90vh, 760px);
+  padding: 0.9rem;
 }
 
 .utility-reading-dialog .utility-reading-shared-form {
-  grid-template-columns: minmax(210px, 330px) minmax(140px, 155px);
-  gap: 0.6rem;
+  grid-template-columns: minmax(190px, 260px) minmax(135px, 155px);
+  gap: 0.55rem;
 }
 
 .utility-reading-dialog .utility-meter-reading-row {
-  grid-template-columns: repeat(2, minmax(0, 210px));
+  grid-template-columns: repeat(2, minmax(0, 195px));
   justify-content: start;
+}
+
+.utility-reading-dialog .utility-reading-room-field {
+  max-width: 260px;
+}
+
+.utility-reading-dialog .utility-reading-date-field {
+  max-width: 155px;
 }
 
 .utility-reading-dialog .utility-meter-field,
@@ -1612,7 +1620,14 @@ html[data-theme="dark"] .resident-profile-page .profile-role-pill {
 }
 
 .utility-reading-dialog .utility-reading-entry-form textarea {
-  min-height: 68px;
+  min-height: 54px;
+  max-height: 72px;
+}
+
+.utility-reading-dialog .utility-reading-reason-field {
+  display: grid;
+  gap: 0.32rem;
+  width: min(100%, 405px);
 }
 
 @media (max-width: 720px) {
@@ -1778,7 +1793,154 @@ html[data-theme="dark"] .resident-profile-page .profile-role-pill {
   margin-inline: auto;
 }
 
+.utility-reading-dialog {
+  width: min(600px, calc(100vw - 48px));
+  max-height: min(90vh, 760px);
+  padding: 0.9rem;
+}
+
+.utility-reading-dialog .account-modal-header {
+  padding-bottom: 0.7rem;
+}
+
+.utility-reading-dialog .account-modal-header h2 {
+  font-size: 1.35rem;
+}
+
+.utility-reading-dialog .utility-reading-entry-form {
+  gap: 0.58rem;
+  padding: 0.78rem;
+}
+
+.utility-reading-dialog .utility-reading-shared-form {
+  grid-template-columns: minmax(0, 260px) minmax(0, 155px);
+  justify-content: start;
+  gap: 0.55rem;
+}
+
+.utility-reading-dialog .utility-reading-room-field {
+  max-width: 260px;
+}
+
+.utility-reading-dialog .utility-reading-date-field {
+  max-width: 155px;
+}
+
+.utility-reading-dialog .utility-reading-entry-form label,
+.utility-reading-dialog .meter-field-label,
+.utility-reading-dialog .meter-field-label label {
+  margin-bottom: 0.24rem;
+  color: #020617;
+  font-size: 0.8rem;
+  font-weight: var(--font-weight-semibold);
+}
+
+.utility-reading-dialog .utility-reading-entry-form input,
+.utility-reading-dialog .utility-reading-entry-form select {
+  height: 38px;
+  min-height: 38px;
+  padding: 0.42rem 0.6rem;
+}
+
+.utility-reading-dialog .utility-reading-form-sections {
+  gap: 0.55rem;
+}
+
+.utility-reading-dialog .utility-reading-meter-form {
+  background: #fbfdfd;
+}
+
+.utility-reading-dialog .utility-reading-meter-form legend {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.65rem;
+  width: 100%;
+  padding: 0.52rem 0.65rem 0.3rem;
+  font-size: 0.88rem;
+}
+
+.utility-reading-dialog .meter-mock-control {
+  justify-self: end;
+  margin-left: 0;
+}
+
+.utility-reading-dialog .meter-mock-control em {
+  color: #020617;
+  font-size: 0.7rem;
+}
+
+.utility-reading-dialog .utility-reading-fetch-button {
+  width: 28px;
+  min-width: 28px;
+  height: 28px;
+  min-height: 28px;
+  border-radius: var(--radius-xs);
+}
+
+.utility-reading-dialog .utility-reading-fetch-button svg {
+  width: 0.82rem;
+  height: 0.82rem;
+}
+
+.utility-reading-dialog .utility-reading-meter-form-body {
+  gap: 0.48rem;
+  padding: 0.5rem 0.65rem 0.65rem;
+}
+
+.utility-reading-dialog .utility-meter-reading-row {
+  grid-template-columns: repeat(2, minmax(0, 195px));
+  justify-content: start;
+  gap: 0.55rem;
+}
+
+.utility-reading-dialog .meter-readonly-value,
+.utility-reading-dialog .utility-reading-meter-value-input {
+  min-height: 38px;
+  height: 38px;
+}
+
+.utility-reading-dialog .meter-readonly-value {
+  padding: 0.45rem 0.6rem;
+}
+
+.utility-reading-dialog .utility-reading-evidence-field {
+  gap: 0.28rem;
+}
+
+.utility-reading-dialog .utility-reading-evidence-field input[type='file'] {
+  width: min(100%, 445px);
+  min-height: 36px;
+  height: 36px;
+  padding: 0.42rem 0.55rem;
+}
+
+.utility-reading-dialog .utility-reading-reason-field {
+  width: min(100%, 445px);
+}
+
+.utility-reading-dialog .utility-reading-entry-form textarea {
+  min-height: 54px;
+  max-height: 72px;
+  padding: 0.5rem 0.65rem;
+}
+
+.utility-reading-dialog .form-button-row {
+  justify-content: flex-end;
+  margin-top: 0.25rem;
+}
+
+.utility-reading-dialog .form-button-row button {
+  min-height: 38px;
+  padding: 0.45rem 0.85rem;
+}
+
 @media (max-width: 720px) {
+  .utility-reading-dialog .utility-reading-shared-form,
+  .utility-reading-dialog .utility-meter-reading-row {
+    grid-template-columns: 1fr;
+  }
+
   .invoice-modern-page .invoice-status-filter,
   .invoice-modern-page .invoice-sort-button,
   .invoice-modern-page .instant-clear-button {

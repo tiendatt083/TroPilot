@@ -161,7 +161,7 @@
   border-radius: var(--radius-md);
   padding: clamp(0.85rem, 1.8vw, 1rem);
   background:
-    radial-gradient(circle at 12% 18%, rgba(36, 125, 131, 0.1), transparent 32%),
+    radial-gradient(circle at 12% 18%, rgba(63, 130, 246, 0.1), transparent 32%),
     linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(248, 252, 252, 0.96));
 }
 
@@ -236,7 +236,7 @@
     linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 252, 252, 0.96));
   box-shadow:
     0 10px 26px rgba(15, 45, 58, 0.055),
-    inset 3px 0 0 rgba(36, 125, 131, 0.2);
+    inset 3px 0 0 rgba(63, 130, 246, 0.2);
   transition:
     border-color var(--transition-fast),
     box-shadow var(--transition-fast),
@@ -244,10 +244,10 @@
 }
 
 .utility-reading-row:hover {
-  border-color: rgba(36, 125, 131, 0.28);
+  border-color: rgba(63, 130, 246, 0.28);
   box-shadow:
     0 14px 32px rgba(15, 45, 58, 0.08),
-    inset 3px 0 0 rgba(36, 125, 131, 0.34);
+    inset 3px 0 0 rgba(63, 130, 246, 0.34);
   transform: translateY(-1px);
 }
 
@@ -339,11 +339,11 @@
   min-height: 30px;
   align-items: center;
   gap: 0.36rem;
-  border: 1px solid rgba(36, 125, 131, 0.2);
+  border: 1px solid rgba(63, 130, 246, 0.2);
   border-radius: var(--radius-xs);
   padding: 0.34rem 0.52rem;
   color: var(--color-primary);
-  background: rgba(36, 125, 131, 0.08);
+  background: rgba(63, 130, 246, 0.08);
   font-size: 0.78rem;
   font-weight: 800;
   transition:
@@ -354,8 +354,8 @@
 
 .utility-reading-evidence-links a:hover,
 .utility-reading-evidence-links a:focus-visible {
-  border-color: rgba(36, 125, 131, 0.36);
-  background: rgba(36, 125, 131, 0.14);
+  border-color: rgba(63, 130, 246, 0.36);
+  background: rgba(63, 130, 246, 0.14);
   transform: translateY(-1px);
 }
 
@@ -420,6 +420,11 @@
 
 .utility-reading-table th:nth-child(7) {
   width: 8%;
+  text-align: center;
+}
+
+.utility-reading-table td:nth-child(7) {
+  text-align: center;
 }
 
 .utility-reading-table .utility-reading-room-cell,
@@ -490,7 +495,7 @@
 }
 
 .utility-reading-table .utility-reading-row-actions {
-  justify-content: flex-end;
+  justify-content: center;
 }
 
 @media (max-width: 900px) {
@@ -600,7 +605,7 @@
 .segmented-control button.active {
   color: #ffffff;
   background: var(--color-primary);
-  box-shadow: 0 8px 18px rgba(14, 145, 170, 0.18);
+  box-shadow: 0 8px 18px rgba(63, 130, 246, 0.18);
 }
 
 .primary-action-button {
@@ -724,7 +729,7 @@
   background: rgba(255, 255, 255, 0.98);
   box-shadow:
     0 8px 20px rgba(15, 45, 58, 0.045),
-    inset 3px 0 0 rgba(36, 125, 131, 0.18);
+    inset 3px 0 0 rgba(63, 130, 246, 0.18);
 }
 
 .invoice-preview-item-table {
@@ -1428,6 +1433,58 @@
   grid-template-columns: repeat(2, minmax(180px, 1fr));
 }
 
+.contract-detail-dialog,
+.contract-detail-dialog :is(h2, h3, p, span, strong, label, .muted-text) {
+  color: #020617;
+}
+
+.contract-detail-dialog :is(.page-eyebrow, .detail-panel span, .status-pill) {
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.contract-detail-dialog .page-eyebrow,
+.contract-detail-dialog .detail-panel > div > span:first-child {
+  color: #020617;
+  font-size: 0.82rem;
+  font-weight: 620;
+}
+
+.contract-detail-dialog .detail-panel strong,
+.contract-detail-dialog .detail-panel p {
+  color: #020617;
+  font-weight: var(--font-weight-regular);
+}
+
+.contract-detail-dialog .status-pill {
+  font-weight: 620;
+}
+
+.contract-detail-dialog .assignment-panel .page-title-row {
+  align-items: center;
+}
+
+.contract-detail-dialog .contract-file-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 138px;
+  min-width: 138px;
+  min-height: 38px;
+  border-color: rgba(63, 130, 246, 0.32);
+  color: var(--color-primary);
+  background: var(--color-primary-soft);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.contract-detail-dialog .contract-file-action:hover:not(:disabled),
+.contract-detail-dialog .contract-file-action:focus-visible {
+  border-color: rgba(63, 130, 246, 0.46);
+  color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 12%, var(--color-surface));
+}
+
 .building-contract-detail-column .assignment-panel {
   margin-top: 0;
 }
@@ -1436,19 +1493,19 @@
   display: grid;
   gap: 0.35rem;
   padding: 0.9rem 1rem;
-  border: 1px solid rgba(14, 145, 170, 0.18);
+  border: 1px solid rgba(63, 130, 246, 0.18);
   border-radius: var(--radius-md);
   background: var(--color-primary-soft);
 }
 
 .contract-file-summary strong {
-  color: var(--color-text);
-  font-weight: 850;
+  color: #020617;
+  font-weight: 650;
 }
 
 .contract-file-summary p {
   margin: 0;
-  color: var(--color-text-muted);
+  color: #020617;
   font-size: 0.9rem;
   line-height: 1.45;
 }
@@ -1567,6 +1624,42 @@
   max-width: 980px;
 }
 
+.compact-equipment-form {
+  max-width: 100%;
+}
+
+.compact-equipment-form > .form-grid {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.85rem;
+}
+
+.compact-equipment-form .equipment-scope-field {
+  padding-bottom: 0.1rem;
+}
+
+.compact-equipment-form .equipment-scope-field .segmented-control {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.equipment-identity-grid,
+.equipment-details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.78rem 0.9rem;
+}
+
+.compact-equipment-form .form-button-row {
+  justify-content: flex-end;
+  gap: 0.6rem;
+  margin-top: 0.15rem;
+}
+
+.compact-equipment-form .form-button-row button {
+  width: 128px;
+  min-width: 128px;
+  min-height: 38px;
+}
+
 .compact-equipment-form .field-label {
   display: block;
   margin-bottom: 0.45rem;
@@ -1580,6 +1673,21 @@
   color: var(--color-text-muted);
   font-size: 0.82rem;
   line-height: 1.45;
+}
+
+@media (max-width: 720px) {
+  .equipment-identity-grid,
+  .equipment-details-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .compact-equipment-form .equipment-scope-field .segmented-control {
+    grid-template-columns: 1fr;
+  }
+
+  .compact-equipment-form .form-button-row button {
+    width: 100%;
+  }
 }
 
 .equipment-filter-row {
@@ -1965,9 +2073,9 @@
 }
 
 .task-quick-secondary-button:hover:not(:disabled) {
-  border-color: rgba(36, 125, 131, 0.35);
+  border-color: rgba(63, 130, 246, 0.35);
   color: var(--color-primary);
-  background: rgba(236, 250, 250, 0.78);
+  background: rgba(238, 244, 255, 0.86);
 }
 
 html[data-theme='dark'] .task-quick-summary,
@@ -1985,12 +2093,6 @@ html[data-theme='dark'] .task-quick-secondary-button {
   .task-quick-detail-grid {
     grid-template-columns: 1fr;
   }
-}
-
-.assignment-action-row {
-  display: grid;
-  grid-template-columns: minmax(180px, 1fr) auto;
-  gap: 0.5rem;
 }
 
 .feedback-action-panel {
@@ -2090,7 +2192,7 @@ html[data-theme='dark'] .task-quick-secondary-button {
 }
 
 .feedback-expanded-parent-row td {
-  border-bottom-color: rgba(36, 125, 131, 0.18);
+  border-bottom-color: rgba(63, 130, 246, 0.18);
 }
 
 .feedback-expanded-row td {
@@ -2201,7 +2303,7 @@ html[data-theme='dark'] .task-quick-secondary-button {
 }
 
 .feedback-review-card:hover {
-  border-color: rgba(36, 125, 131, 0.22);
+  border-color: rgba(63, 130, 246, 0.22);
   box-shadow: 0 14px 34px rgba(15, 32, 48, 0.08);
   transform: translateY(-1px);
 }
@@ -2210,12 +2312,12 @@ html[data-theme='dark'] .task-quick-secondary-button {
   position: absolute;
   inset: 0 auto 0 0;
   width: 4px;
-  background: linear-gradient(180deg, rgba(36, 125, 131, 0.88), rgba(36, 125, 131, 0.22));
+  background: linear-gradient(180deg, rgba(63, 130, 246, 0.88), rgba(63, 130, 246, 0.22));
   content: '';
 }
 
 .feedback-review-card.is-open {
-  border-color: rgba(36, 125, 131, 0.3);
+  border-color: rgba(63, 130, 246, 0.3);
 }
 
 .feedback-review-main {
@@ -2258,7 +2360,7 @@ html[data-theme='dark'] .task-quick-secondary-button {
   border-radius: 999px;
   padding: 0 0.4rem;
   color: var(--color-primary);
-  background: rgba(36, 125, 131, 0.08);
+  background: rgba(63, 130, 246, 0.08);
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -2307,7 +2409,7 @@ html[data-theme='dark'] .task-quick-secondary-button {
   width: 14px;
   min-width: 14px;
   height: 14px;
-  color: rgba(36, 125, 131, 0.84);
+  color: rgba(63, 130, 246, 0.84);
   stroke: currentColor;
   stroke-width: 2;
   fill: none;
@@ -2358,10 +2460,10 @@ html[data-theme='dark'] .task-quick-secondary-button {
 
 .feedback-icon-action.is-active,
 .feedback-icon-action[aria-pressed='true'] {
-  border-color: rgba(36, 125, 131, 0.28);
+  border-color: rgba(63, 130, 246, 0.28);
   color: var(--color-primary);
   background: var(--color-primary-soft);
-  box-shadow: inset 0 0 0 1px rgba(36, 125, 131, 0.12);
+  box-shadow: inset 0 0 0 1px rgba(63, 130, 246, 0.12);
 }
 
 .feedback-review-actions .feedback-action-buttons-compact {
@@ -2395,10 +2497,10 @@ html[data-theme='dark'] .task-quick-secondary-button {
   gap: 0.32rem;
   max-width: 180px;
   min-height: 28px;
-  border: 1px solid rgba(36, 125, 131, 0.12);
+  border: 1px solid rgba(63, 130, 246, 0.12);
   border-radius: 999px;
   padding: 0.26rem 0.5rem;
-  background: rgba(36, 125, 131, 0.075);
+  background: rgba(63, 130, 246, 0.075);
 }
 
 .feedback-linked-task-compact strong,
@@ -2484,7 +2586,7 @@ html[data-theme='dark'] .task-quick-secondary-button {
 
 .feedback-dialog-close-button:hover:not(:disabled),
 .feedback-dialog-close-button:focus-visible {
-  border-color: rgba(36, 125, 131, 0.22);
+  border-color: rgba(63, 130, 246, 0.22);
   color: var(--color-primary);
   background: var(--color-primary-soft);
 }
@@ -2665,15 +2767,6 @@ html[data-theme='dark'] .task-quick-secondary-button {
   gap: 0.25rem 0.45rem;
 }
 
-.maintenance-table .assignment-action-row {
-  grid-template-columns: minmax(120px, 1fr) auto;
-  gap: 0.4rem;
-}
-
-.maintenance-table .assignment-action-row select {
-  min-width: 0;
-}
-
 .maintenance-card-list {
   display: grid;
   gap: 0.7rem;
@@ -2698,11 +2791,11 @@ html[data-theme='dark'] .task-quick-secondary-button {
   color: var(--color-text);
   text-align: left;
   background:
-    radial-gradient(circle at left top, rgba(36, 125, 131, 0.08), transparent 42%),
+    radial-gradient(circle at left top, rgba(63, 130, 246, 0.08), transparent 42%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(249, 253, 253, 0.97));
   box-shadow:
     0 12px 28px rgba(15, 45, 58, 0.055),
-    inset 4px 0 0 rgba(36, 125, 131, 0.3);
+    inset 4px 0 0 rgba(63, 130, 246, 0.3);
   cursor: pointer;
   transition:
     background var(--transition-fast),
@@ -2712,13 +2805,13 @@ html[data-theme='dark'] .task-quick-secondary-button {
 }
 
 .maintenance-card:hover {
-  border-color: rgba(36, 125, 131, 0.45);
+  border-color: rgba(63, 130, 246, 0.45);
   background:
-    radial-gradient(circle at left top, rgba(36, 125, 131, 0.12), transparent 44%),
+    radial-gradient(circle at left top, rgba(63, 130, 246, 0.12), transparent 44%),
     linear-gradient(180deg, #ffffff, #f7fcfc);
   box-shadow:
     0 16px 34px rgba(15, 45, 58, 0.09),
-    inset 4px 0 0 rgba(36, 125, 131, 0.56);
+    inset 4px 0 0 rgba(63, 130, 246, 0.56);
   transform: translateY(-1px);
 }
 
@@ -2726,11 +2819,11 @@ html[data-theme='dark'] .task-quick-secondary-button {
   position: absolute;
   inset: 0 auto 0 0;
   width: 3px;
-  background: linear-gradient(180deg, var(--color-primary), rgba(36, 125, 131, 0.2));
+  background: linear-gradient(180deg, var(--color-primary), rgba(63, 130, 246, 0.2));
 }
 
 .maintenance-card:focus-visible {
-  outline: 3px solid rgba(36, 125, 131, 0.22);
+  outline: 3px solid rgba(63, 130, 246, 0.22);
   outline-offset: 2px;
 }
 
@@ -2841,19 +2934,19 @@ html[data-theme='dark'] .task-quick-secondary-button {
 }
 
 .maintenance-card:hover .maintenance-card-view {
-  border-color: rgba(36, 125, 131, 0.36);
+  border-color: rgba(63, 130, 246, 0.36);
   color: var(--color-primary);
   background: #ffffff;
 }
 
 .maintenance-staff-dialog {
-  width: min(980px, 100%);
+  width: min(860px, calc(100vw - 48px));
 }
 
 .maintenance-staff-dialog-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
-  gap: 1rem;
+  grid-template-columns: 1fr;
+  gap: 0.85rem;
   align-items: start;
 }
 
@@ -2862,13 +2955,78 @@ html[data-theme='dark'] .task-quick-secondary-button {
   min-width: 0;
 }
 
+.maintenance-staff-dialog .maintenance-detail-panel {
+  border-color: #dbe5ee;
+  background: #ffffff;
+}
+
+.maintenance-staff-dialog .detail-panel {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem 1rem;
+  padding: 0.95rem 1rem;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fbfc 100%);
+  box-shadow: none;
+}
+
+.maintenance-staff-dialog .detail-panel div {
+  gap: 0.3rem;
+}
+
+.maintenance-staff-dialog .detail-panel span {
+  color: #020617;
+  font-size: 0.82rem;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.maintenance-staff-dialog .detail-panel strong,
+.maintenance-staff-dialog .detail-panel p,
+.maintenance-staff-dialog .evidence-links {
+  color: #020617;
+  font-weight: var(--font-weight-regular);
+}
+
+.maintenance-staff-dialog .detail-panel .status-pill {
+  font-weight: var(--font-weight-semibold);
+}
+
+.maintenance-staff-dialog .detail-wide {
+  border-top: 1px solid #e2e8f0;
+  padding-top: 0.7rem;
+}
+
 .maintenance-staff-action-panel {
   display: grid;
-  gap: 0.8rem;
-  border: 1px solid var(--color-border-soft);
+  justify-items: start;
+  gap: 0.7rem;
+  border: 0;
+  border-radius: var(--radius-md);
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.maintenance-staff-action-panel .maintenance-start-button {
+  width: auto;
+  min-height: 36px;
+  min-width: 132px;
+  padding: 0.5rem 0.95rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+}
+
+.maintenance-staff-action-panel .panel-form {
+  width: 100%;
+  border: 1px solid #dbe5ee;
   border-radius: var(--radius-md);
   padding: 0.9rem;
-  background: var(--color-surface-muted);
+  background: #ffffff;
+}
+
+.maintenance-staff-action-panel .secondary-link,
+.maintenance-staff-action-panel .empty-state {
+  justify-self: start;
 }
 
 @media (max-width: 1120px) {
@@ -2886,6 +3044,14 @@ html[data-theme='dark'] .task-quick-secondary-button {
 }
 
 @media (max-width: 720px) {
+  .maintenance-staff-dialog {
+    width: min(100%, calc(100vw - 24px));
+  }
+
+  .maintenance-staff-dialog .detail-panel {
+    grid-template-columns: 1fr;
+  }
+
   .maintenance-card {
     grid-template-columns: 1fr;
   }
@@ -2909,7 +3075,7 @@ html[data-theme='dark'] .task-quick-secondary-button {
   border-radius: var(--radius-lg);
   padding: var(--space-3);
   background:
-    radial-gradient(circle at left top, rgba(36, 125, 131, 0.055), transparent 34%),
+    radial-gradient(circle at left top, rgba(63, 130, 246, 0.055), transparent 34%),
     var(--color-surface);
   box-shadow: var(--shadow-xs);
   isolation: isolate;
@@ -2925,9 +3091,9 @@ html[data-theme='dark'] .task-quick-secondary-button {
 }
 
 .staff-maintenance-page .maintenance-card:hover {
-  border-color: rgba(36, 125, 131, 0.32);
+  border-color: rgba(63, 130, 246, 0.32);
   background:
-    radial-gradient(circle at left top, rgba(36, 125, 131, 0.08), transparent 36%),
+    radial-gradient(circle at left top, rgba(63, 130, 246, 0.08), transparent 36%),
     var(--color-surface);
   box-shadow: 0 14px 34px rgba(15, 45, 58, 0.08);
   transform: translateY(-1px);
@@ -2963,6 +3129,14 @@ html[data-theme='dark'] .task-quick-secondary-button {
 .staff-maintenance-page .maintenance-card-meta-grid {
   grid-template-columns: minmax(120px, 0.78fr) minmax(150px, 0.82fr) minmax(170px, 0.9fr);
   gap: var(--space-2);
+}
+
+.staff-maintenance-overview-page .maintenance-card {
+  grid-template-columns: minmax(220px, 0.82fr) minmax(620px, 1.75fr) auto;
+}
+
+.staff-maintenance-overview-page .maintenance-card-meta-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .staff-maintenance-page .maintenance-card-meta {
@@ -3008,7 +3182,7 @@ html[data-theme='dark'] .task-quick-secondary-button {
 }
 
 .staff-maintenance-page .maintenance-card:hover .maintenance-card-view.icon-action-button {
-  border-color: rgba(36, 125, 131, 0.24);
+  border-color: rgba(63, 130, 246, 0.24);
   color: var(--color-primary);
   background: var(--color-primary-soft);
   box-shadow: var(--shadow-xs);
@@ -3036,6 +3210,10 @@ html[data-theme="dark"] .staff-maintenance-page .maintenance-card-meta {
 
   .staff-maintenance-page .maintenance-card-meta-grid {
     grid-column: 1 / -1;
+  }
+
+  .staff-maintenance-overview-page .maintenance-card-meta-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -3302,7 +3480,7 @@ html[data-theme="dark"] .staff-maintenance-page .maintenance-card-meta {
 }
 
 .utility-reading-fetch-bar.is-ready {
-  border-color: rgba(36, 125, 131, 0.26);
+  border-color: rgba(63, 130, 246, 0.26);
   background: rgba(232, 247, 250, 0.52);
 }
 
@@ -3336,7 +3514,7 @@ html[data-theme="dark"] .staff-maintenance-page .maintenance-card-meta {
   height: 2.15rem;
   flex: 0 0 auto;
   place-items: center;
-  border: 1px solid rgba(36, 125, 131, 0.18);
+  border: 1px solid rgba(63, 130, 246, 0.18);
   border-radius: var(--radius-sm);
   color: var(--color-primary);
   background: var(--color-surface);
@@ -3657,8 +3835,8 @@ html[data-theme="dark"] .staff-maintenance-page .maintenance-card-meta {
 }
 
 .utility-reading-dialog {
-  width: min(720px, calc(100vw - 48px));
-  padding: 1rem;
+  width: min(600px, calc(100vw - 48px));
+  padding: 0.9rem;
 }
 
 .utility-reading-dialog .account-modal-header {
@@ -3672,13 +3850,21 @@ html[data-theme="dark"] .staff-maintenance-page .maintenance-card-meta {
 
 .utility-reading-dialog .utility-reading-entry-form {
   gap: 0.58rem;
-  padding: 0.85rem;
+  padding: 0.78rem;
 }
 
 .utility-reading-dialog .utility-reading-shared-form {
-  grid-template-columns: minmax(220px, 330px) minmax(140px, 155px);
+  grid-template-columns: minmax(190px, 260px) minmax(135px, 155px);
   gap: 0.55rem;
   align-items: end;
+}
+
+.utility-reading-dialog .utility-reading-room-field {
+  max-width: 260px;
+}
+
+.utility-reading-dialog .utility-reading-date-field {
+  max-width: 155px;
 }
 
 .utility-reading-dialog .utility-reading-entry-form label,
@@ -3697,7 +3883,8 @@ html[data-theme="dark"] .staff-maintenance-page .maintenance-card-meta {
 }
 
 .utility-reading-dialog .utility-reading-entry-form textarea {
-  min-height: 76px;
+  min-height: 54px;
+  max-height: 72px;
   padding: 0.5rem 0.65rem;
 }
 
@@ -3760,7 +3947,7 @@ html[data-theme="dark"] .staff-maintenance-page .maintenance-card-meta {
 }
 
 .utility-reading-dialog .utility-meter-reading-row {
-  grid-template-columns: repeat(2, minmax(0, 210px));
+  grid-template-columns: repeat(2, minmax(0, 195px));
   gap: 0.55rem;
 }
 
@@ -3782,9 +3969,15 @@ html[data-theme="dark"] .staff-maintenance-page .maintenance-card-meta {
 }
 
 .utility-reading-dialog .utility-reading-evidence-field input[type='file'] {
-  width: min(100%, 430px);
+  width: min(100%, 405px);
   min-height: 36px;
   padding: 0.42rem 0.55rem;
+}
+
+.utility-reading-dialog .utility-reading-reason-field {
+  display: grid;
+  gap: 0.32rem;
+  width: min(100%, 405px);
 }
 
 .utility-reading-dialog .previous-reading-panel {
@@ -3917,7 +4110,7 @@ html[data-theme="dark"] .staff-maintenance-page .maintenance-card-meta {
     linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 252, 252, 0.96));
   box-shadow:
     0 10px 26px rgba(15, 45, 58, 0.055),
-    inset 3px 0 0 rgba(36, 125, 131, 0.2);
+    inset 3px 0 0 rgba(63, 130, 246, 0.2);
   transition:
     border-color var(--transition-fast),
     box-shadow var(--transition-fast),
@@ -3938,10 +4131,10 @@ html[data-theme="dark"] .staff-maintenance-page .maintenance-card-meta {
 
 .service-fee-row:hover,
 .vehicle-row:hover {
-  border-color: rgba(36, 125, 131, 0.28);
+  border-color: rgba(63, 130, 246, 0.28);
   box-shadow:
     0 14px 32px rgba(15, 45, 58, 0.08),
-    inset 3px 0 0 rgba(36, 125, 131, 0.34);
+    inset 3px 0 0 rgba(63, 130, 246, 0.34);
   transform: translateY(-1px);
 }
 
@@ -4202,6 +4395,64 @@ html[data-theme="dark"] .staff-maintenance-page .maintenance-card-meta {
   border-radius: var(--radius-md);
   padding: 1rem;
   background: var(--color-surface-muted);
+}
+
+.service-fee-editor-dialog .additional-service-form {
+  gap: 0.95rem;
+}
+
+.additional-service-field {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.unit-input {
+  position: relative;
+  display: grid;
+}
+
+.unit-input input {
+  padding-right: 2.3rem;
+}
+
+.service-fee-editor-dialog .unit-input-control {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.service-fee-editor-dialog .unit-input-control::-webkit-outer-spin-button,
+.service-fee-editor-dialog .unit-input-control::-webkit-inner-spin-button {
+  margin: 0;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.unit-input-suffix {
+  position: absolute;
+  top: 50%;
+  right: 0.78rem;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  font-weight: 750;
+  line-height: 1;
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.additional-service-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  margin-top: 0.35rem;
+  width: 100%;
+}
+
+.additional-service-actions button {
+  min-width: 148px;
+}
+
+.service-fee-editor-dialog .additional-service-actions {
+  justify-content: flex-end;
 }
 
 .additional-service-table {
@@ -4560,6 +4811,71 @@ html[data-theme="dark"] .staff-maintenance-page .maintenance-card-meta {
 
 .admin-room-detail-page .detail-panel span {
   font-weight: 600;
+}
+
+.room-detail-card {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.85rem 1.15rem;
+  padding: clamp(1rem, 1.8vw, 1.35rem);
+  background:
+    radial-gradient(circle at 94% 0%, rgba(63, 130, 246, 0.075), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(248, 252, 252, 0.98));
+}
+
+.room-detail-card > div {
+  gap: 0.32rem;
+  min-height: 58px;
+  border-bottom: 1px solid rgba(203, 213, 225, 0.72);
+  padding-bottom: 0.65rem;
+}
+
+.room-detail-card span:first-child,
+.room-detail-card > div > span:not(.status-pill):first-child {
+  color: #020617;
+  font-size: 0.78rem;
+  font-weight: 720;
+}
+
+.room-detail-card strong,
+.room-detail-card .staff-room-detail-value,
+.room-detail-card p {
+  color: #020617;
+  font-weight: var(--font-weight-regular);
+}
+
+.room-detail-card .room-detail-metric {
+  font-variant-numeric: tabular-nums;
+  font-weight: 650;
+}
+
+.room-detail-card .detail-wide {
+  grid-column: auto;
+  min-height: 58px;
+  border-bottom: 1px solid rgba(203, 213, 225, 0.72);
+  padding-top: 0;
+  padding-bottom: 0.65rem;
+}
+
+.room-detail-card .status-pill {
+  font-weight: 650;
+}
+
+.admin-room-detail-page .assignment-panel .detail-panel > div > span:first-child {
+  color: #020617;
+  font-size: 0.78rem;
+  font-weight: 720;
+}
+
+@media (max-width: 1080px) {
+  .room-detail-card {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 680px) {
+  .room-detail-card {
+    grid-template-columns: 1fr;
+  }
 }
 
 .room-member-action-icons {
@@ -4974,6 +5290,144 @@ html[data-theme="dark"] .staff-maintenance-page .maintenance-card-meta {
   margin-top: var(--space-2);
 }
 
+.dialog-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: var(--space-2);
+}
+
+.dialog-actions-right {
+  justify-content: flex-end;
+}
+
+.compact-panel-form {
+  gap: 0.85rem;
+}
+
+.maintenance-assignment-dialog {
+  width: min(400px, calc(100vw - 48px));
+}
+
+.maintenance-assignment-dialog .account-modal-header {
+  padding-bottom: 0.75rem;
+}
+
+.maintenance-assignment-dialog .account-modal-header h2 {
+  font-size: 1.35rem;
+}
+
+.maintenance-assignment-dialog > .panel-form {
+  margin-top: 0.8rem;
+  gap: 0.65rem;
+  padding: 0.85rem;
+}
+
+.maintenance-assignment-dialog select {
+  min-height: 42px;
+}
+
+.maintenance-assignment-dialog .dialog-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  flex-wrap: nowrap;
+  justify-content: stretch;
+  gap: 0.55rem;
+  margin-top: 0.25rem;
+}
+
+.maintenance-assignment-dialog .dialog-actions button {
+  width: 100%;
+  min-width: 0;
+  min-height: 40px;
+  margin-top: 0;
+  padding: 0.55rem 0.8rem;
+}
+
+.assignment-dialog-summary {
+  display: grid;
+  gap: 0.25rem;
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 0.85rem;
+  background: var(--color-surface-muted);
+}
+
+.assignment-dialog-summary span {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.maintenance-reassign-button:hover:not(:disabled),
+.maintenance-reassign-button:focus-visible:not(:disabled) {
+  border-color: var(--color-border-soft);
+  color: var(--color-text);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-xs);
+  transform: none;
+}
+
+.maintenance-reassign-button:disabled {
+  color: var(--color-text-muted);
+  cursor: default;
+  opacity: 0.45;
+}
+
+.maintenance-reassign-button:disabled:hover,
+.maintenance-reassign-button:disabled:focus-visible {
+  border-color: var(--color-border-soft);
+  color: var(--color-text-muted);
+  background: var(--color-surface);
+  box-shadow: none;
+  transform: none;
+}
+
+.field-unit-note {
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-medium);
+}
+
+.action-dialog .room-form {
+  gap: 0.62rem;
+  padding: 0.85rem 0.95rem;
+}
+
+.action-dialog .room-form label {
+  margin-bottom: 0.2rem;
+  font-size: 0.8rem;
+}
+
+.action-dialog .room-form .form-grid {
+  gap: 0.58rem;
+}
+
+.action-dialog .room-form input,
+.action-dialog .room-form select,
+.action-dialog .room-form textarea {
+  min-height: 34px;
+  padding: 0.42rem 0.58rem;
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+
+.action-dialog .room-form textarea {
+  min-height: 50px;
+  max-height: 72px;
+}
+
+.action-dialog .room-form .room-code-prefix {
+  min-height: 34px;
+  padding: 0 0.62rem;
+  font-size: 0.82rem;
+}
+
+.action-dialog .room-form > button[type="submit"] {
+  min-height: 36px;
+  min-width: 132px;
+  margin-top: 0.35rem;
+  padding: 0.48rem 0.85rem;
+}
+
 .form-action-row {
   display: flex;
   flex-wrap: wrap;
@@ -5181,10 +5635,10 @@ html[data-theme="dark"] .staff-maintenance-page .maintenance-card-meta {
 }
 
 .segmented-control button.active {
-  border-color: rgba(36, 125, 131, 0.22);
+  border-color: rgba(63, 130, 246, 0.22);
   color: var(--color-primary);
   background: var(--color-primary-soft);
-  box-shadow: inset 0 0 0 1px rgba(36, 125, 131, 0.14);
+  box-shadow: inset 0 0 0 1px rgba(63, 130, 246, 0.14);
 }
 
 .radio-option {

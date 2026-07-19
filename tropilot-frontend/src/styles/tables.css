@@ -75,7 +75,7 @@
 
 .data-table tbody tr:hover {
   background: var(--color-row-hover);
-  box-shadow: inset 3px 0 0 rgba(36, 125, 131, 0.16);
+  box-shadow: inset 3px 0 0 rgba(63, 130, 246, 0.16);
 }
 
 .clickable-table-row {
@@ -83,7 +83,7 @@
 }
 
 .clickable-table-row:focus-visible {
-  outline: 2px solid rgba(36, 125, 131, 0.42);
+  outline: 2px solid rgba(63, 130, 246, 0.42);
   outline-offset: -2px;
 }
 
@@ -250,7 +250,7 @@
   padding: clamp(1.25rem, 2.4vw, 2rem);
   color: #ffffff;
   background:
-    linear-gradient(135deg, rgba(83, 106, 159, 0.22), rgba(36, 125, 131, 0.04) 52%),
+    linear-gradient(135deg, rgba(83, 106, 159, 0.22), rgba(63, 130, 246, 0.04) 52%),
     #182443;
   box-shadow: 0 18px 44px rgba(23, 32, 51, 0.12);
 }
@@ -663,7 +663,7 @@
 }
 
 .account-modal-close:focus-visible {
-  outline: 3px solid rgba(36, 125, 131, 0.2);
+  outline: 3px solid rgba(63, 130, 246, 0.2);
   outline-offset: 2px;
 }
 
@@ -972,8 +972,8 @@
 }
 
 .icon-action-button:hover:not(:disabled),
-.icon-action-button:focus-visible {
-  border-color: rgba(36, 125, 131, 0.24);
+.icon-action-button:focus-visible:not(:disabled) {
+  border-color: rgba(63, 130, 246, 0.24);
   color: var(--color-primary);
   background: var(--color-primary-soft);
   box-shadow: var(--shadow-xs);
@@ -981,14 +981,14 @@
 }
 
 .icon-action-danger:hover:not(:disabled),
-.icon-action-danger:focus-visible {
+.icon-action-danger:focus-visible:not(:disabled) {
   border-color: #f5c7c0;
   color: var(--color-danger);
   background: var(--color-danger-bg);
 }
 
 .icon-action-success:hover:not(:disabled),
-.icon-action-success:focus-visible {
+.icon-action-success:focus-visible:not(:disabled) {
   border-color: rgba(46, 125, 98, 0.24);
   color: var(--color-success);
   background: var(--color-success-bg);
@@ -996,8 +996,8 @@
 
 .icon-action-button:disabled {
   color: var(--color-placeholder);
-  cursor: wait;
-  opacity: 0.72;
+  cursor: default;
+  opacity: 0.58;
 }
 
 .icon-action-button::after {
@@ -1100,9 +1100,9 @@
 }
 
 .table-icon-button:hover:not(:disabled) {
-  background: rgba(20, 148, 150, 0.12);
-  border-color: rgba(20, 148, 150, 0.45);
-  color: #0f8f91;
+  background: rgba(63, 130, 246, 0.12);
+  border-color: rgba(63, 130, 246, 0.42);
+  color: #315fdc;
   transform: translateY(-1px);
 }
 
@@ -1126,9 +1126,9 @@ html[data-theme='dark'] .table-icon-button {
 }
 
 html[data-theme='dark'] .table-icon-button:hover:not(:disabled) {
-  background: rgba(45, 212, 191, 0.14);
-  border-color: rgba(45, 212, 191, 0.45);
-  color: #5eead4;
+  background: rgba(122, 162, 255, 0.16);
+  border-color: rgba(122, 162, 255, 0.45);
+  color: #b8c8ff;
 }
 
 .content-section > .notification-pagination,
@@ -1176,10 +1176,10 @@ html[data-theme='dark'] .table-icon-button:hover:not(:disabled) {
 .content-section .notification-page-buttons .is-active,
 .building-section .notification-page-buttons .is-active,
 .table-wrap + .notification-pagination .notification-page-buttons .is-active {
-  border-color: rgba(36, 125, 131, 0.22);
+  border-color: rgba(63, 130, 246, 0.22);
   color: var(--color-primary);
   background: var(--color-primary-soft);
-  box-shadow: inset 0 0 0 1px rgba(36, 125, 131, 0.16);
+  box-shadow: inset 0 0 0 1px rgba(63, 130, 246, 0.16);
 }
 
 .notification-table-wrap {
@@ -1227,11 +1227,11 @@ html[data-theme='dark'] .table-icon-button:hover:not(:disabled) {
 }
 
 .notification-clickable-row:hover {
-  background: rgba(36, 125, 131, 0.045);
+  background: rgba(63, 130, 246, 0.045);
 }
 
 .notification-clickable-row:focus-visible {
-  outline: 2px solid rgba(36, 125, 131, 0.38);
+  outline: 2px solid rgba(63, 130, 246, 0.38);
   outline-offset: -2px;
 }
 
@@ -1266,7 +1266,7 @@ html[data-theme='dark'] .table-icon-button:hover:not(:disabled) {
   max-width: 100%;
   min-height: 20px;
   padding: 0.12rem 0.48rem;
-  border-color: rgba(36, 125, 131, 0.16);
+  border-color: rgba(63, 130, 246, 0.16);
   color: var(--color-primary);
   background: var(--color-primary-soft);
   font-size: 0.7rem;
@@ -1454,14 +1454,14 @@ html[data-theme='dark'] .table-icon-button:hover:not(:disabled) {
 
 .notification-inbox-item:hover:not(:disabled),
 .notification-inbox-item:focus-visible {
-  border-color: rgba(36, 125, 131, 0.24);
+  border-color: rgba(63, 130, 246, 0.24);
   background: rgba(255, 255, 255, 0.98);
   box-shadow: 0 12px 24px rgba(23, 32, 51, 0.075);
   transform: translateY(-1px);
 }
 
 .notification-inbox-item:focus-visible {
-  outline: 2px solid rgba(36, 125, 131, 0.24);
+  outline: 2px solid rgba(63, 130, 246, 0.24);
   outline-offset: 2px;
 }
 
@@ -1471,9 +1471,9 @@ html[data-theme='dark'] .table-icon-button:hover:not(:disabled) {
 }
 
 .notification-inbox-item.is-unread {
-  border-color: rgba(36, 125, 131, 0.34);
+  border-color: rgba(63, 130, 246, 0.34);
   background:
-    linear-gradient(90deg, rgba(36, 125, 131, 0.085), rgba(255, 255, 255, 0) 28%),
+    linear-gradient(90deg, rgba(63, 130, 246, 0.085), rgba(255, 255, 255, 0) 28%),
     var(--color-surface);
 }
 
@@ -1497,7 +1497,7 @@ html[data-theme='dark'] .table-icon-button:hover:not(:disabled) {
   width: 34px;
   height: 34px;
   place-items: center;
-  border: 1px solid rgba(36, 125, 131, 0.16);
+  border: 1px solid rgba(63, 130, 246, 0.16);
   border-radius: var(--radius-sm);
   color: var(--color-primary);
   background:
@@ -1577,7 +1577,7 @@ html[data-theme='dark'] .table-icon-button:hover:not(:disabled) {
   height: 7px;
   border-radius: 50%;
   background: var(--color-primary);
-  box-shadow: 0 0 0 4px rgba(36, 125, 131, 0.11);
+  box-shadow: 0 0 0 4px rgba(63, 130, 246, 0.11);
 }
 
 .notification-inbox-message {
@@ -1635,7 +1635,7 @@ html[data-theme='dark'] .table-icon-button:hover:not(:disabled) {
 .notification-state-icon.is-unread {
   color: var(--color-primary);
   background: var(--color-primary-soft);
-  border-color: rgba(36, 125, 131, 0.18);
+  border-color: rgba(63, 130, 246, 0.18);
 }
 
 .notification-read-button {
@@ -1646,7 +1646,7 @@ html[data-theme='dark'] .table-icon-button:hover:not(:disabled) {
   min-height: 32px;
   place-items: center;
   padding: 0;
-  border: 1px solid rgba(36, 125, 131, 0.2);
+  border: 1px solid rgba(63, 130, 246, 0.2);
   border-radius: var(--radius-sm);
   color: var(--color-primary);
   background: var(--color-surface);
@@ -1657,7 +1657,7 @@ html[data-theme='dark'] .table-icon-button:hover:not(:disabled) {
   border-color: var(--color-primary);
   color: #ffffff;
   background: var(--color-primary);
-  box-shadow: 0 8px 18px rgba(36, 125, 131, 0.18);
+  box-shadow: 0 8px 18px rgba(63, 130, 246, 0.18);
   transform: translateY(-1px);
 }
 

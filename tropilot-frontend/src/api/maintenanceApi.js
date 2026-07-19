@@ -75,8 +75,3 @@ export async function completeStaffMaintenanceRequest(id, payload) {
   );
   return response.data;
 }
-
-export async function rejectStaffMaintenanceRequest(id, payload) {
-  const response = await apiClient.put(`/api/staff/maintenance-requests/${id}/reject`, payload || {});
-  return response.data;
-}

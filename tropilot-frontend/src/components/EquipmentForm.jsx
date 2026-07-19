@@ -34,6 +34,18 @@ function emptyValues(fixedBuilding) {
   };
 }
 
+function normalizeCondition(condition) {
+  if (condition === 'NEEDS_MAINTENANCE') {
+    return 'UNDER_MAINTENANCE';
+  }
+
+  if (condition === 'BROKEN') {
+    return 'INACTIVE';
+  }
+
+  return EQUIPMENT_CONDITIONS.includes(condition) ? condition : 'GOOD';
+}
+
 function valuesFromEquipment(equipment, fixedBuilding) {
   if (!equipment) {
     return emptyValues(fixedBuilding);
@@ -52,7 +64,7 @@ function valuesFromEquipment(equipment, fixedBuilding) {
     installationDate: equipment.installationDate || '',
     maintenanceCycleDays: daysBetween(baseDate, equipment.nextMaintenanceDate),
     lastMaintenanceDate: equipment.lastMaintenanceDate || '',
-    condition: equipment.condition || 'GOOD'
+    condition: normalizeCondition(equipment.condition)
   };
 }
 
@@ -133,56 +145,7 @@ export default function EquipmentForm({
   return (
     <form className="panel-form equipment-form compact-equipment-form" onSubmit={handleSubmit}>
       <div className="form-grid">
-        {!fixedBuilding && (
-          <div className="form-grid-wide">
-            <label htmlFor="equipmentBuilding">{t('equipment.fields.building')}</label>
-            <select
-              id="equipmentBuilding"
-              name="buildingId"
-              value={values.buildingId}
-              disabled={Boolean(equipment)}
-              onChange={handleChange}
-              required
-            >
-              <option value="">{t('equipment.placeholders.selectBuilding')}</option>
-              {buildings.map((building) => (
-                <option key={building.id} value={building.id}>
-                  {building.buildingCode} - {building.name}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
-
-        <div className="form-grid-wide">
-          <label htmlFor="equipmentCode">{t('equipment.fields.code')}</label>
-          <input
-            id="equipmentCode"
-            name="equipmentCode"
-            value={values.equipmentCode}
-            maxLength="60"
-            placeholder={t('equipment.placeholders.code')}
-            onChange={handleChange}
-          />
-          {!equipment && <small>{t('equipment.help.autoCode')}</small>}
-        </div>
-
-        <div className="form-grid-wide">
-          <label htmlFor="equipmentName">
-            {t('equipment.fields.name')} <span aria-hidden="true">*</span>
-          </label>
-          <input
-            id="equipmentName"
-            name="name"
-            value={values.name}
-            maxLength="160"
-            placeholder={t('equipment.placeholders.name')}
-            onChange={handleChange}
-            required
-          />
-        </div>
-
-        <div className="form-grid-wide">
+        <div className="form-grid-wide equipment-scope-field">
           <span className="field-label">
             {t('equipment.fields.ownership')} <span aria-hidden="true">*</span>
           </span>
@@ -205,7 +168,57 @@ export default function EquipmentForm({
           </small>
         </div>
 
-        {values.scope === 'BUILDING' ? (
+        {!fixedBuilding && (
+          <div className="form-grid-wide">
+            <label htmlFor="equipmentBuilding">{t('equipment.fields.building')}</label>
+            <select
+              id="equipmentBuilding"
+              name="buildingId"
+              value={values.buildingId}
+              disabled={Boolean(equipment)}
+              onChange={handleChange}
+              required
+            >
+              <option value="">{t('equipment.placeholders.selectBuilding')}</option>
+              {buildings.map((building) => (
+                <option key={building.id} value={building.id}>
+                  {building.buildingCode} - {building.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        <div className="form-grid-wide equipment-identity-grid">
+          <div>
+            <label htmlFor="equipmentCode">{t('equipment.fields.code')}</label>
+            <input
+              id="equipmentCode"
+              name="equipmentCode"
+              value={values.equipmentCode}
+              maxLength="60"
+              placeholder={t('equipment.placeholders.code')}
+              onChange={handleChange}
+            />
+          </div>
+          <div>
+            <label htmlFor="equipmentName">
+              {t('equipment.fields.name')} <span aria-hidden="true">*</span>
+            </label>
+            <input
+              id="equipmentName"
+              name="name"
+              value={values.name}
+              maxLength="160"
+              placeholder={t('equipment.placeholders.name')}
+              onChange={handleChange}
+              required
+            />
+          </div>
+        </div>
+
+        <div className="form-grid-wide equipment-details-grid">
+          {values.scope === 'BUILDING' ? (
           <div>
             <label htmlFor="equipmentLocation">{t('equipment.fields.location')}</label>
             <input
@@ -217,8 +230,8 @@ export default function EquipmentForm({
               onChange={handleChange}
             />
           </div>
-        ) : (
-          <div className="form-grid-wide">
+          ) : (
+          <div>
             <label htmlFor="equipmentRoom">
               {t('equipment.fields.room')} <span aria-hidden="true">*</span>
             </label>
@@ -238,48 +251,49 @@ export default function EquipmentForm({
               ))}
             </select>
           </div>
-        )}
+          )}
 
-        <div>
-          <label htmlFor="equipmentCondition">
-            {t('equipment.fields.condition')} <span aria-hidden="true">*</span>
-          </label>
-          <select
-            id="equipmentCondition"
-            name="condition"
-            value={values.condition}
-            onChange={handleChange}
-          >
-            {EQUIPMENT_CONDITIONS.map((condition) => (
-              <option key={condition} value={condition}>
-                {t(`equipment.conditions.${condition}`)}
-              </option>
-            ))}
-          </select>
-        </div>
+          <div>
+            <label htmlFor="equipmentCondition">
+              {t('equipment.fields.condition')} <span aria-hidden="true">*</span>
+            </label>
+            <select
+              id="equipmentCondition"
+              name="condition"
+              value={values.condition}
+              onChange={handleChange}
+            >
+              {EQUIPMENT_CONDITIONS.map((condition) => (
+                <option key={condition} value={condition}>
+                  {t(`equipment.conditions.${condition}`)}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        <div>
-          <label htmlFor="equipmentInstallationDate">{t('equipment.fields.installationDate')}</label>
-          <input
-            id="equipmentInstallationDate"
-            name="installationDate"
-            type="date"
-            value={values.installationDate}
-            onChange={handleChange}
-          />
-        </div>
+          <div>
+            <label htmlFor="equipmentInstallationDate">{t('equipment.fields.installationDate')}</label>
+            <input
+              id="equipmentInstallationDate"
+              name="installationDate"
+              type="date"
+              value={values.installationDate}
+              onChange={handleChange}
+            />
+          </div>
 
-        <div>
-          <label htmlFor="equipmentMaintenanceCycle">{t('equipment.fields.maintenanceCycleDays')}</label>
-          <input
-            id="equipmentMaintenanceCycle"
-            name="maintenanceCycleDays"
-            type="number"
-            min="1"
-            value={values.maintenanceCycleDays}
-            placeholder={t('equipment.placeholders.maintenanceCycleDays')}
-            onChange={handleChange}
-          />
+          <div>
+            <label htmlFor="equipmentMaintenanceCycle">{t('equipment.fields.maintenanceCycleDays')}</label>
+            <input
+              id="equipmentMaintenanceCycle"
+              name="maintenanceCycleDays"
+              type="number"
+              min="1"
+              value={values.maintenanceCycleDays}
+              placeholder={t('equipment.placeholders.maintenanceCycleDays')}
+              onChange={handleChange}
+            />
+          </div>
         </div>
       </div>
 

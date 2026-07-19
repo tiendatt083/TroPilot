@@ -86,9 +86,6 @@ export default function AdminAccountDirectoryTable({
                     )}
                     {showMembersInline && members.length > 0 && (
                       <div className="account-inline-members">
-                        <span className="account-inline-members-label">
-                          {t('accountDirectory.inlineMembers')}
-                        </span>
                         <div className="account-inline-member-list">
                           {members.map((member) => (
                             <button

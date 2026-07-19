@@ -6,6 +6,7 @@ import { resolveFileUrl } from '../utils/fileUrl.js';
 const EMPTY_REQUEST = {
   title: '',
   content: '',
+  assignedToId: '',
   image: null
 };
 
@@ -15,7 +16,11 @@ export default function EquipmentMaintenancePanel({
   historyLoading,
   hideHeader = false,
   requestLoading,
+  requireAssignee = false,
+  staffUsers = [],
   showHistory,
+  submitLabel,
+  submittingLabel,
   onClose,
   onSubmit
 }) {
@@ -117,6 +122,25 @@ export default function EquipmentMaintenancePanel({
               required
             />
           </div>
+          {requireAssignee && (
+            <div>
+              <label htmlFor="equipmentRequestAssignedTo">{t('equipment.request.fields.assignedStaff')}</label>
+              <select
+                id="equipmentRequestAssignedTo"
+                name="assignedToId"
+                value={request.assignedToId}
+                onChange={handleChange}
+                required
+              >
+                <option value="">{t('maintenance.admin.selectStaff')}</option>
+                {staffUsers.map((staff) => (
+                  <option key={staff.id} value={staff.id}>
+                    {staff.fullName} - {staff.email}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
           <div>
             <label htmlFor="equipmentRequestImage">{t('equipment.request.fields.image')}</label>
             <input
@@ -129,7 +153,9 @@ export default function EquipmentMaintenancePanel({
             <small className="field-help">{t('equipment.request.imageHelp')}</small>
           </div>
           <button type="submit" disabled={requestLoading}>
-            {requestLoading ? t('equipment.request.submitting') : t('equipment.request.submit')}
+            {requestLoading
+              ? submittingLabel || t('equipment.request.submitting')
+              : submitLabel || t('equipment.request.submit')}
           </button>
         </form>
       )}

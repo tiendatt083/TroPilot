@@ -15,6 +15,7 @@ public class RoomResponse {
     private Long buildingId;
     private String buildingCode;
     private String buildingName;
+    private String buildingAddress;
     private String roomCode;
     private String roomName;
     private Integer floor;

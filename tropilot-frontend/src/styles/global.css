@@ -159,7 +159,21 @@ html[data-theme="dark"] .workspace-tabs {
 
 html[data-theme="dark"] .workspace-tab-group-toggle:hover,
 html[data-theme="dark"] .workspace-tab-group-toggle.active-group {
-  background: rgba(36, 168, 190, 0.14);
+  background: rgba(122, 162, 255, 0.15);
+}
+
+html[data-theme="dark"] .workspace-tab-group-toggle:hover {
+  color: var(--color-primary-hover);
+}
+
+html[data-theme="dark"] .workspace-tab-group-toggle.active-group {
+  color: #ffffff;
+  background: linear-gradient(135deg, #5f86f5, #7668ff);
+  box-shadow: 0 12px 24px rgba(95, 134, 245, 0.22);
+}
+
+html[data-theme="dark"] .workspace-tab-group-toggle.active-group .workspace-tab-group-chevron {
+  color: rgba(255, 255, 255, 0.9);
 }
 
 html[data-theme="dark"] .dashboard-hero {
@@ -602,7 +616,6 @@ html[data-theme="dark"] input[type="month"]::-webkit-calendar-picker-indicator {
   .notification-form-grid,
   .previous-reading-images,
   .room-code-input-group,
-  .assignment-action-row,
   .invoice-bulk-summary,
   .dashboard-grid,
   .profile-detail-grid,
@@ -1542,15 +1555,15 @@ html[data-theme="dark"] .account-search-only-panel button {
 .notification-row-actions .icon-action-button:hover:not(:disabled),
 .feedback-icon-action:hover:not(:disabled),
 .icon-action-btn:hover:not(:disabled),
-.table-actions .icon-action-button:focus-visible,
-.row-actions .icon-action-button:focus-visible,
-.equipment-icon-actions .icon-action-button:focus-visible,
-.feedback-card-actions .icon-action-button:focus-visible,
-.feedback-review-actions .icon-action-button:focus-visible,
-.notification-row-actions .icon-action-button:focus-visible,
-.feedback-icon-action:focus-visible,
-.icon-action-btn:focus-visible {
-  border-color: rgba(36, 125, 131, 0.36);
+.table-actions .icon-action-button:focus-visible:not(:disabled),
+.row-actions .icon-action-button:focus-visible:not(:disabled),
+.equipment-icon-actions .icon-action-button:focus-visible:not(:disabled),
+.feedback-card-actions .icon-action-button:focus-visible:not(:disabled),
+.feedback-review-actions .icon-action-button:focus-visible:not(:disabled),
+.notification-row-actions .icon-action-button:focus-visible:not(:disabled),
+.feedback-icon-action:focus-visible:not(:disabled),
+.icon-action-btn:focus-visible:not(:disabled) {
+  border-color: rgba(63, 130, 246, 0.36);
   color: var(--color-primary);
   background: var(--color-primary-soft);
   box-shadow: var(--shadow-xs);
@@ -1578,26 +1591,26 @@ html[data-theme="dark"] .feedback-review-actions .icon-action-button:hover:not(:
 html[data-theme="dark"] .notification-row-actions .icon-action-button:hover:not(:disabled),
 html[data-theme="dark"] .feedback-icon-action:hover:not(:disabled),
 html[data-theme="dark"] .icon-action-btn:hover:not(:disabled),
-html[data-theme="dark"] .table-actions .icon-action-button:focus-visible,
-html[data-theme="dark"] .row-actions .icon-action-button:focus-visible,
-html[data-theme="dark"] .equipment-icon-actions .icon-action-button:focus-visible,
-html[data-theme="dark"] .feedback-card-actions .icon-action-button:focus-visible,
-html[data-theme="dark"] .feedback-review-actions .icon-action-button:focus-visible,
-html[data-theme="dark"] .notification-row-actions .icon-action-button:focus-visible,
-html[data-theme="dark"] .feedback-icon-action:focus-visible,
-html[data-theme="dark"] .icon-action-btn:focus-visible {
-  border-color: rgba(45, 212, 191, 0.46);
-  color: #67e8f9;
-  background: rgba(45, 212, 191, 0.14);
+html[data-theme="dark"] .table-actions .icon-action-button:focus-visible:not(:disabled),
+html[data-theme="dark"] .row-actions .icon-action-button:focus-visible:not(:disabled),
+html[data-theme="dark"] .equipment-icon-actions .icon-action-button:focus-visible:not(:disabled),
+html[data-theme="dark"] .feedback-card-actions .icon-action-button:focus-visible:not(:disabled),
+html[data-theme="dark"] .feedback-review-actions .icon-action-button:focus-visible:not(:disabled),
+html[data-theme="dark"] .notification-row-actions .icon-action-button:focus-visible:not(:disabled),
+html[data-theme="dark"] .feedback-icon-action:focus-visible:not(:disabled),
+html[data-theme="dark"] .icon-action-btn:focus-visible:not(:disabled) {
+  border-color: rgba(122, 162, 255, 0.46);
+  color: #b8c8ff;
+  background: rgba(122, 162, 255, 0.16);
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
 }
 
 html[data-theme="dark"] .feedback-icon-action.is-active,
 html[data-theme="dark"] .feedback-icon-action[aria-pressed="true"] {
-  border-color: rgba(45, 212, 191, 0.5);
-  color: #67e8f9;
-  background: rgba(45, 212, 191, 0.16);
-  box-shadow: inset 0 0 0 1px rgba(45, 212, 191, 0.12);
+  border-color: rgba(122, 162, 255, 0.5);
+  color: #b8c8ff;
+  background: rgba(122, 162, 255, 0.18);
+  box-shadow: inset 0 0 0 1px rgba(122, 162, 255, 0.12);
 }
 
 /* Dark workspace normalization: keep operational pages readable and avoid light cards. */

@@ -3,8 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
 import * as maintenanceApi from '../../features/maintenance/api.js';
 import * as adminUserApi from '../../features/users/api.js';
+import ActionDialog from '../../components/common/ActionDialog.jsx';
 import FilterBar from '../../components/common/FilterBar.jsx';
-import MaintenanceAssignmentAction from '../../components/MaintenanceAssignmentAction.jsx';
+import LineIcon from '../../components/common/LineIcon.jsx';
 import MaintenanceRequestTable from '../../components/MaintenanceRequestTable.jsx';
 import { formatEnumLabel } from '../../utils/i18nFormat.js';
 import { MAINTENANCE_STATUS_OPTIONS } from '../../utils/maintenanceOptions.js';
@@ -12,6 +13,10 @@ import { normalizeSearchText } from '../../utils/searchText.js';
 
 function activeStaff(users) {
   return users.filter((user) => user.role === 'STAFF' && user.status === 'ACTIVE');
+}
+
+function canChangeStaff(status) {
+  return status === 'ASSIGNED';
 }
 
 const emptyFilters = {
@@ -45,7 +50,8 @@ export default function AdminBuildingMaintenancePage() {
   const { building } = useOutletContext();
   const [requests, setRequests] = useState([]);
   const [staffUsers, setStaffUsers] = useState([]);
-  const [assignmentMap, setAssignmentMap] = useState({});
+  const [assignmentDialog, setAssignmentDialog] = useState({ open: false, request: null });
+  const [selectedStaffId, setSelectedStaffId] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
@@ -72,9 +78,6 @@ export default function AdminBuildingMaintenancePage() {
       ]);
       setRequests(requestsResponse.data);
       setStaffUsers(activeStaff(usersResponse.data));
-      setAssignmentMap(Object.fromEntries(
-        requestsResponse.data.map((request) => [request.id, request.assignedToId || ''])
-      ));
     } catch (apiError) {
       setError(apiError.response?.data?.message || t('workspace.maintenance.loadError'));
     }
@@ -85,31 +88,34 @@ export default function AdminBuildingMaintenancePage() {
     loadData().finally(() => setLoading(false));
   }, [building.id]);
 
-  const handleAssignmentChange = (requestId, assignedToId) => {
-    setAssignmentMap((current) => ({
-      ...current,
-      [requestId]: assignedToId
-    }));
+  const openAssignmentDialog = (request) => {
+    setAssignmentDialog({ open: true, request });
+    setSelectedStaffId(request.assignedToId ? String(request.assignedToId) : '');
   };
 
-  const handleAssign = async (request) => {
-    const assignedToId = assignmentMap[request.id];
-    if (!assignedToId) {
+  const closeAssignmentDialog = () => {
+    setAssignmentDialog({ open: false, request: null });
+    setSelectedStaffId('');
+  };
+
+  const handleAssign = async () => {
+    if (!assignmentDialog.request || !selectedStaffId) {
       setError(t('maintenance.admin.assignedStaffRequired'));
       return;
     }
 
-    setProcessingId(request.id);
+    setProcessingId(assignmentDialog.request.id);
     setMessage('');
     setError('');
 
     try {
       await maintenanceApi.assignAdminMaintenanceRequest(
-        request.id,
-        { assignedToId: Number(assignedToId) },
+        assignmentDialog.request.id,
+        { assignedToId: Number(selectedStaffId) },
         buildingFilter
       );
       setMessage(t('maintenance.admin.assigned'));
+      closeAssignmentDialog();
       await loadData();
     } catch (apiError) {
       setError(apiError.response?.data?.message || t('maintenance.admin.assignError'));
@@ -118,16 +124,26 @@ export default function AdminBuildingMaintenancePage() {
     }
   };
 
-  const renderActions = (request) => (
-    <MaintenanceAssignmentAction
-      request={request}
-      staffUsers={staffUsers}
-      assignedToId={assignmentMap[request.id]}
-      processing={processingId === request.id}
-      onAssignmentChange={handleAssignmentChange}
-      onAssign={handleAssign}
-    />
-  );
+  const renderActions = (request) => {
+    const enabled = canChangeStaff(request.status);
+    const disabled = !enabled || processingId === request.id;
+    const tooltip = request.status === 'PENDING'
+      ? t('maintenance.admin.assign')
+      : t('maintenance.admin.changeStaff');
+
+    return (
+      <button
+        aria-label={tooltip}
+        className="icon-action-button maintenance-reassign-button"
+        data-tooltip={disabled ? undefined : tooltip}
+        type="button"
+        disabled={disabled}
+        onClick={() => openAssignmentDialog(request)}
+      >
+        <LineIcon name="userCheck" />
+      </button>
+    );
+  };
 
   const handleClearFilters = () => {
     setFilters(emptyFilters);
@@ -172,6 +188,48 @@ export default function AdminBuildingMaintenancePage() {
             onSearchChange={(value) => setFilters((current) => ({ ...current, search: value }))}
           />
           <MaintenanceRequestTable requests={filteredRequests} renderActions={renderActions} />
+          <ActionDialog
+            className="maintenance-assignment-dialog"
+            eyebrow={t('maintenance.admin.eyebrow')}
+            labelledBy="maintenance-assignment-dialog-title"
+            open={assignmentDialog.open}
+            title={assignmentDialog.request?.status === 'PENDING'
+              ? t('maintenance.admin.assignTitle')
+              : t('maintenance.admin.changeStaffTitle')}
+            onClose={closeAssignmentDialog}
+          >
+            <form className="panel-form compact-panel-form" onSubmit={(event) => {
+              event.preventDefault();
+              handleAssign();
+            }}>
+              <div className="assignment-dialog-summary">
+                <strong>{assignmentDialog.request?.title}</strong>
+                <span>{assignmentDialog.request?.equipmentName || assignmentDialog.request?.roomCode || building.name}</span>
+              </div>
+              <label htmlFor="maintenanceAssignedTo">{t('tables.common.assignedStaff')}</label>
+              <select
+                id="maintenanceAssignedTo"
+                value={selectedStaffId}
+                onChange={(event) => setSelectedStaffId(event.target.value)}
+                required
+              >
+                <option value="">{t('maintenance.admin.selectStaff')}</option>
+                {staffUsers.map((staff) => (
+                  <option key={staff.id} value={staff.id}>
+                    {staff.fullName} - {staff.email}
+                  </option>
+                ))}
+              </select>
+              <div className="dialog-actions dialog-actions-right">
+                <button className="secondary-button" type="button" onClick={closeAssignmentDialog}>
+                  {t('common.cancel')}
+                </button>
+                <button type="submit" disabled={processingId === assignmentDialog.request?.id}>
+                  {processingId === assignmentDialog.request?.id ? t('common.saving') : t('common.saveChanges')}
+                </button>
+              </div>
+            </form>
+          </ActionDialog>
         </>
       )}
     </div>

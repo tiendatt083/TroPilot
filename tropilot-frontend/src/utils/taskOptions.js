@@ -5,9 +5,7 @@ export const TASK_TYPE_OPTIONS = [
   localizedOption('METER_READING', 'Meter reading'),
   localizedOption('INVOICE_CREATION', 'Invoice creation'),
   localizedOption('ROOM_CHECK', 'Room check'),
-  localizedOption('MAINTENANCE', 'Maintenance'),
-  localizedOption('VEHICLE_CHECK', 'Vehicle check'),
-  localizedOption('FEEDBACK_HANDLING', 'Feedback handling'),
+  localizedOption('SHARED_EQUIPMENT_CHECK', 'Shared equipment check'),
   localizedOption('OTHER', 'Other')
 ];
 

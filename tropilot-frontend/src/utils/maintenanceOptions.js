@@ -5,8 +5,7 @@ export const MAINTENANCE_STATUS_OPTIONS = [
   localizedOption('PENDING', 'Pending'),
   localizedOption('ASSIGNED', 'Assigned'),
   localizedOption('IN_PROGRESS', 'In progress'),
-  localizedOption('COMPLETED', 'Completed'),
-  localizedOption('REJECTED', 'Rejected')
+  localizedOption('COMPLETED', 'Completed')
 ];
 
 export function getMaintenanceStatusLabel(status) {

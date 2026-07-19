@@ -1,7 +1,6 @@
 package com.tropilot.controller;
 
 import com.tropilot.dto.request.MaintenanceCompleteRequest;
-import com.tropilot.dto.request.MaintenanceRejectRequest;
 import com.tropilot.dto.response.ApiResponse;
 import com.tropilot.dto.response.MaintenanceRequestResponse;
 import com.tropilot.exception.UnauthorizedException;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -62,18 +60,6 @@ public class StaffMaintenanceRequestController {
         return ApiResponse.success(
                 "Maintenance request completed successfully",
                 maintenanceRequestService.completeRequest(getUserId(user), id, request)
-        );
-    }
-
-    @PutMapping("/{id}/reject")
-    public ApiResponse<MaintenanceRequestResponse> rejectRequest(
-            @AuthenticationPrincipal AuthenticatedUser user,
-            @PathVariable(name = "id") Long id,
-            @Valid @RequestBody(required = false) MaintenanceRejectRequest request
-    ) {
-        return ApiResponse.success(
-                "Maintenance request rejected successfully",
-                maintenanceRequestService.rejectRequest(getUserId(user), id, request)
         );
     }
 

@@ -73,7 +73,7 @@ export default function RoomForm({ buildingOptions, initialValues, loading, subm
   const roomCodeMaxLength = Math.max(1, 50 - roomCodePrefix.length);
 
   return (
-    <form className="panel-form" onSubmit={handleSubmit}>
+    <form className="panel-form room-form" onSubmit={handleSubmit}>
       <label htmlFor="buildingId">{t('tables.common.building')}</label>
       <select
         id="buildingId"
@@ -145,7 +145,9 @@ export default function RoomForm({ buildingOptions, initialValues, loading, subm
 
       <div className="form-grid">
         <div>
-          <label htmlFor="price">{t('tables.common.price')}</label>
+          <label htmlFor="price">
+            {t('tables.common.price')} <span className="field-unit-note">(đ)</span>
+          </label>
           <input
             id="price"
             name="price"
@@ -158,7 +160,9 @@ export default function RoomForm({ buildingOptions, initialValues, loading, subm
           />
         </div>
         <div>
-          <label htmlFor="area">{t('tables.common.area')}</label>
+          <label htmlFor="area">
+            {t('tables.common.area')} <span className="field-unit-note">(m2)</span>
+          </label>
           <input
             id="area"
             name="area"
@@ -188,7 +192,7 @@ export default function RoomForm({ buildingOptions, initialValues, loading, subm
         value={form.description || ''}
         onChange={handleChange}
         maxLength={1000}
-        rows="4"
+        rows="2"
       />
 
       <button type="submit" disabled={loading || !hasBuildings}>

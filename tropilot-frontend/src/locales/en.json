@@ -598,6 +598,7 @@
       "add": "Add equipment",
       "create": "Create",
       "saveChanges": "Save changes",
+      "createMaintenance": "Create maintenance",
       "requestMaintenance": "Request maintenance",
       "viewHistory": "Maintenance history",
       "closePanel": "Close"
@@ -623,6 +624,7 @@
       "fields": {
         "title": "Issue title",
         "content": "Issue description",
+        "assignedStaff": "Assigned staff",
         "image": "Evidence image"
       },
       "imageHelp": "Optional JPG or PNG image.",
@@ -630,6 +632,12 @@
       "submitting": "Sending request...",
       "created": "Equipment maintenance request created successfully.",
       "createError": "Equipment maintenance request could not be created"
+    },
+    "maintenance": {
+      "eyebrow": "Equipment maintenance",
+      "title": "Create maintenance",
+      "submit": "Create maintenance",
+      "submitting": "Creating maintenance..."
     },
     "history": {
       "eyebrow": "Maintenance history",
@@ -1514,7 +1522,11 @@
       "assigned": "Maintenance request assigned successfully.",
       "assignError": "Maintenance request could not be assigned",
       "selectStaff": "Select staff",
-      "assign": "Assign"
+      "assign": "Assign",
+      "assignTitle": "Assign staff",
+      "changeStaff": "Change staff",
+      "changeStaffTitle": "Change assigned staff",
+      "changeStaffDisabled": "Staff cannot be changed in this status"
     },
     "staff": {
       "eyebrow": "Operations staff",
@@ -1529,7 +1541,7 @@
       "actions": "Actions",
       "progress": "Request progress",
       "starting": "Starting...",
-      "start": "Start request",
+      "start": "Start maintenance",
       "resultNote": "Result note",
       "resultImage": "Result image",
       "completing": "Completing...",
@@ -2259,6 +2271,7 @@
       "METER_READING": "Meter reading",
       "INVOICE_CREATION": "Invoice creation",
       "ROOM_CHECK": "Room check",
+      "SHARED_EQUIPMENT_CHECK": "Shared equipment check",
       "MAINTENANCE": "Maintenance",
       "VEHICLE_CHECK": "Vehicle check",
       "FEEDBACK_HANDLING": "Feedback handling",
@@ -2504,6 +2517,8 @@
       "waterFetchError": "Water reading could not be fetched",
       "electricityIncrease": "Electricity",
       "waterIncrease": "Water",
+      "readingDateShort": "Date",
+      "editReasonShort": "Reason",
       "allowedImageTypes": "Allowed image types: jpg, jpeg, png. Maximum size: 10 MB.",
       "readingDateHelp": "This date applies to both electricity and water readings.",
       "previousMonthEvidence": "Previous month evidence",

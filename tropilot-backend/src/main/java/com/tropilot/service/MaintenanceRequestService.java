@@ -2,7 +2,6 @@ package com.tropilot.service;
 
 import com.tropilot.dto.request.MaintenanceAssignRequest;
 import com.tropilot.dto.request.MaintenanceCompleteRequest;
-import com.tropilot.dto.request.MaintenanceRejectRequest;
 import com.tropilot.dto.request.MaintenanceRequestCreateRequest;
 import com.tropilot.dto.response.MaintenanceRequestResponse;
 
@@ -32,5 +31,4 @@ public interface MaintenanceRequestService {
 
     MaintenanceRequestResponse completeRequest(Long staffId, Long id, MaintenanceCompleteRequest request);
 
-    MaintenanceRequestResponse rejectRequest(Long staffId, Long id, MaintenanceRejectRequest request);
 }

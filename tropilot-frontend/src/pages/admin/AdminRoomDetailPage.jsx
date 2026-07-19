@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useOutletContext } from 'react-router-dom';
 import * as buildingApi from '../../features/buildings/api.js';
 import * as roomApi from '../../features/rooms/api.js';
 import * as adminUserApi from '../../features/users/api.js';
@@ -18,6 +18,14 @@ function formatNumber(value) {
   return Number.isFinite(numberValue)
     ? numberValue.toLocaleString('en-US', { maximumFractionDigits: 2 })
     : value;
+}
+
+function formatMoney(value) {
+  return `${formatNumber(value)} đ`;
+}
+
+function formatArea(value) {
+  return `${formatNumber(value)} m2`;
 }
 
 function statusClass(status) {
@@ -53,6 +61,7 @@ function getEndContractConfirmationMessage(room, headInfo, t) {
 export default function AdminRoomDetailPage() {
   const { t } = useTranslation();
   const { roomBasePath, roomId } = useRoomRouteContext('admin');
+  const { building } = useOutletContext() || {};
   const location = useLocation();
   const navigate = useNavigate();
   const [room, setRoom] = useState(null);
@@ -207,6 +216,7 @@ export default function AdminRoomDetailPage() {
 
   const hasHeadResident = Boolean(headInfo?.assigned);
   const canAssignHead = !hasHeadResident && room.status === 'EMPTY';
+  const buildingAddress = room.buildingAddress || building?.address || t('common.notProvided');
 
   return (
     <section className="content-section admin-room-detail-page">
@@ -231,12 +241,16 @@ export default function AdminRoomDetailPage() {
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
 
-      <div className="detail-panel">
+      <div className="detail-panel room-detail-card">
         <div>
           <span>{t('tables.common.building')}</span>
           <strong>
             {room.buildingCode} - {room.buildingName}
           </strong>
+        </div>
+        <div>
+          <span>{t('forms.building.address')}</span>
+          <strong>{buildingAddress}</strong>
         </div>
         <div>
           <span>{t('tables.common.status')}</span>
@@ -254,11 +268,11 @@ export default function AdminRoomDetailPage() {
         </div>
         <div>
           <span>{t('tables.common.price')}</span>
-          <strong>{formatNumber(room.price)}</strong>
+          <strong className="room-detail-metric">{formatMoney(room.price)}</strong>
         </div>
         <div>
           <span>{t('tables.common.area')}</span>
-          <strong>{formatNumber(room.area)}</strong>
+          <strong className="room-detail-metric">{formatArea(room.area)}</strong>
         </div>
         <div className="detail-wide">
           <span>{t('tables.common.description')}</span>

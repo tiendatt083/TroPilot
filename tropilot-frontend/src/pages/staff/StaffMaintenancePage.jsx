@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, useOutletContext } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useOutletContext } from 'react-router-dom';
 import * as maintenanceApi from '../../features/maintenance/api.js';
 import ActionDialog from '../../components/common/ActionDialog.jsx';
 import FilterBar from '../../components/common/FilterBar.jsx';
@@ -27,6 +27,8 @@ function requestMatchesSearch(request, searchValue) {
     request.content,
     request.roomCode,
     request.roomName,
+    request.buildingCode,
+    request.buildingName,
     request.requestedByName,
     request.residentHeadName,
     request.equipmentCode,
@@ -40,6 +42,8 @@ function requestMatchesSearch(request, searchValue) {
 
 export default function StaffMaintenancePage() {
   const { t } = useTranslation();
+  const location = useLocation();
+  const navigate = useNavigate();
   const outletContext = useOutletContext();
   const building = outletContext?.building;
   const [requests, setRequests] = useState([]);
@@ -54,7 +58,6 @@ export default function StaffMaintenancePage() {
     resultNote: '',
     resultImage: null
   });
-  const [rejectNote, setRejectNote] = useState('');
   const filteredRequests = useMemo(() => {
     const searchValue = normalizeSearchText(filters.search);
 
@@ -69,14 +72,23 @@ export default function StaffMaintenancePage() {
 
     try {
       const response = await maintenanceApi.getStaffMaintenanceRequests(building?.id ? { buildingId: building.id } : undefined);
-      setRequests(response.data);
-      setSelectedRequest((current) => {
-        if (!current) {
-          return response.data[0] || null;
-        }
+      const targetRequestId = building && location.state?.maintenanceRequestId
+        ? Number(location.state.maintenanceRequestId)
+        : null;
+      const targetRequest = targetRequestId
+        ? response.data.find((request) => request.id === targetRequestId)
+        : null;
 
-        return response.data.find((request) => request.id === current.id) || response.data[0] || null;
-      });
+      setRequests(response.data);
+      setSelectedRequest((current) => targetRequest || (
+        current
+          ? response.data.find((request) => request.id === current.id) || response.data[0] || null
+          : response.data[0] || null
+      ));
+      if (targetRequest) {
+        setDetailOpen(true);
+        navigate('.', { replace: true, state: null });
+      }
     } catch (apiError) {
       setError(apiError.response?.data?.message || t('maintenance.loadError'));
     }
@@ -134,31 +146,17 @@ export default function StaffMaintenancePage() {
     }
   };
 
-  const handleReject = async (event) => {
-    event.preventDefault();
-    setProcessing(true);
-    setMessage('');
-    setError('');
-
-    try {
-      const response = await maintenanceApi.rejectStaffMaintenanceRequest(selectedRequest.id, {
-        resultNote: rejectNote
-      });
-      refreshSelectedRequest(response.data);
-      setRejectNote('');
-      setMessage(t('maintenance.staff.rejected'));
-    } catch (apiError) {
-      setError(apiError.response?.data?.message || t('maintenance.staff.rejectError'));
-    } finally {
-      setProcessing(false);
-    }
-  };
-
   const canStart = selectedRequest?.status === 'ASSIGNED';
   const canComplete = selectedRequest?.status === 'IN_PROGRESS';
-  const canReject = selectedRequest?.status === 'ASSIGNED' || selectedRequest?.status === 'IN_PROGRESS';
 
   const openRequestDetail = (request) => {
+    if (!building && request.buildingId) {
+      navigate(`/staff/buildings/${request.buildingId}/maintenance`, {
+        state: { maintenanceRequestId: request.id }
+      });
+      return;
+    }
+
     setSelectedRequest(request);
     setDetailOpen(true);
   };
@@ -176,7 +174,9 @@ export default function StaffMaintenancePage() {
   };
 
   return (
-    <section className={`${building ? 'building-workspace' : 'content-section'} staff-maintenance-page`}>
+    <section
+      className={`${building ? 'building-workspace staff-building-maintenance-page' : 'content-section staff-maintenance-overview-page'} staff-maintenance-page`}
+    >
       {building ? (
         <div className="building-section-header">
           <span className="page-eyebrow">{t('maintenance.staff.buildingEyebrow')}</span>
@@ -237,6 +237,19 @@ export default function StaffMaintenancePage() {
                   <small>{request.content || t('common.notProvided')}</small>
                 </span>
                 <span className="maintenance-card-meta-grid">
+                  {!building && (
+                    <span className="maintenance-card-meta">
+                      <span>
+                        <LineIcon name="building" />
+                        {t('tables.common.building')}
+                      </span>
+                      <strong>
+                        {request.buildingCode && request.buildingName
+                          ? `${request.buildingCode} - ${request.buildingName}`
+                          : request.buildingName || t('common.notProvided')}
+                      </strong>
+                    </span>
+                  )}
                   <span className="maintenance-card-meta">
                     <span>
                       <LineIcon name="home" />
@@ -290,7 +303,12 @@ export default function StaffMaintenancePage() {
           {selectedRequest && (
             <div className="task-actions-panel maintenance-staff-action-panel">
               {canStart && (
-                <button className="inline-button" type="button" disabled={processing} onClick={handleStart}>
+                <button
+                  className="inline-button maintenance-start-button"
+                  type="button"
+                  disabled={processing}
+                  onClick={handleStart}
+                >
                   {processing ? t('maintenance.staff.starting') : t('maintenance.staff.start')}
                 </button>
               )}
@@ -322,22 +340,6 @@ export default function StaffMaintenancePage() {
                 </form>
               )}
 
-              {canReject && (
-                <form className="panel-form" onSubmit={handleReject}>
-                  <label htmlFor="maintenanceRejectNote">{t('maintenance.staff.rejectionNote')}</label>
-                  <textarea
-                    id="maintenanceRejectNote"
-                    name="rejectNote"
-                    rows="3"
-                    value={rejectNote}
-                    onChange={(event) => setRejectNote(event.target.value)}
-                  />
-                  <button className="secondary-button" type="submit" disabled={processing}>
-                    {processing ? t('maintenance.staff.rejecting') : t('maintenance.staff.reject')}
-                  </button>
-                </form>
-              )}
-
               {selectedRequest.roomId && (
                 <Link
                   className="secondary-link"
@@ -356,7 +358,7 @@ export default function StaffMaintenancePage() {
                 </Link>
               )}
 
-              {!canStart && !canComplete && !canReject && (
+              {!canStart && !canComplete && (
                 <div className="empty-state">{t('maintenance.staff.noAction')}</div>
               )}
             </div>

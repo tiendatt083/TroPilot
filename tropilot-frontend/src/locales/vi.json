@@ -598,6 +598,7 @@
       "add": "Thêm thiết bị",
       "create": "Tạo mới",
       "saveChanges": "Lưu thay đổi",
+      "createMaintenance": "Tạo bảo trì",
       "requestMaintenance": "Yêu cầu bảo trì",
       "viewHistory": "Lịch sử bảo trì",
       "closePanel": "Đóng"
@@ -623,6 +624,7 @@
       "fields": {
         "title": "Tiêu đề sự cố",
         "content": "Mô tả sự cố",
+        "assignedStaff": "Nhân viên xử lý",
         "image": "Ảnh bằng chứng"
       },
       "imageHelp": "Ảnh JPG hoặc PNG, không bắt buộc.",
@@ -630,6 +632,12 @@
       "submitting": "Đang gửi yêu cầu...",
       "created": "Đã tạo yêu cầu bảo trì thiết bị thành công.",
       "createError": "Không thể tạo yêu cầu bảo trì thiết bị"
+    },
+    "maintenance": {
+      "eyebrow": "Bảo trì thiết bị",
+      "title": "Tạo bảo trì",
+      "submit": "Tạo bảo trì",
+      "submitting": "Đang tạo bảo trì..."
     },
     "history": {
       "eyebrow": "Lịch sử bảo trì",
@@ -1514,7 +1522,11 @@
       "assigned": "Đã phân công yêu cầu bảo trì thành công.",
       "assignError": "Không thể phân công yêu cầu bảo trì",
       "selectStaff": "Chọn nhân viên",
-      "assign": "Phân công"
+      "assign": "Phân công",
+      "assignTitle": "Phân công nhân viên",
+      "changeStaff": "Đổi nhân viên",
+      "changeStaffTitle": "Đổi nhân viên xử lý",
+      "changeStaffDisabled": "Không thể đổi nhân viên ở trạng thái này"
     },
     "staff": {
       "eyebrow": "Nhân viên vận hành",
@@ -1529,7 +1541,7 @@
       "actions": "Thao tác",
       "progress": "Tiến độ yêu cầu",
       "starting": "Đang bắt đầu...",
-      "start": "Bắt đầu yêu cầu",
+      "start": "Bắt đầu bảo trì",
       "resultNote": "Ghi chú kết quả",
       "resultImage": "Ảnh kết quả",
       "completing": "Đang hoàn thành...",
@@ -2256,9 +2268,10 @@
       "REJECTED": "Bị từ chối"
     },
     "taskType": {
-      "METER_READING": "Ghi chỉ số",
+      "METER_READING": "Ghi chỉ số điện nước",
       "INVOICE_CREATION": "Tạo hóa đơn",
       "ROOM_CHECK": "Kiểm tra phòng",
+      "SHARED_EQUIPMENT_CHECK": "Kiểm tra thiết bị chung",
       "MAINTENANCE": "Bảo trì",
       "VEHICLE_CHECK": "Kiểm tra xe",
       "FEEDBACK_HANDLING": "Xử lý phản hồi",
@@ -2504,6 +2517,8 @@
       "waterFetchError": "Không thể lấy chỉ số nước tự động",
       "electricityIncrease": "Điện",
       "waterIncrease": "Nước",
+      "readingDateShort": "Ngày ghi",
+      "editReasonShort": "Lý do",
       "allowedImageTypes": "Loại ảnh cho phép: jpg, jpeg, png. Dung lượng tối đa: 10 MB.",
       "readingDateHelp": "Ngày này áp dụng cho cả chỉ số điện và nước.",
       "previousMonthEvidence": "Bằng chứng tháng trước",

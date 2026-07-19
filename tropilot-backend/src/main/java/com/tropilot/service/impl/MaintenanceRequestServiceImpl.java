@@ -4,7 +4,6 @@ import com.tropilot.storage.MaintenanceImageStorageService;
 import com.tropilot.mapper.MaintenanceRequestMapper;
 import com.tropilot.dto.request.MaintenanceAssignRequest;
 import com.tropilot.dto.request.MaintenanceCompleteRequest;
-import com.tropilot.dto.request.MaintenanceRejectRequest;
 import com.tropilot.dto.request.MaintenanceRequestCreateRequest;
 import com.tropilot.dto.response.MaintenanceRequestResponse;
 import com.tropilot.entity.Equipment;
@@ -126,6 +125,22 @@ public class MaintenanceRequestServiceImpl implements MaintenanceRequestService 
             throw new ForbiddenException("Current user cannot request equipment maintenance");
         }
 
+        User assignedTo = null;
+        MaintenanceStatus initialStatus = MaintenanceStatus.PENDING;
+        if (requestedBy.getRole() == UserRole.ADMIN) {
+            if (request.getAssignedToId() == null) {
+                throw new BadRequestException("Assigned staff is required for admin-created maintenance requests");
+            }
+            assignedTo = findActiveStaff(request.getAssignedToId());
+            initialStatus = MaintenanceStatus.ASSIGNED;
+        } else if (request.getAssignedToId() != null) {
+            if (requestedBy.getRole() != UserRole.ADMIN) {
+                throw new ForbiddenException("Only admins can assign equipment maintenance on creation");
+            }
+            assignedTo = findActiveStaff(request.getAssignedToId());
+            initialStatus = MaintenanceStatus.ASSIGNED;
+        }
+
         String imageUrl = maintenanceImageStorageService.store(request.getImage());
         MaintenanceRequest maintenanceRequest = MaintenanceRequest.builder()
                 .room(room)
@@ -136,7 +151,8 @@ public class MaintenanceRequestServiceImpl implements MaintenanceRequestService 
                 .title(request.getTitle().trim())
                 .content(request.getContent().trim())
                 .imageUrl(imageUrl)
-                .status(MaintenanceStatus.PENDING)
+                .assignedTo(assignedTo)
+                .status(initialStatus)
                 .build();
 
         if (equipment.getCondition() != EquipmentCondition.BROKEN) {
@@ -194,8 +210,9 @@ public class MaintenanceRequestServiceImpl implements MaintenanceRequestService 
         MaintenanceRequest maintenanceRequest = findRequest(id);
         validateRequestBelongsToBuilding(maintenanceRequest, buildingId);
 
-        if (maintenanceRequest.getStatus() == MaintenanceStatus.COMPLETED) {
-            throw new BadRequestException("Completed maintenance requests cannot be reassigned");
+        if (maintenanceRequest.getStatus() != MaintenanceStatus.PENDING
+                && maintenanceRequest.getStatus() != MaintenanceStatus.ASSIGNED) {
+            throw new BadRequestException("Only pending or assigned maintenance requests can be reassigned");
         }
 
         User assignedTo = findActiveStaff(request.getAssignedToId());
@@ -262,32 +279,6 @@ public class MaintenanceRequestServiceImpl implements MaintenanceRequestService 
         );
 
         return maintenanceRequestMapper.toResponse(savedRequest);
-    }
-
-    @Override
-    @Transactional
-    public MaintenanceRequestResponse rejectRequest(Long staffId, Long id, MaintenanceRejectRequest request) {
-        MaintenanceRequest maintenanceRequest = findAssignedRequest(staffId, id);
-
-        if (maintenanceRequest.getStatus() == MaintenanceStatus.COMPLETED) {
-            throw new BadRequestException("Completed maintenance requests cannot be rejected");
-        }
-
-        if (maintenanceRequest.getStatus() == MaintenanceStatus.PENDING) {
-            throw new BadRequestException("Pending maintenance requests must be assigned before rejection");
-        }
-
-        maintenanceRequest.setStatus(MaintenanceStatus.REJECTED);
-        if (request != null && request.getResultNote() != null && !request.getResultNote().isBlank()) {
-            maintenanceRequest.setResultNote(request.getResultNote().trim());
-        }
-        if (maintenanceRequest.getEquipment() != null
-                && maintenanceRequest.getEquipment().getCondition() != EquipmentCondition.INACTIVE) {
-            maintenanceRequest.getEquipment().setCondition(EquipmentCondition.NEEDS_MAINTENANCE);
-            equipmentRepository.save(maintenanceRequest.getEquipment());
-        }
-
-        return maintenanceRequestMapper.toResponse(maintenanceRequestRepository.save(maintenanceRequest));
     }
 
     private RoomAssignment findActiveAssignment(Long residentHeadId) {

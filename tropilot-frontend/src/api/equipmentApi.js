@@ -38,6 +38,10 @@ function toMaintenanceFormData(payload) {
     formData.append('image', payload.image);
   }
 
+  if (payload.assignedToId) {
+    formData.append('assignedToId', payload.assignedToId);
+  }
+
   return formData;
 }
 

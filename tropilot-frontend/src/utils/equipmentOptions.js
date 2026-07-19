@@ -2,9 +2,7 @@ export const EQUIPMENT_SCOPES = ['BUILDING', 'ROOM'];
 
 export const EQUIPMENT_CONDITIONS = [
   'GOOD',
-  'NEEDS_MAINTENANCE',
   'UNDER_MAINTENANCE',
-  'BROKEN',
   'INACTIVE'
 ];
 

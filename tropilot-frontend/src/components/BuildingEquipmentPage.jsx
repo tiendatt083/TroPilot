@@ -3,6 +3,7 @@ import { useOutletContext } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import * as equipmentApi from '../features/equipment/api.js';
 import * as roomApi from '../features/rooms/api.js';
+import * as adminUserApi from '../features/users/api.js';
 import EquipmentForm from './EquipmentForm.jsx';
 import EquipmentMaintenancePanel from './EquipmentMaintenancePanel.jsx';
 import EquipmentTable from './EquipmentTable.jsx';
@@ -46,6 +47,10 @@ function toEquipmentPayload(payload) {
   return equipmentPayload;
 }
 
+function activeStaff(users) {
+  return users.filter((user) => user.role === 'STAFF' && user.status === 'ACTIVE');
+}
+
 function apiForRole(role) {
   if (role === 'admin') {
     return {
@@ -71,6 +76,7 @@ export default function BuildingEquipmentPage({ role }) {
   const canManage = role === 'admin';
   const [equipment, setEquipment] = useState([]);
   const [rooms, setRooms] = useState([]);
+  const [staffUsers, setStaffUsers] = useState([]);
   const [filters, setFilters] = useState(EMPTY_FILTERS);
   const [editingEquipment, setEditingEquipment] = useState(null);
   const [formOpen, setFormOpen] = useState(false);
@@ -94,12 +100,14 @@ export default function BuildingEquipmentPage({ role }) {
     setError('');
 
     try {
-      const [equipmentResponse, roomsResponse] = await Promise.all([
+      const [equipmentResponse, roomsResponse, usersResponse] = await Promise.all([
         api.list(building.id, activeFilters),
-        api.rooms({ buildingId: building.id })
+        api.rooms({ buildingId: building.id }),
+        canManage ? adminUserApi.getUsers() : Promise.resolve({ data: [] })
       ]);
       setEquipment(equipmentResponse.data);
       setRooms(roomsResponse.data);
+      setStaffUsers(activeStaff(usersResponse.data || []));
     } catch (apiError) {
       setError(apiError.response?.data?.message || t('equipment.messages.loadError'));
     }
@@ -274,9 +282,9 @@ export default function BuildingEquipmentPage({ role }) {
       )}
       {item.condition !== 'INACTIVE' && (
         <button
-          aria-label={t('equipment.actions.requestMaintenance')}
+          aria-label={canManage ? t('equipment.actions.createMaintenance') : t('equipment.actions.requestMaintenance')}
           className="icon-action-button"
-          data-tooltip={t('equipment.actions.requestMaintenance')}
+          data-tooltip={canManage ? t('equipment.actions.createMaintenance') : t('equipment.actions.requestMaintenance')}
           type="button"
           onClick={() => openRequestPanel(item)}
         >
@@ -296,11 +304,13 @@ export default function BuildingEquipmentPage({ role }) {
   );
   const maintenanceDialogOpen = Boolean(panel.equipment);
   const maintenanceDialogTitle = panel.equipment
-    ? `${panel.type === 'history' ? t('equipment.history.title') : t('equipment.request.title')}: ${panel.equipment.name}`
+    ? `${panel.type === 'history'
+      ? t('equipment.history.title')
+      : canManage ? t('equipment.maintenance.title') : t('equipment.request.title')}: ${panel.equipment.name}`
     : '';
   const maintenanceDialogEyebrow = panel.type === 'history'
     ? t('equipment.history.eyebrow')
-    : t('equipment.request.eyebrow');
+    : canManage ? t('equipment.maintenance.eyebrow') : t('equipment.request.eyebrow');
   const closeMaintenanceDialog = () => setPanel({ type: '', equipment: null });
 
   return (
@@ -425,7 +435,11 @@ export default function BuildingEquipmentPage({ role }) {
           history={history}
           historyLoading={historyLoading}
           requestLoading={requestLoading}
+          requireAssignee={canManage}
+          staffUsers={staffUsers}
           showHistory={panel.type === 'history'}
+          submitLabel={canManage ? t('equipment.maintenance.submit') : undefined}
+          submittingLabel={canManage ? t('equipment.maintenance.submitting') : undefined}
           hideHeader
           onClose={closeMaintenanceDialog}
           onSubmit={handleMaintenanceRequest}

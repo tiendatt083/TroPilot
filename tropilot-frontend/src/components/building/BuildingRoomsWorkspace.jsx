@@ -203,7 +203,7 @@ export default function BuildingRoomsWorkspace({
       )}
 
       <ActionDialog
-        className="action-dialog-wide"
+        className="action-dialog-wide room-create-dialog"
         eyebrow={t('workspace.rooms.eyebrow')}
         labelledBy="building-room-create-dialog-title"
         open={formOpen}
