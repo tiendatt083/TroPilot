@@ -1675,11 +1675,15 @@ html[data-theme="dark"] .resident-profile-page .profile-role-pill {
 }
 
 .task-create-dialog .task-form textarea {
-  min-height: 104px;
+  min-height: 94px;
   padding: 0.55rem 0.65rem;
 }
 
-.task-create-dialog .task-form > button[type="submit"] {
+.task-create-dialog .task-form .task-form-actions {
+  justify-content: flex-end;
+}
+
+.task-create-dialog .task-form .task-form-actions button {
   min-height: 38px;
   margin-top: 0.3rem;
 }
@@ -1783,13 +1787,11 @@ html[data-theme="dark"] .resident-profile-page .profile-role-pill {
   font-weight: var(--font-weight-regular);
 }
 
-.receipt-table td:last-child,
-.expense-table td:last-child {
+.receipt-table td:last-child {
   text-align: center;
 }
 
-.receipt-table td:last-child .icon-action-button,
-.expense-table td:last-child .icon-action-button {
+.receipt-table td:last-child .icon-action-button {
   margin-inline: auto;
 }
 
@@ -1945,5 +1947,324 @@ html[data-theme="dark"] .resident-profile-page .profile-role-pill {
   .invoice-modern-page .invoice-sort-button,
   .invoice-modern-page .instant-clear-button {
     width: 100%;
+  }
+}
+
+/* Utility reading form: shared by admin and staff building pages. */
+.utility-reading-dialog {
+  width: min(820px, calc(100vw - 40px));
+  max-height: min(88vh, 760px);
+  padding: 0;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+}
+
+.utility-reading-dialog .account-modal-header {
+  padding: 0.74rem 0.95rem 0.66rem;
+  border-bottom: 1px solid var(--color-border-soft);
+}
+
+.utility-reading-dialog .account-modal-header h2 {
+  margin: 0;
+  color: #0f172a;
+  font-size: clamp(1.28rem, 1.45vw, 1.55rem);
+  line-height: 1.12;
+}
+
+.utility-reading-dialog .utility-reading-entry-form {
+  display: flex;
+  overflow: visible;
+  max-height: none;
+  flex-direction: column;
+  gap: 0.58rem;
+  padding: 0.68rem 0.82rem 0;
+  background: #ffffff;
+}
+
+.utility-reading-dialog .utility-reading-shared-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 172px;
+  align-items: end;
+  justify-content: start;
+  gap: 0.58rem;
+  padding: 0;
+}
+
+.utility-reading-dialog .utility-reading-room-field,
+.utility-reading-dialog .utility-reading-date-field {
+  max-width: none;
+}
+
+.utility-reading-dialog .utility-reading-entry-form label,
+.utility-reading-dialog .meter-field-label,
+.utility-reading-dialog .meter-field-label label,
+.utility-reading-dialog .utility-reading-evidence-label {
+  margin-bottom: 0.24rem;
+  color: #0f172a;
+  font-size: 0.78rem;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.utility-reading-dialog .utility-reading-entry-form input,
+.utility-reading-dialog .utility-reading-entry-form select {
+  height: 36px;
+  min-height: 36px;
+  border-color: #cfd8e3;
+  border-radius: var(--radius-sm);
+  padding: 0.42rem 0.58rem;
+  color: #0f172a;
+  font-size: 0.82rem;
+}
+
+.utility-reading-dialog .utility-reading-entry-form input:focus,
+.utility-reading-dialog .utility-reading-entry-form select:focus,
+.utility-reading-dialog .utility-reading-entry-form textarea:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.14);
+}
+
+.utility-reading-dialog .utility-reading-form-sections {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.58rem;
+}
+
+.utility-reading-dialog .utility-reading-meter-form {
+  overflow: hidden;
+  border: 1px solid #dbe3ec;
+  border-top-width: 1px;
+  border-radius: var(--radius-md);
+  background: #ffffff;
+  box-shadow: none;
+}
+
+.utility-reading-dialog .meter-form-electricity,
+.utility-reading-dialog .meter-form-water {
+  border-top-width: 1px;
+}
+
+.utility-reading-dialog .utility-reading-meter-form legend {
+  display: grid;
+  width: 100%;
+  grid-template-columns: minmax(0, 1fr) max-content;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.56rem 0.62rem 0.38rem;
+  background: #ffffff;
+  color: #0f172a;
+  font-size: 0.88rem;
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.2;
+}
+
+.utility-reading-dialog .utility-reading-meter-title {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.36rem;
+}
+
+.utility-reading-dialog .utility-reading-meter-icon {
+  width: 0.98rem;
+  height: 0.98rem;
+  flex: 0 0 auto;
+  stroke-width: 2.35;
+}
+
+.utility-reading-dialog .meter-icon-electricity {
+  color: #f59e0b;
+}
+
+.utility-reading-dialog .meter-icon-water {
+  color: #0ea5e9;
+}
+
+.utility-reading-dialog .meter-title-unit {
+  margin-left: 0.12rem;
+  color: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  text-transform: none;
+}
+
+.utility-reading-dialog .meter-mock-control {
+  display: inline-flex;
+  justify-self: end;
+  align-items: center;
+  gap: 0.22rem;
+  margin-left: 0;
+}
+
+.utility-reading-dialog .meter-mock-control em {
+  display: inline-flex;
+  min-height: 26px;
+  align-items: center;
+  border: 1px solid #e2e8f0;
+  border-radius: var(--radius-sm);
+  padding: 0.24rem 0.44rem;
+  background: #f8fafc;
+  color: #0f172a;
+  font-size: 0.72rem;
+  font-style: normal;
+  font-weight: var(--font-weight-regular);
+  text-transform: lowercase;
+}
+
+.utility-reading-dialog .utility-reading-fetch-button {
+  width: 26px;
+  min-width: 26px;
+  height: 26px;
+  min-height: 26px;
+  border-radius: var(--radius-sm);
+  padding: 0;
+  color: #475569;
+  background: #f8fafc;
+}
+
+.utility-reading-dialog .utility-reading-fetch-button svg {
+  width: 0.78rem;
+  height: 0.78rem;
+}
+
+.utility-reading-dialog .utility-reading-meter-form-body {
+  display: grid;
+  gap: 0.46rem;
+  padding: 0 0.62rem 0.62rem;
+}
+
+.utility-reading-dialog .utility-meter-reading-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  justify-content: stretch;
+  gap: 0.5rem;
+}
+
+.utility-reading-dialog .utility-meter-field {
+  gap: 0.18rem;
+  width: 100%;
+}
+
+.utility-reading-dialog .meter-readonly-value,
+.utility-reading-dialog .utility-reading-meter-value-input {
+  width: 100%;
+  height: 36px;
+  min-height: 36px;
+  border-radius: var(--radius-sm);
+  padding: 0.42rem 0.58rem;
+  color: #0f172a;
+  font-size: 0.82rem;
+}
+
+.utility-reading-dialog .meter-readonly-value {
+  border-color: #e2e8f0;
+  background: #eef3f7;
+}
+
+.utility-reading-dialog .utility-reading-evidence-field {
+  display: grid;
+  gap: 0.24rem;
+}
+
+.utility-reading-dialog .utility-reading-upload-dropzone {
+  display: flex;
+  min-height: 34px;
+  align-items: center;
+  gap: 0.42rem;
+  border: 1px dashed #c6d1de;
+  border-radius: var(--radius-sm);
+  padding: 0 0.56rem;
+  background: #ffffff;
+  color: #64748b;
+  cursor: pointer;
+  font-size: 0.78rem;
+  transition: border-color 0.16s ease, background 0.16s ease, color 0.16s ease;
+}
+
+.utility-reading-dialog .utility-reading-upload-dropzone:hover {
+  border-color: #3b82f6;
+  background: #f8fbff;
+  color: #0f172a;
+}
+
+.utility-reading-dialog .utility-reading-upload-icon {
+  width: 0.92rem;
+  height: 0.92rem;
+  flex: 0 0 auto;
+  color: #64748b;
+}
+
+.utility-reading-dialog .utility-reading-file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.utility-reading-dialog .utility-reading-upload-note {
+  color: #64748b;
+  font-size: 0.7rem;
+}
+
+.utility-reading-dialog .utility-reading-reason-field {
+  display: grid;
+  width: min(100%, 460px);
+  gap: 0.22rem;
+}
+
+.utility-reading-dialog .utility-reading-entry-form textarea {
+  min-height: 52px;
+  max-height: 64px;
+  border-radius: var(--radius-sm);
+  color: #0f172a;
+}
+
+.utility-reading-dialog .form-button-row {
+  position: static;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin: 0 -0.82rem;
+  border-top: 1px solid var(--color-border-soft);
+  padding: 0.5rem 0.82rem 0.56rem;
+  background: rgba(255, 255, 255, 0.96);
+}
+
+.utility-reading-dialog .form-button-row button {
+  min-width: 104px;
+  min-height: 34px;
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+}
+
+@media (max-width: 820px) {
+  .utility-reading-dialog {
+    width: calc(100vw - 28px);
+  }
+
+  .utility-reading-dialog .utility-reading-entry-form {
+    padding-inline: 1rem;
+  }
+
+  .utility-reading-dialog .utility-reading-shared-form,
+  .utility-reading-dialog .utility-reading-form-sections,
+  .utility-reading-dialog .utility-meter-reading-row {
+    grid-template-columns: 1fr;
+  }
+
+  .utility-reading-dialog .utility-reading-meter-form legend {
+    grid-template-columns: 1fr;
+  }
+
+  .utility-reading-dialog .meter-mock-control {
+    justify-self: start;
+  }
+
+  .utility-reading-dialog .form-button-row {
+    margin-inline: -1rem;
+    padding-inline: 1rem;
   }
 }

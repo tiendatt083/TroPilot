@@ -19,7 +19,6 @@ public class RoomDeletionGuard {
                 new RelatedTable("room_members", "room_id", null, null),
                 new RelatedTable("invoices", "room_id", null, null),
                 new RelatedTable("receipts", "room_id", null, null),
-                new RelatedTable("expenses", "room_id", null, null),
                 new RelatedTable("tasks", "room_id", null, null),
                 new RelatedTable("maintenance_requests", "room_id", null, null),
                 new RelatedTable("feedbacks", "room_id", null, null),

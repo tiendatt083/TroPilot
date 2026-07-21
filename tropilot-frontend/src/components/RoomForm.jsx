@@ -16,11 +16,23 @@ const emptyForm = {
   description: ''
 };
 
-export default function RoomForm({ buildingOptions, initialValues, loading, submitLabel, onSubmit }) {
+const editableRoomStatuses = new Set(['EMPTY', 'OCCUPIED']);
+
+export default function RoomForm({
+  buildingOptions,
+  initialValues,
+  loading,
+  submitLabel,
+  onSubmit,
+  lockBuilding = false,
+  lockOccupiedStatus = false
+}) {
   const { t } = useTranslation();
   const [form, setForm] = useState(emptyForm);
 
   useEffect(() => {
+    const initialStatus = lockOccupiedStatus ? 'OCCUPIED' : initialValues?.status;
+
     setForm({
       ...emptyForm,
       ...initialValues,
@@ -30,12 +42,16 @@ export default function RoomForm({ buildingOptions, initialValues, loading, subm
       price: initialValues?.price !== undefined ? String(initialValues.price) : '0',
       area: initialValues?.area !== undefined ? String(initialValues.area) : '0',
       maxOccupants: initialValues?.maxOccupants ? String(initialValues.maxOccupants) : '1',
-      status: initialValues?.status || 'EMPTY'
+      status: editableRoomStatuses.has(initialStatus) ? initialStatus : 'EMPTY'
     });
-  }, [initialValues]);
+  }, [initialValues, lockOccupiedStatus]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
+    if (name === 'buildingId' && lockBuilding) {
+      return;
+    }
+
     setForm((current) => {
       const currentBuilding = getSelectedBuilding(buildingOptions, current.buildingId);
       const nextValue =
@@ -62,34 +78,46 @@ export default function RoomForm({ buildingOptions, initialValues, loading, subm
       price: Number(form.price),
       area: Number(form.area),
       maxOccupants: Number(form.maxOccupants),
-      status: form.status,
+      status: lockOccupiedStatus ? 'OCCUPIED' : form.status,
       description: form.description
     });
   };
 
   const hasBuildings = buildingOptions.length > 0;
   const selectedBuilding = getSelectedBuilding(buildingOptions, form.buildingId);
+  const selectedBuildingLabel = selectedBuilding
+    ? `${selectedBuilding.buildingCode} - ${selectedBuilding.name}`
+    : t('forms.room.noBuildings');
   const roomCodePrefix = selectedBuilding?.buildingCode ? `${selectedBuilding.buildingCode}-` : '';
   const roomCodeMaxLength = Math.max(1, 50 - roomCodePrefix.length);
+  const statusOptions = lockOccupiedStatus
+    ? ROOM_STATUS_OPTIONS.filter((status) => status.value === 'OCCUPIED')
+    : ROOM_STATUS_OPTIONS;
 
   return (
     <form className="panel-form room-form" onSubmit={handleSubmit}>
       <label htmlFor="buildingId">{t('tables.common.building')}</label>
-      <select
-        id="buildingId"
-        name="buildingId"
-        value={form.buildingId}
-        onChange={handleChange}
-        required
-        disabled={!hasBuildings}
-      >
-        <option value="">{hasBuildings ? t('forms.room.selectBuilding') : t('forms.room.noBuildings')}</option>
-        {buildingOptions.map((building) => (
-          <option key={building.id} value={building.id}>
-            {building.buildingCode} - {building.name}
-          </option>
-        ))}
-      </select>
+      {lockBuilding ? (
+        <div className="readonly-field room-building-readonly" aria-label={t('tables.common.building')}>
+          {selectedBuildingLabel}
+        </div>
+      ) : (
+        <select
+          id="buildingId"
+          name="buildingId"
+          value={form.buildingId}
+          onChange={handleChange}
+          required
+          disabled={!hasBuildings}
+        >
+          <option value="">{hasBuildings ? t('forms.room.selectBuilding') : t('forms.room.noBuildings')}</option>
+          {buildingOptions.map((building) => (
+            <option key={building.id} value={building.id}>
+              {building.buildingCode} - {building.name}
+            </option>
+          ))}
+        </select>
+      )}
 
       <label htmlFor="roomCode">{t('forms.room.roomCode')}</label>
       <div className="room-code-input-group">
@@ -122,11 +150,12 @@ export default function RoomForm({ buildingOptions, initialValues, loading, subm
           <input
             id="floor"
             name="floor"
-            type="number"
-            min="1"
-            value={form.floor}
-            onChange={handleChange}
-            required
+          type="number"
+          min="1"
+          max={selectedBuilding?.floors || undefined}
+          value={form.floor}
+          onChange={handleChange}
+          required
           />
         </div>
         <div>
@@ -177,8 +206,15 @@ export default function RoomForm({ buildingOptions, initialValues, loading, subm
       </div>
 
       <label htmlFor="status">{t('tables.common.status')}</label>
-      <select id="status" name="status" value={form.status} onChange={handleChange} required>
-        {ROOM_STATUS_OPTIONS.map((status) => (
+      <select
+        id="status"
+        name="status"
+        value={lockOccupiedStatus ? 'OCCUPIED' : form.status}
+        onChange={handleChange}
+        disabled={lockOccupiedStatus}
+        required
+      >
+        {statusOptions.map((status) => (
           <option key={status.value} value={status.value}>
             {formatEnumLabel(t, 'roomStatus', status.value)}
           </option>
@@ -195,9 +231,11 @@ export default function RoomForm({ buildingOptions, initialValues, loading, subm
         rows="2"
       />
 
-      <button type="submit" disabled={loading || !hasBuildings}>
-        {loading ? t('common.saving') : submitLabel}
-      </button>
+      <div className="form-action-row form-action-row-right">
+        <button type="submit" disabled={loading || !selectedBuilding}>
+          {loading ? t('common.saving') : submitLabel}
+        </button>
+      </div>
     </form>
   );
 }

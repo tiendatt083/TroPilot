@@ -243,6 +243,7 @@ export default function UtilityReadingForm({
           loading={loading}
           fetching={fetchingMeter === 'electricity'}
           canFetch={!editing && Boolean(onFetchReadings || onFetchElectricityReading)}
+          selectedImage={electricityImage}
           onChange={handleChange}
           onFetch={() => handleFetchMeter('electricity')}
           onImageChange={setElectricityImage}
@@ -254,6 +255,7 @@ export default function UtilityReadingForm({
           loading={loading}
           fetching={fetchingMeter === 'water'}
           canFetch={!editing && Boolean(onFetchReadings || onFetchWaterReading)}
+          selectedImage={waterImage}
           onChange={handleChange}
           onFetch={() => handleFetchMeter('water')}
           onImageChange={setWaterImage}
@@ -276,14 +278,14 @@ export default function UtilityReadingForm({
       )}
 
       <div className="button-row form-button-row">
-        <button type="submit" disabled={loading || noEligibleRooms}>
-          {loading ? t('common.saving') : submitLabel}
-        </button>
         {onCancel && (
           <button className="secondary-button inline-button" type="button" onClick={onCancel}>
             {t('common.cancel')}
           </button>
         )}
+        <button type="submit" disabled={loading || noEligibleRooms}>
+          {loading ? t('common.saving') : submitLabel}
+        </button>
       </div>
     </form>
   );
@@ -292,108 +294,117 @@ export default function UtilityReadingForm({
 function ElectricityReadingSubform({
   form,
   t,
-  editing,
   loading,
   fetching,
   canFetch,
+  selectedImage,
   onChange,
   onFetch,
   onImageChange
 }) {
-  const unit = t('forms.utilityReading.electricityUnit');
-
   return (
-    <fieldset className="utility-reading-meter-form meter-form-electricity">
-      <legend>
-        <span>
-          {t('forms.utilityReading.electricitySectionTitle')}
-          <span className="meter-title-unit">({unit})</span>
-        </span>
-        {canFetch && (
-          <span className="meter-mock-control">
-            <em>{t('forms.utilityReading.mockApi')}</em>
-            <button
-              className="secondary-button utility-reading-fetch-button"
-              type="button"
-              aria-label={
-                fetching
-                  ? t('forms.utilityReading.fetchingReadings')
-                  : t('forms.utilityReading.fetchMeterShort')
-              }
-              title={
-                fetching
-                  ? t('forms.utilityReading.fetchingReadings')
-                  : t('forms.utilityReading.fetchMeterShort')
-              }
-              onClick={onFetch}
-              disabled={loading || fetching || !form.roomId || !form.readingDate}
-            >
-              <LineIcon name="refresh" />
-              <span className="visually-hidden">
-                {fetching ? t('forms.utilityReading.fetchingReadings') : t('forms.utilityReading.fetchMeterShort')}
-              </span>
-            </button>
-          </span>
-        )}
-      </legend>
-
-      <div className="utility-reading-meter-form-body">
-        <div className="utility-meter-reading-row">
-          <MeterDisplay
-            label={t('forms.utilityReading.oldElectricity')}
-            value={form.oldElectricity}
-          />
-          <div className="utility-meter-field">
-            <div className="meter-field-label">
-              <label htmlFor="newElectricity">{t('forms.utilityReading.newElectricity')}</label>
-            </div>
-            <input
-              className="utility-reading-meter-value-input"
-              id="newElectricity"
-              name="newElectricity"
-              type="number"
-              min="0"
-              step="0.01"
-              value={form.newElectricity}
-              onChange={onChange}
-              required
-            />
-          </div>
-        </div>
-
-        <div className="utility-reading-evidence-field">
-          <label htmlFor="electricityImage">{t('forms.utilityReading.electricityEvidenceImage')}</label>
-          <input
-            id="electricityImage"
-            name="electricityImage"
-            type="file"
-              accept=".jpg,.jpeg,.png,image/jpeg,image/png"
-              onChange={(event) => onImageChange(event.target.files?.[0] || null)}
-            />
-        </div>
-      </div>
-    </fieldset>
+    <MeterReadingSection
+      className="meter-form-electricity"
+      icon="bolt"
+      iconClassName="meter-icon-electricity"
+      title={t('forms.utilityReading.electricitySectionTitle')}
+      unit={t('forms.utilityReading.electricityUnit')}
+      fetchLabel={t('forms.utilityReading.fetchElectricity')}
+      oldLabel={t('forms.utilityReading.oldElectricity')}
+      oldValue={form.oldElectricity}
+      newLabel={t('forms.utilityReading.newElectricity')}
+      newInputId="newElectricity"
+      newInputName="newElectricity"
+      newValue={form.newElectricity}
+      evidenceId="electricityImage"
+      evidenceName="electricityImage"
+      evidenceLabel={t('forms.utilityReading.electricityEvidenceImage')}
+      t={t}
+      loading={loading}
+      fetching={fetching}
+      canFetch={canFetch}
+      canUseFetch={Boolean(form.roomId && form.readingDate)}
+      selectedImage={selectedImage}
+      onChange={onChange}
+      onFetch={onFetch}
+      onImageChange={onImageChange}
+    />
   );
 }
 
 function WaterReadingSubform({
   form,
   t,
-  editing,
   loading,
   fetching,
   canFetch,
+  selectedImage,
   onChange,
   onFetch,
   onImageChange
 }) {
-  const unit = t('forms.utilityReading.waterUnit');
-
   return (
-    <fieldset className="utility-reading-meter-form meter-form-water">
+    <MeterReadingSection
+      className="meter-form-water"
+      icon="droplet"
+      iconClassName="meter-icon-water"
+      title={t('forms.utilityReading.waterSectionTitle')}
+      unit={t('forms.utilityReading.waterUnit')}
+      fetchLabel={t('forms.utilityReading.fetchWater')}
+      oldLabel={t('forms.utilityReading.oldWater')}
+      oldValue={form.oldWater}
+      newLabel={t('forms.utilityReading.newWater')}
+      newInputId="newWater"
+      newInputName="newWater"
+      newValue={form.newWater}
+      evidenceId="waterImage"
+      evidenceName="waterImage"
+      evidenceLabel={t('forms.utilityReading.waterEvidenceImage')}
+      t={t}
+      loading={loading}
+      fetching={fetching}
+      canFetch={canFetch}
+      canUseFetch={Boolean(form.roomId && form.readingDate)}
+      selectedImage={selectedImage}
+      onChange={onChange}
+      onFetch={onFetch}
+      onImageChange={onImageChange}
+    />
+  );
+}
+
+function MeterReadingSection({
+  className,
+  icon,
+  iconClassName,
+  title,
+  unit,
+  fetchLabel,
+  oldLabel,
+  oldValue,
+  newLabel,
+  newInputId,
+  newInputName,
+  newValue,
+  evidenceId,
+  evidenceName,
+  evidenceLabel,
+  t,
+  loading,
+  fetching,
+  canFetch,
+  canUseFetch,
+  selectedImage,
+  onChange,
+  onFetch,
+  onImageChange
+}) {
+  return (
+    <fieldset className={`utility-reading-meter-form ${className}`}>
       <legend>
-        <span>
-          {t('forms.utilityReading.waterSectionTitle')}
+        <span className="utility-reading-meter-title">
+          <LineIcon name={icon} className={`utility-reading-meter-icon ${iconClassName}`} />
+          {title}
           <span className="meter-title-unit">({unit})</span>
         </span>
         {canFetch && (
@@ -405,15 +416,15 @@ function WaterReadingSubform({
               aria-label={
                 fetching
                   ? t('forms.utilityReading.fetchingReadings')
-                  : t('forms.utilityReading.fetchMeterShort')
+                  : fetchLabel
               }
               title={
                 fetching
                   ? t('forms.utilityReading.fetchingReadings')
-                  : t('forms.utilityReading.fetchMeterShort')
+                  : fetchLabel
               }
               onClick={onFetch}
-              disabled={loading || fetching || !form.roomId || !form.readingDate}
+              disabled={loading || fetching || !canUseFetch}
             >
               <LineIcon name="refresh" />
               <span className="visually-hidden">
@@ -426,40 +437,56 @@ function WaterReadingSubform({
 
       <div className="utility-reading-meter-form-body">
         <div className="utility-meter-reading-row">
-          <MeterDisplay
-            label={t('forms.utilityReading.oldWater')}
-            value={form.oldWater}
-          />
+          <MeterDisplay label={oldLabel} value={oldValue} />
           <div className="utility-meter-field">
             <div className="meter-field-label">
-              <label htmlFor="newWater">{t('forms.utilityReading.newWater')}</label>
+              <label htmlFor={newInputId}>{newLabel}</label>
             </div>
             <input
               className="utility-reading-meter-value-input"
-              id="newWater"
-              name="newWater"
+              id={newInputId}
+              name={newInputName}
               type="number"
               min="0"
               step="0.01"
-              value={form.newWater}
+              value={newValue}
               onChange={onChange}
               required
             />
           </div>
         </div>
 
-        <div className="utility-reading-evidence-field">
-          <label htmlFor="waterImage">{t('forms.utilityReading.waterEvidenceImage')}</label>
-          <input
-            id="waterImage"
-            name="waterImage"
-            type="file"
-              accept=".jpg,.jpeg,.png,image/jpeg,image/png"
-              onChange={(event) => onImageChange(event.target.files?.[0] || null)}
-            />
-        </div>
+        <EvidenceUpload
+          id={evidenceId}
+          name={evidenceName}
+          label={evidenceLabel}
+          selectedFile={selectedImage}
+          t={t}
+          onImageChange={onImageChange}
+        />
       </div>
     </fieldset>
+  );
+}
+
+function EvidenceUpload({ id, name, label, selectedFile, t, onImageChange }) {
+  return (
+    <div className="utility-reading-evidence-field">
+      <span className="utility-reading-evidence-label">{label}</span>
+      <label className="utility-reading-upload-dropzone" htmlFor={id}>
+        <LineIcon name="image" className="utility-reading-upload-icon" />
+        <span>{selectedFile?.name || t('forms.utilityReading.chooseFileOrDrop')}</span>
+      </label>
+      <input
+        className="utility-reading-file-input"
+        id={id}
+        name={name}
+        type="file"
+        accept=".jpg,.jpeg,.png,image/jpeg,image/png"
+        onChange={(event) => onImageChange(event.target.files?.[0] || null)}
+      />
+      <span className="utility-reading-upload-note">{t('forms.utilityReading.fileLimitShort')}</span>
+    </div>
   );
 }
 

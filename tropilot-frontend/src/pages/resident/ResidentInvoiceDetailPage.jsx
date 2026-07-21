@@ -5,27 +5,21 @@ import * as invoiceApi from '../../features/invoices/api.js';
 import * as paymentApi from '../../features/payments/api.js';
 import { InvoiceDetail } from '../../features/invoices/components/index.js';
 import ManagementPageHero from '../../components/common/ManagementPageHero.jsx';
-import { PaymentProofUploadForm, PaymentTable } from '../../features/payments/components/index.js';
+import { PaymentProofUploadForm } from '../../features/payments/components/index.js';
 import useInvoicePaymentPolling from '../../hooks/useInvoicePaymentPolling.js';
 
 export default function ResidentInvoiceDetailPage() {
   const { t } = useTranslation();
   const { id } = useParams();
   const [invoice, setInvoice] = useState(null);
-  const [payments, setPayments] = useState([]);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
 
   const loadData = async () => {
-    const [invoiceResponse, paymentsResponse] = await Promise.all([
-      invoiceApi.getResidentInvoice(id),
-      paymentApi.getResidentPayments()
-    ]);
-
+    const invoiceResponse = await invoiceApi.getResidentInvoice(id);
     setInvoice(invoiceResponse.data);
-    setPayments(paymentsResponse.data.filter((payment) => payment.invoiceId === Number(id)));
   };
 
   const fetchCurrentInvoice = useCallback(() => {
@@ -115,11 +109,6 @@ export default function ResidentInvoiceDetailPage() {
           }
           showPaymentInstructions
         />
-
-        <div className="payment-panel">
-          <h2>{t('resident.invoices.paymentStatus')}</h2>
-          <PaymentTable payments={payments} />
-        </div>
       </section>
     </section>
   );

@@ -13,5 +13,4 @@ public class StaffDashboardResponse {
     private long roomsNeedingUtilityReading;
     private long pendingPaymentConfirmations;
     private long activeMaintenanceRequests;
-    private long createdExpenses;
 }

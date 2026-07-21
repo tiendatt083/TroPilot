@@ -11,7 +11,6 @@ import * as paymentApi from '../../features/payments/api.js';
 import * as memberApi from '../../features/residents/api.js';
 import * as vehicleApi from '../../features/residents/vehicleApi.js';
 import * as roomApi from '../../features/rooms/api.js';
-import * as expenseApi from '../../features/payments/expenseApi.js';
 import LineIcon from '../../components/common/LineIcon.jsx';
 import { CHART_COLORS, ChartPanel, DonutChart, GroupedBarChart } from '../../components/common/DashboardCharts.jsx';
 import { formatDisplayDate, formatDisplayMonth } from '../../utils/dateFormat.js';
@@ -25,7 +24,6 @@ const EMPTY_BUILDING_OPERATIONS = {
   receipts: [],
   members: [],
   maintenanceRequests: [],
-  expenses: [],
   tasks: [],
   feedbacks: [],
   notificationCount: 0
@@ -145,7 +143,7 @@ function getRoomLabel(record, fallback) {
 }
 
 function getMaintenanceCost(record) {
-  return record.cost ?? record.totalCost ?? record.expenseAmount ?? record.amount ?? 0;
+  return record.cost ?? record.totalCost ?? record.amount ?? 0;
 }
 
 function getMaintenanceFinishedDate(record) {
@@ -327,7 +325,6 @@ export default function AdminBuildingDetailPage() {
           receiptsResponse,
           membersResponse,
           maintenanceResponse,
-          expensesResponse,
           tasksResponse,
           feedbacksResponse,
           notificationsResponse
@@ -340,7 +337,6 @@ export default function AdminBuildingDetailPage() {
           paymentApi.getAdminReceipts({ buildingId }),
           memberApi.getAdminBuildingMembers({ buildingId }),
           maintenanceApi.getAdminMaintenanceRequests({ buildingId }),
-          expenseApi.getAdminExpenses({ buildingId }),
           taskApi.getAdminTasks({ buildingId }),
           feedbackApi.getAdminFeedbacks({ buildingId }),
           notificationApi.getAdminNotifications({ buildingId })
@@ -359,7 +355,6 @@ export default function AdminBuildingDetailPage() {
           receipts: receiptsResponse.data || [],
           members: membersResponse.data || [],
           maintenanceRequests: maintenanceResponse.data || [],
-          expenses: expensesResponse.data || [],
           tasks: tasksResponse.data || [],
           feedbacks: feedbacksResponse.data || [],
           notificationCount: notificationsResponse.data?.length || 0
@@ -423,19 +418,17 @@ export default function AdminBuildingDetailPage() {
     const unpaidCount = unpaidRecords.length;
     const receipts = operations.receipts.filter((receipt) => receipt.status === 'VALID');
     const openMaintenance = operations.maintenanceRequests.filter((request) =>
-      ['PENDING', 'ASSIGNED', 'IN_PROGRESS'].includes(request.status)
+      ['PENDING', 'IN_PROGRESS'].includes(request.status)
     ).length;
     const tasksOpen = operations.tasks.filter((task) => ['NEW', 'IN_PROGRESS', 'OVERDUE'].includes(task.status)).length;
     const feedbacksOpen = operations.feedbacks.filter((feedback) =>
       ['PENDING', 'IN_PROGRESS'].includes(feedback.status)
     ).length;
-    const expenses = operations.expenses.filter((expense) => expense.status === 'VALID');
     const invoiceAmount = sumAmounts(operations.invoices, 'totalAmount');
     const paidAmount = operations.invoices
       .filter((invoice) => invoice.status === 'PAID')
       .reduce((sum, invoice) => sum + toNumber(invoice.totalAmount), 0);
     const receiptAmount = sumAmounts(receipts, 'amount');
-    const expenseAmount = sumAmounts(expenses, 'amount');
     const debtAmount = sumAmounts(unpaidRecords, 'totalAmount');
     const occupancyPercent = getPercent(occupied, operations.rooms.length);
     const attentionCount = pending
@@ -493,7 +486,6 @@ export default function AdminBuildingDetailPage() {
       financeRows: [
         { label: t('dashboard.ops.labels.totalInvoices'), value: invoiceAmount, tone: 'primary' },
         { label: t('dashboard.ops.labels.paid'), value: receiptAmount, tone: 'success' },
-        { label: t('dashboard.ops.labels.expenses'), value: expenseAmount, tone: 'danger' },
         { label: t('dashboard.ops.labels.unpaid'), value: debtAmount, tone: 'warning' }
       ],
       kpis: [

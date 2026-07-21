@@ -94,6 +94,7 @@ export default function AdminRoomCreatePage() {
         <RoomForm
           buildingOptions={availableBuildings}
           initialValues={initialRoomValues}
+          lockBuilding={Boolean(selectedBuildingId)}
           loading={loading}
           submitLabel={translateInterfaceText('Create room')}
           onSubmit={handleSubmit}

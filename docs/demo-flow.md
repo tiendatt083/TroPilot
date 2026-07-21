@@ -8,7 +8,7 @@ This document defines the fixed academic demonstration flow for Tropilot. Use th
 - Do not use real personal information, private contract files, or private payment screenshots.
 - Do not commit temporary passwords, bank data, webhook secrets, or API keys.
 - Use one demo building as the main walkthrough target.
-- Use the building workspace for detailed building-level operations such as rooms, service fees, utility readings, invoices, vehicles, payments, receipts, expenses, and maintenance.
+- Use the building workspace for detailed building-level operations such as rooms, service fees, utility readings, invoices, vehicles, payments, receipts, and maintenance.
 - Record any issue found during the live walkthrough in `docs/demo-bug-log.md`.
 
 ## Required Local Services
@@ -129,11 +129,10 @@ Use the checklist below from top to bottom.
 | 23 | Head Resident | Create maintenance request | Request starts as pending |
 | 24 | Admin | Assign maintenance request to Staff | Request becomes assigned |
 | 25 | Staff | Start and complete maintenance request | Request becomes completed |
-| 26 | Staff or Admin | Create expense if needed | Expense appears in building expenses |
-| 27 | Admin | Review building cash flow | Income, expense, and remaining cash are updated |
-| 28 | Admin | Remove the Head Resident from the room | Assignment and contract end, room members leave, vehicles become inactive, room becomes empty |
-| 29 | Admin | Check room members, vehicles, and contracts | No old active residence data remains for the empty room |
-| 30 | Admin | Review activity logs | Important actions are logged without sensitive data |
+| 26 | Admin | Review building cash flow | Income and remaining cash are updated |
+| 27 | Admin | Remove the Head Resident from the room | Assignment and contract end, room members leave, vehicles become inactive, room becomes empty |
+| 28 | Admin | Check room members, vehicles, and contracts | No old active residence data remains for the empty room |
+| 29 | Admin | Review activity logs | Important actions are logged without sensitive data |
 
 ## Fixed Verification Points
 

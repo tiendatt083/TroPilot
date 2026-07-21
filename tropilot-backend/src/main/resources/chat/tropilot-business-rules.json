@@ -156,12 +156,12 @@
   ],
   "permissions": {
     "ADMIN": [
-      "Has global system control, including account, building, room, Head Resident assignment, contract, service fee, invoice deletion, receipt, expense, task, notification, and activity log management.",
+      "Has global system control, including account, building, room, Head Resident assignment, contract, service fee, invoice deletion, receipt, task, notification, and activity log management.",
       "Can approve or reject pending room members and manage operational records across buildings."
     ],
     "STAFF": [
-      "Can view buildings, rooms, and service fees, record utility readings, generate invoices, confirm payments, create expenses, process assigned maintenance requests, and handle assigned tasks.",
-      "Cannot create users, assign Head Residents, change service fee configuration, delete invoices, cancel receipts or expenses, or access global Admin activity logs."
+      "Can view buildings, rooms, and service fees, record utility readings, generate invoices, confirm payments, process assigned maintenance requests, and handle assigned tasks.",
+      "Cannot create users, assign Head Residents, change service fee configuration, delete invoices, cancel receipts, or access global Admin activity logs."
     ],
     "RESIDENT_HEAD": [
       "Can access only their own active room and related contract, members, vehicles, utility readings, invoices, payments, maintenance requests, feedback, and authorized notifications.",

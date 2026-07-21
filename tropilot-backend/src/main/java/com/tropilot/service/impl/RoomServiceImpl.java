@@ -6,10 +6,12 @@ import com.tropilot.dto.request.RoomUpsertRequest;
 import com.tropilot.dto.response.RoomResponse;
 import com.tropilot.entity.Building;
 import com.tropilot.entity.Room;
+import com.tropilot.enums.RoomAssignmentStatus;
 import com.tropilot.enums.RoomStatus;
 import com.tropilot.exception.BadRequestException;
 import com.tropilot.exception.ResourceNotFoundException;
 import com.tropilot.repository.BuildingRepository;
+import com.tropilot.repository.RoomAssignmentRepository;
 import com.tropilot.repository.RoomRepository;
 import com.tropilot.service.ActivityLogService;
 import com.tropilot.service.RoomService;
@@ -25,6 +27,7 @@ public class RoomServiceImpl implements RoomService {
 
     private final RoomRepository roomRepository;
     private final BuildingRepository buildingRepository;
+    private final RoomAssignmentRepository roomAssignmentRepository;
     private final RoomMapper roomMapper;
     private final RoomDeletionGuard roomDeletionGuard;
     private final ActivityLogService activityLogService;
@@ -34,7 +37,7 @@ public class RoomServiceImpl implements RoomService {
     public RoomResponse createRoom(RoomUpsertRequest request) {
         Building building = findBuilding(request.getBuildingId());
         String roomCode = buildRoomCode(building, request.getRoomCode());
-        RoomStatus roomStatus = parseRequiredStatus(request.getStatus());
+        RoomStatus roomStatus = parseRequiredManagedStatus(request.getStatus());
 
         if (roomRepository.existsByRoomCode(roomCode)) {
             throw new BadRequestException("Room code is already in use");
@@ -91,7 +94,13 @@ public class RoomServiceImpl implements RoomService {
         Room room = findRoom(id);
         Building building = findBuilding(request.getBuildingId());
         String roomCode = buildRoomCode(building, request.getRoomCode());
-        RoomStatus roomStatus = parseRequiredStatus(request.getStatus());
+        RoomStatus roomStatus = parseRequiredManagedStatus(request.getStatus());
+
+        if (!room.getBuilding().getId().equals(building.getId())) {
+            throw new BadRequestException("Room building cannot be changed");
+        }
+
+        validateOccupiedRoomStatus(id, roomStatus);
 
         roomRepository.findByRoomCode(roomCode)
                 .filter(existing -> !existing.getId().equals(id))
@@ -162,6 +171,22 @@ public class RoomServiceImpl implements RoomService {
         }
 
         return roomStatus;
+    }
+
+    private RoomStatus parseRequiredManagedStatus(String status) {
+        RoomStatus roomStatus = parseRequiredStatus(status);
+        if (roomStatus != RoomStatus.EMPTY && roomStatus != RoomStatus.OCCUPIED) {
+            throw new BadRequestException("Room status must be Empty or Occupied");
+        }
+
+        return roomStatus;
+    }
+
+    private void validateOccupiedRoomStatus(Long roomId, RoomStatus roomStatus) {
+        if (roomAssignmentRepository.existsByRoom_IdAndStatus(roomId, RoomAssignmentStatus.ACTIVE)
+                && roomStatus != RoomStatus.OCCUPIED) {
+            throw new BadRequestException("Room with active assignment must remain occupied");
+        }
     }
 
     private String normalizeCode(String roomCode) {

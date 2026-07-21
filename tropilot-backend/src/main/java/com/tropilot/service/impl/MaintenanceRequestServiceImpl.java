@@ -223,6 +223,26 @@ public class MaintenanceRequestServiceImpl implements MaintenanceRequestService 
     }
 
     @Override
+    @Transactional
+    public void deleteRequest(Long id, Long buildingId) {
+        MaintenanceRequest maintenanceRequest = findRequest(id);
+        validateRequestBelongsToBuilding(maintenanceRequest, buildingId);
+
+        if (maintenanceRequest.getStatus() != MaintenanceStatus.PENDING
+                && maintenanceRequest.getStatus() != MaintenanceStatus.ASSIGNED) {
+            throw new BadRequestException("Only maintenance requests that have not started can be deleted");
+        }
+
+        Equipment equipment = maintenanceRequest.getEquipment();
+        maintenanceRequestRepository.delete(maintenanceRequest);
+
+        if (equipment != null && equipment.getCondition() == EquipmentCondition.NEEDS_MAINTENANCE) {
+            equipment.setCondition(EquipmentCondition.GOOD);
+            equipmentRepository.save(equipment);
+        }
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public List<MaintenanceRequestResponse> getStaffRequests(Long staffId, Long buildingId) {
         List<MaintenanceRequest> requests = buildingId == null

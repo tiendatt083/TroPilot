@@ -24,7 +24,6 @@ public class AdminDashboardResponse {
     private long overdueInvoices;
     private BigDecimal totalIncome;
     private BigDecimal unpaidAmount;
-    private BigDecimal totalExpense;
     private BigDecimal remainingCash;
     private long pendingMaintenanceRequests;
     private long inProgressTasks;

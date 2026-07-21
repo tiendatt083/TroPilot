@@ -6,7 +6,7 @@ import TaskForm from './TaskForm.jsx';
 import {
   getTaskStatusClass,
 } from '../utils/taskOptions.js';
-import { formatDateTime, formatEnumLabel } from '../utils/i18nFormat.js';
+import { formatDate, formatEnumLabel } from '../utils/i18nFormat.js';
 import { formatRoomLabel } from '../utils/roomDisplay.js';
 
 function roomText(task, t) {
@@ -82,11 +82,9 @@ export default function TaskQuickViewDialog({
             submitLabel={t('common.saveChanges')}
             includeStatus
             roomPlaceholder={roomPlaceholder}
+            onCancel={() => setEditing(false)}
             onSubmit={handleSubmit}
           />
-          <button className="task-quick-secondary-button" type="button" disabled={loading} onClick={() => setEditing(false)}>
-            {t('common.cancel')}
-          </button>
         </div>
       ) : (
         <div className="task-quick-view">
@@ -106,7 +104,7 @@ export default function TaskQuickViewDialog({
             <DetailItem label={t('tables.common.room')} value={roomText(task, t)} />
             <DetailItem label={t('tables.common.assignedStaff')} value={task.assignedToName} />
             <DetailItem label={t('details.staffEmail')} value={task.assignedToEmail} />
-            <DetailItem label={t('tables.common.deadline')} value={formatDateTime(task.deadline, t)} />
+            <DetailItem label={t('tables.common.deadline')} value={formatDate(task.deadline, t)} />
             <DetailItem label={t('tables.common.createdBy')} value={task.createdByName} />
             <DetailItem label={t('tables.common.content')} value={task.content} wide />
             {task.resultNote && <DetailItem label={t('tables.common.resultNote')} value={task.resultNote} wide />}

@@ -58,7 +58,6 @@ export default function StaffBuildingTaskPage() {
     resultNote: '',
     resultImage: null
   });
-  const [rejectNote, setRejectNote] = useState('');
   const [filters, setFilters] = useState(emptyFilters);
   const filteredTasks = useMemo(() => {
     const searchValue = normalizeSearchText(filters.search);
@@ -168,29 +167,6 @@ export default function StaffBuildingTaskPage() {
     }
   };
 
-  const handleReject = async (event) => {
-    event.preventDefault();
-
-    if (!selectedTask) {
-      return;
-    }
-
-    setProcessing(true);
-    setMessage('');
-    setError('');
-
-    try {
-      const response = await taskApi.rejectStaffTask(selectedTask.id, { resultNote: rejectNote });
-      refreshSelectedTask(response.data);
-      setRejectNote('');
-      setMessage(t('taskManagement.rejected'));
-    } catch (apiError) {
-      setError(apiError.response?.data?.message || t('taskManagement.rejectError'));
-    } finally {
-      setProcessing(false);
-    }
-  };
-
   const handleClearFilters = () => {
     setFilters(emptyFilters);
   };
@@ -234,7 +210,7 @@ export default function StaffBuildingTaskPage() {
       )}
 
       <ActionDialog
-        className="action-dialog-wide task-staff-dialog"
+        className="action-dialog-wide task-staff-dialog task-view-dialog"
         eyebrow={t('taskManagement.actionsEyebrow')}
         labelledBy="staff-building-task-dialog-title"
         open={detailOpen && Boolean(selectedTask)}
@@ -242,10 +218,10 @@ export default function StaffBuildingTaskPage() {
         onClose={closeTaskDetail}
       >
         {selectedTask && (
-          <div className="task-workspace">
+          <div className="task-workspace task-staff-workspace">
             <TaskDetail task={selectedTask} />
 
-            <aside className="task-actions-panel">
+            <aside className="task-actions-panel task-staff-actions">
               {selectedTask.status === 'NEW' && (
                 <button className="inline-button" type="button" disabled={processing} onClick={handleStart}>
                   {processing ? t('taskManagement.starting') : t('taskManagement.start')}
@@ -253,45 +229,33 @@ export default function StaffBuildingTaskPage() {
               )}
 
               {selectedTask.status === 'IN_PROGRESS' && (
-                <form className="panel-form" onSubmit={handleComplete}>
-                  <label htmlFor="buildingTaskResultNote">{t('taskManagement.resultNote')}</label>
-                  <textarea
-                    id="buildingTaskResultNote"
-                    name="resultNote"
-                    rows="4"
-                    value={completionForm.resultNote}
-                    onChange={handleCompletionChange}
-                    required
-                  />
+                <form className="panel-form task-completion-form" onSubmit={handleComplete}>
+                  <div className="task-completion-note-field">
+                    <label htmlFor="buildingTaskResultNote">{t('taskManagement.resultNote')}</label>
+                    <textarea
+                      id="buildingTaskResultNote"
+                      name="resultNote"
+                      rows="4"
+                      value={completionForm.resultNote}
+                      onChange={handleCompletionChange}
+                      required
+                    />
+                  </div>
 
-                  <label htmlFor="buildingTaskResultImage">{t('taskManagement.resultImage')}</label>
-                  <input
-                    id="buildingTaskResultImage"
-                    name="resultImage"
-                    type="file"
-                    accept="image/jpeg,image/png"
-                    onChange={handleCompletionChange}
-                  />
+                  <div className="task-completion-side-field">
+                    <label htmlFor="buildingTaskResultImage">{t('taskManagement.resultImage')}</label>
+                    <input
+                      id="buildingTaskResultImage"
+                      name="resultImage"
+                      type="file"
+                      accept="image/jpeg,image/png"
+                      onChange={handleCompletionChange}
+                    />
 
-                  <button type="submit" disabled={processing}>
-                    {processing ? t('taskManagement.completing') : t('taskManagement.complete')}
-                  </button>
-                </form>
-              )}
-
-              {selectedTask.status !== 'COMPLETED' && selectedTask.status !== 'REJECTED' && (
-                <form className="panel-form" onSubmit={handleReject}>
-                  <label htmlFor="buildingTaskRejectNote">{t('taskManagement.rejectionNote')}</label>
-                  <textarea
-                    id="buildingTaskRejectNote"
-                    name="resultNote"
-                    rows="3"
-                    value={rejectNote}
-                    onChange={(event) => setRejectNote(event.target.value)}
-                  />
-                  <button className="secondary-button" type="submit" disabled={processing}>
-                    {processing ? t('taskManagement.rejecting') : t('taskManagement.reject')}
-                  </button>
+                    <button type="submit" disabled={processing}>
+                      {processing ? t('taskManagement.completing') : t('taskManagement.complete')}
+                    </button>
+                  </div>
                 </form>
               )}
 

@@ -141,11 +141,6 @@ const DESCRIPTION_PATTERNS = [
     params: (match) => ({ invoice: match[1], room: match[2], month: formatDisplayMonth(match[3]) })
   },
   {
-    pattern: /^Created expense (.+)$/i,
-    key: 'activityLogs.descriptions.createdExpense',
-    params: (match) => ({ expense: match[1] })
-  },
-  {
     pattern: /^Created task (.+) for (.+)$/i,
     key: 'activityLogs.descriptions.createdTask',
     params: (match) => ({ task: match[1], assignee: match[2] })

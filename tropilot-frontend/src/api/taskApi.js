@@ -48,6 +48,11 @@ export async function updateAdminTask(id, payload, filters) {
   return response.data;
 }
 
+export async function deleteAdminTask(id, filters) {
+  const response = await apiClient.delete(`/api/admin/tasks/${id}`, filterConfig(filters));
+  return response.data;
+}
+
 export async function getStaffTasks() {
   const response = await apiClient.get('/api/staff/tasks');
   return response.data;

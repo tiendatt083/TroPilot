@@ -220,7 +220,6 @@ function getDashboardState(state) {
     overdueInvoices: 0,
     totalIncome: 0,
     unpaidAmount,
-    totalExpense: 0,
     remainingCash: 0,
     pendingMaintenanceRequests: 0,
     inProgressTasks: 0,
@@ -364,8 +363,7 @@ async function handleApiRoute(route, state) {
       overdueTasks: 0,
       roomsNeedingUtilityReading: 1,
       pendingPaymentConfirmations: 0,
-      activeMaintenanceRequests: 0,
-      createdExpenses: 0
+      activeMaintenanceRequests: 0
     }));
   }
 

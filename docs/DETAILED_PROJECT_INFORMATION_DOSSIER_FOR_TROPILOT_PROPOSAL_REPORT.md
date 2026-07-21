@@ -94,7 +94,7 @@ Information Required from the Student: nguồn nghiên cứu thị trường Vi�
 | PS-08 | Quản lý nhiều tòa nhà | Admin, Staff | Nghiệp vụ cần lọc theo building | Nhiều tòa nhà, nhiều phòng | Nhầm dữ liệu giữa tòa nhà | Building workspace, buildingId endpoints | `AdminBuilding...Controller`, `StaffBuilding...Controller` | [VERIFIED] |
 | PS-09 | Phân quyền dữ liệu | Admin, Staff, Resident | Mỗi vai trò có phạm vi khác nhau | Dữ liệu tài chính/cư dân nhạy cảm | Rò rỉ dữ liệu phòng khác | Spring Security, @PreAuthorize, resident room interceptor | `SecurityConfig.java`, `ResidentRoomAccessInterceptor.java` | [VERIFIED] |
 | PS-10 | Thông báo/giao tiếp | Admin, Staff, Resident | Cần gửi và đọc thông báo | Nhiều đối tượng nhận | Bỏ sót thông tin | Notification target users/buildings/read | notification entities/controllers | [VERIFIED] |
-| PS-11 | Theo dõi doanh thu/chi phí | Admin, Staff | Cần biết thu, chi, còn lại | Hóa đơn/biên lai/chi phí tách rời | Khó đánh giá dòng tiền | CashFlowService, receipts, expenses | `CashFlowServiceImpl` | [VERIFIED] |
+| PS-11 | Theo dõi doanh thu | Admin, Staff | Cần biết thu, còn lại, chưa thanh toán | Hóa đơn/biên lai tách rời | Khó đánh giá dòng tiền | CashFlowService, receipts | `CashFlowServiceImpl` | [VERIFIED] |
 | PS-12 | Tra cứu dữ liệu nghiệp vụ | Admin, Staff, Resident | Người dùng cần hỏi nhanh trạng thái | Dữ liệu nằm nhiều module | Mất thời gian tra cứu | AI assistant read-only theo role context | `ChatServiceImpl`, `ChatContextServiceImpl` | [VERIFIED] |
 
 Information Required from the Student: mức độ thường xuyên/nghiêm trọng từng vấn đề từ thực tế hoặc khảo sát.
@@ -119,7 +119,7 @@ Information Required from the Student: xác nhận SePay/Gemini đã chạy trê
 | ST-02 | Staff | Nhân sự vận hành/kỹ thuật | Nhiệm vụ, bảo trì, chỉ số | Xem việc được giao, thao tác vận hành | Giảm thủ công | Có | Staff operational | Medium | High | [VERIFIED] |
 | ST-03 | Resident Head | Đại diện phòng | Hợp đồng, hóa đơn, thành viên, xe, bảo trì | Xem dữ liệu phòng mình | Minh bạch giao dịch | Có | Own active room | Medium | High | [VERIFIED] |
 | ST-04 | Room Member | Cư dân trong phòng | Cần được ghi nhận là người ở | Đăng ký/duyệt qua Resident Head/Admin | Hợp thức hóa thông tin | Không thấy login account | Room record | Low | Medium | [VERIFIED] |
-| ST-05 | Property owner | Chủ tài sản | Cần doanh thu/chi phí | Báo cáo cash flow | Theo dõi tài sản | [MISSING] | [MISSING] | High | Medium | [INFERRED] |
+| ST-05 | Property owner | Chủ tài sản | Cần theo dõi doanh thu | Báo cáo cash flow | Theo dõi tài sản | [MISSING] | [MISSING] | High | Medium | [INFERRED] |
 | ST-06 | Building manager | Quản lý tòa nhà | Điều phối tòa nhà | Workspace theo building | Kiểm soát vận hành | Có thể là Admin/Staff | Building-level | Medium | High | [INFERRED] |
 | ST-07 | Accountant | Kế toán | Đối soát thu/chi | Báo cáo tài chính | Theo dõi dòng tiền | Không có role riêng | [MISSING] | Medium | Medium | [INFERRED] |
 | ST-08 | Maintenance technician | Kỹ thuật bảo trì | Nhận và hoàn tất yêu cầu | Task/maintenance assigned | Truy vết công việc | Staff | Assigned tasks/requests | Medium | High | [VERIFIED] |
@@ -136,17 +136,17 @@ Information Required from the Student: xác nhận có accountant/property owner
 
 ### 7.1 Admin
 
-[VERIFIED] Admin có quyền `/api/admin/**`, quản lý user, building, room, Head Resident assignment, contracts, service fees, invoices, receipts, expenses, tasks, notifications, equipment, feedback, activity logs. Evidence: `SecurityConfig.java`, các `Admin...Controller`.
+[VERIFIED] Admin có quyền `/api/admin/**`, quản lý user, building, room, Head Resident assignment, contracts, service fees, invoices, receipts, tasks, notifications, equipment, feedback, activity logs. Evidence: `SecurityConfig.java`, các `Admin...Controller`.
 
 [VERIFIED] Admin có quyền tạo Staff/Resident Head, lock/unlock/reset password, xóa user theo logic service. Evidence: `AdminUserController.java`, `UserServiceImpl.java`.
 
-[VERIFIED] Admin có quyền tài chính rộng hơn Staff: receipt list, cash flow, approve/cancel expenses, delete invoices trong điều kiện hợp lệ. Evidence: `AdminReceiptController`, `AdminCashFlowController`, `AdminExpenseController`, `InvoiceServiceImpl`.
+[VERIFIED] Admin có quyền tài chính rộng hơn Staff: receipt list, cash flow, delete invoices trong điều kiện hợp lệ. Evidence: `AdminReceiptController`, `AdminCashFlowController`, `InvoiceServiceImpl`.
 
 ### 7.2 Staff
 
-[VERIFIED] Staff được phép xem building/room/service fee, ghi utility readings, xem/generate invoice trong building workspace, xử lý payment pending, tạo expense, xử lý maintenance/task được giao. Evidence: `Staff...Controller`, `SecurityConfig.java`, `TaskServiceImpl`, `MaintenanceRequestServiceImpl`.
+[VERIFIED] Staff được phép xem building/room/service fee, ghi utility readings, xem/generate invoice trong building workspace, xử lý payment pending, xử lý maintenance/task được giao. Evidence: `Staff...Controller`, `SecurityConfig.java`, `TaskServiceImpl`, `MaintenanceRequestServiceImpl`.
 
-[VERIFIED] Staff không có endpoint `/api/admin/**`; một số endpoint `/api/staff/payments`, `/api/staff/expenses`, `/api/staff/invoices`, `/api/staff/utility-readings` cho phép `STAFF` và `ADMIN`. Evidence: `SecurityConfig.java`.
+[VERIFIED] Staff không có endpoint `/api/admin/**`; một số endpoint `/api/staff/payments`, `/api/staff/invoices`, `/api/staff/utility-readings` cho phép `STAFF` và `ADMIN`. Evidence: `SecurityConfig.java`.
 
 [MISSING] Chưa thấy cơ chế phân công Staff theo tòa nhà rõ ràng trong entity hoặc service; Staff có thể xem buildings qua `buildingService.getBuildings(null)` trong chat context. Cần xác nhận scope Staff là toàn bộ operational hay theo tòa nhà.
 
@@ -173,7 +173,6 @@ Permission Matrix:
 | Invoice | Preview/generate/delete/view | Preview/generate/view | View/complaint | Building/own room | [VERIFIED] |
 | Payment | View/approve/reject via staff endpoints | View/approve/reject | Upload proof | Building/own invoice | [VERIFIED] |
 | Receipt | View | [MISSING] | Via invoice/payment? | Building/own room | [VERIFIED]/[MISSING] |
-| Expense | View/approve/cancel | Create/view | No | Building | [VERIFIED] |
 | Maintenance | Assign/view | Start/complete/reject assigned | Create/view own | Building/assigned/own | [VERIFIED] |
 | Equipment | CRUD/view | View/request maintenance | View current room/request maintenance | Building/own room | [VERIFIED] |
 | Task | CRUD | Start/complete/reject assigned | No | Assigned staff | [VERIFIED] |
@@ -216,7 +215,6 @@ Information Required from the Student: xác nhận Staff có bị giới hạn t
 | Payment | Thanh toán thủ công | Resident, Staff/Admin | proof upload, approve/reject | Implemented | `PaymentServiceImpl` | High |
 | Receipt | Biên lai | System/Admin | create after valid payment | Implemented | `ReceiptCreationServiceImpl` | High |
 | SePay payment | Thanh toán QR/webhook | Resident/System | QR/payment code/webhook/idempotency | Implemented/configurable | `SepayPaymentServiceImpl` | High |
-| Expense | Chi phí | Staff/Admin | create/approve/cancel/view | Implemented | `ExpenseServiceImpl` | Medium |
 | Maintenance | Bảo trì | Resident/Admin/Staff | request/assign/start/complete/reject | Implemented | `MaintenanceRequestServiceImpl` | High |
 | Equipment | Thiết bị | Admin/Staff/Resident | CRUD/view/history/maintenance link | Implemented | `EquipmentServiceImpl` | Medium |
 | Task | Nhiệm vụ | Admin/Staff | create/update/start/complete/reject | Implemented | `TaskServiceImpl` | Medium |
@@ -308,13 +306,12 @@ Information Required from the Student: bổ sung Postman/API docs nếu muốn m
 | 13 | Maintenance request | Báo sửa chữa | Resident/Admin/Staff | Create request with optional equipment/image | PENDING | Own room/equipment scope | `MaintenanceRequestServiceImpl` | SLA |
 | 14 | Admin assigns Staff | Giao xử lý | Admin | Select active staff -> assign | ASSIGNED | Admin only | `MaintenanceRequestServiceImpl` | Staff-building assignment |
 | 15 | Staff completes maintenance | Hoàn thành | Staff | Start -> complete with note/image | COMPLETED | Assigned staff only | `MaintenanceRequestServiceImpl` | Không |
-| 16 | Expense recording | Ghi chi phí | Staff/Admin | Create expense with proof, optional maintenance/task | Pending/approved flow | Staff/Admin | `ExpenseServiceImpl` | Approval status details |
-| 17 | Notification delivery | Gửi thông báo | Admin/System | Create target -> users read | Sent/read | Target validation | notification services | Push/email notification |
-| 18 | AI assistant query | Hỏi đáp nghiệp vụ | All roles | Validate auth/room -> build role context -> Gemini reply | Text answer | Role scope, sensitive key sanitization | `ChatServiceImpl` | External Gemini logs/privacy |
-| 19 | Password recovery | Khôi phục mật khẩu | User | Forgot -> code email -> reset | Password changed | Code hash/attempt/expiry | `AuthServiceImpl` | OTP length/expiry docs |
-| 20 | Move-out | Kết thúc cư trú | Admin | Remove Head Resident -> end assignment/contract -> members left -> vehicles inactive -> room empty | Room EMPTY | Admin only | tests/service | Final settlement process |
+| 16 | Notification delivery | Gửi thông báo | Admin/System | Create target -> users read | Sent/read | Target validation | notification services | Push/email notification |
+| 17 | AI assistant query | Hỏi đáp nghiệp vụ | All roles | Validate auth/room -> build role context -> Gemini reply | Text answer | Role scope, sensitive key sanitization | `ChatServiceImpl` | External Gemini logs/privacy |
+| 18 | Password recovery | Khôi phục mật khẩu | User | Forgot -> code email -> reset | Password changed | Code hash/attempt/expiry | `AuthServiceImpl` | OTP length/expiry docs |
+| 19 | Move-out | Kết thúc cư trú | Admin | Remove Head Resident -> end assignment/contract -> members left -> vehicles inactive -> room empty | Room EMPTY | Admin only | tests/service | Final settlement process |
 
-Information Required from the Student: cung cấp sequence/UML nếu đã có; xác nhận trạng thái chi tiết contract/payment/expense.
+Information Required from the Student: cung cấp sequence/UML nếu đã có; xác nhận trạng thái chi tiết contract/payment.
 
 ## 11. Business Rules
 
@@ -918,7 +915,7 @@ Information Required from the Student: trả lời theo bảng trên để chuy�
 3. Problem statement summary: [VERIFIED/INFERRED] Các vấn đề chính gồm dữ liệu phân tán, hợp đồng, điện nước, hóa đơn, thanh toán, bảo trì, thiết bị, phân quyền và tra cứu nghiệp vụ.
 4. Proposed solution summary: [VERIFIED] Tropilot cung cấp frontend React và backend Spring Boot với module vận hành đầy đủ, phân quyền ba vai trò, payment/receipt, SePay, Gemini, notifications và activity logs.
 5. Confirmed stakeholders: [VERIFIED] Admin, Staff, Resident Head, Room Member, SePay, Gemini, Email provider. [INFERRED] Property owner, Building manager, Accountant, System administrator.
-6. Confirmed scope: [VERIFIED] Auth, user, building, room, assignment, members, contracts, service fees, readings, invoices, payments, receipts, SePay, expense, maintenance, equipment, task, vehicle, feedback, notification, contact, AI, i18n, file upload, Excel export.
+6. Confirmed scope: [VERIFIED] Auth, user, building, room, assignment, members, contracts, service fees, readings, invoices, payments, receipts, SePay, maintenance, equipment, task, vehicle, feedback, notification, contact, AI, i18n, file upload, Excel export.
 7. Main objectives: [INFERRED] Tập trung hóa vận hành, tự động hóa hóa đơn, đối soát thanh toán, phân quyền dữ liệu, hỗ trợ demo học thuật có kiểm thử.
 8. Technology stack: [VERIFIED] React 18.2.0, Vite 5.2.0, Axios, React Router, i18next, xlsx, Playwright, Java 17, Spring Boot 3.2.4, Spring Security/JPA/Mail/Validation, Flyway, MySQL, JJWT, Lombok.
 9. Architecture: [VERIFIED] Decoupled frontend/backend, layered three-tier architecture, modular monolith backend.

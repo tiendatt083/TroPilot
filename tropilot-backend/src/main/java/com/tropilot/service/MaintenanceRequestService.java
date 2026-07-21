@@ -25,6 +25,8 @@ public interface MaintenanceRequestService {
 
     MaintenanceRequestResponse assignRequest(Long id, MaintenanceAssignRequest request, Long buildingId);
 
+    void deleteRequest(Long id, Long buildingId);
+
     List<MaintenanceRequestResponse> getStaffRequests(Long staffId, Long buildingId);
 
     MaintenanceRequestResponse startRequest(Long staffId, Long id);

@@ -149,6 +149,25 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Transactional
+    public void deleteTask(Long id, Long buildingId) {
+        Task task = findTask(id);
+        validateTaskBelongsToBuilding(task, buildingId);
+
+        if (task.getStatus() == TaskStatus.IN_PROGRESS || task.getStatus() == TaskStatus.COMPLETED) {
+            throw new BadRequestException("Tasks already updated by staff cannot be deleted");
+        }
+
+        Feedback feedback = task.getFeedback();
+        if (feedback != null && feedback.getStatus() == FeedbackStatus.IN_PROGRESS) {
+            feedback.setStatus(FeedbackStatus.PENDING);
+            feedbackRepository.save(feedback);
+        }
+
+        taskRepository.delete(task);
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public List<TaskResponse> getStaffTasks(Long staffId) {
         return taskRepository.findByAssignedToIdWithDetails(staffId)
@@ -227,33 +246,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     @Transactional
     public TaskResponse rejectTask(Long staffId, Long id, TaskRejectRequest request) {
-        Task task = findAssignedTask(staffId, id);
-
-        if (task.getStatus() == TaskStatus.COMPLETED) {
-            throw new BadRequestException("Completed tasks cannot be rejected");
-        }
-
-        task.setStatus(TaskStatus.REJECTED);
-        if (request != null && request.getResultNote() != null && !request.getResultNote().isBlank()) {
-            task.setResultNote(request.getResultNote().trim());
-        }
-
-        Task savedTask = taskRepository.save(task);
-        synchronizeFeedbackStatus(savedTask);
-        activityLogService.record(
-                savedTask.getAssignedTo(),
-                "TASK_REJECTED",
-                "Rejected task " + savedTask.getTitle()
-        );
-        notifyTaskCreator(
-                savedTask,
-                NotificationEventType.TASK_REJECTED,
-                "Nhân viên từ chối công việc",
-                savedTask.getAssignedTo().getFullName()
-                        + " đã từ chối công việc \"" + savedTask.getTitle() + "\"."
-        );
-
-        return taskMapper.toResponse(savedTask);
+        throw new ForbiddenException("Staff cannot reject assigned tasks");
     }
 
     private void notifyTaskCreator(
@@ -348,8 +341,8 @@ public class TaskServiceImpl implements TaskService {
                 .orElseThrow(() -> new ResourceNotFoundException("Feedback not found"));
         validateFeedbackBelongsToBuilding(feedback, buildingId);
 
-        if (feedback.getStatus() == FeedbackStatus.RESOLVED || feedback.getStatus() == FeedbackStatus.REJECTED) {
-            throw new BadRequestException("Resolved or rejected feedback cannot be assigned to staff");
+        if (feedback.getStatus() == FeedbackStatus.RESOLVED) {
+            throw new BadRequestException("Resolved feedback cannot be assigned to staff");
         }
 
         return feedback;
@@ -431,10 +424,8 @@ public class TaskServiceImpl implements TaskService {
         }
 
         FeedbackStatus status = switch (task.getStatus()) {
-            case NEW -> FeedbackStatus.ASSIGNED;
-            case IN_PROGRESS, OVERDUE -> FeedbackStatus.IN_PROGRESS;
-            case COMPLETED -> FeedbackStatus.RESOLVED;
-            case REJECTED -> FeedbackStatus.REJECTED;
+            case NEW, IN_PROGRESS, OVERDUE -> FeedbackStatus.IN_PROGRESS;
+            case COMPLETED, REJECTED -> FeedbackStatus.RESOLVED;
         };
 
         if (feedback.getStatus() != status) {
@@ -490,7 +481,11 @@ public class TaskServiceImpl implements TaskService {
 
     private TaskStatus parseTaskStatus(String value) {
         try {
-            return TaskStatus.valueOf(value.trim().toUpperCase(Locale.ROOT));
+            TaskStatus status = TaskStatus.valueOf(value.trim().toUpperCase(Locale.ROOT));
+            if (status == TaskStatus.REJECTED) {
+                throw new BadRequestException("Task status is invalid");
+            }
+            return status;
         } catch (RuntimeException exception) {
             throw new BadRequestException("Task status is invalid");
         }

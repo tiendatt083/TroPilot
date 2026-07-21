@@ -97,12 +97,12 @@ Every chatbot answer must:
 
 ### CHAT-ADMIN-008: Financial Summary
 
-- **Canonical question:** What are the current total income, total expense, remaining cash, and unpaid amount?
-- **Required answer data:** Total income, total expense, remaining cash, unpaid
+- **Canonical question:** What are the current total income, remaining cash, and unpaid amount?
+- **Required answer data:** Total income, remaining cash, unpaid
   invoice amount, and reporting period.
-- **Expected behavior:** Explain that remaining cash equals valid income minus
-  valid expenses and identify material unpaid amounts.
-- **Must not:** Count cancelled receipts or cancelled expenses.
+- **Expected behavior:** Explain that remaining cash is based on valid income
+  and identify material unpaid amounts.
+- **Must not:** Count cancelled receipts.
 
 ## Staff Question Checklist
 

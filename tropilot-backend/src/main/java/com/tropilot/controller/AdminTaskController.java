@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -59,6 +60,15 @@ public class AdminTaskController {
             @Valid @RequestBody TaskUpdateRequest request
     ) {
         return ApiResponse.success("Task updated successfully", taskService.updateTask(id, request, buildingId));
+    }
+
+    @DeleteMapping("/{id}")
+    public ApiResponse<Void> deleteTask(
+            @PathVariable(name = "id") Long id,
+            @RequestParam(name = "buildingId", required = false) Long buildingId
+    ) {
+        taskService.deleteTask(id, buildingId);
+        return ApiResponse.success("Task deleted successfully", null);
     }
 
     private Long getUserId(AuthenticatedUser user) {

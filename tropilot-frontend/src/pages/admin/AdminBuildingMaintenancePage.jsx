@@ -16,7 +16,11 @@ function activeStaff(users) {
 }
 
 function canChangeStaff(status) {
-  return status === 'ASSIGNED';
+  return status === 'PENDING' || status === 'ASSIGNED';
+}
+
+function canDeleteRequest(status) {
+  return status === 'PENDING' || status === 'ASSIGNED';
 }
 
 const emptyFilters = {
@@ -124,24 +128,63 @@ export default function AdminBuildingMaintenancePage() {
     }
   };
 
+  const handleDelete = async (request) => {
+    if (!canDeleteRequest(request.status)) {
+      return;
+    }
+
+    const confirmed = window.confirm(t('maintenance.admin.deleteConfirm', { title: request.title }));
+    if (!confirmed) {
+      return;
+    }
+
+    setProcessingId(request.id);
+    setMessage('');
+    setError('');
+
+    try {
+      await maintenanceApi.deleteAdminMaintenanceRequest(request.id, buildingFilter);
+      setMessage(t('maintenance.admin.deleted'));
+      await loadData();
+    } catch (apiError) {
+      setError(apiError.response?.data?.message || t('maintenance.admin.deleteError'));
+    } finally {
+      setProcessingId(null);
+    }
+  };
+
   const renderActions = (request) => {
-    const enabled = canChangeStaff(request.status);
-    const disabled = !enabled || processingId === request.id;
+    const changeEnabled = canChangeStaff(request.status);
+    const deleteEnabled = canDeleteRequest(request.status);
+    const changeDisabled = !changeEnabled || processingId === request.id;
+    const deleteDisabled = !deleteEnabled || processingId === request.id;
     const tooltip = request.status === 'PENDING'
       ? t('maintenance.admin.assign')
       : t('maintenance.admin.changeStaff');
 
     return (
-      <button
-        aria-label={tooltip}
-        className="icon-action-button maintenance-reassign-button"
-        data-tooltip={disabled ? undefined : tooltip}
-        type="button"
-        disabled={disabled}
-        onClick={() => openAssignmentDialog(request)}
-      >
-        <LineIcon name="userCheck" />
-      </button>
+      <div className="table-actions icon-table-actions maintenance-admin-actions">
+        <button
+          aria-label={tooltip}
+          className="icon-action-button maintenance-reassign-button"
+          data-tooltip={changeDisabled ? undefined : tooltip}
+          type="button"
+          disabled={changeDisabled}
+          onClick={() => openAssignmentDialog(request)}
+        >
+          <LineIcon name="userCheck" />
+        </button>
+        <button
+          aria-label={t('maintenance.admin.delete')}
+          className="icon-action-button maintenance-delete-button"
+          data-tooltip={deleteDisabled ? undefined : t('maintenance.admin.delete')}
+          type="button"
+          disabled={deleteDisabled}
+          onClick={() => handleDelete(request)}
+        >
+          <LineIcon name="trash" />
+        </button>
+      </div>
     );
   };
 

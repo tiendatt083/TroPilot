@@ -54,7 +54,6 @@ public class SecurityConfig {
                         .requestMatchers("/api/staff/utility-readings/**").hasAnyRole("STAFF", "ADMIN")
                         .requestMatchers("/api/staff/invoices/**").hasAnyRole("STAFF", "ADMIN")
                         .requestMatchers("/api/staff/payments/**").hasAnyRole("STAFF", "ADMIN")
-                        .requestMatchers("/api/staff/expenses/**").hasAnyRole("STAFF", "ADMIN")
                         .requestMatchers("/api/staff/tasks/**").hasRole("STAFF")
                         .requestMatchers("/api/staff/maintenance-requests/**").hasRole("STAFF")
                         .requestMatchers("/api/staff/**").hasRole("STAFF")

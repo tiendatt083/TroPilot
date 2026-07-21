@@ -21,11 +21,6 @@ export default function CashFlowSummary({ cashFlow }) {
       value: cashFlow.totalIncome
     },
     {
-      key: 'expense',
-      label: t('cashFlow.totalExpense'),
-      value: cashFlow.totalExpense
-    },
-    {
       key: 'remaining',
       label: t('cashFlow.remainingCash'),
       value: cashFlow.remainingCash

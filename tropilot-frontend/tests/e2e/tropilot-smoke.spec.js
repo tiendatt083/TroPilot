@@ -12,7 +12,7 @@ test.describe('Tropilot smoke flow', () => {
     await loginAs(page, 'admin');
 
     await expect(page).toHaveURL(/\/admin\/dashboard$/);
-    await expect(page.getByRole('heading', { name: 'Vận hành hôm nay' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: "Today's operations" })).toBeVisible();
 
     await page.goto('/admin/buildings');
     await expect(page.getByRole('heading', { name: 'Building management' })).toBeVisible();
@@ -78,7 +78,7 @@ test.describe('Tropilot smoke flow', () => {
     const state = await mockTropilotApi(page);
 
     await loginAs(page, 'admin');
-    await page.goto('/admin/rooms/create?buildingId=1');
+    await page.goto('/admin/buildings/1/rooms/create');
 
     await page.locator('#roomCode').fill('P202');
     await page.locator('#roomName').fill('Room 202');
@@ -93,7 +93,7 @@ test.describe('Tropilot smoke flow', () => {
     const createdRoom = getMockStateSnapshot(state).rooms.find((room) => room.roomCode === 'BD01-P202');
     expect(createdRoom).toBeTruthy();
 
-    await page.goto(`/admin/rooms/${createdRoom.id}`);
+    await page.goto(`/admin/buildings/1/rooms/${createdRoom.id}`);
     await page.getByRole('button', { name: 'Assign Head Resident' }).click();
     await page.locator('#residentHeadId').selectOption('3');
     await page.locator('.assignment-form button[type="submit"]').click();
@@ -115,7 +115,7 @@ test.describe('Tropilot smoke flow', () => {
     await page.locator('#roomId').selectOption('1');
     await page.getByRole('button', { name: 'Preview invoice' }).click();
 
-    await expect(page.getByRole('heading', { name: 'Invoice details' })).toBeVisible();
+    await expect(page.getByText('Invoice preview')).toBeVisible();
     await expect(page.getByText('10,500,000')).toBeVisible();
 
     await page.getByRole('button', { name: 'Generate invoice' }).click();
@@ -144,8 +144,6 @@ test.describe('Tropilot smoke flow', () => {
 
     await expect(page.locator('#newElectricity')).toHaveValue('437');
     await expect(page.locator('#newWater')).toHaveValue('31');
-    await expect(page.getByText('+87 kWh')).toBeVisible();
-    await expect(page.getByText('+7 m3')).toBeVisible();
     await expectNoVisibleAppError(page);
   });
 

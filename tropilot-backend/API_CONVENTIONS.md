@@ -50,7 +50,6 @@ Examples:
 
 - `BuildingUpsertRequest`
 - `RoomUpsertRequest`
-- `ExpenseCreateRequest`
 - `VehicleRegistrationRequest`
 - `HeadResidentAssignmentResponse`
 

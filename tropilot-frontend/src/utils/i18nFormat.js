@@ -1,4 +1,4 @@
-import { formatDisplayDateTime } from './dateFormat.js';
+import { formatDisplayDate, formatDisplayDateTime } from './dateFormat.js';
 
 export function formatFallbackEnumLabel(value) {
   if (!value) {
@@ -26,4 +26,12 @@ export function formatDateTime(value, t) {
   }
 
   return formatDisplayDateTime(value, t('common.notProvided'));
+}
+
+export function formatDate(value, t) {
+  if (!value) {
+    return t('common.notProvided');
+  }
+
+  return formatDisplayDate(value, t('common.notProvided'));
 }

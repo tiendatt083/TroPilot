@@ -11,10 +11,8 @@ export const FEEDBACK_TYPE_OPTIONS = [
 
 export const FEEDBACK_STATUS_OPTIONS = [
   localizedOption('PENDING', 'Pending'),
-  localizedOption('ASSIGNED', 'Assigned'),
   localizedOption('IN_PROGRESS', 'In progress'),
-  localizedOption('RESOLVED', 'Resolved'),
-  localizedOption('REJECTED', 'Rejected')
+  localizedOption('RESOLVED', 'Resolved')
 ];
 
 export function getFeedbackTypeLabel(type) {

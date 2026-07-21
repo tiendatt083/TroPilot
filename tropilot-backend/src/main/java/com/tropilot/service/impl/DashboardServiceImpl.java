@@ -16,7 +16,6 @@ import com.tropilot.dto.response.VehicleResponse;
 import com.tropilot.entity.Invoice;
 import com.tropilot.entity.RentalContract;
 import com.tropilot.entity.UtilityReading;
-import com.tropilot.enums.ExpenseStatus;
 import com.tropilot.enums.FeedbackStatus;
 import com.tropilot.enums.InvoiceStatus;
 import com.tropilot.enums.MaintenanceStatus;
@@ -30,7 +29,6 @@ import com.tropilot.enums.TaskStatus;
 import com.tropilot.enums.UserRole;
 import com.tropilot.enums.VehicleStatus;
 import com.tropilot.repository.BuildingRepository;
-import com.tropilot.repository.ExpenseRepository;
 import com.tropilot.repository.FeedbackRepository;
 import com.tropilot.repository.InvoiceRepository;
 import com.tropilot.repository.MaintenanceRequestRepository;
@@ -73,7 +71,6 @@ public class DashboardServiceImpl implements DashboardService {
     private final RentalContractRepository rentalContractRepository;
     private final InvoiceRepository invoiceRepository;
     private final ReceiptRepository receiptRepository;
-    private final ExpenseRepository expenseRepository;
     private final MaintenanceRequestRepository maintenanceRequestRepository;
     private final TaskRepository taskRepository;
     private final FeedbackRepository feedbackRepository;
@@ -100,7 +97,6 @@ public class DashboardServiceImpl implements DashboardService {
                 RoomAssignmentStatus.ACTIVE
         );
         BigDecimal totalIncome = nonNull(receiptRepository.sumAmountByStatus(ReceiptStatus.VALID));
-        BigDecimal totalExpense = nonNull(expenseRepository.sumAmountByStatus(ExpenseStatus.VALID));
 
         return AdminDashboardResponse.builder()
                 .totalBuildings(buildingRepository.count())
@@ -122,13 +118,11 @@ public class DashboardServiceImpl implements DashboardService {
                 .overdueInvoices(invoiceRepository.countByDueDateBeforeAndStatusNot(today, InvoiceStatus.PAID))
                 .totalIncome(totalIncome)
                 .unpaidAmount(nonNull(invoiceRepository.sumUnpaidAmount(InvoiceStatus.PAID)))
-                .totalExpense(totalExpense)
-                .remainingCash(totalIncome.subtract(totalExpense))
+                .remainingCash(totalIncome)
                 .pendingMaintenanceRequests(maintenanceRequestRepository.countByStatus(MaintenanceStatus.PENDING))
                 .inProgressTasks(taskRepository.countByStatus(TaskStatus.IN_PROGRESS))
                 .unresolvedFeedbacks(feedbackRepository.countByStatusIn(List.of(
                         FeedbackStatus.PENDING,
-                        FeedbackStatus.ASSIGNED,
                         FeedbackStatus.IN_PROGRESS
                 )))
                 .build();
@@ -162,7 +156,6 @@ public class DashboardServiceImpl implements DashboardService {
                         staffId,
                         List.of(MaintenanceStatus.ASSIGNED, MaintenanceStatus.IN_PROGRESS)
                 ))
-                .createdExpenses(expenseRepository.countByCreatedBy_Id(staffId))
                 .build();
     }
 

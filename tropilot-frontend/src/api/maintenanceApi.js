@@ -57,6 +57,11 @@ export async function assignAdminMaintenanceRequest(id, payload, filters) {
   return response.data;
 }
 
+export async function deleteAdminMaintenanceRequest(id, filters) {
+  const response = await apiClient.delete(`/api/admin/maintenance-requests/${id}`, filterConfig(filters));
+  return response.data;
+}
+
 export async function getStaffMaintenanceRequests(filters) {
   const response = await apiClient.get('/api/staff/maintenance-requests', filterConfig(filters));
   return response.data;

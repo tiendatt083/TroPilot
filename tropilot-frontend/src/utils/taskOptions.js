@@ -17,10 +17,9 @@ export const TASK_PRIORITY_OPTIONS = [
 ];
 
 export const TASK_STATUS_OPTIONS = [
-  localizedOption('NEW', 'New'),
+  localizedOption('NEW', 'Assigned'),
   localizedOption('IN_PROGRESS', 'In progress'),
   localizedOption('COMPLETED', 'Completed'),
-  localizedOption('REJECTED', 'Rejected'),
   localizedOption('OVERDUE', 'Overdue')
 ];
 
@@ -58,4 +57,20 @@ export function toDateTimeInputValue(value) {
   }
 
   return String(value).slice(0, 16);
+}
+
+export function toDateInputValue(value) {
+  if (!value) {
+    return '';
+  }
+
+  return String(value).slice(0, 10);
+}
+
+export function toDeadlinePayload(value) {
+  if (!value) {
+    return '';
+  }
+
+  return String(value).includes('T') ? value : `${value}T23:59:00`;
 }

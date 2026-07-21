@@ -35,7 +35,6 @@ export const adminRoutes = (
       <Route path="contracts/:id" element={<Navigate to="/admin/buildings" replace />} />
       <Route path="invoices" element={<Navigate to="/admin/buildings" replace />} />
       <Route path="receipts" element={<Navigate to="/admin/buildings" replace />} />
-      <Route path="expenses" element={<Navigate to="/admin/buildings" replace />} />
       <Route path="cashflow" element={<Navigate to="/admin/buildings" replace />} />
       <Route path="tasks" element={<Navigate to="/admin/buildings" replace />} />
       <Route path="tasks/create" element={<Navigate to="/admin/buildings" replace />} />

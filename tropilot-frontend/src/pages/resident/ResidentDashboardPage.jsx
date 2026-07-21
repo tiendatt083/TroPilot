@@ -98,19 +98,6 @@ function buildMonthlyRows(invoices, readings) {
     }));
 }
 
-function getMonthlySummary(monthlyRows) {
-  const latest = monthlyRows[monthlyRows.length - 1] || null;
-  const totalCost = monthlyRows.reduce((sum, row) => sum + row.cost, 0);
-  const averageCost = monthlyRows.length ? totalCost / monthlyRows.length : 0;
-
-  return {
-    latest,
-    averageCost,
-    totalElectricity: monthlyRows.reduce((sum, row) => sum + row.electricity, 0),
-    totalWater: monthlyRows.reduce((sum, row) => sum + row.water, 0)
-  };
-}
-
 function formatFallbackEnumLabel(value) {
   if (!value) {
     return '';
@@ -133,39 +120,6 @@ function formatEnumLabel(value, group, t) {
 
 function statusClass(status) {
   return `status-pill room-status-${String(status || 'empty').toLowerCase()}`;
-}
-
-function ResidentInsightStrip({ summary, t }) {
-  const currencyUnit = t('invoices.currencyUnit', { defaultValue: 'đ' });
-  const insightItems = [
-    {
-      label: t('dashboard.resident.charts.currentMonthCost'),
-      value: summary.latest ? formatMoney(summary.latest.cost, currencyUnit) : t('common.notAvailable')
-    },
-    {
-      label: t('dashboard.resident.charts.averageCost'),
-      value: summary.averageCost ? formatMoney(summary.averageCost, currencyUnit) : t('common.notAvailable')
-    },
-    {
-      label: t('dashboard.resident.charts.electricityTotal'),
-      value: `${formatNumber(summary.totalElectricity)} kWh`
-    },
-    {
-      label: t('dashboard.resident.charts.waterTotal'),
-      value: `${formatNumber(summary.totalWater)} m³`
-    }
-  ];
-
-  return (
-    <div className="resident-insight-strip">
-      {insightItems.map((item) => (
-        <div className="resident-insight-item" key={item.label}>
-          <span>{item.label}</span>
-          <strong>{item.value}</strong>
-        </div>
-      ))}
-    </div>
-  );
 }
 
 function MonthlyUsageChart({ rows, t }) {
@@ -263,7 +217,6 @@ export default function ResidentDashboardPage() {
   const activeVehicles = dashboard?.activeVehicles || [];
   const recentMaintenanceRequests = dashboard?.recentMaintenanceRequests || [];
   const monthlyRows = useMemo(() => buildMonthlyRows(invoiceHistory, utilityHistory), [invoiceHistory, utilityHistory]);
-  const monthlySummary = useMemo(() => getMonthlySummary(monthlyRows), [monthlyRows]);
   const currencyUnit = t('invoices.currencyUnit', { defaultValue: 'đ' });
   const metrics = dashboard
     ? [
@@ -331,7 +284,6 @@ export default function ResidentDashboardPage() {
           </DashboardSection>
 
           <section className="resident-analytics-section">
-            <ResidentInsightStrip summary={monthlySummary} t={t} />
             <div className="resident-chart-grid">
               <MonthlyUsageChart rows={monthlyRows} t={t} />
               <MonthlyCostChart rows={monthlyRows} t={t} />

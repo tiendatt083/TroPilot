@@ -4,7 +4,7 @@ import {
   getTaskStatusClass,
 } from '../utils/taskOptions.js';
 import LineIcon from './common/LineIcon.jsx';
-import { formatDateTime, formatEnumLabel } from '../utils/i18nFormat.js';
+import { formatDate, formatEnumLabel } from '../utils/i18nFormat.js';
 import { formatRoomLabel } from '../utils/roomDisplay.js';
 
 function roomText(task, t) {
@@ -28,11 +28,14 @@ function buildingText(task, t) {
 export default function TaskTable({
   detailBasePath,
   onViewTask,
+  onDeleteTask,
+  deletingTaskId,
   showAssignedStaff = true,
   showBuilding = false,
   tasks
 }) {
   const { t } = useTranslation();
+  const canDeleteTask = (task) => Boolean(onDeleteTask) && !['IN_PROGRESS', 'COMPLETED'].includes(task.status);
 
   return (
     <div className="table-wrap">
@@ -73,7 +76,7 @@ export default function TaskTable({
                 </td>
               )}
               <td>{formatEnumLabel(t, 'taskType', task.taskType)}</td>
-              <td>{formatDateTime(task.deadline, t)}</td>
+              <td>{formatDate(task.deadline, t)}</td>
               <td>
                 <span className={getTaskStatusClass(task.status)}>
                   {formatEnumLabel(t, 'taskStatus', task.status)}
@@ -81,15 +84,29 @@ export default function TaskTable({
               </td>
               <td>
                 {onViewTask ? (
-                  <button
-                    className="table-icon-button"
-                    type="button"
-                    aria-label={t('common.view')}
-                    title={t('common.view')}
-                    onClick={() => onViewTask(task)}
-                  >
-                    <LineIcon name="eye" size={16} />
-                  </button>
+                  <div className="table-action-buttons">
+                    <button
+                      className="table-icon-button"
+                      type="button"
+                      aria-label={t('common.view')}
+                      title={t('common.view')}
+                      onClick={() => onViewTask(task)}
+                    >
+                      <LineIcon name="eye" size={16} />
+                    </button>
+                    {onDeleteTask && (
+                      <button
+                        className="table-icon-button icon-action-danger"
+                        type="button"
+                        aria-label={t('common.delete')}
+                        title={t('common.delete')}
+                        disabled={!canDeleteTask(task) || deletingTaskId === task.id}
+                        onClick={() => onDeleteTask(task)}
+                      >
+                        <LineIcon name="trash" size={16} />
+                      </button>
+                    )}
+                  </div>
                 ) : (
                   <Link
                     className="table-icon-button"

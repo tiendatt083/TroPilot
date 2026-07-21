@@ -5,7 +5,6 @@ import AdminBuildingCashFlowPage from '../pages/admin/AdminBuildingCashFlowPage.
 import AdminBuildingContractPage from '../pages/admin/AdminBuildingContractPage.jsx';
 import AdminBuildingDetailPage from '../pages/admin/AdminBuildingDetailPage.jsx';
 import AdminBuildingEquipmentPage from '../pages/admin/AdminBuildingEquipmentPage.jsx';
-import AdminBuildingExpensePage from '../pages/admin/AdminBuildingExpensePage.jsx';
 import AdminBuildingFeedbackPage from '../pages/admin/AdminBuildingFeedbackPage.jsx';
 import AdminBuildingInvoicePage from '../pages/admin/AdminBuildingInvoicePage.jsx';
 import AdminBuildingMaintenancePage from '../pages/admin/AdminBuildingMaintenancePage.jsx';
@@ -23,7 +22,6 @@ import AdminRoomDetailPage from '../pages/admin/AdminRoomDetailPage.jsx';
 import AdminRoomEditPage from '../pages/admin/AdminRoomEditPage.jsx';
 import AdminRoomMembersPage from '../pages/admin/AdminRoomMembersPage.jsx';
 import StaffBuildingEquipmentPage from '../pages/staff/StaffBuildingEquipmentPage.jsx';
-import StaffBuildingExpensePage from '../pages/staff/StaffBuildingExpensePage.jsx';
 import StaffBuildingOverviewPage from '../pages/staff/StaffBuildingOverviewPage.jsx';
 import StaffBuildingRoomsPage from '../pages/staff/StaffBuildingRoomsPage.jsx';
 import StaffBuildingServiceFeePage from '../pages/staff/StaffBuildingServiceFeePage.jsx';
@@ -53,7 +51,6 @@ export const adminBuildingWorkspaceRoutes = (
     <Route path="receipts" element={<AdminBuildingReceiptPage />} />
     <Route path="members" element={<Navigate to="../users" replace />} />
     <Route path="maintenance" element={<AdminBuildingMaintenancePage />} />
-    <Route path="expenses" element={<AdminBuildingExpensePage />} />
     <Route path="cashflow" element={<AdminBuildingCashFlowPage />} />
     <Route path="tasks" element={<AdminBuildingTaskPage />} />
     <Route path="tasks/:taskId" element={<AdminBuildingTaskDetailPage />} />
@@ -76,7 +73,6 @@ export const staffBuildingWorkspaceRoutes = (
     <Route path="vehicles" element={<StaffBuildingVehiclePage />} />
     <Route path="payments" element={<StaffBuildingOverviewRedirect />} />
     <Route path="maintenance" element={<StaffMaintenancePage />} />
-    <Route path="expenses" element={<StaffBuildingExpensePage />} />
     <Route path="cashflow" element={<StaffBuildingOverviewRedirect />} />
     <Route path="tasks" element={<StaffBuildingTaskPage />} />
   </Route>

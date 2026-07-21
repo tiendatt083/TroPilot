@@ -9,6 +9,7 @@ import { formatNumber } from '../../utils/numberFormat.js';
 import { formatRoomCode } from '../../utils/roomDisplay.js';
 import { ROOM_STATUS_OPTIONS } from '../../utils/roomStatusOptions.js';
 import { formatEnumLabel } from '../../utils/i18nFormat.js';
+import { translateInterfaceText } from '../../utils/interfaceTranslations.js';
 
 const emptyFilters = {
   search: '',
@@ -51,7 +52,7 @@ export default function BuildingRoomsWorkspace({
       });
       setRooms(response.data);
     } catch (apiError) {
-      setError(apiError.response?.data?.message || t('workspace.rooms.loadError'));
+      setError(translateInterfaceText(apiError.response?.data?.message || t('workspace.rooms.loadError')));
     } finally {
       setLoading(false);
     }
@@ -98,7 +99,7 @@ export default function BuildingRoomsWorkspace({
       setFormOpen(false);
       await loadRooms(appliedFilters);
     } catch (apiError) {
-      setFormError(apiError.response?.data?.message || t('roomManagement.createError'));
+      setFormError(translateInterfaceText(apiError.response?.data?.message || t('roomManagement.createError')));
     } finally {
       setSavingForm(false);
     }
@@ -214,6 +215,7 @@ export default function BuildingRoomsWorkspace({
         <RoomForm
           buildingOptions={[building]}
           initialValues={{ buildingId: building.id }}
+          lockBuilding
           loading={savingForm}
           submitLabel={t('workspace.rooms.create')}
           onSubmit={handleCreateRoom}

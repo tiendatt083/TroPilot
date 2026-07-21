@@ -198,7 +198,6 @@
     "rooms": "Phòng",
     "invoices": "Hóa đơn",
     "pendingPayments": "Thanh toán chờ duyệt",
-    "expenses": "Chi phí",
     "vehicles": "Xe",
     "equipment": "Thiết bị",
     "serviceFees": "Phí dịch vụ",
@@ -433,7 +432,6 @@
     "receipts": "Biên lai",
     "roomMembers": "Thành viên phòng",
     "maintenance": "Bảo trì",
-    "expenses": "Chi phí",
     "cashFlow": "Dòng tiền",
     "tasks": "Công việc",
     "feedbacks": "Phản hồi",
@@ -462,7 +460,7 @@
       "attentionTitle": "Cần xử lý",
       "attentionDescription": "Các công việc và yêu cầu cần được theo dõi tại tòa nhà.",
       "financeTitle": "Tình hình tài chính",
-      "financeDescription": "Tổng hóa đơn, khoản đã thu, chi phí và số tiền còn phải thu.",
+      "financeDescription": "T?ng h?a ??n, kho?n ?? thu v? s? ti?n c?n ph?i thu.",
       "summaryTitle": "Tổng hợp vận hành"
     },
     "metrics": {
@@ -485,7 +483,6 @@
       "trackedItems": "Mục cần theo dõi",
       "totalInvoiceAmount": "Tổng tiền hóa đơn",
       "totalIncome": "Tổng thu",
-      "totalExpense": "Tổng chi",
       "outstandingAmount": "Số tiền còn phải thu",
       "unresolvedFeedbacks": "Phản hồi chưa xử lý",
       "invoiceComplaints": "Khiếu nại hóa đơn",
@@ -969,7 +966,6 @@
     "actions": {
       "CONTRACT_CONFIRMED": "Xác nhận hợp đồng",
       "CONTRACT_UPLOADED": "Tải hợp đồng lên",
-      "EXPENSE_CREATED": "Tạo chi phí",
       "FIRST_TIME_PASSWORD_CHANGED": "Đổi mật khẩu lần đầu",
       "HEAD_RESIDENT_ASSIGNED": "Gán chủ hộ",
       "INVOICE_DELETED": "Xóa hóa đơn",
@@ -1036,7 +1032,6 @@
       "createdReceiptWithoutCode": "Hệ thống đã tạo biên lai cho hóa đơn {{invoice}}",
       "createdSepayReceipt": "Hệ thống đã tạo biên lai cho hóa đơn SePay {{invoice}}",
       "receivedSepayTransfer": "Đã nhận chuyển khoản SePay cho hóa đơn {{invoice}}, phòng {{room}}, tháng {{month}}",
-      "createdExpense": "Đã tạo chi phí {{expense}}",
       "createdTask": "Đã tạo công việc {{task}} cho {{assignee}}",
       "completedTask": "Đã hoàn thành công việc {{task}}",
       "createdMaintenanceRequest": "Đã tạo yêu cầu bảo trì {{request}} cho phòng {{room}}",
@@ -1064,7 +1059,7 @@
         "residentsTitle": "Cư dân và xe",
         "residentsDescription": "Tình hình cư dân hiện tại và số lượng xe.",
         "financeTitle": "Tình hình tài chính",
-        "financeDescription": "Thu, chi, số tiền còn phải thu và tiền còn lại từ dữ liệu thực.",
+        "financeDescription": "Kho?n ?? thu, s? ti?n c?n ph?i thu v? ti?n c?n l?i t? d? li?u th?c.",
         "attentionTitle": "Cần chú ý",
         "attentionDescription": "Các mục cần xem xét hoặc xử lý vận hành."
       },
@@ -1080,7 +1075,6 @@
         "totalOccupants": "Tổng người ở",
         "activeVehicles": "Xe đang hoạt động",
         "totalIncome": "Tổng thu",
-        "totalExpense": "Tổng chi phí",
         "remainingCash": "Tiền còn lại",
         "unpaidAmount": "Số tiền chưa thanh toán",
         "expiringContracts": "Hợp đồng sắp hết hạn",
@@ -1147,8 +1141,7 @@
         "feedback": {
           "PENDING": "Chờ xử lý",
           "IN_PROGRESS": "Đang xử lý",
-          "RESOLVED": "Đã giải quyết",
-          "REJECTED": "Đã đóng"
+          "RESOLVED": "Đã giải quyết"
         },
         "maintenance": {
           "PENDING": "Chờ xử lý",
@@ -1170,7 +1163,7 @@
         "totalRooms": "Tổng phòng",
         "residents": "Người thuê",
         "devices": "Thiết bị",
-        "unpaidInvoices": "HĐ chưa thanh toán",
+        "unpaidInvoices": "Hóa đơn chưa thanh toán",
         "pendingFeedback": "Phản hồi chờ xử lý",
         "scheduledMaintenance": "Bảo trì đã lên lịch",
         "occupiedRooms": "Phòng đang thuê",
@@ -1178,8 +1171,7 @@
         "openWork": "Việc đang mở",
         "paid": "Đã thu",
         "unpaid": "Chưa thu",
-        "totalInvoices": "Tổng hóa đơn",
-        "expenses": "Chi phí"
+        "totalInvoices": "Tổng hóa đơn"
       },
       "helpers": {
         "managedBuildings": "Tòa nhà đang quản lý",
@@ -1295,8 +1287,6 @@
         "operationOverviewDescription": "Biểu đồ tóm tắt chỉ số điện nước và công việc.",
         "operationsTitle": "Hàng đợi vận hành",
         "operationsDescription": "Các nghiệp vụ tòa nhà cần nhân viên xử lý.",
-        "expenseTitle": "Hoạt động chi phí",
-        "expenseDescription": "Chi phí được tạo từ công việc vận hành hợp lệ.",
         "quickActionTitle": "Truy cập nhanh",
         "quickActionDescription": "Mở nhanh các trang nhân viên thường dùng."
       },
@@ -1306,7 +1296,6 @@
         "roomsNeedingUtilityReading": "Phòng cần ghi chỉ số điện nước",
         "pendingPaymentConfirmations": "Thanh toán chờ xác nhận",
         "activeMaintenanceRequests": "Yêu cầu bảo trì đang xử lý",
-        "createdExpenses": "Chi phí đã tạo",
         "utilityReadingsDue": "Chỉ số điện nước cần ghi",
         "paymentChecks": "Thanh toán cần kiểm tra"
       },
@@ -1315,8 +1304,6 @@
         "utilityReadingsHelper": "Phòng còn cần ghi trong kỳ hiện tại",
         "workload": "Công việc",
         "workloadHelper": "Việc được giao và số quá hạn",
-        "expenses": "Chi phí",
-        "expensesHelper": "Chi phí đã được tạo bởi nhân viên",
         "recorded": "Đã ghi",
         "needReading": "Cần ghi",
         "assigned": "Được giao",
@@ -1328,12 +1315,10 @@
         "utilityReadings": "Chỉ số điện nước",
         "payments": "Thanh toán",
         "maintenance": "Bảo trì",
-        "expenses": "Chi phí",
         "taskHelper": "Xem danh sách công việc",
         "utilityHelper": "Chọn tòa nhà để ghi chỉ số",
         "paymentHelper": "Kiểm tra xác nhận thanh toán",
-        "maintenanceHelper": "Theo dõi yêu cầu bảo trì",
-        "expenseHelper": "Xem chi phí đã tạo"
+        "maintenanceHelper": "Theo dõi yêu cầu bảo trì"
       }
     },
     "resident": {
@@ -1443,7 +1428,6 @@
   "cashFlow": {
     "unavailable": "Chưa có dữ liệu dòng tiền.",
     "totalIncome": "Tổng thu",
-    "totalExpense": "Tổng chi",
     "remainingCash": "Tiền còn lại",
     "unpaidAmount": "Số tiền chưa thanh toán"
   },
@@ -1526,7 +1510,11 @@
       "assignTitle": "Phân công nhân viên",
       "changeStaff": "Đổi nhân viên",
       "changeStaffTitle": "Đổi nhân viên xử lý",
-      "changeStaffDisabled": "Không thể đổi nhân viên ở trạng thái này"
+      "changeStaffDisabled": "Không thể đổi nhân viên ở trạng thái này",
+      "delete": "Xóa bảo trì",
+      "deleteConfirm": "Xóa yêu cầu bảo trì \"{{title}}\"? Chỉ xóa được khi nhân viên chưa bắt đầu xử lý.",
+      "deleted": "Đã xóa yêu cầu bảo trì.",
+      "deleteError": "Không thể xóa yêu cầu bảo trì"
     },
     "staff": {
       "eyebrow": "Nhân viên vận hành",
@@ -1549,7 +1537,6 @@
       "rejectionNote": "Ghi chú từ chối",
       "rejecting": "Đang từ chối...",
       "reject": "Từ chối yêu cầu",
-      "linkedExpense": "Tạo chi phí liên kết",
       "noAction": "Không có thao tác nhân viên phù hợp với trạng thái bảo trì này."
     },
     "form": {
@@ -1798,6 +1785,7 @@
     "detailsTitle": "Chi tiết phòng",
     "membersTitle": "Thành viên phòng",
     "create": "Tạo phòng",
+    "saveChanges": "Lưu",
     "back": "Quay lại",
     "backToRooms": "Quay lại danh sách phòng",
     "backToDetails": "Quay lại chi tiết",
@@ -1840,7 +1828,7 @@
     "assignment": {
       "eyebrow": "Chủ hộ",
       "title": "Phân phòng",
-      "assign": "Gán chủ hộ",
+      "assign": "Gán",
       "assigned": "Đã gán chủ hộ thành công. Hãy tạo hóa đơn đầu tiên cho phòng này. Hóa đơn đầu tiên gồm tiền cọc, tiền phòng tháng đầu và các phí dịch vụ hàng tháng.",
       "assignError": "Không thể gán chủ hộ",
       "futureEndConfirm": "Hợp đồng chưa đến ngày kết thúc ({{date}}). Bạn có muốn kết thúc ngay và đưa chủ hộ cùng thành viên ra khỏi phòng {{room}} không?",
@@ -1885,6 +1873,9 @@
     "createError": "Không thể tạo công việc",
     "updated": "Đã cập nhật công việc thành công.",
     "updateError": "Không thể cập nhật công việc",
+    "deleted": "Đã xóa công việc.",
+    "deleteError": "Không thể xóa công việc",
+    "deleteConfirm": "Xóa công việc \"{{title}}\"? Chỉ xóa được khi nhân viên chưa cập nhật trạng thái.",
     "started": "Đã bắt đầu công việc.",
     "startError": "Không thể bắt đầu công việc",
     "completed": "Đã hoàn thành công việc.",
@@ -1903,27 +1894,6 @@
     "noAction": "Không có thao tác phù hợp với trạng thái công việc này.",
     "saveChanges": "Lưu thay đổi",
     "selectRoom": "Chọn phòng"
-  },
-  "expenseManagement": {
-    "title": "Chi phí",
-    "create": "Tạo chi phí",
-    "createTitle": "Tạo chi phí",
-    "back": "Quay lại chi phí",
-    "loading": "Đang tải chi phí...",
-    "loadingRooms": "Đang tải phòng...",
-    "loadError": "Không thể tải chi phí",
-    "roomsLoadError": "Không thể tải phòng",
-    "createError": "Không thể tạo chi phí",
-    "cancel": "Hủy",
-    "cancelConfirm": "Hủy chi phí này?",
-    "cancelled": "Đã hủy chi phí thành công.",
-    "cancelError": "Không thể hủy chi phí",
-    "approved": "Đã duyệt chi phí thành công.",
-    "approveError": "Không thể duyệt chi phí",
-    "viewCashFlow": "Xem dòng tiền",
-    "entryEyebrow": "Nhập chi phí",
-    "outgoingEyebrow": "Khoản chi",
-    "buildingTitle": "Chi phí trong tòa nhà này"
   },
   "utilityReadingManagement": {
     "title": "Chỉ số điện nước",
@@ -2064,8 +2034,7 @@
       "view": "Xem dòng tiền",
       "income": "Thu nhập",
       "receipts": "Biên lai hợp lệ",
-      "outgoing": "Khoản chi",
-      "expenses": "Chi phí hợp lệ"
+      "outgoing": "Khoản chi"
     },
     "vehicles": {
       "eyebrow": "Xe của tòa nhà",
@@ -2099,17 +2068,6 @@
       "eyebrow": "Biên lai tòa nhà",
       "title": "Biên lai trong tòa nhà này",
       "loadError": "Không thể tải biên lai của tòa nhà"
-    },
-    "expenses": {
-      "eyebrow": "Chi phí tòa nhà",
-      "title": "Chi phí trong tòa nhà này",
-      "loading": "Đang tải chi phí...",
-      "loadError": "Không thể tải chi phí của tòa nhà",
-      "cancelConfirm": "Hủy chi phí này?",
-      "cancelled": "Đã hủy chi phí thành công.",
-      "cancelError": "Không thể hủy chi phí",
-      "approved": "Đã duyệt chi phí thành công.",
-      "approveError": "Không thể duyệt chi phí"
     },
     "notifications": {
       "eyebrow": "Thông báo tòa nhà",
@@ -2214,10 +2172,8 @@
     },
     "feedbackStatus": {
       "PENDING": "Đang chờ",
-      "ASSIGNED": "Đã phân công",
       "IN_PROGRESS": "Đang xử lý",
-      "RESOLVED": "Đã giải quyết",
-      "REJECTED": "Bị từ chối"
+      "RESOLVED": "Đã giải quyết"
     },
     "paymentStatus": {
       "PENDING": "Đang chờ",
@@ -2226,19 +2182,6 @@
     },
     "receiptStatus": {
       "VALID": "Hợp lệ",
-      "CANCELLED": "Đã hủy"
-    },
-    "expenseType": {
-      "REPAIR": "Sửa chữa",
-      "REPLACEMENT": "Thay thế",
-      "CLEANING": "Vệ sinh",
-      "MAINTENANCE": "Bảo trì",
-      "OPERATION": "Vận hành",
-      "OTHER": "Khác"
-    },
-    "expenseStatus": {
-      "VALID": "Hợp lệ",
-      "PENDING": "Đang chờ",
       "CANCELLED": "Đã hủy"
     },
     "feeType": {
@@ -2284,7 +2227,7 @@
       "URGENT": "Khẩn cấp"
     },
     "taskStatus": {
-      "NEW": "Mới",
+      "NEW": "Đã phân công",
       "IN_PROGRESS": "Đang xử lý",
       "COMPLETED": "Đã hoàn thành",
       "REJECTED": "Bị từ chối",
@@ -2312,7 +2255,6 @@
       "equipment": "Thiết bị",
       "evidence": "Bằng chứng",
       "expense": "Chi phí",
-      "expenseCode": "Mã chi phí",
       "feeType": "Loại phí",
       "floor": "Tầng",
       "headResident": "Chủ hộ",
@@ -2386,9 +2328,6 @@
       "selectReceipt": "Chọn một biên lai để xem chi tiết.",
       "receiptCode": "Mã biên lai"
     },
-    "expenses": {
-      "empty": "Không tìm thấy chi phí."
-    },
     "maintenanceRequests": {
       "empty": "Không tìm thấy yêu cầu bảo trì.",
       "issue": "Sự cố",
@@ -2433,7 +2372,7 @@
       "startDate": "Ngày bắt đầu",
       "endDate": "Ngày kết thúc",
       "assigning": "Đang gán...",
-      "submit": "Gán chủ hộ"
+      "submit": "Gán"
     },
     "room": {
       "selectBuilding": "Chọn tòa nhà",
@@ -2482,14 +2421,6 @@
       "generalBuildingTask": "Công việc chung của tòa nhà",
       "noRoomLinked": "Không gắn phòng cụ thể"
     },
-    "expense": {
-      "taskReference": "Mã công việc liên quan",
-      "maintenanceRequestReference": "Mã yêu cầu bảo trì liên quan",
-      "expenseType": "Loại chi phí",
-      "proofImage": "Ảnh bằng chứng",
-      "creating": "Đang tạo...",
-      "create": "Tạo chi phí"
-    },
     "utilityReading": {
       "selectRoom": "Chọn phòng",
       "electricitySectionTitle": "Chỉ số điện",
@@ -2504,6 +2435,8 @@
       "newWater": "Chỉ số nước mới",
       "waterUnit": "m3",
       "waterEvidenceImage": "Ảnh bằng chứng nước (không bắt buộc)",
+      "chooseFileOrDrop": "Chọn tệp hoặc kéo thả ảnh vào đây",
+      "fileLimitShort": "JPG, PNG tối đa 5MB",
       "automaticReading": "Đồng bộ chỉ số",
       "mockSource": "Nguồn dữ liệu mô phỏng",
       "mockApi": "mock api",

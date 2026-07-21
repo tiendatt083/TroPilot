@@ -3,7 +3,8 @@ import { useTranslation } from 'react-i18next';
 import {
   TASK_STATUS_OPTIONS,
   TASK_TYPE_OPTIONS,
-  toDateTimeInputValue
+  toDateInputValue,
+  toDeadlinePayload
 } from '../utils/taskOptions.js';
 import { formatEnumLabel } from '../utils/i18nFormat.js';
 import { formatRoomLabel } from '../utils/roomDisplay.js';
@@ -28,18 +29,24 @@ export default function TaskForm({
   includeStatus = false,
   roomRequired = false,
   roomPlaceholder,
+  onCancel,
   onSubmit
 }) {
   const { t } = useTranslation();
   const [form, setForm] = useState(emptyForm);
 
   useEffect(() => {
+    const initialStatus = TASK_STATUS_OPTIONS.some((option) => option.value === initialValues?.status)
+      ? initialValues.status
+      : emptyForm.status;
+
     setForm({
       ...emptyForm,
       ...initialValues,
       roomId: initialValues?.roomId || '',
       assignedToId: initialValues?.assignedToId || '',
-      deadline: toDateTimeInputValue(initialValues?.deadline)
+      deadline: toDateInputValue(initialValues?.deadline),
+      status: initialStatus
     });
   }, [initialValues]);
 
@@ -60,7 +67,7 @@ export default function TaskForm({
       taskType: form.taskType,
       roomId: form.roomId ? Number(form.roomId) : null,
       assignedToId: form.assignedToId ? Number(form.assignedToId) : null,
-      deadline: form.deadline,
+      deadline: toDeadlinePayload(form.deadline),
       priority: form.priority
     };
 
@@ -77,7 +84,7 @@ export default function TaskForm({
       <input id="title" name="title" value={form.title} onChange={handleChange} maxLength={160} required />
 
       <label htmlFor="content">{t('tables.common.content')}</label>
-      <textarea id="content" name="content" rows="5" value={form.content} onChange={handleChange} required />
+      <textarea id="content" name="content" rows="3" value={form.content} onChange={handleChange} required />
 
       <div className="form-grid">
         <div>
@@ -109,7 +116,7 @@ export default function TaskForm({
           <input
             id="deadline"
             name="deadline"
-            type="datetime-local"
+            type="date"
             lang="en-GB"
             value={form.deadline}
             onChange={handleChange}
@@ -142,9 +149,16 @@ export default function TaskForm({
         </>
       )}
 
-      <button type="submit" disabled={loading}>
-        {loading ? t('common.saving') : submitLabel}
-      </button>
+      <div className="form-button-row task-form-actions">
+        {onCancel && (
+          <button className="secondary-button" type="button" disabled={loading} onClick={onCancel}>
+            {t('common.cancel')}
+          </button>
+        )}
+        <button type="submit" disabled={loading}>
+          {loading ? t('common.saving') : submitLabel}
+        </button>
+      </div>
     </form>
   );
 }

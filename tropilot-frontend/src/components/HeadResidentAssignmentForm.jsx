@@ -82,9 +82,11 @@ export default function HeadResidentAssignmentForm({ residentHeads, loading, onS
         </div>
       </div>
 
-      <button type="submit" disabled={loading || !hasResidentHeads}>
-        {loading ? t('forms.assignment.assigning') : t('forms.assignment.submit')}
-      </button>
+      <div className="form-action-row form-action-row-right">
+        <button type="submit" disabled={loading || !hasResidentHeads}>
+          {loading ? t('forms.assignment.assigning') : t('forms.assignment.submit')}
+        </button>
+      </div>
     </form>
   );
 }

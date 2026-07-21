@@ -80,8 +80,9 @@ export default function AdminRoomEditPage() {
         <RoomForm
           buildingOptions={buildings}
           initialValues={room}
+          lockBuilding
           loading={saving}
-          submitLabel={translateInterfaceText('Save changes')}
+          submitLabel={translateInterfaceText('Save')}
           onSubmit={handleSubmit}
         />
       )}

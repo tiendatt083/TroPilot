@@ -217,7 +217,7 @@ export default function AdminBuildingFeedbackPage() {
 
   const renderActions = (feedback) => {
     const openAction = activeAction?.feedbackId === feedback.id ? activeAction.action : null;
-    const canAssign = !feedback.assignedTaskId && !['RESOLVED', 'REJECTED'].includes(feedback.status);
+    const canAssign = !feedback.assignedTaskId && feedback.status !== 'RESOLVED';
 
     return (
       <div className="feedback-review-actions">
@@ -261,7 +261,7 @@ export default function AdminBuildingFeedbackPage() {
 
   const renderActionForm = (feedback) => {
     const openAction = activeAction?.feedbackId === feedback.id ? activeAction.action : null;
-    const canAssign = !feedback.assignedTaskId && !['RESOLVED', 'REJECTED'].includes(feedback.status);
+    const canAssign = !feedback.assignedTaskId && feedback.status !== 'RESOLVED';
 
     if (openAction === 'status') {
       return (
@@ -426,8 +426,9 @@ export default function AdminBuildingFeedbackPage() {
             <div className="feedback-review-title-row">
               <div className="feedback-review-title-block">
                 <div className="feedback-review-kicker">
-                  <span>{formatEnumLabel(t, 'feedbackType', feedback.type)}</span>
-                  {feedback.invoiceId ? <span>#{feedback.invoiceId}</span> : null}
+                  <span className={getFeedbackStatusClass(feedback.status)}>
+                    {formatEnumLabel(t, 'feedbackStatus', feedback.status)}
+                  </span>
                 </div>
                 <h3>{feedback.title}</h3>
               </div>
@@ -436,6 +437,14 @@ export default function AdminBuildingFeedbackPage() {
             <p className="feedback-review-message" title={feedback.content}>{feedback.content}</p>
 
             <div className="feedback-review-meta">
+              <span className="feedback-review-type-pill">
+                <em>{formatEnumLabel(t, 'feedbackType', feedback.type)}</em>
+              </span>
+              {feedback.invoiceId ? (
+                <span className="feedback-review-type-pill">
+                  <em>#{feedback.invoiceId}</em>
+                </span>
+              ) : null}
               <span>
                 <LineIcon name="home" />
                 <em>{formatRoomLabel(feedback)}</em>
@@ -458,9 +467,6 @@ export default function AdminBuildingFeedbackPage() {
           </div>
 
           <div className="feedback-review-side">
-            <span className={getFeedbackStatusClass(feedback.status)}>
-              {formatEnumLabel(t, 'feedbackStatus', feedback.status)}
-            </span>
             {hasAssignedTask && (
               <div className="feedback-linked-task feedback-linked-task-compact">
                 <strong>{feedback.assignedStaffName || t('common.notAssigned')}</strong>

@@ -313,7 +313,6 @@ public class ChatContextServiceImpl implements ChatContextService {
         summary.put("overdueInvoices", dashboard.getOverdueInvoices());
         summary.put("unpaidAmount", dashboard.getUnpaidAmount());
         summary.put("totalIncome", dashboard.getTotalIncome());
-        summary.put("totalExpense", dashboard.getTotalExpense());
         summary.put("remainingCash", dashboard.getRemainingCash());
         summary.put("pendingMaintenanceRequests", dashboard.getPendingMaintenanceRequests());
         summary.put("inProgressTasks", dashboard.getInProgressTasks());
@@ -329,7 +328,6 @@ public class ChatContextServiceImpl implements ChatContextService {
         summary.put("roomsNeedingUtilityReading", dashboard.getRoomsNeedingUtilityReading());
         summary.put("pendingPaymentConfirmations", dashboard.getPendingPaymentConfirmations());
         summary.put("activeMaintenanceRequests", dashboard.getActiveMaintenanceRequests());
-        summary.put("createdExpenses", dashboard.getCreatedExpenses());
         return summary;
     }
 
@@ -554,7 +552,6 @@ public class ChatContextServiceImpl implements ChatContextService {
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("month", cashFlow.getMonth());
         data.put("totalIncome", cashFlow.getTotalIncome());
-        data.put("totalExpense", cashFlow.getTotalExpense());
         data.put("remainingCash", cashFlow.getRemainingCash());
         data.put("unpaidAmount", cashFlow.getUnpaidAmount());
         return data;

@@ -18,6 +18,8 @@ public interface TaskService {
 
     TaskResponse updateTask(Long id, TaskUpdateRequest request, Long buildingId);
 
+    void deleteTask(Long id, Long buildingId);
+
     List<TaskResponse> getStaffTasks(Long staffId);
 
     TaskResponse getStaffTask(Long staffId, Long id);

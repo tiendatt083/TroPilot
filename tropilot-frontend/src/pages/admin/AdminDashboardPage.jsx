@@ -143,7 +143,7 @@ function getRoomLabel(record, fallback) {
 }
 
 function getMaintenanceCost(record) {
-  return record.cost ?? record.totalCost ?? record.expenseAmount ?? record.amount ?? 0;
+  return record.cost ?? record.totalCost ?? record.amount ?? 0;
 }
 
 function getMaintenanceFinishedDate(record) {
@@ -480,8 +480,7 @@ export default function AdminDashboardPage() {
   const feedbackSegments = [
     { label: statusLabel(t, 'feedback', 'PENDING'), value: insights.feedbacks.filter((item) => item.status === 'PENDING').length, color: CHART_COLORS.warning },
     { label: statusLabel(t, 'feedback', 'IN_PROGRESS'), value: insights.feedbacks.filter((item) => item.status === 'IN_PROGRESS').length, color: CHART_COLORS.info },
-    { label: statusLabel(t, 'feedback', 'RESOLVED'), value: insights.feedbacks.filter((item) => item.status === 'RESOLVED').length, color: CHART_COLORS.paid },
-    { label: statusLabel(t, 'feedback', 'REJECTED'), value: insights.feedbacks.filter((item) => item.status === 'REJECTED').length, color: CHART_COLORS.neutral }
+    { label: statusLabel(t, 'feedback', 'RESOLVED'), value: insights.feedbacks.filter((item) => item.status === 'RESOLVED').length, color: CHART_COLORS.paid }
   ];
   const paymentSegments = [
     { label: statusLabel(t, 'invoice', 'PAID'), value: paymentPaidValue, color: CHART_COLORS.paid },

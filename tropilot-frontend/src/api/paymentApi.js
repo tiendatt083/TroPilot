@@ -16,6 +16,20 @@ function filterConfig(filters = {}) {
   return Object.keys(params).length ? { params } : {};
 }
 
+function cashFlowConfig(month, filters = {}) {
+  const params = {};
+
+  if (month) {
+    params.month = month;
+  }
+
+  if (filters.buildingId) {
+    params.buildingId = filters.buildingId;
+  }
+
+  return Object.keys(params).length ? { params } : {};
+}
+
 export async function uploadPaymentProof({ invoiceId, proofImage, note }) {
   const formData = new FormData();
   formData.append('invoiceId', invoiceId);
@@ -56,5 +70,15 @@ export async function getAdminReceipts(filters) {
 
 export async function getAdminReceipt(id, filters) {
   const response = await apiClient.get(`/api/admin/receipts/${id}`, filterConfig(filters));
+  return response.data;
+}
+
+export async function getAdminCashFlow(month, filters) {
+  const response = await apiClient.get('/api/admin/cashflow', cashFlowConfig(month, filters));
+  return response.data;
+}
+
+export async function getStaffCashFlow(month, filters) {
+  const response = await apiClient.get('/api/staff/cashflow', cashFlowConfig(month, filters));
   return response.data;
 }

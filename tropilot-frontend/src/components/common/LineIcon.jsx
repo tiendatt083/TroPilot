@@ -86,6 +86,11 @@ const ICONS = {
       <path d="M4 13h7v7H4z" />
     </>
   ),
+  bolt: (
+    <>
+      <path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z" />
+    </>
+  ),
   droplet: (
     <>
       <path d="M12 3.5s6 6.1 6 10.4a6 6 0 0 1-12 0C6 9.6 12 3.5 12 3.5Z" />
@@ -165,6 +170,13 @@ const ICONS = {
       <path d="M4 7h16" />
       <path d="M4 12h16" />
       <path d="M4 17h16" />
+    </>
+  ),
+  image: (
+    <>
+      <path d="M5 4h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z" />
+      <path d="m3 16 5-5 4 4 2-2 7 7" />
+      <path d="M15.5 8.5h.1" />
     </>
   ),
   monitor: (

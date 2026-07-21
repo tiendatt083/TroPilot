@@ -3,21 +3,57 @@ import { createPortal } from 'react-dom';
 
 const TOOLTIP_OFFSET = 10;
 const CURSOR_TOOLTIP_OFFSET = 14;
+const TOOLTIP_TARGET_SELECTOR = [
+  '[data-tooltip]',
+  '.icon-action-button[aria-label]',
+  '.table-icon-button[aria-label]',
+  '.chat-icon-button[aria-label]',
+  '.settings-icon-button[aria-label]',
+  '.icon-button[aria-label]'
+].join(', ');
 
 function findTooltipTarget(target) {
   if (!(target instanceof Element)) {
     return null;
   }
 
-  return target.closest('[data-tooltip]');
+  return target.closest(TOOLTIP_TARGET_SELECTOR);
 }
 
 function getTooltipText(element) {
-  return element?.getAttribute('data-tooltip')?.trim() || '';
+  return (
+    element?.getAttribute('data-tooltip')?.trim() ||
+    element?.getAttribute('aria-label')?.trim() ||
+    element?.getAttribute('title')?.trim() ||
+    element?.getAttribute('data-native-title')?.trim() ||
+    ''
+  );
 }
 
 function shouldFollowCursor(element) {
   return element?.getAttribute('data-tooltip-follow') === 'true';
+}
+
+function suppressNativeTooltip(element) {
+  if (!element?.hasAttribute('title')) {
+    return;
+  }
+
+  element.setAttribute('data-native-title', element.getAttribute('title') || '');
+  element.removeAttribute('title');
+}
+
+function restoreNativeTooltip(element) {
+  if (!element?.hasAttribute('data-native-title')) {
+    return;
+  }
+
+  const title = element.getAttribute('data-native-title') || '';
+  element.removeAttribute('data-native-title');
+
+  if (title) {
+    element.setAttribute('title', title);
+  }
 }
 
 function getTooltipPosition(element, text, pointerPosition = null) {
@@ -56,6 +92,7 @@ export default function GlobalTooltip() {
       const text = getTooltipText(activeElement);
 
       if (!activeElement || !document.documentElement.contains(activeElement) || !text) {
+        restoreNativeTooltip(activeElement);
         activeElement = null;
         setTooltip(null);
         return;
@@ -76,6 +113,7 @@ export default function GlobalTooltip() {
       lastPointerPosition = event.pointerType
         ? { clientX: event.clientX, clientY: event.clientY }
         : null;
+      suppressNativeTooltip(element);
       setTooltip(getTooltipPosition(element, text, lastPointerPosition));
     };
 
@@ -97,6 +135,7 @@ export default function GlobalTooltip() {
         return;
       }
 
+      restoreNativeTooltip(activeElement);
       activeElement = null;
       lastPointerPosition = null;
       setTooltip(null);
@@ -111,6 +150,7 @@ export default function GlobalTooltip() {
     window.addEventListener('scroll', updateTooltip, true);
 
     return () => {
+      restoreNativeTooltip(activeElement);
       document.removeEventListener('pointerover', showTooltip);
       document.removeEventListener('pointermove', moveTooltip);
       document.removeEventListener('pointerout', hideTooltip);

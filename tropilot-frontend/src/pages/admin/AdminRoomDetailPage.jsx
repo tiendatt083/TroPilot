@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation, useNavigate, useOutletContext } from 'react-router-dom';
+import { ArrowLeft, Edit3, Trash2, UsersRound } from 'lucide-react';
 import * as buildingApi from '../../features/buildings/api.js';
 import * as roomApi from '../../features/rooms/api.js';
 import * as adminUserApi from '../../features/users/api.js';
@@ -11,6 +12,7 @@ import ActionDialog from '../../components/common/ActionDialog.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
 import { formatDateInputValue, formatDisplayDate } from '../../utils/dateFormat.js';
 import { formatEnumLabel } from '../../utils/i18nFormat.js';
+import { translateInterfaceText } from '../../utils/interfaceTranslations.js';
 import { formatRoomCode } from '../../utils/roomDisplay.js';
 
 function formatNumber(value) {
@@ -99,7 +101,7 @@ export default function AdminRoomDetailPage() {
     loadRoomDetails()
       .catch((apiError) => {
         if (active) {
-          setError(apiError.response?.data?.message || t('roomManagement.loadOneError'));
+          setError(translateInterfaceText(apiError.response?.data?.message || t('roomManagement.loadOneError')));
         }
       })
       .finally(() => {
@@ -117,7 +119,7 @@ export default function AdminRoomDetailPage() {
     try {
       await loadRoomDetails();
     } catch (apiError) {
-      setError(apiError.response?.data?.message || t('roomManagement.refreshError'));
+      setError(translateInterfaceText(apiError.response?.data?.message || t('roomManagement.refreshError')));
     }
   };
 
@@ -132,7 +134,7 @@ export default function AdminRoomDetailPage() {
       setShowAssignForm(false);
       await refreshRoomDetails();
     } catch (apiError) {
-      setError(apiError.response?.data?.message || t('roomManagement.assignment.assignError'));
+      setError(translateInterfaceText(apiError.response?.data?.message || t('roomManagement.assignment.assignError')));
     } finally {
       setAssigning(false);
     }
@@ -153,7 +155,7 @@ export default function AdminRoomDetailPage() {
       setMessage(t('roomManagement.assignment.ended'));
       await refreshRoomDetails();
     } catch (apiError) {
-      setError(apiError.response?.data?.message || t('roomManagement.assignment.endError'));
+      setError(translateInterfaceText(apiError.response?.data?.message || t('roomManagement.assignment.endError')));
     } finally {
       setRemovingHead(false);
     }
@@ -173,7 +175,7 @@ export default function AdminRoomDetailPage() {
       await roomApi.deleteAdminRoom(room.id);
       navigate(roomBasePath, { replace: true });
     } catch (apiError) {
-      setError(apiError.response?.data?.message || t('roomManagement.deleteError'));
+      setError(translateInterfaceText(apiError.response?.data?.message || t('roomManagement.deleteError')));
     } finally {
       setDeleting(false);
     }
@@ -188,6 +190,14 @@ export default function AdminRoomDetailPage() {
     setEditError('');
   };
 
+  const handleCloseAssign = () => {
+    if (assigning) {
+      return;
+    }
+
+    setShowAssignForm(false);
+  };
+
   const handleUpdateRoom = async (payload) => {
     setSavingEdit(true);
     setEditError('');
@@ -200,7 +210,7 @@ export default function AdminRoomDetailPage() {
       setEditOpen(false);
       await refreshRoomDetails();
     } catch (apiError) {
-      setEditError(apiError.response?.data?.message || t('roomManagement.updateError'));
+      setEditError(translateInterfaceText(apiError.response?.data?.message || t('roomManagement.updateError')));
     } finally {
       setSavingEdit(false);
     }
@@ -222,18 +232,41 @@ export default function AdminRoomDetailPage() {
     <section className="content-section admin-room-detail-page">
       <div className="page-title-row">
         <PageHeader eyebrow={formatRoomCode(room)} title={room.roomName} />
-        <div className="button-row">
-          <Link className="secondary-link" to={roomBasePath}>
-            {t('roomManagement.back')}
+        <div className="button-row room-detail-actions">
+          <Link
+            className="icon-action-button"
+            data-tooltip={t('roomManagement.back')}
+            to={roomBasePath}
+            aria-label={t('roomManagement.back')}
+          >
+            <ArrowLeft size={18} />
           </Link>
-          <button className="button-link" type="button" onClick={() => setEditOpen(true)}>
-            {t('common.edit')}
+          <button
+            className="icon-action-button"
+            data-tooltip={t('common.edit')}
+            type="button"
+            onClick={() => setEditOpen(true)}
+            aria-label={t('common.edit')}
+          >
+            <Edit3 size={18} />
           </button>
-          <Link className="secondary-link" to={`${roomBasePath}/${room.id}/members`}>
-            {t('roomManagement.members')}
+          <Link
+            className="icon-action-button"
+            data-tooltip={t('roomManagement.members')}
+            to={`${roomBasePath}/${room.id}/members`}
+            aria-label={t('roomManagement.members')}
+          >
+            <UsersRound size={18} />
           </Link>
-          <button className="secondary-button inline-button" type="button" disabled={deleting} onClick={handleDelete}>
-            {t('common.delete')}
+          <button
+            className="icon-action-button icon-action-danger"
+            data-tooltip={t('common.delete')}
+            type="button"
+            disabled={deleting}
+            onClick={handleDelete}
+            aria-label={t('common.delete')}
+          >
+            <Trash2 size={18} />
           </button>
         </div>
       </div>
@@ -291,7 +324,7 @@ export default function AdminRoomDetailPage() {
               className="button-link"
               type="button"
               disabled={!canAssignHead}
-              onClick={() => setShowAssignForm((current) => !current)}
+              onClick={() => setShowAssignForm(true)}
             >
               {t('roomManagement.assignment.assign')}
             </button>
@@ -357,13 +390,20 @@ export default function AdminRoomDetailPage() {
           </div>
         )}
 
-        {showAssignForm && canAssignHead && (
+        <ActionDialog
+          className="assignment-dialog"
+          eyebrow={formatRoomCode(room)}
+          labelledBy="room-assign-dialog-title"
+          open={showAssignForm && canAssignHead}
+          title={t('roomManagement.assignment.title')}
+          onClose={handleCloseAssign}
+        >
           <HeadResidentAssignmentForm
             residentHeads={residentHeads}
             loading={assigning}
             onSubmit={handleAssignHead}
           />
-        )}
+        </ActionDialog>
       </section>
 
       <ActionDialog
@@ -378,6 +418,8 @@ export default function AdminRoomDetailPage() {
         <RoomForm
           buildingOptions={buildings}
           initialValues={room}
+          lockBuilding
+          lockOccupiedStatus={hasHeadResident}
           loading={savingEdit}
           submitLabel={t('roomManagement.saveChanges')}
           onSubmit={handleUpdateRoom}

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, useLocation, useNavigate, useOutletContext } from 'react-router-dom';
+import { useLocation, useNavigate, useOutletContext } from 'react-router-dom';
 import * as maintenanceApi from '../../features/maintenance/api.js';
 import ActionDialog from '../../components/common/ActionDialog.jsx';
 import FilterBar from '../../components/common/FilterBar.jsx';
@@ -338,24 +338,6 @@ export default function StaffMaintenancePage() {
                     {processing ? t('maintenance.staff.completing') : t('maintenance.staff.complete')}
                   </button>
                 </form>
-              )}
-
-              {selectedRequest.roomId && (
-                <Link
-                  className="secondary-link"
-                  to={building ? `/staff/buildings/${building.id}/expenses` : '/staff/expenses/create'}
-                  state={{
-                    openCreateExpense: true,
-                    roomId: selectedRequest.roomId,
-                    maintenanceRequestId: selectedRequest.id,
-                    equipmentId: selectedRequest.equipmentId || '',
-                    equipmentCode: selectedRequest.equipmentCode || '',
-                    expenseType: 'MAINTENANCE',
-                    content: `Yêu cầu bảo trì #${selectedRequest.id}: ${selectedRequest.title}`
-                  }}
-                >
-                  {t('maintenance.staff.linkedExpense')}
-                </Link>
               )}
 
               {!canStart && !canComplete && (

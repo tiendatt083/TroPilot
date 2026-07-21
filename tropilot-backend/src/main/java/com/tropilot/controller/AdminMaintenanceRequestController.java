@@ -7,6 +7,7 @@ import com.tropilot.service.MaintenanceRequestService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -43,5 +44,14 @@ public class AdminMaintenanceRequestController {
                 "Maintenance request assigned successfully",
                 maintenanceRequestService.assignRequest(id, request, buildingId)
         );
+    }
+
+    @DeleteMapping("/{id}")
+    public ApiResponse<Void> deleteRequest(
+            @PathVariable(name = "id") Long id,
+            @RequestParam(name = "buildingId", required = false) Long buildingId
+    ) {
+        maintenanceRequestService.deleteRequest(id, buildingId);
+        return ApiResponse.success("Maintenance request deleted successfully", null);
     }
 }

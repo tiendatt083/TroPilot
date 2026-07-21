@@ -841,7 +841,6 @@
 .invoice-status-paid,
 .payment-status-approved,
 .receipt-status-valid,
-.expense-status-valid,
 .task-status-completed,
 .maintenance-status-completed,
 .feedback-status-resolved,
@@ -861,11 +860,9 @@
 .invoice-status-rejected,
 .payment-status-rejected,
 .receipt-status-cancelled,
-.expense-status-cancelled,
 .task-status-rejected,
 .task-status-overdue,
 .maintenance-status-rejected,
-.feedback-status-rejected,
 .task-priority-urgent,
 .vehicle-status-rejected {
   color: var(--color-danger);
@@ -883,7 +880,6 @@
 .room-status-occupied,
 .contract-status-uploaded,
 .invoice-status-pending-confirmation,
-.feedback-status-assigned,
 .feedback-status-in-progress,
 .task-status-new,
 .task-priority-medium,
@@ -896,7 +892,6 @@
 .member-status-pending,
 .invoice-status-unpaid,
 .payment-status-pending,
-.expense-status-pending,
 .task-status-in-progress,
 .maintenance-status-pending,
 .maintenance-status-in-progress,
@@ -919,6 +914,12 @@
   font-family: var(--font-family-app);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-strong);
+}
+
+.table-action-buttons {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
 }
 
 .muted-text {

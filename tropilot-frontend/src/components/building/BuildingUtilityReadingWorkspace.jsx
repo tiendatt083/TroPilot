@@ -113,6 +113,15 @@ export default function BuildingUtilityReadingWorkspace({
     ? `${formatRoomCode(editingReading)} - ${formatDisplayMonth(editingReading.month)}`
     : t('buildingUtilityReadings.recordReading');
 
+  const closeForm = () => {
+    if (saving) {
+      return;
+    }
+
+    setFormOpen(false);
+    setEditingReading(null);
+  };
+
   return (
     <div className="building-workspace">
       <div className="building-section-header">
@@ -155,12 +164,7 @@ export default function BuildingUtilityReadingWorkspace({
         labelledBy="utility-reading-dialog-title"
         open={formOpen}
         title={formTitle}
-        onClose={() => {
-          if (!saving) {
-            setFormOpen(false);
-            setEditingReading(null);
-          }
-        }}
+        onClose={closeForm}
       >
         <UtilityReadingForm
           key={editingReading?.id || `building-reading-${building.id}-${selectedMonth}-${formVersion}`}
@@ -176,10 +180,7 @@ export default function BuildingUtilityReadingWorkspace({
             editingReading ? t('buildingUtilityReadings.saveChanges') : t('buildingUtilityReadings.recordReading')
           }
           onSubmit={editingReading ? handleUpdate : handleCreate}
-          onCancel={editingReading ? () => {
-            setFormOpen(false);
-            setEditingReading(null);
-          } : undefined}
+          onCancel={closeForm}
         />
       </ActionDialog>
     </div>

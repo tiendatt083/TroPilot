@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
 import CashFlowSummary from '../CashFlowSummary.jsx';
-import ExpenseTable from '../ExpenseTable.jsx';
 import LineIcon from '../common/LineIcon.jsx';
 import ReceiptTable from '../ReceiptTable.jsx';
 import { formatMonthInputValue } from '../../utils/dateFormat.js';
@@ -69,14 +68,6 @@ export default function BuildingCashFlowWorkspace({ getCashFlow, showReceipts = 
               <ReceiptTable receipts={cashFlow?.receipts || []} />
             </section>
           )}
-
-          <section className="cashflow-record-section">
-            <div className="cashflow-section-heading">
-              <span>{t('workspace.cashFlow.outgoing')}</span>
-              <strong>{t('workspace.cashFlow.expenses')}</strong>
-            </div>
-            <ExpenseTable expenses={cashFlow?.expenses || []} />
-          </section>
         </section>
       )}
     </div>

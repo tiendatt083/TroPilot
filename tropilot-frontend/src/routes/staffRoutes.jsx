@@ -6,8 +6,6 @@ import Settings from '../pages/Settings.jsx';
 import StaffBuildingListPage from '../pages/staff/StaffBuildingListPage.jsx';
 import StaffActivityLogPage from '../pages/staff/StaffActivityLogPage.jsx';
 import StaffDashboardPage from '../pages/staff/StaffDashboardPage.jsx';
-import StaffExpenseCreatePage from '../pages/staff/StaffExpenseCreatePage.jsx';
-import StaffExpenseListPage from '../pages/staff/StaffExpenseListPage.jsx';
 import StaffMaintenancePage from '../pages/staff/StaffMaintenancePage.jsx';
 import StaffNotificationPage from '../pages/staff/StaffNotificationPage.jsx';
 import StaffRoomDetailPage from '../pages/staff/StaffRoomDetailPage.jsx';
@@ -31,8 +29,6 @@ export const staffRoutes = (
       <Route path="invoices" element={<Navigate to="/staff/buildings" replace />} />
       <Route path="invoices/generate" element={<Navigate to="/staff/buildings" replace />} />
       <Route path="payments/pending" element={<Navigate to="/staff/buildings" replace />} />
-      <Route path="expenses" element={<StaffExpenseListPage />} />
-      <Route path="expenses/create" element={<StaffExpenseCreatePage />} />
       <Route path="tasks" element={<StaffTaskListPage />} />
       <Route path="tasks/:id" element={<StaffTaskDetailPage />} />
       <Route path="maintenance" element={<StaffMaintenancePage />} />

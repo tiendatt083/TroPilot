@@ -11,10 +11,8 @@ import java.util.List;
 public class CashFlowResponse {
 
     private BigDecimal totalIncome;
-    private BigDecimal totalExpense;
     private BigDecimal remainingCash;
     private BigDecimal unpaidAmount;
     private String month;
     private List<ReceiptResponse> receipts;
-    private List<ExpenseResponse> expenses;
 }

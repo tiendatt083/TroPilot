@@ -1,6 +1,6 @@
 # Tropilot - Modern Rental Property Operation Management System
 
-Tropilot is a full-stack rental property operation management system for property administrators, operations staff, and Head Residents. It centralizes daily rental operations including buildings, rooms, resident accounts, room members, contracts, utility readings, invoices, payments, vehicles, maintenance requests, staff tasks, receipts, expenses, cash flow, notifications, feedback, dashboards, and activity logs.
+Tropilot is a full-stack rental property operation management system for property administrators, operations staff, and Head Residents. It centralizes daily rental operations including buildings, rooms, resident accounts, room members, contracts, utility readings, invoices, payments, vehicles, maintenance requests, staff tasks, receipts, cash flow, notifications, feedback, dashboards, and activity logs.
 
 The system is designed for an academic demonstration while still following production-oriented practices such as JWT authentication, role-based authorization, DTO-based API responses, password hashing, file upload validation, and clear service-layer business logic.
 
@@ -50,7 +50,6 @@ The system is designed for an academic demonstration while still following produ
 - Invoice generation
 - Payment confirmation
 - Receipt management
-- Expense management
 - Cash flow management
 - Staff task assignment
 - Maintenance request management
@@ -329,7 +328,7 @@ Tropilot uses a two-level management workflow:
 1. Global role workspaces show cross-building information for Admin, Staff, and Head Resident users.
 2. Building workspaces are used for detailed building-level operations.
 
-Admin can review global system information from the Admin workspace, then open a specific building to manage rooms, room users, contracts, utility readings, invoices, service fees, vehicles, payments, receipts, room members, maintenance requests, expenses, cash flow, tasks, feedback, invoice complaints, notifications, and equipment for that building.
+Admin can review global system information from the Admin workspace, then open a specific building to manage rooms, room users, contracts, utility readings, invoices, service fees, vehicles, payments, receipts, room members, maintenance requests, cash flow, tasks, feedback, invoice complaints, notifications, and equipment for that building.
 
 Staff uses the same building-focused workflow for permitted operational tasks, but Staff cannot create users, assign Head Residents, change restricted system settings, delete paid financial records, or perform Admin-only actions.
 
@@ -387,10 +386,9 @@ docs/chatbot-context-schema.md
 22. Create a maintenance request from the Head Resident account.
 23. Assign the maintenance request to Staff from the Admin account.
 24. Start and complete the maintenance request from the Staff account.
-25. Create an expense, optionally linked to the maintenance request.
-26. View building cash flow from the building workspace.
-27. View global role-based dashboards for Admin, Staff, and Head Resident.
-28. Review activity logs from the Admin account.
+25. View building cash flow from the building workspace.
+26. View global role-based dashboards for Admin, Staff, and Head Resident.
+27. Review activity logs from the Admin account.
 
 ## Security Notes
 
@@ -418,7 +416,6 @@ uploads/contracts
 uploads/utility-readings
 uploads/payments
 uploads/maintenance
-uploads/expenses
 uploads/tasks
 ```
 
@@ -428,7 +425,6 @@ Supported upload examples:
 - Utility evidence images: jpg, jpeg, png
 - Payment proof images: jpg, jpeg, png
 - Maintenance images: jpg, jpeg, png
-- Expense proof images: jpg, jpeg, png
 - Task result images: jpg, jpeg, png
 
 ## Standard API Response Format

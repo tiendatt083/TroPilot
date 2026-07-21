@@ -17,7 +17,6 @@ export default function StaffTaskDetailPage() {
     resultNote: '',
     resultImage: null
   });
-  const [rejectNote, setRejectNote] = useState('');
 
   useEffect(() => {
     let active = true;
@@ -88,24 +87,6 @@ export default function StaffTaskDetailPage() {
     }
   };
 
-  const handleReject = async (event) => {
-    event.preventDefault();
-    setProcessing(true);
-    setMessage('');
-    setError('');
-
-    try {
-      const response = await taskApi.rejectStaffTask(id, { resultNote: rejectNote });
-      setTask(response.data);
-      setRejectNote('');
-      setMessage(t('taskManagement.rejected'));
-    } catch (apiError) {
-      setError(apiError.response?.data?.message || t('taskManagement.rejectError'));
-    } finally {
-      setProcessing(false);
-    }
-  };
-
   if (loading) {
     return <div className="empty-state">{t('taskManagement.loadingOne')}</div>;
   }
@@ -116,10 +97,9 @@ export default function StaffTaskDetailPage() {
 
   const canStart = task.status === 'NEW';
   const canComplete = task.status === 'IN_PROGRESS';
-  const canReject = task.status !== 'COMPLETED' && task.status !== 'REJECTED';
 
   return (
-    <section className="content-section">
+    <section className="content-section staff-task-detail-page">
       <div className="page-title-row">
         <PageHeader eyebrow={t('role.staff')} title={task.title} />
         <Link className="secondary-link" to="/staff/tasks">
@@ -169,23 +149,7 @@ export default function StaffTaskDetailPage() {
             </form>
           )}
 
-          {canReject && (
-            <form className="panel-form" onSubmit={handleReject}>
-              <label htmlFor="rejectNote">{t('taskManagement.rejectionNote')}</label>
-              <textarea
-                id="rejectNote"
-                name="rejectNote"
-                rows="4"
-                value={rejectNote}
-                onChange={(event) => setRejectNote(event.target.value)}
-              />
-              <button className="secondary-button" type="submit" disabled={processing}>
-                {processing ? t('taskManagement.rejecting') : t('taskManagement.reject')}
-              </button>
-            </form>
-          )}
-
-          {!canStart && !canComplete && !canReject && (
+          {!canStart && !canComplete && (
             <div className="empty-state">{t('taskManagement.noAction')}</div>
           )}
         </aside>

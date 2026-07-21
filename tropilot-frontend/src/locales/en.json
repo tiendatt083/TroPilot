@@ -198,7 +198,6 @@
     "rooms": "Rooms",
     "invoices": "Invoices",
     "pendingPayments": "Pending payments",
-    "expenses": "Expenses",
     "vehicles": "Vehicles",
     "equipment": "Equipment",
     "serviceFees": "Service fees",
@@ -433,7 +432,6 @@
     "receipts": "Receipts",
     "roomMembers": "Room members",
     "maintenance": "Maintenance",
-    "expenses": "Expenses",
     "cashFlow": "Cash flow",
     "tasks": "Tasks",
     "feedbacks": "Feedbacks",
@@ -462,7 +460,7 @@
       "attentionTitle": "Attention required",
       "attentionDescription": "Work and requests that need follow-up in this building.",
       "financeTitle": "Financial position",
-      "financeDescription": "Invoice total, collected income, expenses, and outstanding amount.",
+      "financeDescription": "Invoice total, collected income, and outstanding amount.",
       "summaryTitle": "Operating summary"
     },
     "metrics": {
@@ -485,7 +483,6 @@
       "trackedItems": "Items to track",
       "totalInvoiceAmount": "Total invoice amount",
       "totalIncome": "Total income",
-      "totalExpense": "Total expense",
       "outstandingAmount": "Outstanding amount",
       "unresolvedFeedbacks": "Unresolved feedbacks",
       "invoiceComplaints": "Invoice complaints",
@@ -969,7 +966,6 @@
     "actions": {
       "CONTRACT_CONFIRMED": "Contract confirmed",
       "CONTRACT_UPLOADED": "Contract uploaded",
-      "EXPENSE_CREATED": "Expense created",
       "FIRST_TIME_PASSWORD_CHANGED": "First-time password changed",
       "HEAD_RESIDENT_ASSIGNED": "Head Resident assigned",
       "INVOICE_DELETED": "Invoice deleted",
@@ -1036,7 +1032,6 @@
       "createdReceiptWithoutCode": "System created receipt for invoice {{invoice}}",
       "createdSepayReceipt": "System created receipt for SePay invoice {{invoice}}",
       "receivedSepayTransfer": "Received SePay transfer for invoice {{invoice}}, room {{room}}, month {{month}}",
-      "createdExpense": "Created expense {{expense}}",
       "createdTask": "Created task {{task}} for {{assignee}}",
       "completedTask": "Completed task {{task}}",
       "createdMaintenanceRequest": "Created maintenance request {{request}} for room {{room}}",
@@ -1064,7 +1059,7 @@
         "residentsTitle": "Residents and vehicles",
         "residentsDescription": "Current resident coverage and vehicle volume.",
         "financeTitle": "Financial position",
-        "financeDescription": "Income, expense, outstanding amount, and remaining cash from real records.",
+        "financeDescription": "Income, outstanding amount, and remaining cash from real records.",
         "attentionTitle": "Attention required",
         "attentionDescription": "Items that need review or operational follow-up."
       },
@@ -1080,7 +1075,6 @@
         "totalOccupants": "Total occupants",
         "activeVehicles": "Active vehicles",
         "totalIncome": "Total income",
-        "totalExpense": "Total expense",
         "remainingCash": "Remaining cash",
         "unpaidAmount": "Unpaid amount",
         "expiringContracts": "Expiring contracts",
@@ -1147,8 +1141,7 @@
         "feedback": {
           "PENDING": "Pending",
           "IN_PROGRESS": "In progress",
-          "RESOLVED": "Resolved",
-          "REJECTED": "Closed"
+          "RESOLVED": "Resolved"
         },
         "maintenance": {
           "PENDING": "Pending",
@@ -1178,8 +1171,7 @@
         "openWork": "Open work",
         "paid": "Paid",
         "unpaid": "Unpaid",
-        "totalInvoices": "Total invoices",
-        "expenses": "Expenses"
+        "totalInvoices": "Total invoices"
       },
       "helpers": {
         "managedBuildings": "Managed buildings",
@@ -1295,8 +1287,6 @@
         "operationOverviewDescription": "Charts summarizing electricity and water readings and work.",
         "operationsTitle": "Operational queue",
         "operationsDescription": "Building operations that need staff processing.",
-        "expenseTitle": "Expense activity",
-        "expenseDescription": "Expenses created from valid operational work.",
         "quickActionTitle": "Quick access",
         "quickActionDescription": "Open the staff pages used most often."
       },
@@ -1306,7 +1296,6 @@
         "roomsNeedingUtilityReading": "Rooms needing electricity and water readings",
         "pendingPaymentConfirmations": "Pending payment confirmations",
         "activeMaintenanceRequests": "Active maintenance requests",
-        "createdExpenses": "Created expenses",
         "utilityReadingsDue": "Electricity and water readings due",
         "paymentChecks": "Payment checks"
       },
@@ -1315,8 +1304,6 @@
         "utilityReadingsHelper": "Rooms still needing readings this cycle",
         "workload": "Work",
         "workloadHelper": "Assigned work and overdue items",
-        "expenses": "Expenses",
-        "expensesHelper": "Expenses created by staff",
         "recorded": "Recorded",
         "needReading": "Need reading",
         "assigned": "Assigned",
@@ -1328,12 +1315,10 @@
         "utilityReadings": "Utility readings",
         "payments": "Payments",
         "maintenance": "Maintenance",
-        "expenses": "Expenses",
         "taskHelper": "Open the task list",
         "utilityHelper": "Choose a building to record readings",
         "paymentHelper": "Review payment confirmations",
-        "maintenanceHelper": "Track maintenance requests",
-        "expenseHelper": "Open created expenses"
+        "maintenanceHelper": "Track maintenance requests"
       }
     },
     "resident": {
@@ -1443,7 +1428,6 @@
   "cashFlow": {
     "unavailable": "Cash flow data is not available.",
     "totalIncome": "Total income",
-    "totalExpense": "Total expense",
     "remainingCash": "Remaining cash",
     "unpaidAmount": "Unpaid amount"
   },
@@ -1526,7 +1510,11 @@
       "assignTitle": "Assign staff",
       "changeStaff": "Change staff",
       "changeStaffTitle": "Change assigned staff",
-      "changeStaffDisabled": "Staff cannot be changed in this status"
+      "changeStaffDisabled": "Staff cannot be changed in this status",
+      "delete": "Delete maintenance",
+      "deleteConfirm": "Delete maintenance request \"{{title}}\"? It can only be deleted before staff starts work.",
+      "deleted": "Maintenance request deleted.",
+      "deleteError": "Maintenance request could not be deleted"
     },
     "staff": {
       "eyebrow": "Operations staff",
@@ -1549,7 +1537,6 @@
       "rejectionNote": "Rejection note",
       "rejecting": "Rejecting...",
       "reject": "Reject request",
-      "linkedExpense": "Create linked expense",
       "noAction": "No staff action is available for this maintenance status."
     },
     "form": {
@@ -1798,6 +1785,7 @@
     "detailsTitle": "Room details",
     "membersTitle": "Room members",
     "create": "Create room",
+    "saveChanges": "Save",
     "back": "Back",
     "backToRooms": "Back to rooms",
     "backToDetails": "Back to details",
@@ -1840,7 +1828,7 @@
     "assignment": {
       "eyebrow": "Head Resident",
       "title": "Room assignment",
-      "assign": "Assign Head Resident",
+      "assign": "Assign",
       "assigned": "Head Resident assigned successfully. Please create the first invoice for this room. The first invoice includes the deposit, first month room rent, and monthly service fees.",
       "assignError": "Head Resident could not be assigned",
       "futureEndConfirm": "The contract has not reached its end date yet ({{date}}). Do you want to end it now and remove the Head Resident and room members from room {{room}}?",
@@ -1885,6 +1873,9 @@
     "createError": "Task could not be created",
     "updated": "Task updated successfully.",
     "updateError": "Task could not be updated",
+    "deleted": "Task deleted.",
+    "deleteError": "Task could not be deleted",
+    "deleteConfirm": "Delete task \"{{title}}\"? It can only be deleted before staff updates the status.",
     "started": "Task started successfully.",
     "startError": "Task could not be started",
     "completed": "Task completed successfully.",
@@ -1903,27 +1894,6 @@
     "noAction": "No staff action is available for this task status.",
     "saveChanges": "Save changes",
     "selectRoom": "Select room"
-  },
-  "expenseManagement": {
-    "title": "Expenses",
-    "create": "Create expense",
-    "createTitle": "Create expense",
-    "back": "Back to expenses",
-    "loading": "Loading expenses...",
-    "loadingRooms": "Loading rooms...",
-    "loadError": "Expenses could not be loaded",
-    "roomsLoadError": "Rooms could not be loaded",
-    "createError": "Expense could not be created",
-    "cancel": "Cancel",
-    "cancelConfirm": "Cancel this expense?",
-    "cancelled": "Expense cancelled successfully.",
-    "cancelError": "Expense could not be cancelled",
-    "approved": "Expense approved successfully.",
-    "approveError": "Expense could not be approved",
-    "viewCashFlow": "View cash flow",
-    "entryEyebrow": "Expense entry",
-    "outgoingEyebrow": "Outgoing money",
-    "buildingTitle": "Expenses in this building"
   },
   "utilityReadingManagement": {
     "title": "Utility readings",
@@ -2064,8 +2034,7 @@
       "view": "View cash flow",
       "income": "Income",
       "receipts": "Valid receipts",
-      "outgoing": "Outgoing money",
-      "expenses": "Valid expenses"
+      "outgoing": "Outgoing money"
     },
     "vehicles": {
       "eyebrow": "Building vehicles",
@@ -2099,17 +2068,6 @@
       "eyebrow": "Building receipts",
       "title": "Receipts in this building",
       "loadError": "Building receipts could not be loaded"
-    },
-    "expenses": {
-      "eyebrow": "Building expenses",
-      "title": "Expenses in this building",
-      "loading": "Loading expenses...",
-      "loadError": "Building expenses could not be loaded",
-      "cancelConfirm": "Cancel this expense?",
-      "cancelled": "Expense cancelled successfully.",
-      "cancelError": "Expense could not be cancelled",
-      "approved": "Expense approved successfully.",
-      "approveError": "Expense could not be approved"
     },
     "notifications": {
       "eyebrow": "Building notifications",
@@ -2214,10 +2172,8 @@
     },
     "feedbackStatus": {
       "PENDING": "Pending",
-      "ASSIGNED": "Assigned",
       "IN_PROGRESS": "In progress",
-      "RESOLVED": "Resolved",
-      "REJECTED": "Rejected"
+      "RESOLVED": "Resolved"
     },
     "paymentStatus": {
       "PENDING": "Pending",
@@ -2226,19 +2182,6 @@
     },
     "receiptStatus": {
       "VALID": "Valid",
-      "CANCELLED": "Cancelled"
-    },
-    "expenseType": {
-      "REPAIR": "Repair",
-      "REPLACEMENT": "Replacement",
-      "CLEANING": "Cleaning",
-      "MAINTENANCE": "Maintenance",
-      "OPERATION": "Operation",
-      "OTHER": "Other"
-    },
-    "expenseStatus": {
-      "VALID": "Valid",
-      "PENDING": "Pending",
       "CANCELLED": "Cancelled"
     },
     "feeType": {
@@ -2284,7 +2227,7 @@
       "URGENT": "Urgent"
     },
     "taskStatus": {
-      "NEW": "New",
+      "NEW": "Assigned",
       "IN_PROGRESS": "In progress",
       "COMPLETED": "Completed",
       "REJECTED": "Rejected",
@@ -2312,7 +2255,6 @@
       "equipment": "Equipment",
       "evidence": "Evidence",
       "expense": "Expense",
-      "expenseCode": "Expense code",
       "feeType": "Fee type",
       "floor": "Floor",
       "headResident": "Head Resident",
@@ -2386,9 +2328,6 @@
       "selectReceipt": "Select a receipt to view details.",
       "receiptCode": "Receipt code"
     },
-    "expenses": {
-      "empty": "No expenses found."
-    },
     "maintenanceRequests": {
       "empty": "No maintenance requests found.",
       "issue": "Issue",
@@ -2433,7 +2372,7 @@
       "startDate": "Start date",
       "endDate": "End date",
       "assigning": "Assigning...",
-      "submit": "Assign Head Resident"
+      "submit": "Assign"
     },
     "room": {
       "selectBuilding": "Select building",
@@ -2482,14 +2421,6 @@
       "generalBuildingTask": "General building task",
       "noRoomLinked": "No specific room"
     },
-    "expense": {
-      "taskReference": "Task reference",
-      "maintenanceRequestReference": "Maintenance request reference",
-      "expenseType": "Expense type",
-      "proofImage": "Proof image",
-      "creating": "Creating...",
-      "create": "Create expense"
-    },
     "utilityReading": {
       "selectRoom": "Select room",
       "electricitySectionTitle": "Electricity reading",
@@ -2504,6 +2435,8 @@
       "newWater": "New water",
       "waterUnit": "m3",
       "waterEvidenceImage": "Water evidence image (optional)",
+      "chooseFileOrDrop": "Choose file or drag image here",
+      "fileLimitShort": "JPG, PNG up to 5MB",
       "automaticReading": "Reading sync",
       "mockSource": "Simulated data source",
       "mockApi": "mock api",

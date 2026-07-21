@@ -58,6 +58,7 @@ export default function AdminBuildingTaskPage() {
   const [selectedTask, setSelectedTask] = useState(null);
   const [detailMessage, setDetailMessage] = useState('');
   const [detailError, setDetailError] = useState('');
+  const [deletingTaskId, setDeletingTaskId] = useState(null);
   const [filters, setFilters] = useState(emptyFilters);
 
   const buildingFilter = { buildingId: building.id };
@@ -137,6 +138,30 @@ export default function AdminBuildingTaskPage() {
     }
   };
 
+  const handleDelete = async (task) => {
+    if (['IN_PROGRESS', 'COMPLETED'].includes(task.status)) {
+      return;
+    }
+
+    if (!window.confirm(t('taskManagement.deleteConfirm', { title: task.title }))) {
+      return;
+    }
+
+    setDeletingTaskId(task.id);
+    setMessage('');
+    setError('');
+
+    try {
+      await taskApi.deleteAdminTask(task.id, buildingFilter);
+      setTasks((currentTasks) => currentTasks.filter((item) => item.id !== task.id));
+      setMessage(t('taskManagement.deleted'));
+    } catch (apiError) {
+      setError(apiError.response?.data?.message || t('taskManagement.deleteError'));
+    } finally {
+      setDeletingTaskId(null);
+    }
+  };
+
   const closeDetail = () => {
     if (!saving) {
       setSelectedTask(null);
@@ -192,7 +217,13 @@ export default function AdminBuildingTaskPage() {
             onClear={handleClearFilters}
             onSearchChange={(value) => setFilters((current) => ({ ...current, search: value }))}
           />
-          <TaskTable tasks={filteredTasks} detailBasePath={`/admin/buildings/${building.id}/tasks`} onViewTask={setSelectedTask} />
+          <TaskTable
+            tasks={filteredTasks}
+            detailBasePath={`/admin/buildings/${building.id}/tasks`}
+            deletingTaskId={deletingTaskId}
+            onDeleteTask={handleDelete}
+            onViewTask={setSelectedTask}
+          />
         </section>
       )}
 

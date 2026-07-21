@@ -5,7 +5,6 @@ import * as maintenanceApi from '../../features/maintenance/api.js';
 import * as taskApi from '../../features/maintenance/taskApi.js';
 import * as vehicleApi from '../../features/residents/vehicleApi.js';
 import * as roomApi from '../../features/rooms/api.js';
-import * as expenseApi from '../../features/payments/expenseApi.js';
 import * as utilityReadingApi from '../../features/invoices/utilityReadingApi.js';
 import LineIcon from '../../components/common/LineIcon.jsx';
 import { CHART_COLORS, ChartPanel, DonutChart } from '../../components/common/DashboardCharts.jsx';
@@ -17,7 +16,6 @@ const emptySummary = {
   rooms: [],
   vehicles: [],
   maintenanceRequests: [],
-  expenses: [],
   utilityOverview: null,
   tasks: []
 };
@@ -31,7 +29,7 @@ const STATUS_LABELS = {
     COMPLETED: 'Đã hoàn thành',
     EMPTY: 'Trống',
     IN_PROGRESS: 'Đang xử lý',
-    NEW: 'Mới',
+    NEW: 'Đã phân công',
     OCCUPIED: 'Đã thuê',
     OVERDUE: 'Quá hạn',
     PENDING: 'Đang chờ',
@@ -46,7 +44,7 @@ const STATUS_LABELS = {
     COMPLETED: 'Completed',
     EMPTY: 'Empty',
     IN_PROGRESS: 'In progress',
-    NEW: 'New',
+    NEW: 'Assigned',
     OCCUPIED: 'Occupied',
     OVERDUE: 'Overdue',
     PENDING: 'Pending',
@@ -77,11 +75,6 @@ function copy(language, viText, enText) {
 function toNumber(value) {
   const numericValue = Number(value ?? 0);
   return Number.isFinite(numericValue) ? numericValue : 0;
-}
-
-function formatMoney(value, language) {
-  const locale = language === 'en' ? 'en-US' : 'vi-VN';
-  return `${toNumber(value).toLocaleString(locale, { maximumFractionDigits: 0 })} ${language === 'en' ? 'VND' : 'đ'}`;
 }
 
 function countByStatus(items, statuses) {
@@ -143,10 +136,6 @@ function getMaintenanceTitle(item, language) {
 
 function getTaskTitle(item, language) {
   return item?.title || item?.description || copy(language, 'Công việc vận hành', 'Operation task');
-}
-
-function getExpenseTitle(item, language) {
-  return item?.expenseCode || item?.code || item?.content || copy(language, 'Chi phí vận hành', 'Operation expense');
 }
 
 function KpiCard({ helper, icon, label, tone, value }) {
@@ -215,47 +204,6 @@ function RecentListPanel({ emptyText, icon, language, rows, title }) {
   );
 }
 
-function ExpenseTablePanel({ emptyText, icon, language, rows, title }) {
-  return (
-    <section className="ops-panel staff-building-expense-panel">
-      <PanelTitle icon={icon} title={title} />
-      {rows.length ? (
-        <div className="staff-building-expense-table-wrap">
-          <table className="staff-building-expense-table">
-            <thead>
-              <tr>
-                <th>{copy(language, 'Chi phí', 'Expense')}</th>
-                <th>{copy(language, 'Phòng', 'Room')}</th>
-                <th>{copy(language, 'Số tiền', 'Amount')}</th>
-                <th>{copy(language, 'Trạng thái', 'Status')}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((row) => (
-                <tr key={row.key}>
-                  <td>
-                    <div className="staff-building-expense-name">
-                      <strong>{row.title}</strong>
-                      <span>{row.category}</span>
-                    </div>
-                  </td>
-                  <td>{row.room}</td>
-                  <td>{row.amount}</td>
-                  <td>
-                    <span className={getStatusClass(row.status)}>{getStatusLabel(row.status, language)}</span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      ) : (
-        <div className="empty-state flat-empty-state staff-building-empty-panel">{emptyText}</div>
-      )}
-    </section>
-  );
-}
-
 export default function StaffBuildingOverviewPage() {
   const { i18n } = useTranslation();
   const language = getLanguageMode(i18n.resolvedLanguage || i18n.language);
@@ -279,7 +227,6 @@ export default function StaffBuildingOverviewPage() {
           roomsResponse,
           vehiclesResponse,
           maintenanceResponse,
-          expensesResponse,
           utilityOverviewResponse,
           tasksResponse
         ] =
@@ -287,7 +234,6 @@ export default function StaffBuildingOverviewPage() {
             roomApi.getStaffRooms(buildingFilter),
             vehicleApi.getStaffVehicles(buildingFilter),
             maintenanceApi.getStaffMaintenanceRequests(buildingFilter),
-            expenseApi.getStaffExpenses(buildingFilter),
             utilityReadingApi.getStaffUtilityReadingOverview(utilityOverviewFilter),
             taskApi.getStaffTasks()
           ]);
@@ -300,7 +246,6 @@ export default function StaffBuildingOverviewPage() {
           rooms: roomsResponse.data || [],
           vehicles: vehiclesResponse.data || [],
           maintenanceRequests: maintenanceResponse.data || [],
-          expenses: expensesResponse.data || [],
           utilityOverview: unwrapResponseData(utilityOverviewResponse, null),
           tasks: (tasksResponse.data || []).filter((task) => matchesBuilding(task, building))
         });
@@ -331,10 +276,8 @@ export default function StaffBuildingOverviewPage() {
     const completedMaintenance = countByStatus(summary.maintenanceRequests, ['COMPLETED']);
     const openTasks = countByStatus(summary.tasks, ['NEW', 'IN_PROGRESS', 'OVERDUE']);
     const overdueTasks = countByStatus(summary.tasks, ['OVERDUE']);
-    const pendingExpenses = countByStatus(summary.expenses, ['PENDING']);
     const roomsNeedingUtilityReading = getUtilityPendingRooms(summary.utilityOverview);
-    const totalExpenseAmount = summary.expenses.reduce((total, expense) => total + toNumber(expense.amount), 0);
-    const attentionCount = openMaintenance + overdueTasks + pendingExpenses + roomsNeedingUtilityReading;
+    const attentionCount = openMaintenance + overdueTasks + roomsNeedingUtilityReading;
     const occupancyPercent = getPercent(occupiedRooms, summary.rooms.length);
 
     return {
@@ -348,9 +291,7 @@ export default function StaffBuildingOverviewPage() {
       openMaintenance,
       openTasks,
       overdueTasks,
-      pendingExpenses,
-      roomsNeedingUtilityReading,
-      totalExpenseAmount
+      roomsNeedingUtilityReading
     };
   }, [summary]);
 
@@ -372,13 +313,6 @@ export default function StaffBuildingOverviewPage() {
       label: copy(language, 'Xe hoạt động', 'Active vehicles'),
       value: formatNumber(dashboardData.activeVehicles),
       helper: copy(language, 'Xe đã đăng ký', 'Registered vehicles')
-    },
-    {
-      icon: 'wallet',
-      tone: 'success',
-      label: copy(language, 'Chi phí đã tạo', 'Created expenses'),
-      value: formatMoney(dashboardData.totalExpenseAmount, language),
-      helper: `${formatNumber(summary.expenses.length)} ${copy(language, 'bản ghi', 'records')}`
     }
   ];
 
@@ -402,13 +336,6 @@ export default function StaffBuildingOverviewPage() {
       value: dashboardData.roomsNeedingUtilityReading,
       color: CHART_COLORS.violet,
       to: `/staff/buildings/${building.id}/utility-readings`
-    },
-    {
-      key: 'expenses',
-      label: copy(language, 'Chi phí chờ duyệt', 'Pending expenses'),
-      value: dashboardData.pendingExpenses,
-      color: CHART_COLORS.cyan,
-      to: `/staff/buildings/${building.id}/expenses`
     },
     {
       key: 'overdue',
@@ -441,15 +368,6 @@ export default function StaffBuildingOverviewPage() {
         ? `${copy(language, 'Hạn', 'Due')}: ${formatDisplayDate(item.dueDate || item.deadline, '-')}`
         : copy(language, 'Chưa có hạn', 'No due date')
     ]
-  }));
-
-  const recentExpenses = sortRecent(summary.expenses).slice(0, 4).map((item) => ({
-    key: `expense-${item.id || item.expenseCode || item.code}`,
-    title: getExpenseTitle(item, language),
-    category: item.category || item.type || copy(language, 'Chi phí', 'Expense'),
-    room: getRoomCode(item, copy(language, 'Việc chung tòa nhà', 'Building-wide')),
-    amount: formatMoney(item.amount, language),
-    status: item.status,
   }));
 
   return (
@@ -500,13 +418,6 @@ export default function StaffBuildingOverviewPage() {
             language={language}
             rows={recentMaintenance}
             title={copy(language, 'Bảo trì gần đây', 'Recent maintenance')}
-          />
-          <ExpenseTablePanel
-            emptyText={copy(language, 'Chưa có chi phí.', 'No expenses yet.')}
-            icon="wallet"
-            language={language}
-            rows={recentExpenses}
-            title={copy(language, 'Chi phí gần đây', 'Recent expenses')}
           />
         </div>
       </div>
