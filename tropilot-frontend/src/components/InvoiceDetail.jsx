@@ -5,6 +5,7 @@ import { formatDisplayDate, formatDisplayMonth } from '../utils/dateFormat.js';
 import { formatEnumLabel } from '../utils/i18nFormat.js';
 import { formatInvoiceAmount, formatInvoiceText } from '../utils/invoiceDisplay.js';
 import { formatRoomLabel } from '../utils/roomDisplay.js';
+import LineIcon from './common/LineIcon.jsx';
 
 function formatBankName(payment) {
   const rawCode = String(payment?.bankCode || payment?.bankName || '').trim();
@@ -91,7 +92,28 @@ function buildDisplayItems(invoice) {
   return items;
 }
 
-export default function InvoiceDetail({ invoice, paymentUploadSlot = null, showPaymentInstructions = false }) {
+function InvoiceSummaryItem({ icon, label, value, showIcon }) {
+  return (
+    <div className={showIcon ? 'invoice-summary-item invoice-summary-item-with-icon' : ''}>
+      {showIcon && (
+        <span className="invoice-summary-item-icon">
+          <LineIcon name={icon} />
+        </span>
+      )}
+      <span className="invoice-summary-item-copy">
+        <span>{label}</span>
+        <strong>{value}</strong>
+      </span>
+    </div>
+  );
+}
+
+export default function InvoiceDetail({
+  invoice,
+  paymentUploadSlot = null,
+  showPaymentInstructions = false,
+  showSummaryIcons = false
+}) {
   const { t } = useTranslation();
 
   if (!invoice) {
@@ -106,50 +128,64 @@ export default function InvoiceDetail({ invoice, paymentUploadSlot = null, showP
   const hasEvidenceLinks = Boolean(invoice.electricityImageUrl || invoice.waterImageUrl);
   const detailPanel = (
     <div className="detail-panel invoice-detail-summary-grid">
-      <div>
-        <span>{t('tables.common.room')}</span>
-        <strong>{formatRoomLabel(invoice)}</strong>
-      </div>
-      <div>
-        <span>{t('tables.common.building')}</span>
-        <strong>
-          {invoice.buildingCode} - {invoice.buildingName}
-        </strong>
-      </div>
-      <div>
-        <span>{t('tables.common.headResident')}</span>
-        <strong>{invoice.residentHeadName}</strong>
-      </div>
-      <div>
-        <span>{t('buildingInvoices.invoiceDate')}</span>
-        <strong>{formatDisplayDate(invoice.invoiceDate)}</strong>
-      </div>
-      <div>
-        <span>{t('tables.common.month')}</span>
-        <strong>{formatDisplayMonth(invoice.month)}</strong>
-      </div>
-      <div>
-        <span>{t('buildingInvoices.utilityMonth')}</span>
-        <strong>
-          {invoice.utilityMonth ? formatDisplayMonth(invoice.utilityMonth) : t('common.notApplicable')}
-        </strong>
-      </div>
-      <div>
-        <span>{t('tables.common.dueDate')}</span>
-        <strong>{formatDisplayDate(invoice.dueDate)}</strong>
-      </div>
-      <div>
-        <span>{t('tables.common.status')}</span>
-        <strong>
+      <InvoiceSummaryItem
+        icon="building"
+        label={t('tables.common.room')}
+        showIcon={showSummaryIcons}
+        value={formatRoomLabel(invoice)}
+      />
+      <InvoiceSummaryItem
+        icon="building"
+        label={t('tables.common.building')}
+        showIcon={showSummaryIcons}
+        value={`${invoice.buildingCode} - ${invoice.buildingName}`}
+      />
+      <InvoiceSummaryItem
+        icon="user"
+        label={t('tables.common.headResident')}
+        showIcon={showSummaryIcons}
+        value={invoice.residentHeadName}
+      />
+      <InvoiceSummaryItem
+        icon="calendar"
+        label={t('buildingInvoices.invoiceDate')}
+        showIcon={showSummaryIcons}
+        value={formatDisplayDate(invoice.invoiceDate)}
+      />
+      <InvoiceSummaryItem
+        icon="calendar"
+        label={t('tables.common.month')}
+        showIcon={showSummaryIcons}
+        value={formatDisplayMonth(invoice.month)}
+      />
+      <InvoiceSummaryItem
+        icon="droplet"
+        label={t('buildingInvoices.utilityMonth')}
+        showIcon={showSummaryIcons}
+        value={invoice.utilityMonth ? formatDisplayMonth(invoice.utilityMonth) : t('common.notApplicable')}
+      />
+      <InvoiceSummaryItem
+        icon="calendar"
+        label={t('tables.common.dueDate')}
+        showIcon={showSummaryIcons}
+        value={formatDisplayDate(invoice.dueDate)}
+      />
+      <InvoiceSummaryItem
+        icon="checkShield"
+        label={t('tables.common.status')}
+        showIcon={showSummaryIcons}
+        value={(
           <span className={getInvoiceStatusClass(invoice.status)}>
             {formatEnumLabel(t, 'invoiceStatus', invoice.status)}
           </span>
-        </strong>
-      </div>
-      <div>
-        <span>{t('tables.common.totalAmount')}</span>
-        <strong>{formatInvoiceAmount(invoice.totalAmount)}</strong>
-      </div>
+        )}
+      />
+      <InvoiceSummaryItem
+        icon="wallet"
+        label={t('tables.common.totalAmount')}
+        showIcon={showSummaryIcons}
+        value={formatInvoiceAmount(invoice.totalAmount)}
+      />
     </div>
   );
 

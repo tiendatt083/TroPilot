@@ -171,6 +171,8 @@ export default function StaffBuildingTaskPage() {
     setFilters(emptyFilters);
   };
 
+  const hasSelectedTaskAction = selectedTask?.status === 'NEW' || selectedTask?.status === 'IN_PROGRESS';
+
   return (
     <div className="building-workspace">
       <PageHeader eyebrow={t('taskManagement.buildingEyebrow')}/>
@@ -221,48 +223,46 @@ export default function StaffBuildingTaskPage() {
           <div className="task-workspace task-staff-workspace">
             <TaskDetail task={selectedTask} />
 
-            <aside className="task-actions-panel task-staff-actions">
-              {selectedTask.status === 'NEW' && (
-                <button className="inline-button" type="button" disabled={processing} onClick={handleStart}>
-                  {processing ? t('taskManagement.starting') : t('taskManagement.start')}
-                </button>
-              )}
+            {hasSelectedTaskAction && (
+              <aside className="task-actions-panel task-staff-actions">
+                {selectedTask.status === 'NEW' && (
+                  <button className="inline-button" type="button" disabled={processing} onClick={handleStart}>
+                    {processing ? t('taskManagement.starting') : t('taskManagement.start')}
+                  </button>
+                )}
 
-              {selectedTask.status === 'IN_PROGRESS' && (
-                <form className="panel-form task-completion-form" onSubmit={handleComplete}>
-                  <div className="task-completion-note-field">
-                    <label htmlFor="buildingTaskResultNote">{t('taskManagement.resultNote')}</label>
-                    <textarea
-                      id="buildingTaskResultNote"
-                      name="resultNote"
-                      rows="4"
-                      value={completionForm.resultNote}
-                      onChange={handleCompletionChange}
-                      required
-                    />
-                  </div>
+                {selectedTask.status === 'IN_PROGRESS' && (
+                  <form className="panel-form task-completion-form" onSubmit={handleComplete}>
+                    <div className="task-completion-note-field">
+                      <label htmlFor="buildingTaskResultNote">{t('taskManagement.resultNote')}</label>
+                      <textarea
+                        id="buildingTaskResultNote"
+                        name="resultNote"
+                        rows="4"
+                        value={completionForm.resultNote}
+                        onChange={handleCompletionChange}
+                        required
+                      />
+                    </div>
 
-                  <div className="task-completion-side-field">
-                    <label htmlFor="buildingTaskResultImage">{t('taskManagement.resultImage')}</label>
-                    <input
-                      id="buildingTaskResultImage"
-                      name="resultImage"
-                      type="file"
-                      accept="image/jpeg,image/png"
-                      onChange={handleCompletionChange}
-                    />
+                    <div className="task-completion-side-field">
+                      <label htmlFor="buildingTaskResultImage">{t('taskManagement.resultImage')}</label>
+                      <input
+                        id="buildingTaskResultImage"
+                        name="resultImage"
+                        type="file"
+                        accept="image/jpeg,image/png"
+                        onChange={handleCompletionChange}
+                      />
 
-                    <button type="submit" disabled={processing}>
-                      {processing ? t('taskManagement.completing') : t('taskManagement.complete')}
-                    </button>
-                  </div>
-                </form>
-              )}
-
-              {selectedTask.status === 'COMPLETED' && (
-                <div className="empty-state">{t('taskManagement.noAction')}</div>
-              )}
-            </aside>
+                      <button type="submit" disabled={processing}>
+                        {processing ? t('taskManagement.completing') : t('taskManagement.complete')}
+                      </button>
+                    </div>
+                  </form>
+                )}
+              </aside>
+            )}
           </div>
         )}
       </ActionDialog>

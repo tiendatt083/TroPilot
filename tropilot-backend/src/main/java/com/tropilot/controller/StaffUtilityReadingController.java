@@ -4,7 +4,6 @@ import com.tropilot.dto.request.UtilityReadingCreateRequest;
 import com.tropilot.dto.request.UtilityReadingUpdateRequest;
 import com.tropilot.dto.response.ApiResponse;
 import com.tropilot.dto.response.UtilityMeterFetchResponse;
-import com.tropilot.dto.response.UtilityReadingFetchResponse;
 import com.tropilot.dto.response.UtilityReadingOverviewResponse;
 import com.tropilot.dto.response.UtilityReadingResponse;
 import com.tropilot.exception.UnauthorizedException;
@@ -60,17 +59,6 @@ public class StaffUtilityReadingController {
         );
     }
 
-    @PostMapping("/fetch")
-    public ApiResponse<UtilityReadingFetchResponse> fetchReading(
-            @RequestParam(name = "roomId") Long roomId,
-            @RequestParam(name = "readingDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate readingDate
-    ) {
-        return ApiResponse.success(
-                "Utility readings fetched successfully",
-                utilityReadingProvider.fetch(roomId, readingDate)
-        );
-    }
-
     @PostMapping("/fetch/electricity")
     public ApiResponse<UtilityMeterFetchResponse> fetchElectricityReading(
             @RequestParam(name = "roomId") Long roomId,
@@ -107,11 +95,6 @@ public class StaffUtilityReadingController {
                 "Utility reading overview loaded successfully",
                 utilityReadingService.getOverview(buildingId, month)
         );
-    }
-
-    @GetMapping("/{id}")
-    public ApiResponse<UtilityReadingResponse> getReading(@PathVariable(name = "id") Long id) {
-        return ApiResponse.success("Utility reading loaded successfully", utilityReadingService.getReading(id));
     }
 
     private Long getUserId(AuthenticatedUser user) {

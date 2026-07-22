@@ -20,11 +20,6 @@ export async function getResidentFeedbacks() {
   return response.data;
 }
 
-export async function createInvoiceComplaint(invoiceId, payload) {
-  const response = await apiClient.post(`/api/resident/invoices/${invoiceId}/complaint`, payload);
-  return response.data;
-}
-
 export async function getAdminFeedbacks(filters) {
   const response = await apiClient.get('/api/admin/feedbacks', filterConfig(filters));
   return response.data;
@@ -37,10 +32,5 @@ export async function replyAdminFeedback(id, payload, filters) {
 
 export async function updateAdminFeedbackStatus(id, payload, filters) {
   const response = await apiClient.put(`/api/admin/feedbacks/${id}/status`, payload, filterConfig(filters));
-  return response.data;
-}
-
-export async function getAdminInvoiceComplaints(filters) {
-  const response = await apiClient.get('/api/admin/invoice-complaints', filterConfig(filters));
   return response.data;
 }

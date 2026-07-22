@@ -49,7 +49,7 @@ export default function TaskTable({
             <th>{t('tables.common.type')}</th>
             <th>{t('tables.common.deadline')}</th>
             <th>{t('tables.common.status')}</th>
-            <th>{t('tables.common.actions')}</th>
+            <th className="task-actions-column">{t('tables.common.actions')}</th>
           </tr>
         </thead>
         <tbody>
@@ -82,24 +82,24 @@ export default function TaskTable({
                   {formatEnumLabel(t, 'taskStatus', task.status)}
                 </span>
               </td>
-              <td>
+              <td className="task-actions-cell">
                 {onViewTask ? (
                   <div className="table-action-buttons">
                     <button
-                      className="table-icon-button"
+                      className="icon-action-button"
+                      data-tooltip={t('common.view')}
                       type="button"
                       aria-label={t('common.view')}
-                      title={t('common.view')}
                       onClick={() => onViewTask(task)}
                     >
                       <LineIcon name="eye" size={16} />
                     </button>
                     {onDeleteTask && (
                       <button
-                        className="table-icon-button icon-action-danger"
+                        className="icon-action-button icon-action-danger"
+                        data-tooltip={t('common.delete')}
                         type="button"
                         aria-label={t('common.delete')}
-                        title={t('common.delete')}
                         disabled={!canDeleteTask(task) || deletingTaskId === task.id}
                         onClick={() => onDeleteTask(task)}
                       >
@@ -109,10 +109,10 @@ export default function TaskTable({
                   </div>
                 ) : (
                   <Link
-                    className="table-icon-button"
+                    className="icon-action-button"
+                    data-tooltip={t('common.view')}
                     to={`${detailBasePath}/${task.id}`}
                     aria-label={t('common.view')}
-                    title={t('common.view')}
                   >
                     <LineIcon name="eye" size={16} />
                   </Link>

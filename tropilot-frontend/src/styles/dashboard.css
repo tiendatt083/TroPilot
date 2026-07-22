@@ -869,7 +869,7 @@
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   gap: var(--space-3);
-  align-items: start;
+  align-items: center;
   min-height: 108px;
   border: 1px solid var(--color-border-soft);
   border-radius: var(--radius-md);
@@ -2299,41 +2299,55 @@ html[data-theme="dark"] .settings-group-icon-danger {
 
 .staff-priority-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 0.62rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
 }
 
 .staff-priority-card {
+  position: relative;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
   min-width: 0;
-  gap: 0.56rem;
+  gap: 0.74rem;
   align-items: center;
   border: 1px solid var(--color-border-soft);
   border-radius: var(--radius-md);
-  min-height: 66px;
-  padding: 0.62rem 0.68rem;
+  min-height: 82px;
+  overflow: hidden;
+  padding: 0.86rem 0.95rem;
   color: var(--color-text);
-  background: var(--color-surface);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(63, 130, 246, 0.07), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(249, 252, 255, 0.97));
   text-decoration: none;
+  box-shadow: 0 10px 24px rgba(15, 45, 78, 0.045);
   transition:
     border-color 160ms ease,
     box-shadow 160ms ease,
     transform 160ms ease;
 }
 
+.staff-priority-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: var(--color-primary);
+}
+
 .staff-priority-card:hover {
   border-color: rgba(63, 130, 246, 0.28);
-  box-shadow: 0 12px 28px rgba(15, 33, 61, 0.08);
+  box-shadow: 0 14px 32px rgba(15, 33, 61, 0.09);
   transform: translateY(-1px);
 }
 
 .staff-priority-icon {
   display: grid;
-  width: 1.95rem;
-  height: 1.95rem;
+  width: 2.28rem;
+  height: 2.28rem;
   flex: 0 0 auto;
   place-items: center;
+  align-self: center;
   border-radius: var(--radius-sm);
   color: var(--color-primary);
   background: var(--color-primary-soft);
@@ -2354,9 +2368,17 @@ html[data-theme="dark"] .settings-group-icon-danger {
   background: var(--color-danger-bg);
 }
 
+.staff-priority-card-danger::before {
+  background: var(--color-danger);
+}
+
 .staff-priority-card-warning .staff-priority-icon {
   color: var(--color-warning);
   background: var(--color-warning-bg);
+}
+
+.staff-priority-card-warning::before {
+  background: var(--color-warning);
 }
 
 .staff-priority-card div {
@@ -2368,7 +2390,7 @@ html[data-theme="dark"] .settings-group-icon-danger {
 .staff-priority-value {
   justify-self: end;
   color: var(--color-text);
-  font-size: 1.16rem;
+  font-size: clamp(1.18rem, 1.7vw, 1.46rem);
   line-height: 1.05;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
@@ -2376,14 +2398,14 @@ html[data-theme="dark"] .settings-group-icon-danger {
 
 .staff-priority-card span {
   color: var(--color-text);
-  font-size: 0.82rem;
+  font-size: 0.86rem;
   font-weight: var(--font-weight-strong);
   line-height: 1.25;
 }
 
 .staff-priority-card small {
   color: var(--color-text-muted);
-  font-size: 0.72rem;
+  font-size: 0.74rem;
   line-height: 1.35;
 }
 
@@ -2401,6 +2423,8 @@ html[data-theme="dark"] .settings-group-icon-danger {
 }
 
 .staff-dashboard-table-panel {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
   overflow: hidden;
   border: 1px solid var(--color-border-soft);
   border-radius: var(--radius-lg);
@@ -2443,6 +2467,7 @@ html[data-theme="dark"] .settings-group-icon-danger {
 .staff-dashboard-table-wrap {
   max-width: 100%;
   overflow-x: hidden;
+  min-height: 286px;
 }
 
 .staff-dashboard-compact-table {
@@ -2454,7 +2479,8 @@ html[data-theme="dark"] .settings-group-icon-danger {
 .staff-dashboard-compact-table th,
 .staff-dashboard-compact-table td {
   border-bottom: 1px solid var(--color-border-soft);
-  padding: 0.74rem 0.78rem;
+  height: 58px;
+  padding: 0.68rem 0.78rem;
   color: var(--color-text);
   text-align: left;
   vertical-align: middle;
@@ -2463,6 +2489,7 @@ html[data-theme="dark"] .settings-group-icon-danger {
 }
 
 .staff-dashboard-compact-table th {
+  height: 36px;
   color: var(--color-text-muted);
   background: var(--color-table-header);
   font-size: 0.72rem;
@@ -2540,6 +2567,10 @@ html[data-theme="dark"] .settings-group-icon-danger {
 
 .staff-dashboard-compact-table .status-pill {
   max-width: 100%;
+}
+
+.staff-dashboard-table-wrap .flat-empty-state {
+  min-height: 250px;
 }
 
 .resident-dashboard-page .dashboard-hero {

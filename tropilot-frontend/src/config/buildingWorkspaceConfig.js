@@ -40,8 +40,7 @@ const BUILDING_WORKSPACE_GROUPS = [
     labelKey: 'buildingWorkspace.groups.finance',
     items: [
       { path: '/invoices', labelKey: 'buildingWorkspace.invoices' },
-      { path: '/cashflow', labelKey: 'buildingWorkspace.cashFlow' },
-      { path: '/receipts', labelKey: 'buildingWorkspace.receipts' }
+      { path: '/cashflow', labelKey: 'buildingWorkspace.cashFlow' }
     ]
   }
 ];

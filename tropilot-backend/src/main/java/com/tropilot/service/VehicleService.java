@@ -1,5 +1,6 @@
 package com.tropilot.service;
 
+import com.tropilot.dto.request.AdminVehicleCreateRequest;
 import com.tropilot.dto.request.VehicleRegistrationRequest;
 import com.tropilot.dto.response.VehicleResponse;
 
@@ -15,11 +16,11 @@ public interface VehicleService {
 
     List<VehicleResponse> getVehicles(Long buildingId);
 
-    List<VehicleResponse> getPendingVehicles(Long buildingId);
+    VehicleResponse createAdminVehicle(AdminVehicleCreateRequest request, Long buildingId);
 
     VehicleResponse approveVehicle(Long id, Long buildingId);
 
-    VehicleResponse rejectVehicle(Long id, Long buildingId);
+    VehicleResponse rejectVehicle(Long id, Long rejectedById, Long buildingId);
 
-    VehicleResponse deactivateVehicle(Long id, Long buildingId);
+    void deleteVehicle(Long id, Long buildingId);
 }

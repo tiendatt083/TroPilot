@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { formatDisplayDate } from '../utils/dateFormat.js';
+import LineIcon from './common/LineIcon.jsx';
 import ModalCloseButton from './common/ModalCloseButton.jsx';
 
 export default function AdminAccountDirectoryTable({
@@ -144,7 +145,7 @@ export default function AdminAccountDirectoryTable({
                       )}
                     </td>
                   )}
-                  <td>
+                  <td className="account-actions-cell">
                     {useIconActions ? (
                       <IconTableActions
                         account={account}
@@ -279,7 +280,7 @@ function AccountDetailModal({ account, onClose, showRoom, t }) {
       <section
         aria-labelledby="account-detail-title"
         aria-modal="true"
-        className="account-detail-modal"
+        className="account-detail-modal account-directory-detail-modal"
         role="dialog"
         onMouseDown={(event) => event.stopPropagation()}
       >
@@ -292,35 +293,48 @@ function AccountDetailModal({ account, onClose, showRoom, t }) {
         </div>
 
         <dl className="account-detail-grid">
-          <DetailItem label={t('accountDirectory.detail.email')} value={account.email} />
-          <DetailItem label={t('accountDirectory.detail.phone')} value={account.phone || t('common.notProvided')} />
-          <DetailItem label={t('accountDirectory.detail.role')} value={formatRole(account.role, t)} />
+          <DetailItem icon="mail" label={t('accountDirectory.detail.email')} value={account.email} />
+          <DetailItem icon="phone" label={t('accountDirectory.detail.phone')} value={account.phone || t('common.notProvided')} />
+          <DetailItem icon="user" label={t('accountDirectory.detail.role')} value={formatRole(account.role, t)} />
           {showRoom && (
-            <DetailItem label={t('accountDirectory.detail.room')} value={formatRoom(account, t)} />
+            <DetailItem icon="building" label={t('accountDirectory.detail.room')} value={formatRoom(account, t)} />
           )}
-          <DetailItem label={t('accountDirectory.detail.status')} value={formatStatus(account.status, t)} />
+          <DetailItem
+            icon="activity"
+            label={t('accountDirectory.detail.status')}
+            value={(
+              <span className={`status-pill status-${String(account.status || 'ACTIVE').toLowerCase()}`}>
+                {formatStatus(account.status, t)}
+              </span>
+            )}
+          />
           {isRoomMember && (
             <>
               <DetailItem
+                icon="users"
                 label={t('forms.member.relationship')}
                 value={account.relationship || t('common.notProvided')}
               />
               <DetailItem
+                icon="userCheck"
                 label={t('tables.common.headResident')}
                 value={account.residentHeadName || t('common.notProvided')}
               />
               <DetailItem
+                icon="calendar"
                 label={t('roomManagement.moveIn')}
                 value={formatDisplayDate(account.moveInDate, t('common.notSet'))}
               />
             </>
           )}
           <DetailItem
+            icon="calendar"
             label={t('accountDirectory.detail.createdAt')}
             value={formatDisplayDate(account.createdAt, t('common.notAvailable'))}
           />
           {!isRoomMember && (
             <DetailItem
+              icon="lock"
               label={t('accountDirectory.detail.temporaryPassword')}
               value={account.mustChangePassword
                 ? account.temporaryPassword || t('userManagement.passwordUnavailable')
@@ -339,11 +353,16 @@ function AccountDetailModal({ account, onClose, showRoom, t }) {
               <div className="account-member-list">
                 {members.map((member) => (
                   <div className="account-member-item" key={member.id}>
-                    <div>
-                      <strong>{member.fullName}</strong>
-                      <span>{member.relationship || t('residentDirectory.member')}</span>
+                    <div className="account-member-main">
+                      <span className="account-member-icon">
+                        <LineIcon name="user" />
+                      </span>
+                      <div className="account-member-copy">
+                        <strong>{member.fullName}</strong>
+                        <span>{member.relationship || t('residentDirectory.member')}</span>
+                      </div>
                     </div>
-                    <div>
+                    <div className="account-member-contact">
                       <span>{member.phone || t('common.notProvided')}</span>
                       <span>{member.email || t('common.notProvided')}</span>
                     </div>
@@ -362,11 +381,16 @@ function AccountDetailModal({ account, onClose, showRoom, t }) {
   );
 }
 
-function DetailItem({ label, value }) {
+function DetailItem({ icon, label, value }) {
   return (
-    <div>
-      <dt>{label}</dt>
-      <dd>{value}</dd>
+    <div className="account-detail-item">
+      <span className="account-detail-icon">
+        <LineIcon name={icon} />
+      </span>
+      <div className="account-detail-copy">
+        <dt>{label}</dt>
+        <dd>{value}</dd>
+      </div>
     </div>
   );
 }

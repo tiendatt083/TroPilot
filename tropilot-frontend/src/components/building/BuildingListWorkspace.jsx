@@ -301,9 +301,11 @@ export default function BuildingListWorkspace({
       ) : (
         <DataTable
           caption={t('workspace.buildings.caption')}
+          className="building-list-table-wrap"
           columns={columns}
           emptyMessage={t('workspace.buildings.empty')}
           rows={buildings}
+          tableClassName="building-list-table"
         />
       )}
 

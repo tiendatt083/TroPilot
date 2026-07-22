@@ -28,22 +28,8 @@ function toFormData(payload) {
   return formData;
 }
 
-export async function createResidentMaintenanceRequest(payload) {
-  const response = await apiClient.post(
-    '/api/resident/maintenance-requests',
-    toFormData(payload),
-    multipartConfig
-  );
-  return response.data;
-}
-
 export async function getResidentMaintenanceRequests() {
   const response = await apiClient.get('/api/resident/maintenance-requests');
-  return response.data;
-}
-
-export async function getResidentMaintenanceRequest(id) {
-  const response = await apiClient.get(`/api/resident/maintenance-requests/${id}`);
   return response.data;
 }
 

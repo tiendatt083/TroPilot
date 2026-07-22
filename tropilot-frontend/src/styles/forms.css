@@ -581,6 +581,116 @@
   grid-column: 1 / -1;
 }
 
+.invoice-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.85rem;
+  margin-bottom: 1.15rem;
+}
+
+.invoice-summary-card {
+  display: grid;
+  position: relative;
+  grid-template-columns: 42px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.85rem;
+  overflow: hidden;
+  min-height: 82px;
+  border: 1px solid rgba(203, 213, 225, 0.86);
+  border-radius: var(--radius-md);
+  padding: 0.82rem 1rem;
+  background:
+    radial-gradient(circle at 98% 0%, color-mix(in srgb, var(--invoice-summary-accent, var(--color-primary)) 11%, transparent), transparent 38%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(249, 252, 255, 0.97));
+  box-shadow: 0 10px 24px rgba(15, 45, 78, 0.055);
+}
+
+.invoice-summary-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: var(--invoice-summary-accent, var(--color-primary));
+}
+
+.invoice-summary-card-total {
+  --invoice-summary-accent: #3f82f6;
+}
+
+.invoice-summary-card-created {
+  --invoice-summary-accent: #18b894;
+}
+
+.invoice-summary-card-missing {
+  --invoice-summary-accent: #f59e0b;
+}
+
+.invoice-summary-icon {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--invoice-summary-accent, var(--color-primary)) 20%, white);
+  border-radius: var(--radius-sm);
+  color: var(--invoice-summary-accent, var(--color-primary));
+  background: color-mix(in srgb, var(--invoice-summary-accent, var(--color-primary)) 9%, white);
+  line-height: 0;
+}
+
+.invoice-summary-icon .line-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.invoice-summary-copy {
+  display: grid;
+  gap: 0.22rem;
+  min-width: 0;
+}
+
+.invoice-summary-copy span {
+  color: var(--color-text-muted);
+  font-size: 0.82rem;
+  font-weight: 780;
+  line-height: 1.25;
+}
+
+.invoice-summary-copy small {
+  overflow: hidden;
+  color: #64748b;
+  font-size: 0.74rem;
+  font-weight: 560;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.invoice-summary-card strong {
+  justify-self: end;
+  color: var(--color-text);
+  font-size: clamp(1.55rem, 2.4vw, 2rem);
+  font-weight: 560;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+html[data-theme='dark'] .invoice-summary-card {
+  border-color: rgba(148, 163, 184, 0.28);
+  background:
+    radial-gradient(circle at 98% 0%, color-mix(in srgb, var(--invoice-summary-accent, var(--color-primary)) 20%, transparent), transparent 38%),
+    linear-gradient(180deg, rgba(15, 23, 42, 0.98), rgba(17, 31, 50, 0.96));
+  box-shadow: none;
+}
+
+html[data-theme='dark'] .invoice-summary-icon {
+  border-color: color-mix(in srgb, var(--invoice-summary-accent, var(--color-primary)) 30%, #1e293b);
+  background: color-mix(in srgb, var(--invoice-summary-accent, var(--color-primary)) 13%, #0f172a);
+}
+
+html[data-theme='dark'] .invoice-summary-copy small {
+  color: #94a3b8;
+}
+
 .invoice-preview-column {
   min-width: 0;
 }
@@ -1234,17 +1344,24 @@
   white-space: nowrap;
 }
 
+.invoice-action-column,
 .invoice-action-cell {
+  width: 96px;
   text-align: center;
 }
 
 .invoice-action-cell .icon-action-button {
+  display: inline-grid;
   margin-inline: auto;
+  place-items: center;
+  vertical-align: middle;
 }
 
 .invoice-action-cell .icon-table-actions,
-.invoice-action-cell .table-actions {
+.invoice-action-cell .table-actions,
+.invoice-action-cell .table-action-group {
   justify-content: center;
+  margin-inline: auto;
 }
 
 @media (max-width: 1180px) {
@@ -1400,6 +1517,15 @@
   width: 10%;
 }
 
+.building-contract-action-header,
+.building-contract-action-cell {
+  text-align: center;
+}
+
+.building-contract-action-cell .table-icon-button {
+  margin-inline: auto;
+}
+
 .table-primary-cell {
   display: grid;
   gap: 0.22rem;
@@ -1540,9 +1666,9 @@
 
 .contract-history-header span {
   color: var(--color-primary);
-  font-size: 0.72rem;
-  font-weight: 850;
-  text-transform: uppercase;
+  font-size: 0.95rem;
+  font-weight: 650;
+  text-transform: none;
 }
 
 .contract-history-header strong {
@@ -1581,12 +1707,13 @@
   min-width: 0;
 }
 
-.contract-history-item strong {
+.contract-history-item-title {
   color: var(--color-text);
-  font-weight: 850;
+  font-size: 0.92rem;
+  font-weight: 500;
 }
 
-.contract-history-item span {
+.contract-history-item span:not(.contract-history-item-title) {
   color: var(--color-text-muted);
   font-size: 0.86rem;
 }
@@ -1776,7 +1903,21 @@
 }
 
 .equipment-table .equipment-col-actions {
-  width: 14%;
+  width: 164px;
+  min-width: 164px;
+  text-align: center;
+}
+
+.equipment-table th.equipment-col-actions,
+.equipment-table td.equipment-col-actions {
+  padding-inline: 0.5rem;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.equipment-table td.equipment-col-actions {
+  display: table-cell;
+  place-items: center;
 }
 
 .equipment-code-cell,
@@ -1832,8 +1973,12 @@
 }
 
 .equipment-icon-actions {
-  justify-content: flex-end;
+  display: inline-flex;
+  width: 136px;
+  justify-content: center;
   gap: 0.32rem;
+  margin-inline: auto;
+  vertical-align: middle;
 }
 
 .equipment-icon-actions .icon-action-button {
@@ -1885,8 +2030,24 @@
 }
 
 .equipment-request-form {
+  display: grid;
+  gap: var(--space-4);
   max-width: 720px;
   box-shadow: none;
+}
+
+.equipment-request-form .equipment-request-submit-button {
+  justify-self: end;
+  width: auto;
+  min-width: 168px;
+  min-height: 38px;
+  padding: 0.5rem 1rem;
+}
+
+.equipment-request-form .equipment-request-action-row {
+  display: flex;
+  width: 100%;
+  justify-content: flex-end;
 }
 
 .equipment-history-list {
@@ -1981,20 +2142,32 @@
   width: min(840px, calc(100vw - 48px));
 }
 
+.task-staff-dialog {
+  width: min(860px, calc(100vw - 48px));
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 12% 0%, rgba(59, 130, 246, 0.08), transparent 32%),
+    #ffffff;
+}
+
 .task-staff-dialog .account-modal-header {
-  padding-bottom: 0.7rem;
+  align-items: flex-start;
+  margin-bottom: 0.85rem;
+  padding-bottom: 0.95rem;
+  border-bottom: 1px solid rgba(203, 213, 225, 0.72);
 }
 
 .task-staff-dialog .account-modal-header .section-eyebrow {
-  color: #020617;
-  font-weight: 500;
+  color: #2563eb;
+  font-size: 0.78rem;
+  font-weight: 700;
   text-transform: none;
 }
 
 .task-staff-dialog .account-modal-header h2 {
   color: #020617;
-  font-size: 1.32rem;
-  font-weight: 650;
+  font-size: 1.42rem;
+  font-weight: 700;
   line-height: 1.2;
 }
 
@@ -2004,65 +2177,159 @@
 }
 
 .task-staff-dialog .task-detail-panel {
-  display: block;
-}
-
-.task-staff-dialog .detail-panel {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.55rem 1rem;
-  border: 1px solid var(--color-border-soft);
-  border-radius: var(--radius-md);
-  padding: 0.82rem 0.95rem;
-  background: #ffffff;
-  box-shadow: none;
-}
-
-.task-staff-dialog .detail-panel div {
-  gap: 0.18rem;
-  min-width: 0;
-  padding-bottom: 0.48rem;
-  border-bottom: 1px solid rgba(204, 218, 226, 0.7);
-}
-
-.task-staff-dialog .detail-panel span {
-  color: #020617;
-  font-size: 0.8rem;
-  font-weight: 600;
-  text-transform: none;
-}
-
-.task-staff-dialog .detail-panel strong,
-.task-staff-dialog .detail-panel p {
-  color: #020617;
-  font-size: 0.94rem;
-  font-weight: 400;
-  line-height: 1.38;
-}
-
-.task-staff-dialog .detail-panel .status-pill {
-  width: fit-content;
-  font-weight: 600;
-}
-
-.task-staff-dialog .detail-wide {
-  grid-column: 1 / -1;
-}
-
-.task-staff-dialog .task-detail-note-field {
   display: grid;
-  gap: 0.28rem;
-  border: 1px solid rgba(204, 218, 226, 0.72);
-  border-radius: var(--radius-sm);
-  padding: 0.62rem 0.72rem;
-  background: #f8fbfc;
+  gap: 0.75rem;
 }
 
-.task-staff-dialog .task-detail-note-field p {
-  margin: 0;
+.task-staff-dialog .task-detail-card {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0;
+  overflow: hidden;
+  border: 1px solid rgba(203, 213, 225, 0.9);
+  border-radius: 14px;
+  padding: 0;
+  background:
+    radial-gradient(circle at 96% 0%, rgba(59, 130, 246, 0.08), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 252, 255, 0.98));
+  box-shadow:
+    0 16px 34px rgba(15, 23, 42, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.task-staff-dialog .task-detail-field,
+.task-staff-dialog .task-detail-title-field {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+  min-height: 72px;
+  padding: 0.82rem 1rem;
+  border-right: 1px solid rgba(203, 213, 225, 0.68);
+  border-bottom: 1px solid rgba(203, 213, 225, 0.68);
+}
+
+.task-staff-dialog .task-detail-card > .task-detail-field:nth-child(2n + 1) {
+  border-right: 0;
+}
+
+.task-staff-dialog .task-detail-card > .task-detail-field:nth-last-child(-n + 2) {
+  border-bottom: 0;
 }
 
 .task-staff-dialog .task-detail-title-field {
   grid-column: 1 / -1;
+  min-height: 76px;
+  border-right: 0;
+  background:
+    linear-gradient(90deg, rgba(59, 130, 246, 0.05), transparent 68%);
+}
+
+.task-staff-dialog .task-detail-copy {
+  display: grid;
+  gap: 0.26rem;
+  min-width: 0;
+}
+
+.task-staff-dialog .task-detail-copy > span {
+  color: #334155;
+  font-size: 0.74rem;
+  font-weight: 650;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.task-staff-dialog .task-detail-copy > strong,
+.task-staff-dialog .task-detail-copy > p {
+  margin: 0;
+  color: #020617;
+  font-size: 0.94rem;
+  font-weight: 400;
+  line-height: 1.38;
+  overflow-wrap: anywhere;
+}
+
+.task-staff-dialog .task-detail-title-field .task-detail-copy > strong {
+  font-size: 1.02rem;
+  font-weight: 650;
+}
+
+.task-staff-dialog .task-detail-icon {
+  display: inline-grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border-radius: 12px;
+  border: 1px solid rgba(37, 99, 235, 0.16);
+  color: #2563eb;
+  background: #eef5ff;
+  box-shadow: 0 10px 22px rgba(37, 99, 235, 0.08);
+}
+
+.task-staff-dialog .task-detail-icon .line-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.task-staff-dialog .task-detail-icon-green {
+  border-color: rgba(16, 185, 129, 0.2);
+  color: #059669;
+  background: #e9fbf4;
+}
+
+.task-staff-dialog .task-detail-icon-amber {
+  border-color: rgba(245, 158, 11, 0.24);
+  color: #d97706;
+  background: #fff7e6;
+}
+
+.task-staff-dialog .task-detail-icon-cyan {
+  border-color: rgba(6, 182, 212, 0.2);
+  color: #0891b2;
+  background: #e8fbff;
+}
+
+.task-staff-dialog .task-detail-icon-indigo,
+.task-staff-dialog .task-detail-icon-violet {
+  border-color: rgba(99, 102, 241, 0.2);
+  color: #4f46e5;
+  background: #f0f1ff;
+}
+
+.task-staff-dialog .detail-panel .status-pill,
+.task-staff-dialog .task-detail-copy .status-pill {
+  width: fit-content;
+  font-weight: 600;
+}
+
+.task-staff-dialog .task-detail-note-grid {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.task-staff-dialog .task-detail-note-field {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  align-items: start;
+  gap: 0.75rem;
+  border: 1px solid rgba(203, 213, 225, 0.86);
+  border-radius: 14px;
+  padding: 0.82rem 1rem;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 252, 255, 0.98));
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.045);
+}
+
+.task-staff-dialog .task-detail-result-field {
+  background:
+    radial-gradient(circle at 98% 0%, rgba(6, 182, 212, 0.08), transparent 32%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 252, 255, 0.98));
+}
+
+.task-staff-dialog .task-detail-note-field p {
+  max-height: 140px;
+  overflow-y: auto;
+  white-space: pre-wrap;
 }
 
 .task-staff-dialog .task-detail-status-field {
@@ -2070,8 +2337,8 @@
 }
 
 .task-staff-actions {
-  display: block;
-  justify-content: stretch;
+  display: grid;
+  justify-items: end;
   gap: 0.65rem;
   padding: 0.72rem 0.82rem;
   border: 1px solid var(--color-border-soft);
@@ -2085,6 +2352,11 @@
   min-width: 150px;
   min-height: 38px;
   padding: 0.45rem 0.95rem;
+}
+
+.task-staff-actions > .page-header {
+  justify-self: stretch;
+  width: 100%;
 }
 
 .task-staff-actions .panel-form {
@@ -2135,6 +2407,19 @@
 
   .task-staff-dialog .detail-panel {
     grid-template-columns: 1fr;
+  }
+
+  .task-staff-dialog .task-detail-card > .task-detail-field,
+  .task-staff-dialog .task-detail-title-field {
+    border-right: 0;
+  }
+
+  .task-staff-dialog .task-detail-card > .task-detail-field:nth-last-child(-n + 2) {
+    border-bottom: 1px solid rgba(203, 213, 225, 0.68);
+  }
+
+  .task-staff-dialog .task-detail-card > .task-detail-field:last-child {
+    border-bottom: 0;
   }
 
   .task-staff-actions .task-completion-form {
@@ -3176,6 +3461,31 @@ html[data-theme='dark'] .task-quick-secondary-button {
 
 .maintenance-staff-dialog {
   width: min(860px, calc(100vw - 48px));
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 14% 0%, rgba(59, 130, 246, 0.08), transparent 32%),
+    #ffffff;
+}
+
+.maintenance-staff-dialog .account-modal-header {
+  align-items: flex-start;
+  margin-bottom: 0.85rem;
+  padding-bottom: 0.95rem;
+  border-bottom: 1px solid rgba(203, 213, 225, 0.72);
+}
+
+.maintenance-staff-dialog .account-modal-header .section-eyebrow {
+  color: #2563eb;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: none;
+}
+
+.maintenance-staff-dialog .account-modal-header h2 {
+  color: #020617;
+  font-size: 1.42rem;
+  font-weight: 700;
+  line-height: 1.2;
 }
 
 .maintenance-staff-dialog-grid {
@@ -3191,49 +3501,162 @@ html[data-theme='dark'] .task-quick-secondary-button {
 }
 
 .maintenance-staff-dialog .maintenance-detail-panel {
-  border-color: #dbe5ee;
-  background: #ffffff;
+  display: grid;
+  gap: 0.7rem;
 }
 
-.maintenance-staff-dialog .detail-panel {
+.maintenance-staff-dialog .maintenance-detail-card {
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.85rem 1rem;
-  padding: 0.95rem 1rem;
-  background: linear-gradient(135deg, #ffffff 0%, #f8fbfc 100%);
-  box-shadow: none;
+  gap: 0;
+  overflow: hidden;
+  border: 1px solid rgba(203, 213, 225, 0.9);
+  border-radius: 14px;
+  padding: 0;
+  background:
+    radial-gradient(circle at 96% 0%, rgba(59, 130, 246, 0.08), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 252, 255, 0.98));
+  box-shadow:
+    0 16px 34px rgba(15, 23, 42, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
-.maintenance-staff-dialog .detail-panel div {
-  gap: 0.3rem;
+.maintenance-staff-dialog .maintenance-detail-field {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+  min-height: 72px;
+  padding: 0.82rem 1rem;
+  border-right: 1px solid rgba(203, 213, 225, 0.68);
+  border-bottom: 1px solid rgba(203, 213, 225, 0.68);
 }
 
-.maintenance-staff-dialog .detail-panel span {
-  color: #020617;
-  font-size: 0.82rem;
-  font-weight: var(--font-weight-semibold);
+.maintenance-staff-dialog .maintenance-detail-card > .maintenance-detail-field:nth-child(2n) {
+  border-right: 0;
+}
+
+.maintenance-staff-dialog .maintenance-detail-card > .maintenance-detail-field:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+  border-right: 0;
+  border-bottom: 0;
+}
+
+.maintenance-staff-dialog .maintenance-detail-card > .maintenance-detail-field:last-child:nth-child(even) {
+  border-bottom: 0;
+}
+
+.maintenance-staff-dialog .maintenance-detail-copy {
+  display: grid;
+  gap: 0.26rem;
+  min-width: 0;
+}
+
+.maintenance-staff-dialog .maintenance-detail-copy > span {
+  color: #334155;
+  font-size: 0.74rem;
+  font-weight: 650;
   letter-spacing: 0;
   text-transform: none;
 }
 
-.maintenance-staff-dialog .detail-panel strong,
-.maintenance-staff-dialog .detail-panel p,
+.maintenance-staff-dialog .maintenance-detail-copy > strong,
+.maintenance-staff-dialog .maintenance-detail-copy > p,
 .maintenance-staff-dialog .evidence-links {
+  margin: 0;
   color: #020617;
-  font-weight: var(--font-weight-regular);
+  font-size: 0.94rem;
+  font-weight: 400;
+  line-height: 1.38;
+  overflow-wrap: anywhere;
 }
 
-.maintenance-staff-dialog .detail-panel .status-pill {
-  font-weight: var(--font-weight-semibold);
+.maintenance-staff-dialog .maintenance-detail-copy .status-pill {
+  width: fit-content;
+  font-weight: 600;
 }
 
-.maintenance-staff-dialog .detail-wide {
-  border-top: 1px solid #e2e8f0;
-  padding-top: 0.7rem;
+.maintenance-staff-dialog .maintenance-detail-icon {
+  display: inline-grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border-radius: 12px;
+  border: 1px solid rgba(37, 99, 235, 0.16);
+  color: #2563eb;
+  background: #eef5ff;
+  box-shadow: 0 10px 22px rgba(37, 99, 235, 0.08);
+}
+
+.maintenance-staff-dialog .maintenance-detail-icon .line-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.maintenance-staff-dialog .maintenance-detail-icon-green {
+  border-color: rgba(16, 185, 129, 0.2);
+  color: #059669;
+  background: #e9fbf4;
+}
+
+.maintenance-staff-dialog .maintenance-detail-icon-amber {
+  border-color: rgba(245, 158, 11, 0.24);
+  color: #d97706;
+  background: #fff7e6;
+}
+
+.maintenance-staff-dialog .maintenance-detail-icon-cyan {
+  border-color: rgba(6, 182, 212, 0.2);
+  color: #0891b2;
+  background: #e8fbff;
+}
+
+.maintenance-staff-dialog .maintenance-detail-icon-indigo,
+.maintenance-staff-dialog .maintenance-detail-icon-violet {
+  border-color: rgba(99, 102, 241, 0.2);
+  color: #4f46e5;
+  background: #f0f1ff;
+}
+
+.maintenance-staff-dialog .maintenance-detail-note-grid {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.maintenance-staff-dialog .maintenance-detail-note-field {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  align-items: start;
+  gap: 0.75rem;
+  border: 1px solid rgba(203, 213, 225, 0.86);
+  border-radius: 14px;
+  padding: 0.82rem 1rem;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 252, 255, 0.98));
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.045);
+}
+
+.maintenance-staff-dialog .maintenance-detail-result-field {
+  background:
+    radial-gradient(circle at 98% 0%, rgba(6, 182, 212, 0.08), transparent 32%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 252, 255, 0.98));
+}
+
+.maintenance-staff-dialog .maintenance-detail-image-field {
+  background:
+    radial-gradient(circle at 98% 0%, rgba(99, 102, 241, 0.08), transparent 32%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 252, 255, 0.98));
+}
+
+.maintenance-staff-dialog .maintenance-detail-note-field p {
+  max-height: 130px;
+  overflow-y: auto;
+  white-space: pre-wrap;
 }
 
 .maintenance-staff-action-panel {
   display: grid;
-  justify-items: start;
+  justify-items: end;
   gap: 0.7rem;
   border: 0;
   border-radius: var(--radius-md);
@@ -3252,6 +3675,8 @@ html[data-theme='dark'] .task-quick-secondary-button {
 }
 
 .maintenance-staff-action-panel .panel-form {
+  display: grid;
+  gap: 0.7rem;
   width: 100%;
   border: 1px solid #dbe5ee;
   border-radius: var(--radius-md);
@@ -3259,9 +3684,17 @@ html[data-theme='dark'] .task-quick-secondary-button {
   background: #ffffff;
 }
 
+.maintenance-staff-action-panel .panel-form button[type="submit"] {
+  justify-self: end;
+  width: auto;
+  min-width: 112px;
+  min-height: 38px;
+  padding: 0.5rem 0.95rem;
+}
+
 .maintenance-staff-action-panel .secondary-link,
 .maintenance-staff-action-panel .empty-state {
-  justify-self: start;
+  justify-self: stretch;
 }
 
 @media (max-width: 1120px) {
@@ -3287,6 +3720,19 @@ html[data-theme='dark'] .task-quick-secondary-button {
     grid-template-columns: 1fr;
   }
 
+  .maintenance-staff-dialog .maintenance-detail-card > .maintenance-detail-field {
+    grid-column: auto;
+    border-right: 0;
+  }
+
+  .maintenance-staff-dialog .maintenance-detail-card > .maintenance-detail-field:nth-last-child(-n + 2) {
+    border-bottom: 1px solid rgba(203, 213, 225, 0.68);
+  }
+
+  .maintenance-staff-dialog .maintenance-detail-card > .maintenance-detail-field:last-child {
+    border-bottom: 0;
+  }
+
   .maintenance-card {
     grid-template-columns: 1fr;
   }
@@ -3302,6 +3748,86 @@ html[data-theme='dark'] .task-quick-secondary-button {
 
 .staff-maintenance-page .maintenance-card-list {
   gap: var(--space-3);
+}
+
+.staff-maintenance-table-wrap {
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xs);
+}
+
+.staff-maintenance-request-table {
+  min-width: 980px;
+  table-layout: fixed;
+}
+
+.staff-maintenance-request-table th,
+.staff-maintenance-request-table td {
+  vertical-align: middle;
+}
+
+.staff-maintenance-request-table th:nth-child(1),
+.staff-maintenance-request-table td:nth-child(1) {
+  width: 25%;
+}
+
+.staff-maintenance-request-table th:nth-child(2),
+.staff-maintenance-request-table td:nth-child(2) {
+  width: 15%;
+}
+
+.staff-maintenance-request-table th:nth-child(3),
+.staff-maintenance-request-table td:nth-child(3) {
+  width: 18%;
+}
+
+.staff-maintenance-request-table th:nth-child(4),
+.staff-maintenance-request-table td:nth-child(4) {
+  width: 18%;
+  white-space: nowrap;
+}
+
+.staff-maintenance-request-table th:nth-child(5),
+.staff-maintenance-request-table td:nth-child(5) {
+  width: 14%;
+  text-align: center;
+}
+
+.staff-maintenance-request-table .staff-maintenance-actions-column,
+.staff-maintenance-request-table .staff-maintenance-actions-cell {
+  width: 10%;
+  text-align: center;
+}
+
+.staff-maintenance-request-table td {
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+.staff-maintenance-request-table .staff-maintenance-main-text,
+.staff-maintenance-request-table .table-subtext {
+  display: block;
+  overflow: hidden;
+  max-width: 100%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.staff-maintenance-request-table .staff-maintenance-main-text {
+  color: var(--color-text);
+  font-weight: 520;
+}
+
+.staff-maintenance-request-table .table-subtext {
+  color: var(--color-text-muted);
+  font-weight: 450;
+}
+
+.staff-maintenance-request-table .status-pill {
+  justify-content: center;
+}
+
+.staff-maintenance-actions-cell .icon-action-button {
+  margin-inline: auto;
 }
 
 .staff-maintenance-page .maintenance-card {
@@ -3521,6 +4047,35 @@ html[data-theme="dark"] .staff-maintenance-page .maintenance-card-meta {
   padding: 0;
   background: transparent;
   box-shadow: none;
+}
+
+.resident-invoice-detail-page .invoice-detail-summary-grid .invoice-summary-item-with-icon {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  align-items: center;
+  gap: 0.74rem;
+}
+
+.resident-invoice-detail-page .invoice-summary-item-icon {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border: 1px solid rgba(63, 130, 246, 0.16);
+  border-radius: var(--radius-sm);
+  color: var(--color-primary);
+  background: var(--color-primary-soft);
+}
+
+.resident-invoice-detail-page .invoice-summary-item-icon .line-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.resident-invoice-detail-page .invoice-summary-item-copy {
+  display: grid;
+  min-width: 0;
+  gap: 0.22rem;
 }
 
 .invoice-detail-summary-grid span,
@@ -4325,11 +4880,12 @@ html[data-theme="dark"] .staff-maintenance-page .maintenance-card-meta {
 
 .vehicle-table-resident th:last-child,
 .vehicle-table-resident td:last-child {
-  text-align: right;
+  text-align: center;
 }
 
 .vehicle-table-resident .table-actions {
-  justify-content: flex-end;
+  justify-content: center;
+  margin-inline: auto;
 }
 
 .service-fee-row,
@@ -4445,13 +5001,13 @@ html[data-theme="dark"] .staff-maintenance-page .maintenance-card-meta {
 .service-fee-actions,
 .vehicle-actions {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   min-width: 0;
 }
 
 .service-fee-actions .table-actions,
 .vehicle-actions .table-actions {
-  justify-content: flex-end;
+  justify-content: center;
   flex-wrap: nowrap;
 }
 
@@ -4742,12 +5298,20 @@ html[data-theme="dark"] .staff-maintenance-page .maintenance-card-meta {
 .service-fee-table td:last-child,
 .vehicle-table-building th:last-child,
 .vehicle-table-building td:last-child {
-  text-align: right;
+  text-align: center;
 }
 
 .service-fee-table .table-actions,
 .vehicle-table-building .table-actions {
-  justify-content: flex-end;
+  justify-content: center;
+  margin-inline: auto;
+}
+
+.service-fee-actions-column,
+.service-fee-actions-cell,
+.vehicle-actions-column,
+.vehicle-actions-cell {
+  text-align: center;
 }
 
 .compact-section-header {
@@ -4954,68 +5518,193 @@ html[data-theme="dark"] .staff-maintenance-page .maintenance-card-meta {
   font-weight: 600;
 }
 
+.room-detail-card,
+.room-assignment-card {
+  gap: 0;
+  overflow: hidden;
+  padding: 0;
+  border-color: rgba(203, 213, 225, 0.9);
+  background:
+    radial-gradient(circle at 96% 6%, rgba(59, 130, 246, 0.07), transparent 35%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(249, 252, 255, 0.98));
+}
+
 .room-detail-card {
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 0.85rem 1.15rem;
-  padding: clamp(1rem, 1.8vw, 1.35rem);
+}
+
+.room-assignment-card {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.room-detail-info-item {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  align-items: center;
+  gap: 0.78rem;
+  min-height: 94px;
+  padding: 1.05rem 1.2rem;
+  border-right: 1px solid rgba(203, 213, 225, 0.72);
+  border-bottom: 1px solid rgba(203, 213, 225, 0.72);
+}
+
+.room-detail-card > .room-detail-info-item:nth-child(4n),
+.room-assignment-card > .room-detail-info-item:nth-child(2n) {
+  border-right: 0;
+}
+
+.room-detail-card > .room-detail-info-item:nth-child(n+5),
+.room-assignment-card > .room-detail-info-item:nth-child(n+7) {
+  border-bottom: 0;
+}
+
+.admin-room-detail-page .detail-panel .room-detail-info-icon {
+  display: inline-grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border: 1px solid rgba(37, 99, 235, 0.14);
+  border-radius: 14px;
+  color: #2563eb;
   background:
-    radial-gradient(circle at 94% 0%, rgba(63, 130, 246, 0.075), transparent 34%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(248, 252, 252, 0.98));
+    radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.92), transparent 55%),
+    #eef5ff;
+  box-shadow: 0 12px 26px rgba(37, 99, 235, 0.1);
+  text-transform: none;
 }
 
-.room-detail-card > div {
+.admin-room-detail-page .detail-panel .room-detail-info-icon .line-icon {
+  width: 19px;
+  height: 19px;
+}
+
+.admin-room-detail-page .room-detail-info-copy {
+  display: grid;
   gap: 0.32rem;
-  min-height: 58px;
-  border-bottom: 1px solid rgba(203, 213, 225, 0.72);
-  padding-bottom: 0.65rem;
+  min-width: 0;
 }
 
-.room-detail-card span:first-child,
-.room-detail-card > div > span:not(.status-pill):first-child {
-  color: #020617;
-  font-size: 0.78rem;
-  font-weight: 720;
+.admin-room-detail-page .room-detail-info-copy > span {
+  color: #334155;
+  font-size: 0.72rem;
+  font-weight: 750;
+  letter-spacing: 0;
+  text-transform: uppercase;
 }
 
-.room-detail-card strong,
-.room-detail-card .staff-room-detail-value,
-.room-detail-card p {
+.admin-room-detail-page .room-detail-info-copy > strong {
   color: #020617;
+  font-size: 0.94rem;
   font-weight: var(--font-weight-regular);
+  line-height: 1.35;
+  overflow-wrap: anywhere;
 }
 
-.room-detail-card .room-detail-metric {
+.admin-room-detail-page .room-detail-info-copy .room-detail-metric {
   font-variant-numeric: tabular-nums;
+}
+
+.admin-room-detail-page .room-detail-info-copy .status-pill {
   font-weight: 650;
 }
 
-.room-detail-card .detail-wide {
-  grid-column: auto;
-  min-height: 58px;
-  border-bottom: 1px solid rgba(203, 213, 225, 0.72);
-  padding-top: 0;
-  padding-bottom: 0.65rem;
+.admin-room-detail-page .room-assignment-card .room-detail-info-item {
+  min-height: 72px;
+  padding: 0.78rem 1rem;
 }
 
-.room-detail-card .status-pill {
-  font-weight: 650;
+.admin-room-detail-page .room-assignment-action-row {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  min-height: auto;
+  padding: 0.58rem 1rem;
+  border-top: 1px solid rgba(203, 213, 225, 0.72);
+  border-right: 0;
+  border-bottom: 0;
 }
 
-.admin-room-detail-page .assignment-panel .detail-panel > div > span:first-child {
-  color: #020617;
-  font-size: 0.78rem;
-  font-weight: 720;
+.admin-room-detail-page .room-assignment-action-row .inline-button {
+  width: 100%;
+  min-height: 34px;
+  padding-block: 0.42rem;
+}
+
+html[data-theme='dark'] .room-detail-card,
+html[data-theme='dark'] .room-assignment-card {
+  border-color: rgba(148, 163, 184, 0.28);
+  background:
+    radial-gradient(circle at 96% 6%, rgba(59, 130, 246, 0.12), transparent 34%),
+    linear-gradient(180deg, rgba(15, 23, 42, 0.98), rgba(17, 31, 50, 0.96));
+}
+
+html[data-theme='dark'] .room-detail-info-item {
+  border-color: rgba(148, 163, 184, 0.24);
+}
+
+html[data-theme='dark'] .admin-room-detail-page .detail-panel .room-detail-info-icon {
+  border-color: rgba(96, 165, 250, 0.26);
+  color: #93c5fd;
+  background:
+    radial-gradient(circle at 30% 20%, rgba(59, 130, 246, 0.22), transparent 56%),
+    rgba(30, 41, 59, 0.88);
+  box-shadow: none;
+}
+
+html[data-theme='dark'] .admin-room-detail-page .room-detail-info-copy > span {
+  color: #a8bed8;
+}
+
+html[data-theme='dark'] .admin-room-detail-page .room-detail-info-copy > strong {
+  color: #f8fafc;
+}
+
+html[data-theme='dark'] .admin-room-detail-page .room-assignment-action-row {
+  border-top-color: rgba(148, 163, 184, 0.24);
 }
 
 @media (max-width: 1080px) {
   .room-detail-card {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .room-detail-card > .room-detail-info-item:nth-child(2n) {
+    border-right: 0;
+  }
+
+  .room-detail-card > .room-detail-info-item:nth-child(n+5) {
+    border-bottom: 1px solid rgba(203, 213, 225, 0.72);
+  }
+
+  .room-detail-card > .room-detail-info-item:nth-last-child(-n+2) {
+    border-bottom: 0;
+  }
+
+  html[data-theme='dark'] .room-detail-card > .room-detail-info-item:nth-child(n+5) {
+    border-bottom-color: rgba(148, 163, 184, 0.24);
+  }
 }
 
 @media (max-width: 680px) {
-  .room-detail-card {
+  .room-detail-card,
+  .room-assignment-card {
     grid-template-columns: 1fr;
+  }
+
+  .room-detail-card > .room-detail-info-item,
+  .room-assignment-card > .room-detail-info-item {
+    border-right: 0;
+    border-bottom: 1px solid rgba(203, 213, 225, 0.72);
+  }
+
+  .room-detail-card > .room-detail-info-item:last-child,
+  .room-assignment-card > .room-detail-info-item:last-of-type {
+    border-bottom: 0;
+  }
+
+  html[data-theme='dark'] .room-detail-card > .room-detail-info-item,
+  html[data-theme='dark'] .room-assignment-card > .room-detail-info-item {
+    border-bottom-color: rgba(148, 163, 184, 0.24);
   }
 }
 
@@ -5211,7 +5900,8 @@ html[data-theme="dark"] .staff-maintenance-page .maintenance-card-meta {
   stroke-width: 2;
 }
 
-.cashflow-filter-card input {
+.cashflow-filter-card input,
+.cashflow-filter-card select {
   min-height: 36px;
   border-color: rgba(127, 154, 177, 0.3);
   border-radius: var(--radius-xs);
@@ -5226,43 +5916,60 @@ html[data-theme="dark"] .staff-maintenance-page .maintenance-card-meta {
 .cashflow-summary {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 0.7rem;
+  gap: var(--space-3);
 }
 
 .cashflow-metric {
   display: grid;
-  gap: 0.35rem;
-  border: 1px solid var(--color-border-soft);
-  border-radius: var(--radius-sm);
-  padding: 0.8rem 0.9rem;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.97), rgba(247, 251, 253, 0.96));
-  box-shadow: 0 8px 18px rgba(16, 32, 51, 0.045);
+  position: relative;
+  overflow: hidden;
+  min-height: 86px;
+}
+
+.cashflow-metric::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: var(--invoice-summary-accent, var(--color-primary));
 }
 
 .cashflow-metric-income {
-  border-left: 3px solid var(--color-success);
+  --invoice-summary-accent: #3f82f6;
+}
+
+.cashflow-metric-paid {
+  --invoice-summary-accent: #18b894;
 }
 
 .cashflow-metric-remaining {
-  border-left: 3px solid var(--color-primary);
+  --invoice-summary-accent: #3f82f6;
 }
 
 .cashflow-metric-unpaid {
-  border-left: 3px solid var(--color-warning);
+  --invoice-summary-accent: #f59e0b;
 }
 
-.cashflow-summary span {
+.cashflow-metric-rate {
+  --invoice-summary-accent: #06b6d4;
+}
+
+.cashflow-summary .invoice-summary-copy span {
   color: var(--color-text-muted);
-  font-size: 0.72rem;
-  font-weight: 850;
-  letter-spacing: 0;
+  font-size: 0.78rem;
+  font-weight: 760;
 }
 
 .cashflow-summary strong {
   color: var(--color-text);
-  font-size: 1.05rem;
+  font-size: clamp(1.15rem, 1.4vw, 1.42rem);
+  font-weight: 820;
+  line-height: 1;
   font-variant-numeric: tabular-nums;
+}
+
+.cashflow-summary .invoice-summary-copy small {
+  max-width: 13rem;
 }
 
 .cashflow-record-section {
@@ -5277,10 +5984,25 @@ html[data-theme="dark"] .staff-maintenance-page .maintenance-card-meta {
   gap: 0.75rem;
 }
 
+.cashflow-receipt-section {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.cashflow-receipt-section > .table-wrap {
+  max-height: 334px;
+  overflow-y: auto;
+}
+
+.cashflow-receipt-section > .table-wrap::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
 .cashflow-section-heading span {
   color: var(--color-primary);
   font-size: 0.72rem;
-  font-weight: 850;
+  font-weight: 780;
   letter-spacing: 0;
 }
 
@@ -5288,6 +6010,296 @@ html[data-theme="dark"] .staff-maintenance-page .maintenance-card-meta {
   color: var(--color-text);
   font-size: 1.05rem;
   line-height: 1.25;
+}
+
+.cashflow-chart-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  align-items: stretch;
+}
+
+.cashflow-chart-grid .shared-chart-panel {
+  min-width: 0;
+}
+
+.cashflow-chart-grid .shared-chart-title h2:empty {
+  display: none;
+}
+
+.cashflow-line-chart {
+  position: relative;
+  min-height: 300px;
+  padding: 0.45rem 0.65rem 0.35rem;
+  background:
+    radial-gradient(circle at 90% 6%, rgba(63, 130, 246, 0.06), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(249, 252, 255, 0.98));
+}
+
+.cashflow-line-chart-svg {
+  display: block;
+  width: 100%;
+  height: 300px;
+  overflow: visible;
+}
+
+.cashflow-line-grid {
+  stroke: rgba(104, 119, 137, 0.12);
+  stroke-width: 1;
+}
+
+.cashflow-line-y-label,
+.cashflow-line-x-label {
+  fill: var(--color-text-muted);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-anchor: middle;
+}
+
+.cashflow-line-y-label {
+  text-anchor: end;
+  font-variant-numeric: tabular-nums;
+}
+
+.cashflow-line-area {
+  fill: url(#cashflow-line-fill);
+}
+
+.cashflow-line-path {
+  fill: none;
+  stroke: var(--color-primary);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.6;
+  filter: drop-shadow(0 10px 18px rgba(63, 130, 246, 0.16));
+}
+
+.cashflow-line-point {
+  fill: var(--color-surface);
+  stroke: var(--color-primary);
+  stroke-width: 2.4;
+  cursor: help;
+}
+
+.cashflow-line-empty {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  transform: translate(-50%, -50%);
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-sm);
+  padding: 0.65rem 0.85rem;
+  color: var(--color-text-muted);
+  background: rgba(255, 255, 255, 0.92);
+  font-size: 0.82rem;
+  font-weight: 650;
+}
+
+.cashflow-donut-panel .shared-donut-layout {
+  grid-template-columns: minmax(170px, 210px) minmax(0, 1fr);
+}
+
+.cashflow-room-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  align-items: start;
+}
+
+.cashflow-room-panel {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  overflow: hidden;
+  min-width: 0;
+  height: 374px;
+  border: 1px solid rgba(203, 213, 225, 0.82);
+  border-radius: var(--radius-md);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(249, 252, 255, 0.97));
+  box-shadow: 0 10px 24px rgba(15, 45, 78, 0.045);
+}
+
+.cashflow-room-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+  padding: 0.72rem 0.95rem;
+}
+
+.cashflow-room-panel-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.72rem;
+  min-width: 0;
+}
+
+.cashflow-room-panel-title > span:last-child {
+  color: var(--color-primary);
+  font-size: 0.72rem;
+  font-weight: 780;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.cashflow-room-panel-icon {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-sm);
+  color: var(--color-primary);
+  background: var(--color-surface-muted);
+  line-height: 0;
+}
+
+.cashflow-room-panel-icon .line-icon {
+  width: 15px;
+  height: 15px;
+}
+
+.cashflow-room-table-wrap {
+  height: 326px;
+  max-height: 326px;
+  overflow-y: auto;
+  border-radius: 0;
+  box-shadow: none;
+  scrollbar-color: #b4c1c8 transparent;
+  scrollbar-width: thin;
+}
+
+.cashflow-room-table-wrap::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.cashflow-room-table-wrap::-webkit-scrollbar-thumb {
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background: #b4c1c8;
+  background-clip: padding-box;
+}
+
+.cashflow-room-table {
+  min-width: 620px;
+}
+
+.cashflow-room-table th,
+.cashflow-room-table td {
+  padding: 0.64rem 0.82rem;
+}
+
+.cashflow-room-table td {
+  vertical-align: middle;
+}
+
+.cashflow-room-table tbody tr {
+  height: 58px;
+}
+
+.cashflow-room-table th {
+  color: #64748b;
+  font-size: 0.72rem;
+  font-weight: 650;
+}
+
+.cashflow-room-primary {
+  display: block;
+  color: var(--color-text);
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.cashflow-room-table .table-subtext {
+  color: #64748b;
+  font-size: 0.78rem;
+}
+
+.cashflow-room-table .flat-empty-state {
+  min-height: 288px;
+}
+
+.cashflow-receipt-section .receipt-table th:nth-child(7),
+.cashflow-receipt-section .receipt-table td:nth-child(7) {
+  text-align: center;
+}
+
+.cashflow-receipt-section .receipt-table td:nth-child(7) strong,
+.cashflow-receipt-section .receipt-table td:nth-child(7) .table-subtext {
+  margin-inline: auto;
+}
+
+html[data-theme='dark'] .cashflow-line-chart {
+  background:
+    radial-gradient(circle at 90% 6%, rgba(59, 130, 246, 0.13), transparent 34%),
+    linear-gradient(180deg, rgba(15, 23, 42, 0.98), rgba(17, 31, 50, 0.96));
+}
+
+html[data-theme='dark'] .cashflow-line-grid {
+  stroke: rgba(148, 163, 184, 0.18);
+}
+
+html[data-theme='dark'] .cashflow-line-point {
+  fill: #0f172a;
+}
+
+html[data-theme='dark'] .cashflow-line-empty {
+  background: rgba(15, 23, 42, 0.92);
+}
+
+html[data-theme='dark'] .cashflow-room-panel {
+  border-color: rgba(148, 163, 184, 0.26);
+  background:
+    linear-gradient(180deg, rgba(15, 23, 42, 0.98), rgba(17, 31, 50, 0.96));
+  box-shadow: none;
+}
+
+html[data-theme='dark'] .cashflow-room-panel-header {
+  border-bottom-color: rgba(148, 163, 184, 0.22);
+}
+
+html[data-theme='dark'] .cashflow-room-panel-icon {
+  border-color: rgba(148, 163, 184, 0.26);
+  background: rgba(30, 41, 59, 0.82);
+}
+
+html[data-theme='dark'] .cashflow-room-table th,
+html[data-theme='dark'] .cashflow-room-table .table-subtext {
+  color: #94a3b8;
+}
+
+@media (max-width: 1080px) {
+  .cashflow-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .cashflow-chart-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .cashflow-room-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .cashflow-summary {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .cashflow-filter-card {
+    width: 100%;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .cashflow-line-chart {
+    overflow-x: auto;
+  }
+
+  .cashflow-line-chart-svg {
+    min-width: 620px;
+  }
 }
 
 .resident-feedback-page {
@@ -5425,6 +6437,14 @@ html[data-theme="dark"] .staff-maintenance-page .maintenance-card-meta {
   min-width: 148px;
   justify-self: start;
   margin-top: var(--space-2);
+}
+
+.building-form .building-form-submit {
+  min-width: 118px;
+  min-height: 38px;
+  justify-self: end;
+  padding: 0.52rem 1.15rem;
+  font-size: var(--font-size-sm);
 }
 
 .dialog-actions {
@@ -5665,6 +6685,94 @@ html[data-theme="dark"] .staff-maintenance-page .maintenance-card-meta {
 
 .form-action-row-right {
   justify-content: flex-end;
+}
+
+.vehicle-create-dialog {
+  max-width: 560px;
+}
+
+.resident-vehicle-request-dialog {
+  max-width: 560px;
+}
+
+.resident-member-dialog {
+  max-width: 560px;
+}
+
+.resident-vehicle-request-dialog > .panel-form {
+  gap: var(--space-3);
+  box-shadow: none;
+}
+
+.resident-member-dialog-form {
+  gap: var(--space-3);
+  box-shadow: none;
+}
+
+.resident-member-dialog-form .form-button-row {
+  justify-content: flex-end;
+  margin-top: var(--space-2);
+}
+
+.resident-member-dialog-form .form-button-row button {
+  min-height: 36px;
+  margin-top: 0;
+  padding: 0.48rem 0.9rem;
+}
+
+.resident-member-dialog-form .form-button-row button[type="submit"] {
+  min-width: 74px;
+  width: auto;
+}
+
+.vehicle-add-button {
+  min-height: 36px;
+  padding: 0.48rem 0.8rem;
+  gap: 0.38rem;
+}
+
+.vehicle-add-button .line-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.vehicle-create-dialog .admin-vehicle-form {
+  gap: var(--space-3);
+  box-shadow: none;
+}
+
+.admin-vehicle-form-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.admin-vehicle-field {
+  min-width: 0;
+}
+
+.admin-vehicle-field-full {
+  width: 100%;
+}
+
+.vehicle-create-dialog .admin-vehicle-form .form-action-row {
+  flex-wrap: nowrap;
+}
+
+.vehicle-create-dialog .admin-vehicle-form .form-action-row button[type="submit"] {
+  width: auto;
+  min-width: 88px;
+  padding-inline: 1rem;
+}
+
+@media (max-width: 680px) {
+  .invoice-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-vehicle-form-row {
+    grid-template-columns: 1fr;
+  }
 }
 
 .notification-submit-row {

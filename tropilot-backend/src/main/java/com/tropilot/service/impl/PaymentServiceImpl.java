@@ -2,17 +2,14 @@ package com.tropilot.service.impl;
 
 import com.tropilot.storage.PaymentProofStorageService;
 import com.tropilot.mapper.PaymentMapper;
-import com.tropilot.dto.request.PaymentDecisionRequest;
 import com.tropilot.dto.request.PaymentUploadRequest;
 import com.tropilot.dto.response.PaymentResponse;
 import com.tropilot.entity.Invoice;
 import com.tropilot.entity.Payment;
 import com.tropilot.entity.RoomAssignment;
-import com.tropilot.entity.User;
 import com.tropilot.enums.InvoiceStatus;
 import com.tropilot.enums.PaymentStatus;
 import com.tropilot.enums.NotificationEventType;
-import com.tropilot.enums.ReceiptStatus;
 import com.tropilot.enums.RoomAssignmentStatus;
 import com.tropilot.exception.BadRequestException;
 import com.tropilot.exception.ForbiddenException;
@@ -20,21 +17,15 @@ import com.tropilot.exception.ResourceNotFoundException;
 import com.tropilot.repository.InvoiceRepository;
 import com.tropilot.repository.BuildingRepository;
 import com.tropilot.repository.PaymentRepository;
-import com.tropilot.repository.ReceiptRepository;
 import com.tropilot.repository.RoomAssignmentRepository;
-import com.tropilot.repository.UserRepository;
 import com.tropilot.service.ActivityLogService;
-import com.tropilot.service.PaymentEmailService;
 import com.tropilot.service.PaymentService;
 import com.tropilot.service.NotificationService;
-import com.tropilot.service.ReceiptCreationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -43,14 +34,10 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
     private final BuildingRepository buildingRepository;
     private final InvoiceRepository invoiceRepository;
-    private final ReceiptRepository receiptRepository;
     private final RoomAssignmentRepository roomAssignmentRepository;
-    private final UserRepository userRepository;
     private final PaymentProofStorageService paymentProofStorageService;
     private final PaymentMapper paymentMapper;
-    private final ReceiptCreationService receiptCreationService;
     private final ActivityLogService activityLogService;
-    private final PaymentEmailService paymentEmailService;
     private final NotificationService notificationService;
 
     @Override
@@ -96,15 +83,6 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<PaymentResponse> getResidentPayments(Long residentHeadId) {
-        return paymentRepository.findByResidentHeadIdWithDetails(residentHeadId)
-                .stream()
-                .map(paymentMapper::toResponse)
-                .toList();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public List<PaymentResponse> getPendingPayments(Long buildingId) {
         List<Payment> payments = buildingId == null
                 ? paymentRepository.findByStatusWithDetails(PaymentStatus.PENDING)
@@ -114,99 +92,6 @@ public class PaymentServiceImpl implements PaymentService {
                 .stream()
                 .map(paymentMapper::toResponse)
                 .toList();
-    }
-
-    @Override
-    @Transactional
-    public PaymentResponse approvePayment(
-            Long paymentId,
-            Long confirmedById,
-            PaymentDecisionRequest request,
-            Long buildingId
-    ) {
-        Payment payment = findPayment(paymentId);
-        User confirmedBy = findUser(confirmedById);
-        Invoice invoice = payment.getInvoice();
-
-        validatePaymentBelongsToBuilding(payment, buildingId);
-        validatePaymentPending(payment);
-        validateInvoicePendingConfirmation(invoice);
-
-        if (receiptRepository.existsByInvoice_IdAndStatus(invoice.getId(), ReceiptStatus.VALID)) {
-            throw new BadRequestException("A valid receipt already exists for this invoice");
-        }
-
-        LocalDateTime now = LocalDateTime.now();
-        payment.setStatus(PaymentStatus.APPROVED);
-        payment.setConfirmedBy(confirmedBy);
-        payment.setConfirmedAt(now);
-        updateDecisionNote(payment, request);
-
-        invoice.setStatus(InvoiceStatus.PAID);
-        invoiceRepository.save(invoice);
-        receiptRepository.save(receiptCreationService.createValidReceipt(invoice, confirmedBy, now));
-        activityLogService.record(
-                confirmedBy,
-                "PAYMENT_APPROVED",
-                "Approved payment for invoice " + invoice.getId()
-        );
-        Payment savedPayment = paymentRepository.save(payment);
-        notificationService.notifyUser(
-                confirmedBy,
-                payment.getResidentHead(),
-                NotificationEventType.PAYMENT_RECEIVED,
-                "Thanh toán đã được xác nhận",
-                "Hóa đơn " + invoice.getId() + " đã được xác nhận thanh toán thành công.",
-                "/resident/invoices/" + invoice.getId(),
-                invoice.getRoom().getBuilding()
-        );
-        paymentEmailService.sendPaymentSuccessEmail(invoice, now);
-
-        return paymentMapper.toResponse(savedPayment);
-    }
-
-    @Override
-    @Transactional
-    public PaymentResponse rejectPayment(
-            Long paymentId,
-            Long confirmedById,
-            PaymentDecisionRequest request,
-            Long buildingId
-    ) {
-        Payment payment = findPayment(paymentId);
-        User confirmedBy = findUser(confirmedById);
-        Invoice invoice = payment.getInvoice();
-
-        validatePaymentBelongsToBuilding(payment, buildingId);
-        validatePaymentPending(payment);
-        validateInvoicePendingConfirmation(invoice);
-
-        payment.setStatus(PaymentStatus.REJECTED);
-        payment.setConfirmedBy(confirmedBy);
-        payment.setConfirmedAt(LocalDateTime.now());
-        updateDecisionNote(payment, request);
-
-        invoice.setStatus(InvoiceStatus.REJECTED);
-        invoiceRepository.save(invoice);
-        activityLogService.record(
-                confirmedBy,
-                "PAYMENT_REJECTED",
-                "Rejected payment for invoice " + invoice.getId()
-        );
-
-        Payment savedPayment = paymentRepository.save(payment);
-        notificationService.notifyUser(
-                confirmedBy,
-                payment.getResidentHead(),
-                NotificationEventType.PAYMENT_REJECTED,
-                "Thanh toán chưa được chấp nhận",
-                "Minh chứng thanh toán hóa đơn " + invoice.getId()
-                        + " chưa được chấp nhận. Vui lòng kiểm tra và gửi lại.",
-                "/resident/invoices/" + invoice.getId(),
-                invoice.getRoom().getBuilding()
-        );
-
-        return paymentMapper.toResponse(savedPayment);
     }
 
     private void validateResidentInvoiceAccess(RoomAssignment assignment, Invoice invoice) {
@@ -228,31 +113,8 @@ public class PaymentServiceImpl implements PaymentService {
         }
     }
 
-    private void validatePaymentPending(Payment payment) {
-        if (payment.getStatus() != PaymentStatus.PENDING) {
-            throw new BadRequestException("Only pending payments can be processed");
-        }
-    }
-
-    private void validateInvoicePendingConfirmation(Invoice invoice) {
-        if (invoice.getStatus() != InvoiceStatus.PENDING_CONFIRMATION) {
-            throw new BadRequestException("Invoice is not pending payment confirmation");
-        }
-    }
-
-    private void updateDecisionNote(Payment payment, PaymentDecisionRequest request) {
-        if (request != null && request.getNote() != null && !request.getNote().isBlank()) {
-            payment.setNote(request.getNote().trim());
-        }
-    }
-
     private String normalizeNote(String note) {
         return note == null || note.isBlank() ? null : note.trim();
-    }
-
-    private Payment findPayment(Long paymentId) {
-        return paymentRepository.findById(paymentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Payment not found"));
     }
 
     private List<Payment> getBuildingPendingPayments(Long buildingId) {
@@ -266,26 +128,9 @@ public class PaymentServiceImpl implements PaymentService {
         }
     }
 
-    private void validatePaymentBelongsToBuilding(Payment payment, Long buildingId) {
-        if (buildingId == null) {
-            return;
-        }
-
-        validateBuildingExists(buildingId);
-
-        if (!Objects.equals(payment.getInvoice().getRoom().getBuilding().getId(), buildingId)) {
-            throw new BadRequestException("Payment does not belong to the selected building");
-        }
-    }
-
     private Invoice findInvoice(Long invoiceId) {
         return invoiceRepository.findById(invoiceId)
                 .orElseThrow(() -> new ResourceNotFoundException("Invoice not found"));
-    }
-
-    private User findUser(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
     private RoomAssignment findResidentAssignment(Long residentHeadId) {

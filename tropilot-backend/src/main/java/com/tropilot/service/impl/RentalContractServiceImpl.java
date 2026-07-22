@@ -103,15 +103,6 @@ public class RentalContractServiceImpl implements RentalContractService {
     }
 
     @Override
-    @Transactional
-    public RentalContractResponse markNeedUpdate(Long id, Long buildingId) {
-        RentalContract contract = findActiveContract(id);
-        validateContractBelongsToBuilding(contract, buildingId);
-        contract.setContractStatus(ContractStatus.NEED_UPDATE);
-        return rentalContractMapper.toResponse(rentalContractRepository.save(contract));
-    }
-
-    @Override
     @Transactional(readOnly = true)
     public RentalContractResponse getCurrentResidentContract(Long residentHeadId) {
         return toResponseWithHistory(findCurrentResidentContract(residentHeadId));

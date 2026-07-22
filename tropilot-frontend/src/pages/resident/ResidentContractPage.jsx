@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import * as contractApi from '../../features/contracts/api.js';
 import ContractFileHistoryList from '../../components/ContractFileHistoryList.jsx';
 import ActionDialog from '../../components/common/ActionDialog.jsx';
+import LineIcon from '../../components/common/LineIcon.jsx';
 import ManagementPageHero from '../../components/common/ManagementPageHero.jsx';
 import { getContractStatusClass } from '../../utils/contractStatusOptions.js';
 import { formatDisplayDate } from '../../utils/dateFormat.js';
@@ -19,6 +20,20 @@ function formatNumber(value) {
 
 function isConfirmedContract(contract) {
   return contract?.contractStatus === 'CONFIRMED';
+}
+
+function ContractInfoItem({ icon, label, value }) {
+  return (
+    <div className="resident-contract-info-item">
+      <span className="resident-contract-info-icon">
+        <LineIcon name={icon} />
+      </span>
+      <span className="resident-contract-info-copy">
+        <span>{label}</span>
+        <strong>{value}</strong>
+      </span>
+    </div>
+  );
 }
 
 export default function ResidentContractPage() {
@@ -94,39 +109,41 @@ export default function ResidentContractPage() {
 
       {contract ? (
         <>
-          <div className="detail-panel">
-            <div>
-              <span>{t('tables.common.room')}</span>
-              <strong>{formatRoomLabel(contract)}</strong>
-            </div>
-            <div>
-              <span>{t('tables.common.building')}</span>
-              <strong>
-                {contract.buildingCode} - {contract.buildingName}
-              </strong>
-            </div>
-            <div>
-              <span>{t('contracts.period')}</span>
-              <strong>
-                {formatDisplayDate(contract.startDate)} {t('common.to')} {formatDisplayDate(contract.endDate)}
-              </strong>
-            </div>
-            <div>
-              <span>{t('tables.common.depositAmount')}</span>
-              <strong>{formatNumber(contract.depositAmount)}</strong>
-            </div>
-            <div>
-              <span>{t('contracts.status')}</span>
-              <strong>
+          <div className="detail-panel resident-contract-info-grid">
+            <ContractInfoItem
+              icon="building"
+              label={t('tables.common.room')}
+              value={formatRoomLabel(contract)}
+            />
+            <ContractInfoItem
+              icon="building"
+              label={t('tables.common.building')}
+              value={`${contract.buildingCode} - ${contract.buildingName}`}
+            />
+            <ContractInfoItem
+              icon="calendar"
+              label={t('contracts.period')}
+              value={`${formatDisplayDate(contract.startDate)} ${t('common.to')} ${formatDisplayDate(contract.endDate)}`}
+            />
+            <ContractInfoItem
+              icon="wallet"
+              label={t('tables.common.depositAmount')}
+              value={formatNumber(contract.depositAmount)}
+            />
+            <ContractInfoItem
+              icon="checkShield"
+              label={t('contracts.status')}
+              value={(
                 <span className={getContractStatusClass(contract.contractStatus)}>
                   {formatEnumLabel(t, 'contractStatus', contract.contractStatus)}
                 </span>
-              </strong>
-            </div>
-            <div>
-              <span>{t('contracts.rentalStatus')}</span>
-              <strong>{formatEnumLabel(t, 'rentalStatus', contract.rentalStatus)}</strong>
-            </div>
+              )}
+            />
+            <ContractInfoItem
+              icon="activity"
+              label={t('contracts.rentalStatus')}
+              value={formatEnumLabel(t, 'rentalStatus', contract.rentalStatus)}
+            />
           </div>
 
           <div className="button-row contract-actions">

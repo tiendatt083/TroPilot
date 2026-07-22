@@ -14,8 +14,6 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
     boolean existsByInvoice_IdAndStatus(Long invoiceId, PaymentStatus status);
 
-    boolean existsByInvoice_Id(Long invoiceId);
-
     void deleteByInvoice_Id(Long invoiceId);
 
     long countByStatus(PaymentStatus status);
@@ -28,18 +26,6 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
             "confirmedBy"
     })
     Optional<Payment> findById(Long id);
-
-    @Query("""
-            select payment from Payment payment
-            join fetch payment.invoice invoice
-            join fetch invoice.room room
-            join fetch room.building building
-            join fetch payment.residentHead residentHead
-            left join fetch payment.confirmedBy confirmedBy
-            where residentHead.id = :residentHeadId
-            order by payment.uploadedAt desc
-            """)
-    List<Payment> findByResidentHeadIdWithDetails(@Param("residentHeadId") Long residentHeadId);
 
     @Query("""
             select payment from Payment payment

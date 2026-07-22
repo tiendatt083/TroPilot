@@ -152,11 +152,13 @@ export default function EquipmentMaintenancePanel({
             />
             <small className="field-help">{t('equipment.request.imageHelp')}</small>
           </div>
-          <button type="submit" disabled={requestLoading}>
-            {requestLoading
-              ? submittingLabel || t('equipment.request.submitting')
-              : submitLabel || t('equipment.request.submit')}
-          </button>
+          <div className="equipment-request-action-row">
+            <button className="equipment-request-submit-button" type="submit" disabled={requestLoading}>
+              {requestLoading
+                ? submittingLabel || t('equipment.request.submitting')
+                : submitLabel || t('equipment.request.submit')}
+            </button>
+          </div>
         </form>
       )}
     </section>

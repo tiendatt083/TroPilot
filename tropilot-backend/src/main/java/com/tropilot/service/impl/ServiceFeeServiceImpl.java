@@ -73,13 +73,6 @@ public class ServiceFeeServiceImpl implements ServiceFeeService {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public ServiceFeeResponse getBuildingServiceFee(Long buildingId, Long id) {
-        ServiceFee serviceFee = findBuildingServiceFee(buildingId, id);
-        return serviceFeeMapper.toResponse(serviceFee);
-    }
-
-    @Override
     @Transactional
     public ServiceFeeResponse updateBuildingServiceFee(Long buildingId, Long id, ServiceFeeUpsertRequest request) {
         ServiceFee serviceFee = findBuildingServiceFee(buildingId, id);

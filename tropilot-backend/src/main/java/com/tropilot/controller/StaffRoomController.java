@@ -1,7 +1,9 @@
 package com.tropilot.controller;
 
 import com.tropilot.dto.response.ApiResponse;
+import com.tropilot.dto.response.HeadResidentAssignmentResponse;
 import com.tropilot.dto.response.RoomResponse;
+import com.tropilot.service.HeadResidentAssignmentService;
 import com.tropilot.service.RoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,6 +22,7 @@ import java.util.List;
 public class StaffRoomController {
 
     private final RoomService roomService;
+    private final HeadResidentAssignmentService headResidentAssignmentService;
 
     @GetMapping
     public ApiResponse<List<RoomResponse>> getRooms(
@@ -33,5 +36,13 @@ public class StaffRoomController {
     @GetMapping("/{id}")
     public ApiResponse<RoomResponse> getRoom(@PathVariable(name = "id") Long id) {
         return ApiResponse.success("Room loaded successfully", roomService.getRoom(id));
+    }
+
+    @GetMapping("/{id}/head-resident")
+    public ApiResponse<HeadResidentAssignmentResponse> getHeadResident(@PathVariable(name = "id") Long id) {
+        return ApiResponse.success(
+                "Head Resident assignment loaded successfully",
+                headResidentAssignmentService.getHeadResidentAssignment(id)
+        );
     }
 }

@@ -17,6 +17,8 @@ const emptyFilters = {
   status: ''
 };
 
+const STAFF_OVERVIEW_VISIBLE_STATUSES = new Set(['ASSIGNED', 'IN_PROGRESS']);
+
 function requestMatchesSearch(request, searchValue) {
   if (!searchValue) {
     return true;
@@ -40,6 +42,29 @@ function requestMatchesSearch(request, searchValue) {
   return searchableValues.some((value) => normalizeSearchText(value).includes(searchValue));
 }
 
+function getMaintenanceDeviceText(request, t) {
+  return request.equipmentName
+    || request.equipmentCode
+    || request.title
+    || t('common.notProvided');
+}
+
+function getMaintenanceDeviceSubtext(request, t) {
+  if (request.equipmentCode && request.equipmentName && request.equipmentCode !== request.equipmentName) {
+    return request.equipmentCode;
+  }
+
+  if (request.content && request.content !== request.title) {
+    return request.content;
+  }
+
+  return request.equipmentId ? t('navigation.equipment') : t('tables.common.request');
+}
+
+function getMaintenanceRoomText(request, t) {
+  return request.roomId ? formatRoomCode(request) : t('equipment.scopes.BUILDING');
+}
+
 export default function StaffMaintenancePage() {
   const { t } = useTranslation();
   const location = useLocation();
@@ -59,13 +84,21 @@ export default function StaffMaintenancePage() {
     resultImage: null
   });
   const filteredRequests = useMemo(() => {
+    const visibleRequests = building
+      ? requests
+      : requests.filter((request) => STAFF_OVERVIEW_VISIBLE_STATUSES.has(request.status));
+
+    if (!building) {
+      return visibleRequests;
+    }
+
     const searchValue = normalizeSearchText(filters.search);
 
-    return requests.filter((request) => (
+    return visibleRequests.filter((request) => (
       requestMatchesSearch(request, searchValue)
       && (!filters.status || request.status === filters.status)
     ));
-  }, [filters, requests]);
+  }, [building, filters, requests]);
 
   const loadRequests = async () => {
     setError('');
@@ -148,6 +181,7 @@ export default function StaffMaintenancePage() {
 
   const canStart = selectedRequest?.status === 'ASSIGNED';
   const canComplete = selectedRequest?.status === 'IN_PROGRESS';
+  const hasSelectedMaintenanceAction = canStart || canComplete;
 
   const openRequestDetail = (request) => {
     if (!building && request.buildingId) {
@@ -195,97 +229,79 @@ export default function StaffMaintenancePage() {
         <div className="empty-state">{t('maintenance.loading')}</div>
       ) : (
         <>
-          <FilterBar
-            as="div"
-            className="workspace-filter-row"
-            searchAriaLabel={t('workspace.filters.searchAria')}
-            searchPlaceholder={t('workspace.filters.searchPlaceholder')}
-            searchValue={filters.search}
-            filters={[
-              {
-                name: 'status',
-                value: filters.status,
-                ariaLabel: t('workspace.filters.statusAria'),
-                onChange: (value) => setFilters((current) => ({ ...current, status: value })),
-                options: [
-                  { value: '', label: t('workspace.filters.allStatuses') },
-                  ...MAINTENANCE_STATUS_OPTIONS.map((option) => ({
-                    value: option.value,
-                    label: formatEnumLabel(t, 'maintenanceStatus', option.value)
-                  }))
-                ]
-              }
-            ]}
-            clearLabel={t('common.clear')}
-            onClear={handleClearFilters}
-            onSearchChange={(value) => setFilters((current) => ({ ...current, search: value }))}
-          />
-          <section className="maintenance-card-list maintenance-card-list-polished">
-            {filteredRequests.map((request) => (
-              <button
-                className="maintenance-card"
-                key={request.id}
-                type="button"
-                onClick={() => openRequestDetail(request)}
-              >
-                <span className="maintenance-card-accent" aria-hidden="true" />
-                <span className="maintenance-card-main">
-                  <span className="maintenance-card-type">
-                    {request.equipmentId ? t('navigation.equipment') : t('tables.common.request')}
-                  </span>
-                  <strong>{request.title}</strong>
-                  <small>{request.content || t('common.notProvided')}</small>
-                </span>
-                <span className="maintenance-card-meta-grid">
-                  {!building && (
-                    <span className="maintenance-card-meta">
-                      <span>
-                        <LineIcon name="building" />
-                        {t('tables.common.building')}
+          {building && (
+            <FilterBar
+              as="div"
+              className="workspace-filter-row"
+              searchAriaLabel={t('workspace.filters.searchAria')}
+              searchPlaceholder={t('workspace.filters.searchPlaceholder')}
+              searchValue={filters.search}
+              filters={[
+                {
+                  name: 'status',
+                  value: filters.status,
+                  ariaLabel: t('workspace.filters.statusAria'),
+                  onChange: (value) => setFilters((current) => ({ ...current, status: value })),
+                  options: [
+                    { value: '', label: t('workspace.filters.allStatuses') },
+                    ...MAINTENANCE_STATUS_OPTIONS.map((option) => ({
+                      value: option.value,
+                      label: formatEnumLabel(t, 'maintenanceStatus', option.value)
+                    }))
+                  ]
+                }
+              ]}
+              clearLabel={t('common.clear')}
+              onClear={handleClearFilters}
+              onSearchChange={(value) => setFilters((current) => ({ ...current, search: value }))}
+            />
+          )}
+          <div className="table-wrap staff-maintenance-table-wrap">
+            <table className="data-table staff-maintenance-request-table">
+              <thead>
+                <tr>
+                  <th>{t('navigation.equipment')}</th>
+                  <th>{t('tables.common.room')}</th>
+                  <th>{t('tables.common.requestedBy')}</th>
+                  <th>{t('tables.common.created')}</th>
+                  <th>{t('tables.common.status')}</th>
+                  <th className="staff-maintenance-actions-column">{t('tables.common.actions')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredRequests.map((request) => (
+                  <tr key={request.id}>
+                    <td>
+                      <span className="staff-maintenance-main-text">{getMaintenanceDeviceText(request, t)}</span>
+                      <span className="table-subtext">{getMaintenanceDeviceSubtext(request, t)}</span>
+                    </td>
+                    <td>{getMaintenanceRoomText(request, t)}</td>
+                    <td>{request.requestedByName || request.residentHeadName || t('common.notProvided')}</td>
+                    <td>{formatDateTime(request.createdAt, t)}</td>
+                    <td>
+                      <span className={getMaintenanceStatusClass(request.status)}>
+                        {formatEnumLabel(t, 'maintenanceStatus', request.status)}
                       </span>
-                      <strong>
-                        {request.buildingCode && request.buildingName
-                          ? `${request.buildingCode} - ${request.buildingName}`
-                          : request.buildingName || t('common.notProvided')}
-                      </strong>
-                    </span>
-                  )}
-                  <span className="maintenance-card-meta">
-                    <span>
-                      <LineIcon name="home" />
-                      {t('tables.common.room')}
-                    </span>
-                    <strong>{request.roomId ? formatRoomCode(request) : t('equipment.scopes.BUILDING')}</strong>
-                  </span>
-                  <span className="maintenance-card-meta">
-                    <span>
-                      <LineIcon name="user" />
-                      {t('tables.common.requestedBy')}
-                    </span>
-                    <strong>{request.requestedByName || request.residentHeadName || t('common.notProvided')}</strong>
-                  </span>
-                  <span className="maintenance-card-meta">
-                    <span>
-                      <LineIcon name="calendar" />
-                      {t('tables.common.created')}
-                    </span>
-                    <strong>{formatDateTime(request.createdAt, t)}</strong>
-                  </span>
-                </span>
-                <span className="maintenance-card-state">
-                  <span className={getMaintenanceStatusClass(request.status)}>
-                    {formatEnumLabel(t, 'maintenanceStatus', request.status)}
-                  </span>
-                  <span className="maintenance-card-view icon-action-button" aria-hidden="true">
-                    <LineIcon name="eye" />
-                  </span>
-                </span>
-              </button>
-            ))}
+                    </td>
+                    <td className="staff-maintenance-actions-cell">
+                      <button
+                        aria-label={t('common.view')}
+                        className="icon-action-button"
+                        data-tooltip={t('common.view')}
+                        type="button"
+                        onClick={() => openRequestDetail(request)}
+                      >
+                        <LineIcon name="eye" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
             {filteredRequests.length === 0 && (
               <div className="empty-state flat-empty-state">{t('tables.maintenanceRequests.empty')}</div>
             )}
-          </section>
+          </div>
         </>
       )}
 
@@ -300,7 +316,7 @@ export default function StaffMaintenancePage() {
         <div className="maintenance-staff-dialog-grid">
           <MaintenanceRequestDetail request={selectedRequest} />
 
-          {selectedRequest && (
+          {selectedRequest && hasSelectedMaintenanceAction && (
             <div className="task-actions-panel maintenance-staff-action-panel">
               {canStart && (
                 <button
@@ -340,9 +356,6 @@ export default function StaffMaintenancePage() {
                 </form>
               )}
 
-              {!canStart && !canComplete && (
-                <div className="empty-state">{t('maintenance.staff.noAction')}</div>
-              )}
             </div>
           )}
         </div>

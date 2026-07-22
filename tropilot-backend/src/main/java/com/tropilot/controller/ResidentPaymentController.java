@@ -11,13 +11,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/resident/payments")
@@ -35,14 +32,6 @@ public class ResidentPaymentController {
         return ApiResponse.success(
                 "Payment proof uploaded successfully",
                 paymentService.uploadPaymentProof(getUserId(user), request)
-        );
-    }
-
-    @GetMapping
-    public ApiResponse<List<PaymentResponse>> getPayments(@AuthenticationPrincipal AuthenticatedUser user) {
-        return ApiResponse.success(
-                "Payments loaded successfully",
-                paymentService.getResidentPayments(getUserId(user))
         );
     }
 

@@ -35,7 +35,7 @@ export default function BuildingForm({ initialValues, loading, submitLabel, onSu
   };
 
   return (
-    <form className="panel-form" onSubmit={handleSubmit}>
+    <form className="panel-form building-form" onSubmit={handleSubmit}>
       <label htmlFor="buildingCode">{t('forms.building.buildingCode')}</label>
       <input
         id="buildingCode"
@@ -87,7 +87,7 @@ export default function BuildingForm({ initialValues, loading, submitLabel, onSu
         rows="4"
       />
 
-      <button type="submit" disabled={loading}>
+      <button className="building-form-submit" type="submit" disabled={loading}>
         {loading ? t('common.saving') : submitLabel}
       </button>
     </form>

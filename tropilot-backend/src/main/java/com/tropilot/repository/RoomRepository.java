@@ -17,8 +17,6 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
 
     long countByStatus(RoomStatus status);
 
-    long countByBuilding_Id(Long buildingId);
-
     List<Room> findAllByBuilding_IdOrderByRoomCodeAsc(Long buildingId);
 
     @Query("""

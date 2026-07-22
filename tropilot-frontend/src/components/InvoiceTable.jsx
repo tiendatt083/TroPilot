@@ -28,7 +28,7 @@ export default function InvoiceTable({ invoices, renderActions, detailPathBase, 
             <th>{t('tables.common.totalAmount')}</th>
             <th>{t('tables.common.dueDate')}</th>
             <th>{t('tables.common.status')}</th>
-            {hasActions && <th>{t('tables.common.actions')}</th>}
+            {hasActions && <th className="invoice-action-column">{t('tables.common.actions')}</th>}
           </tr>
         </thead>
         <tbody>

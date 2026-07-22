@@ -46,17 +46,6 @@ public class AdminBuildingServiceFeeController {
         );
     }
 
-    @GetMapping("/{id}")
-    public ApiResponse<ServiceFeeResponse> getServiceFee(
-            @PathVariable(name = "buildingId") Long buildingId,
-            @PathVariable(name = "id") Long id
-    ) {
-        return ApiResponse.success(
-                "Service fee loaded successfully",
-                serviceFeeService.getBuildingServiceFee(buildingId, id)
-        );
-    }
-
     @PutMapping("/{id}")
     public ApiResponse<ServiceFeeResponse> updateServiceFee(
             @PathVariable(name = "buildingId") Long buildingId,

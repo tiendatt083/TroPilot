@@ -113,46 +113,44 @@ export default function StaffTaskDetailPage() {
       <section className="task-workspace">
         <TaskDetail task={task} />
 
-        <aside className="task-actions-panel">
-          <PageHeader eyebrow={t('taskManagement.actionsEyebrow')} title={t('taskManagement.progressTitle')} />
+        {(canStart || canComplete) && (
+          <aside className="task-actions-panel task-staff-actions">
+            <PageHeader eyebrow={t('taskManagement.actionsEyebrow')} title={t('taskManagement.progressTitle')} />
 
-          {canStart && (
-            <button className="inline-button" type="button" disabled={processing} onClick={handleStart}>
-              {processing ? t('taskManagement.starting') : t('taskManagement.start')}
-            </button>
-          )}
-
-          {canComplete && (
-            <form className="panel-form" onSubmit={handleComplete}>
-              <label htmlFor="resultNote">{t('taskManagement.resultNote')}</label>
-              <textarea
-                id="resultNote"
-                name="resultNote"
-                rows="5"
-                value={completionForm.resultNote}
-                onChange={handleCompletionChange}
-                required
-              />
-
-              <label htmlFor="resultImage">{t('taskManagement.resultImage')}</label>
-              <input
-                id="resultImage"
-                name="resultImage"
-                type="file"
-                accept="image/jpeg,image/png"
-                onChange={handleCompletionChange}
-              />
-
-              <button type="submit" disabled={processing}>
-                {processing ? t('taskManagement.completing') : t('taskManagement.complete')}
+            {canStart && (
+              <button className="inline-button" type="button" disabled={processing} onClick={handleStart}>
+                {processing ? t('taskManagement.starting') : t('taskManagement.start')}
               </button>
-            </form>
-          )}
+            )}
 
-          {!canStart && !canComplete && (
-            <div className="empty-state">{t('taskManagement.noAction')}</div>
-          )}
-        </aside>
+            {canComplete && (
+              <form className="panel-form" onSubmit={handleComplete}>
+                <label htmlFor="resultNote">{t('taskManagement.resultNote')}</label>
+                <textarea
+                  id="resultNote"
+                  name="resultNote"
+                  rows="5"
+                  value={completionForm.resultNote}
+                  onChange={handleCompletionChange}
+                  required
+                />
+
+                <label htmlFor="resultImage">{t('taskManagement.resultImage')}</label>
+                <input
+                  id="resultImage"
+                  name="resultImage"
+                  type="file"
+                  accept="image/jpeg,image/png"
+                  onChange={handleCompletionChange}
+                />
+
+                <button type="submit" disabled={processing}>
+                  {processing ? t('taskManagement.completing') : t('taskManagement.complete')}
+                </button>
+              </form>
+            )}
+          </aside>
+        )}
       </section>
     </section>
   );

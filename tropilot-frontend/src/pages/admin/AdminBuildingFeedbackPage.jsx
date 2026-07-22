@@ -221,6 +221,9 @@ export default function AdminBuildingFeedbackPage() {
 
     return (
       <div className="feedback-review-actions">
+        <span className={getFeedbackStatusClass(feedback.status)}>
+          {formatEnumLabel(t, 'feedbackStatus', feedback.status)}
+        </span>
         <div className="feedback-action-buttons feedback-icon-actions">
           <button
             aria-label={t('feedbackManagement.status')}
@@ -425,11 +428,6 @@ export default function AdminBuildingFeedbackPage() {
           <div className="feedback-review-content">
             <div className="feedback-review-title-row">
               <div className="feedback-review-title-block">
-                <div className="feedback-review-kicker">
-                  <span className={getFeedbackStatusClass(feedback.status)}>
-                    {formatEnumLabel(t, 'feedbackStatus', feedback.status)}
-                  </span>
-                </div>
                 <h3>{feedback.title}</h3>
               </div>
             </div>

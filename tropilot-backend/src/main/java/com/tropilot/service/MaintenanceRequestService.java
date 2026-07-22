@@ -9,8 +9,6 @@ import java.util.List;
 
 public interface MaintenanceRequestService {
 
-    MaintenanceRequestResponse createResidentRequest(Long residentHeadId, MaintenanceRequestCreateRequest request);
-
     MaintenanceRequestResponse createEquipmentRequest(
             Long requestedById,
             Long equipmentId,
@@ -18,8 +16,6 @@ public interface MaintenanceRequestService {
     );
 
     List<MaintenanceRequestResponse> getResidentRequests(Long residentHeadId);
-
-    MaintenanceRequestResponse getResidentRequest(Long residentHeadId, Long id);
 
     List<MaintenanceRequestResponse> getRequests(Long buildingId);
 

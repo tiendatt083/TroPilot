@@ -108,6 +108,7 @@ export default function ResidentInvoiceDetailPage() {
             ) : null
           }
           showPaymentInstructions
+          showSummaryIcons
         />
       </section>
     </section>

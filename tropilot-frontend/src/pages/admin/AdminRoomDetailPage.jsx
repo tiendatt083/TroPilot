@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation, useNavigate, useOutletContext } from 'react-router-dom';
-import { ArrowLeft, Edit3, Trash2, UsersRound } from 'lucide-react';
 import * as buildingApi from '../../features/buildings/api.js';
 import * as roomApi from '../../features/rooms/api.js';
 import * as adminUserApi from '../../features/users/api.js';
@@ -9,6 +8,7 @@ import useRoomRouteContext from '../../features/rooms/useRoomRouteContext.js';
 import HeadResidentAssignmentForm from '../../components/HeadResidentAssignmentForm.jsx';
 import RoomForm from '../../components/RoomForm.jsx';
 import ActionDialog from '../../components/common/ActionDialog.jsx';
+import LineIcon from '../../components/common/LineIcon.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
 import { formatDateInputValue, formatDisplayDate } from '../../utils/dateFormat.js';
 import { formatEnumLabel } from '../../utils/i18nFormat.js';
@@ -58,6 +58,20 @@ function getEndContractConfirmationMessage(room, headInfo, t) {
   }
 
   return t('roomManagement.assignment.endConfirm', { room: roomCode });
+}
+
+function RoomDetailInfoItem({ icon, label, children }) {
+  return (
+    <div className="room-detail-info-item">
+      <span className="room-detail-info-icon" aria-hidden="true">
+        <LineIcon name={icon} />
+      </span>
+      <div className="room-detail-info-copy">
+        <span>{label}</span>
+        <strong>{children}</strong>
+      </div>
+    </div>
+  );
 }
 
 export default function AdminRoomDetailPage() {
@@ -231,7 +245,7 @@ export default function AdminRoomDetailPage() {
   return (
     <section className="content-section admin-room-detail-page">
       <div className="page-title-row">
-        <PageHeader eyebrow={formatRoomCode(room)} title={room.roomName} />
+        <PageHeader eyebrow={formatRoomCode(room)} />
         <div className="button-row room-detail-actions">
           <Link
             className="icon-action-button"
@@ -239,7 +253,7 @@ export default function AdminRoomDetailPage() {
             to={roomBasePath}
             aria-label={t('roomManagement.back')}
           >
-            <ArrowLeft size={18} />
+            <LineIcon name="logOut" />
           </Link>
           <button
             className="icon-action-button"
@@ -248,7 +262,7 @@ export default function AdminRoomDetailPage() {
             onClick={() => setEditOpen(true)}
             aria-label={t('common.edit')}
           >
-            <Edit3 size={18} />
+            <LineIcon name="edit" />
           </button>
           <Link
             className="icon-action-button"
@@ -256,7 +270,7 @@ export default function AdminRoomDetailPage() {
             to={`${roomBasePath}/${room.id}/members`}
             aria-label={t('roomManagement.members')}
           >
-            <UsersRound size={18} />
+            <LineIcon name="users" />
           </Link>
           <button
             className="icon-action-button icon-action-danger"
@@ -266,7 +280,7 @@ export default function AdminRoomDetailPage() {
             onClick={handleDelete}
             aria-label={t('common.delete')}
           >
-            <Trash2 size={18} />
+            <LineIcon name="trash" />
           </button>
         </div>
       </div>
@@ -275,50 +289,35 @@ export default function AdminRoomDetailPage() {
       {error && <div className="alert error-alert">{error}</div>}
 
       <div className="detail-panel room-detail-card">
-        <div>
-          <span>{t('tables.common.building')}</span>
-          <strong>
-            {room.buildingCode} - {room.buildingName}
-          </strong>
-        </div>
-        <div>
-          <span>{t('forms.building.address')}</span>
-          <strong>{buildingAddress}</strong>
-        </div>
-        <div>
-          <span>{t('tables.common.status')}</span>
-          <strong>
-            <span className={statusClass(room.status)}>{formatEnumLabel(t, 'roomStatus', room.status)}</span>
-          </strong>
-        </div>
-        <div>
-          <span>{t('tables.common.floor')}</span>
-          <strong>{room.floor}</strong>
-        </div>
-        <div>
-          <span>{t('roomManagement.maximumOccupants')}</span>
-          <strong>{room.maxOccupants}</strong>
-        </div>
-        <div>
-          <span>{t('tables.common.price')}</span>
-          <strong className="room-detail-metric">{formatMoney(room.price)}</strong>
-        </div>
-        <div>
-          <span>{t('tables.common.area')}</span>
-          <strong className="room-detail-metric">{formatArea(room.area)}</strong>
-        </div>
-        <div className="detail-wide">
-          <span>{t('tables.common.description')}</span>
-          <p>{room.description || t('roomManagement.noDescription')}</p>
-        </div>
+        <RoomDetailInfoItem icon="building" label={t('tables.common.building')}>
+          {room.buildingCode} - {room.buildingName}
+        </RoomDetailInfoItem>
+        <RoomDetailInfoItem icon="mapPin" label={t('forms.building.address')}>
+          {buildingAddress}
+        </RoomDetailInfoItem>
+        <RoomDetailInfoItem icon="checkShield" label={t('tables.common.status')}>
+          <span className={statusClass(room.status)}>{formatEnumLabel(t, 'roomStatus', room.status)}</span>
+        </RoomDetailInfoItem>
+        <RoomDetailInfoItem icon="barChart" label={t('tables.common.floor')}>
+          {room.floor}
+        </RoomDetailInfoItem>
+        <RoomDetailInfoItem icon="users" label={t('roomManagement.maximumOccupants')}>
+          {room.maxOccupants}
+        </RoomDetailInfoItem>
+        <RoomDetailInfoItem icon="wallet" label={t('tables.common.price')}>
+          <span className="room-detail-metric">{formatMoney(room.price)}</span>
+        </RoomDetailInfoItem>
+        <RoomDetailInfoItem icon="activity" label={t('tables.common.area')}>
+          <span className="room-detail-metric">{formatArea(room.area)}</span>
+        </RoomDetailInfoItem>
+        <RoomDetailInfoItem icon="fileText" label={t('tables.common.description')}>
+          {room.description || t('roomManagement.noDescription')}
+        </RoomDetailInfoItem>
       </div>
 
       <section className="assignment-panel">
         <div className="page-title-row compact-title-row">
-          <PageHeader
-            eyebrow={t('roomManagement.assignment.eyebrow')}
-            title={t('roomManagement.assignment.title')}
-          />
+          <PageHeader eyebrow={t('roomManagement.assignment.eyebrow')} />
           {!hasHeadResident && (
             <button
               className="button-link"
@@ -332,46 +331,34 @@ export default function AdminRoomDetailPage() {
         </div>
 
         {hasHeadResident ? (
-          <div className="detail-panel">
-            <div>
-              <span>{t('tables.common.headResident')}</span>
-              <strong>{headInfo.residentHeadName}</strong>
-            </div>
-            <div>
-              <span>{t('profile.fields.email')}</span>
-              <strong>{headInfo.residentHeadEmail}</strong>
-            </div>
-            <div>
-              <span>{t('roomManagement.assignment.period')}</span>
-              <strong>
-                {formatDisplayDate(headInfo.assignmentStartDate)} {t('common.to')}{' '}
-                {formatDisplayDate(headInfo.assignmentEndDate)}
-              </strong>
-            </div>
-            <div>
-              <span>{t('roomManagement.assignment.status')}</span>
-              <strong>{formatEnumLabel(t, 'rentalStatus', headInfo.assignmentStatus)}</strong>
-            </div>
-            <div>
-              <span>{t('roomManagement.assignment.deposit')}</span>
-              <strong>{formatNumber(headInfo.depositAmount)}</strong>
-            </div>
-            <div>
-              <span>{t('roomManagement.assignment.rentalStatus')}</span>
-              <strong>{formatEnumLabel(t, 'rentalStatus', headInfo.rentalStatus)}</strong>
-            </div>
-            <div>
-              <span>{t('roomManagement.assignment.contractStatus')}</span>
-              <strong>{formatEnumLabel(t, 'contractStatus', headInfo.contractStatus)}</strong>
-            </div>
-            <div>
-              <span>{t('roomManagement.assignment.contractPeriod')}</span>
-              <strong>
-                {formatDisplayDate(headInfo.contractStartDate)} {t('common.to')}{' '}
-                {formatDisplayDate(headInfo.contractEndDate)}
-              </strong>
-            </div>
-            <div className="detail-wide">
+          <div className="detail-panel room-assignment-card">
+            <RoomDetailInfoItem icon="user" label={t('tables.common.headResident')}>
+              {headInfo.residentHeadName}
+            </RoomDetailInfoItem>
+            <RoomDetailInfoItem icon="mail" label={t('profile.fields.email')}>
+              {headInfo.residentHeadEmail}
+            </RoomDetailInfoItem>
+            <RoomDetailInfoItem icon="calendar" label={t('roomManagement.assignment.period')}>
+              {formatDisplayDate(headInfo.assignmentStartDate)} {t('common.to')}{' '}
+              {formatDisplayDate(headInfo.assignmentEndDate)}
+            </RoomDetailInfoItem>
+            <RoomDetailInfoItem icon="activity" label={t('roomManagement.assignment.status')}>
+              {formatEnumLabel(t, 'rentalStatus', headInfo.assignmentStatus)}
+            </RoomDetailInfoItem>
+            <RoomDetailInfoItem icon="wallet" label={t('roomManagement.assignment.deposit')}>
+              {formatNumber(headInfo.depositAmount)}
+            </RoomDetailInfoItem>
+            <RoomDetailInfoItem icon="checkShield" label={t('roomManagement.assignment.rentalStatus')}>
+              {formatEnumLabel(t, 'rentalStatus', headInfo.rentalStatus)}
+            </RoomDetailInfoItem>
+            <RoomDetailInfoItem icon="fileText" label={t('roomManagement.assignment.contractStatus')}>
+              {formatEnumLabel(t, 'contractStatus', headInfo.contractStatus)}
+            </RoomDetailInfoItem>
+            <RoomDetailInfoItem icon="calendar" label={t('roomManagement.assignment.contractPeriod')}>
+              {formatDisplayDate(headInfo.contractStartDate)} {t('common.to')}{' '}
+              {formatDisplayDate(headInfo.contractEndDate)}
+            </RoomDetailInfoItem>
+            <div className="detail-wide room-assignment-action-row">
               <button
                 className="secondary-button inline-button"
                 type="button"

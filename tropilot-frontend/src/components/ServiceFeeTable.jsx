@@ -40,7 +40,7 @@ export default function ServiceFeeTable({
               <th>{methodLabel || t('tables.common.calculation')}</th>
               <th>{priceLabel || t('tables.common.unitPrice')}</th>
               <th>{t('tables.common.status')}</th>
-              {hasActions && <th>{t('tables.common.actions')}</th>}
+              {hasActions && <th className="service-fee-actions-column">{t('tables.common.actions')}</th>}
             </tr>
           </thead>
           <tbody>
@@ -71,7 +71,7 @@ export default function ServiceFeeTable({
                     </span>
                   </td>
                   {hasActions && (
-                    <td>
+                    <td className="service-fee-actions-cell">
                       <div className="table-actions">{renderActions(serviceFee)}</div>
                     </td>
                   )}

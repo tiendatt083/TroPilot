@@ -51,6 +51,8 @@ export default function StaffTaskListPage() {
     navigate(`/staff/tasks/${task.id}`);
   };
 
+  const activeTasks = tasks.filter((task) => task.status !== 'COMPLETED');
+
   return (
     <section className="content-section">
       <PageHeader eyebrow={t('role.staff')} title={t('taskManagement.staffTitle')} />
@@ -61,7 +63,7 @@ export default function StaffTaskListPage() {
         <div className="empty-state">{t('taskManagement.loading')}</div>
       ) : (
         <TaskTable
-          tasks={tasks}
+          tasks={activeTasks}
           onViewTask={openTaskInBuilding}
           showAssignedStaff={false}
           showBuilding

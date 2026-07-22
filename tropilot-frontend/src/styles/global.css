@@ -1788,3 +1788,483 @@ html[data-theme="dark"] :is(.secondary-link, .secondary-button) {
   color: var(--color-text);
   background: rgba(25, 38, 56, 0.9);
 }
+
+/* Staff dark mode dialogs need to override light card styles from feature CSS. */
+html[data-theme="dark"] :is(
+  .task-staff-dialog,
+  .maintenance-staff-dialog,
+  .utility-reading-dialog
+) {
+  border-color: rgba(132, 164, 188, 0.28);
+  color: var(--color-text);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(122, 162, 255, 0.09), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0)),
+    var(--color-surface);
+  box-shadow:
+    0 26px 70px rgba(0, 0, 0, 0.36),
+    inset 0 1px 0 rgba(255, 255, 255, 0.045);
+}
+
+html[data-theme="dark"] :is(
+  .task-staff-dialog,
+  .maintenance-staff-dialog,
+  .utility-reading-dialog
+) .account-modal-header {
+  border-bottom-color: rgba(132, 164, 188, 0.28);
+}
+
+html[data-theme="dark"] :is(
+  .task-staff-dialog,
+  .maintenance-staff-dialog,
+  .utility-reading-dialog
+) .account-modal-header h2 {
+  color: var(--color-text);
+}
+
+html[data-theme="dark"] :is(
+  .task-staff-dialog,
+  .maintenance-staff-dialog
+) .section-eyebrow {
+  color: var(--color-primary);
+}
+
+html[data-theme="dark"] :is(
+  .task-staff-dialog .task-detail-card,
+  .maintenance-staff-dialog .maintenance-detail-card
+) {
+  border-color: rgba(132, 164, 188, 0.28);
+  background:
+    radial-gradient(circle at 96% 8%, rgba(122, 162, 255, 0.08), transparent 30%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.025), rgba(255, 255, 255, 0)),
+    rgba(18, 29, 43, 0.92);
+  box-shadow: none;
+}
+
+html[data-theme="dark"] :is(
+  .task-staff-dialog .task-detail-field,
+  .task-staff-dialog .task-detail-title-field,
+  .maintenance-staff-dialog .maintenance-detail-field
+) {
+  border-color: rgba(132, 164, 188, 0.24);
+}
+
+html[data-theme="dark"] :is(
+  .task-staff-dialog .task-detail-copy > span,
+  .maintenance-staff-dialog .maintenance-detail-copy > span
+) {
+  color: #b4c4d7;
+}
+
+html[data-theme="dark"] :is(
+  .task-staff-dialog .task-detail-copy > strong,
+  .task-staff-dialog .task-detail-copy > p,
+  .maintenance-staff-dialog .maintenance-detail-copy > strong,
+  .maintenance-staff-dialog .maintenance-detail-copy > p,
+  .maintenance-staff-dialog .evidence-links
+) {
+  color: var(--color-text);
+}
+
+html[data-theme="dark"] :is(
+  .task-staff-dialog .task-detail-note-field,
+  .maintenance-staff-dialog .maintenance-detail-note-field
+) {
+  border-color: rgba(132, 164, 188, 0.28);
+  color: var(--color-text);
+  background:
+    linear-gradient(180deg, rgba(25, 38, 56, 0.98), rgba(18, 29, 43, 0.96));
+  box-shadow: none;
+}
+
+html[data-theme="dark"] :is(
+  .task-staff-dialog .task-detail-result-field,
+  .maintenance-staff-dialog .maintenance-detail-result-field
+) {
+  background:
+    radial-gradient(circle at 98% 0%, rgba(91, 213, 210, 0.11), transparent 34%),
+    linear-gradient(180deg, rgba(25, 38, 56, 0.98), rgba(18, 29, 43, 0.96));
+}
+
+html[data-theme="dark"] .maintenance-staff-dialog .maintenance-detail-image-field {
+  background:
+    radial-gradient(circle at 98% 0%, rgba(139, 92, 246, 0.12), transparent 34%),
+    linear-gradient(180deg, rgba(25, 38, 56, 0.98), rgba(18, 29, 43, 0.96));
+}
+
+html[data-theme="dark"] :is(
+  .task-staff-dialog .task-detail-note-field p,
+  .maintenance-staff-dialog .maintenance-detail-note-field p
+) {
+  color: var(--color-text);
+}
+
+html[data-theme="dark"] :is(
+  .task-staff-dialog .task-detail-icon,
+  .maintenance-staff-dialog .maintenance-detail-icon
+) {
+  border-color: rgba(147, 197, 253, 0.26);
+  color: #93c5fd;
+  background: rgba(59, 130, 246, 0.14);
+  box-shadow: none;
+}
+
+html[data-theme="dark"] :is(
+  .task-staff-dialog .task-detail-icon-green,
+  .maintenance-staff-dialog .maintenance-detail-icon-green
+) {
+  border-color: rgba(110, 231, 183, 0.28);
+  color: #6ee7b7;
+  background: rgba(16, 185, 129, 0.13);
+}
+
+html[data-theme="dark"] :is(
+  .task-staff-dialog .task-detail-icon-amber,
+  .maintenance-staff-dialog .maintenance-detail-icon-amber
+) {
+  border-color: rgba(251, 191, 36, 0.32);
+  color: #fbbf24;
+  background: rgba(245, 158, 11, 0.14);
+}
+
+html[data-theme="dark"] :is(
+  .task-staff-dialog .task-detail-icon-cyan,
+  .maintenance-staff-dialog .maintenance-detail-icon-cyan
+) {
+  border-color: rgba(103, 232, 249, 0.3);
+  color: #67e8f9;
+  background: rgba(6, 182, 212, 0.13);
+}
+
+html[data-theme="dark"] :is(
+  .task-staff-dialog .task-detail-icon-indigo,
+  .task-staff-dialog .task-detail-icon-violet,
+  .maintenance-staff-dialog .maintenance-detail-icon-indigo,
+  .maintenance-staff-dialog .maintenance-detail-icon-violet
+) {
+  border-color: rgba(167, 139, 250, 0.3);
+  color: #a78bfa;
+  background: rgba(99, 102, 241, 0.14);
+}
+
+html[data-theme="dark"] .task-staff-actions,
+html[data-theme="dark"] .maintenance-staff-action-panel .panel-form {
+  border-color: rgba(132, 164, 188, 0.26);
+  background: rgba(18, 29, 43, 0.9);
+  box-shadow: none;
+}
+
+html[data-theme="dark"] .utility-reading-dialog .utility-reading-entry-form {
+  background: transparent;
+}
+
+html[data-theme="dark"] .utility-reading-dialog :is(
+  .utility-reading-entry-form label,
+  .meter-field-label,
+  .meter-field-label label,
+  .utility-reading-evidence-label
+) {
+  color: #c9d9ea;
+}
+
+html[data-theme="dark"] .utility-reading-dialog :is(
+  .utility-reading-entry-form input,
+  .utility-reading-entry-form select,
+  .utility-reading-entry-form textarea,
+  .utility-reading-meter-value-input
+) {
+  border-color: rgba(132, 164, 188, 0.3);
+  color: var(--color-text);
+  background: var(--color-input);
+}
+
+html[data-theme="dark"] .utility-reading-dialog :is(
+  .utility-reading-entry-form input:focus,
+  .utility-reading-entry-form select:focus,
+  .utility-reading-entry-form textarea:focus,
+  .utility-reading-meter-value-input:focus
+) {
+  border-color: rgba(122, 162, 255, 0.62);
+  box-shadow: 0 0 0 3px rgba(122, 162, 255, 0.16);
+}
+
+html[data-theme="dark"] .utility-reading-dialog .utility-reading-meter-form {
+  border-color: rgba(132, 164, 188, 0.28);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.025), rgba(255, 255, 255, 0)),
+    rgba(18, 29, 43, 0.92);
+}
+
+html[data-theme="dark"] .utility-reading-dialog .utility-reading-meter-form legend {
+  border-bottom-color: rgba(132, 164, 188, 0.22);
+  color: var(--color-text);
+  background: rgba(25, 38, 56, 0.88);
+}
+
+html[data-theme="dark"] .utility-reading-dialog :is(
+  .meter-title-unit,
+  .utility-reading-upload-note,
+  .utility-reading-entry-form > .muted-text
+) {
+  color: var(--color-text-muted);
+}
+
+html[data-theme="dark"] .utility-reading-dialog .meter-mock-control em {
+  border-color: rgba(132, 164, 188, 0.24);
+  color: #d7e3ee;
+  background: rgba(25, 38, 56, 0.78);
+}
+
+html[data-theme="dark"] .utility-reading-dialog .utility-reading-fetch-button {
+  border-color: rgba(132, 164, 188, 0.24);
+  color: #93c5fd;
+  background: rgba(25, 38, 56, 0.82);
+}
+
+html[data-theme="dark"] .utility-reading-dialog .meter-readonly-value {
+  border-color: rgba(132, 164, 188, 0.22);
+  color: var(--color-text);
+  background: rgba(25, 38, 56, 0.76);
+}
+
+html[data-theme="dark"] .utility-reading-dialog .meter-readonly-value strong {
+  color: var(--color-text);
+}
+
+html[data-theme="dark"] .utility-reading-dialog .utility-reading-upload-dropzone {
+  border-color: rgba(132, 164, 188, 0.3);
+  color: #b4c4d7;
+  background: rgba(18, 29, 43, 0.82);
+}
+
+html[data-theme="dark"] .utility-reading-dialog .utility-reading-upload-dropzone:hover {
+  border-color: rgba(122, 162, 255, 0.58);
+  color: var(--color-text);
+  background: rgba(25, 38, 56, 0.95);
+}
+
+html[data-theme="dark"] .utility-reading-dialog .utility-reading-upload-icon {
+  color: #93c5fd;
+}
+
+html[data-theme="dark"] .utility-reading-dialog .previous-reading-panel {
+  border-color: rgba(132, 164, 188, 0.24);
+  background: rgba(25, 38, 56, 0.72);
+}
+
+html[data-theme="dark"] .utility-reading-dialog .previous-reading-panel strong {
+  color: var(--color-text);
+}
+
+html[data-theme="dark"] .utility-reading-dialog .form-button-row {
+  border-top-color: rgba(132, 164, 188, 0.24);
+  background: rgba(18, 29, 43, 0.88);
+}
+
+html[data-theme="dark"] .contract-detail-dialog {
+  color: var(--color-text);
+}
+
+html[data-theme="dark"] .contract-detail-dialog .account-modal-header {
+  border-bottom-color: rgba(132, 164, 188, 0.24);
+}
+
+html[data-theme="dark"] .contract-detail-dialog .account-modal-header h2,
+html[data-theme="dark"] .contract-detail-dialog :is(h2, h3, label),
+html[data-theme="dark"] .contract-history-item-title {
+  color: var(--color-text);
+}
+
+html[data-theme="dark"] .contract-detail-dialog :is(p, .muted-text),
+html[data-theme="dark"] .contract-history-header p,
+html[data-theme="dark"] .contract-history-item span:not(.contract-history-item-title) {
+  color: var(--color-text-muted);
+}
+
+html[data-theme="dark"] .contract-history-panel {
+  border-color: rgba(132, 164, 188, 0.24);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0)),
+    rgba(18, 29, 43, 0.88);
+  box-shadow: none;
+}
+
+html[data-theme="dark"] .contract-history-header {
+  border-bottom-color: rgba(132, 164, 188, 0.2);
+}
+
+html[data-theme="dark"] .contract-history-header span {
+  color: #93c5fd;
+}
+
+html[data-theme="dark"] .contract-history-item {
+  border-color: rgba(132, 164, 188, 0.2);
+  background: rgba(15, 23, 42, 0.72);
+}
+
+html[data-theme="dark"] .contract-detail-dialog .contract-file-action,
+html[data-theme="dark"] .contract-history-item .secondary-link {
+  border-color: rgba(147, 197, 253, 0.28);
+  color: #dbeafe;
+  background: rgba(30, 64, 175, 0.24);
+}
+
+html[data-theme="dark"] .contract-detail-dialog .status-pill {
+  color: #cbd5e1;
+  background: rgba(71, 85, 105, 0.58);
+}
+
+html[data-theme="dark"] .contract-detail-dialog .contract-status-confirmed {
+  color: #a7f3d0;
+  background: rgba(6, 78, 59, 0.5);
+}
+
+html[data-theme="dark"] .contract-detail-dialog .contract-status-uploaded,
+html[data-theme="dark"] .contract-detail-dialog .contract-status-pending-confirmation {
+  color: #bfdbfe;
+  background: rgba(30, 64, 175, 0.42);
+}
+
+html[data-theme="dark"] .contract-detail-dialog .contract-status-need-update {
+  color: #fecaca;
+  background: rgba(127, 29, 29, 0.46);
+}
+
+html[data-theme="dark"] .resident-dashboard-page .dashboard-list li {
+  border-color: rgba(132, 164, 188, 0.2);
+  color: var(--color-text);
+  background:
+    linear-gradient(90deg, rgba(91, 213, 210, 0.08), rgba(122, 162, 255, 0.035) 62%, transparent),
+    rgba(18, 29, 43, 0.88);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.025);
+}
+
+html[data-theme="dark"] .resident-dashboard-page .dashboard-list strong {
+  color: var(--color-text);
+}
+
+html[data-theme="dark"] .resident-dashboard-page .dashboard-list span:not(.status-pill) {
+  color: var(--color-text-muted);
+}
+
+html[data-theme="dark"] .resident-dashboard-page .resident-compact-list-panel .flat-empty-state {
+  border-color: rgba(132, 164, 188, 0.2);
+  color: var(--color-text-muted);
+  background: rgba(18, 29, 43, 0.78);
+}
+
+/* Login keeps the light blue brand artwork even when the app theme is dark. */
+html[data-theme="dark"] .login-page {
+  color: #111d35;
+  background:
+    linear-gradient(140deg, rgba(93, 169, 255, 0.2) 0%, rgba(255, 255, 255, 0) 24%),
+    linear-gradient(180deg, #f8fbff 0%, #eef6ff 100%);
+}
+
+html[data-theme="dark"] .auth-panel.login-panel {
+  border-color: rgba(210, 224, 242, 0.9);
+  color: #111d35;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.97), rgba(255, 255, 255, 0.91)),
+    #ffffff;
+  box-shadow: 0 2rem 5rem rgba(35, 92, 156, 0.16);
+}
+
+html[data-theme="dark"] .login-panel h1,
+html[data-theme="dark"] .login-field label,
+html[data-theme="dark"] .login-wordmark,
+html[data-theme="dark"] .login-input-wrap input {
+  color: #111d35;
+}
+
+html[data-theme="dark"] .login-wordmark span {
+  color: #1e7cff;
+}
+
+html[data-theme="dark"] .login-input-wrap input {
+  border-color: #c7d6e8;
+  background: rgba(255, 255, 255, 0.95);
+}
+
+html[data-theme="dark"] .login-input-wrap input::placeholder {
+  color: #98a8bd;
+}
+
+html[data-theme="dark"] .login-submit-button {
+  color: #ffffff;
+  background: linear-gradient(180deg, #2489ff 0%, #0564f1 100%);
+}
+
+@media (max-width: 720px) {
+  .auth-page.login-page {
+    padding: 1rem;
+  }
+
+  .auth-panel.login-panel {
+    width: min(100%, 30rem);
+    padding: 2rem 1.35rem;
+    border-radius: 1.25rem;
+  }
+
+  .login-heading {
+    gap: 1.35rem;
+    margin-bottom: 1.35rem;
+  }
+
+  .login-brand {
+    gap: 0.75rem;
+    transform: scale(0.92);
+  }
+
+  .login-panel h1 {
+    font-size: 1.55rem;
+    line-height: 1.16;
+  }
+
+  .login-input-wrap input {
+    height: 3.45rem;
+    padding-left: 3.65rem;
+  }
+
+  .login-submit-button {
+    min-height: 3.5rem;
+    margin-top: 1.4rem;
+  }
+
+  .login-city {
+    opacity: 0.1;
+  }
+
+  .login-dots-top {
+    right: -7rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-panel.login-panel {
+    padding: 1.65rem 1rem;
+  }
+
+  .login-brand {
+    transform: scale(0.84);
+  }
+
+  .login-panel h1 {
+    font-size: 1.45rem;
+    line-height: 1.16;
+  }
+}
+
+.login-brand {
+  transform: none !important;
+}
+
+html[data-theme="dark"] .login-input-wrap .login-input-icon,
+html[data-theme="dark"] .reset-notice-icon {
+  color: #126fff;
+}
+
+html[data-theme="dark"] .forgot-password-description,
+html[data-theme="dark"] .reset-password-description {
+  color: #637189;
+}

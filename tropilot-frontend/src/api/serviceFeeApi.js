@@ -5,11 +5,6 @@ export async function getAdminBuildingServiceFees(buildingId) {
   return response.data;
 }
 
-export async function getAdminBuildingServiceFee(buildingId, id) {
-  const response = await apiClient.get(`/api/admin/buildings/${buildingId}/service-fees/${id}`);
-  return response.data;
-}
-
 export async function createAdminBuildingServiceFee(buildingId, payload) {
   const response = await apiClient.post(`/api/admin/buildings/${buildingId}/service-fees`, payload);
   return response.data;

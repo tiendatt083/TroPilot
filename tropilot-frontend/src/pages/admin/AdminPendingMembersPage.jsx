@@ -195,7 +195,7 @@ export default function AdminPendingMembersPage() {
                 <th>{t('pendingMemberReview.columns.headResident')}</th>
                 <th>{t('pendingMemberReview.columns.building')}</th>
                 <th>{t('pendingMemberReview.columns.room')}</th>
-                <th>{t('pendingMemberReview.columns.actions')}</th>
+                <th className="pending-member-actions-column">{t('pendingMemberReview.columns.actions')}</th>
               </tr>
             </thead>
             <tbody>
@@ -233,7 +233,7 @@ export default function AdminPendingMembersPage() {
                         t('common.notProvided')
                       )}
                     </td>
-                    <td>
+                    <td className="pending-member-actions-cell">
                       <div className="table-actions icon-table-actions pending-member-action-icons">
                         <button
                           aria-label={t('pendingMemberReview.actions.approve')}

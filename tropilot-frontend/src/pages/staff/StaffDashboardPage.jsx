@@ -2,11 +2,13 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import * as dashboardApi from '../../features/buildings/dashboardApi.js';
+import * as maintenanceApi from '../../features/maintenance/api.js';
 import * as taskApi from '../../features/maintenance/taskApi.js';
 import LineIcon from '../../components/common/LineIcon.jsx';
 import { CHART_COLORS, ChartPanel, DonutChart } from '../../components/common/DashboardCharts.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
 import { formatDate, formatEnumLabel } from '../../utils/i18nFormat.js';
+import { getMaintenanceStatusClass } from '../../utils/maintenanceOptions.js';
 import { formatRoomLabel } from '../../utils/roomDisplay.js';
 import { getTaskStatusClass } from '../../utils/taskOptions.js';
 
@@ -30,6 +32,14 @@ function sortRecent(items) {
   return [...items].sort((left, right) => new Date(getRecentDateValue(right)) - new Date(getRecentDateValue(left)));
 }
 
+function getListPayload(response) {
+  if (Array.isArray(response)) {
+    return response;
+  }
+
+  return Array.isArray(response?.data) ? response.data : [];
+}
+
 function taskRoomText(task, t) {
   if (!task.roomCode) {
     return task.buildingId || task.buildingCode
@@ -40,10 +50,27 @@ function taskRoomText(task, t) {
   return formatRoomLabel(task);
 }
 
+function maintenanceRoomText(request, t) {
+  if (request.roomCode || request.roomName) {
+    return formatRoomLabel(request);
+  }
+
+  return request.buildingCode || request.buildingName || t('forms.task.generalBuildingTask');
+}
+
+function maintenanceTitleText(request, t) {
+  return request.title
+    || request.equipmentName
+    || request.equipmentCode
+    || request.content
+    || t('dashboard.ops.fallback.noDescription');
+}
+
 export default function StaffDashboardPage() {
   const { t, i18n } = useTranslation();
   const [dashboard, setDashboard] = useState(null);
   const [recentTasks, setRecentTasks] = useState([]);
+  const [recentMaintenance, setRecentMaintenance] = useState([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const locale = String(i18n.resolvedLanguage || i18n.language).startsWith('en') ? 'en-US' : 'vi-VN';
@@ -53,12 +80,14 @@ export default function StaffDashboardPage() {
 
     Promise.all([
       dashboardApi.getStaffDashboard(),
-      taskApi.getStaffTasks()
+      taskApi.getStaffTasks(),
+      maintenanceApi.getStaffMaintenanceRequests()
     ])
-      .then(([dashboardResponse, tasksResponse]) => {
+      .then(([dashboardResponse, tasksResponse, maintenanceResponse]) => {
         if (active) {
           setDashboard(dashboardResponse.data);
-          setRecentTasks(sortRecent(tasksResponse.data || []).slice(0, 5));
+          setRecentTasks(sortRecent(getListPayload(tasksResponse)).slice(0, 5));
+          setRecentMaintenance(sortRecent(getListPayload(maintenanceResponse)).slice(0, 5));
         }
       })
       .catch((apiError) => {
@@ -206,7 +235,7 @@ export default function StaffDashboardPage() {
             </section>
           </div>
 
-          <div className="staff-dashboard-table-grid staff-dashboard-table-grid-single">
+          <div className="staff-dashboard-table-grid">
             <section className="staff-dashboard-table-panel">
               <div className="staff-dashboard-table-title">
                 <span>
@@ -245,6 +274,47 @@ export default function StaffDashboardPage() {
                   </tbody>
                 </table>
                 {!recentTasks.length && <div className="empty-state flat-empty-state">Chưa có công việc.</div>}
+              </div>
+            </section>
+
+            <section className="staff-dashboard-table-panel">
+              <div className="staff-dashboard-table-title">
+                <span>
+                  <LineIcon name="tool" />
+                </span>
+                <h2>Bảo trì gần đây</h2>
+              </div>
+              <div className="staff-dashboard-table-wrap">
+                <table className="staff-dashboard-compact-table staff-dashboard-maintenance-table">
+                  <thead>
+                    <tr>
+                      <th>Bảo trì</th>
+                      <th>Phòng</th>
+                      <th>Ngày tạo</th>
+                      <th>Trạng thái</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {recentMaintenance.map((request) => (
+                      <tr key={request.id}>
+                        <td>
+                          <div className="staff-dashboard-table-primary">
+                            <Link to="/staff/maintenance">{maintenanceTitleText(request, t)}</Link>
+                            <span>{request.requestedByName || request.residentHeadName || request.equipmentName || t('common.notProvided')}</span>
+                          </div>
+                        </td>
+                        <td>{maintenanceRoomText(request, t)}</td>
+                        <td>{formatDate(request.createdAt || request.updatedAt, t)}</td>
+                        <td>
+                          <span className={getMaintenanceStatusClass(request.status)}>
+                            {formatEnumLabel(t, 'maintenanceStatus', request.status)}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {!recentMaintenance.length && <div className="empty-state flat-empty-state">Chưa có yêu cầu bảo trì.</div>}
               </div>
             </section>
           </div>

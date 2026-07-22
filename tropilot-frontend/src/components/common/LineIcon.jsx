@@ -272,6 +272,14 @@ const ICONS = {
       <path d="M9 7V4h6v3" />
     </>
   ),
+  uploadCloud: (
+    <>
+      <path d="M16 16l-4-4-4 4" />
+      <path d="M12 12v9" />
+      <path d="M20.4 17.2A5 5 0 0 0 16 9h-1.3A7 7 0 1 0 5 16.7" />
+      <path d="M16 21H8" />
+    </>
+  ),
   user: (
     <>
       <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" />

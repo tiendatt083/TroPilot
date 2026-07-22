@@ -118,12 +118,3 @@ export async function getResidentEquipment() {
   const response = await apiClient.get('/api/resident/equipment/current-room');
   return response.data;
 }
-
-export async function requestResidentEquipmentMaintenance(equipmentId, payload) {
-  const response = await apiClient.post(
-    `/api/resident/equipment/${equipmentId}/maintenance-requests`,
-    toMaintenanceFormData(payload),
-    multipartConfig
-  );
-  return response.data;
-}

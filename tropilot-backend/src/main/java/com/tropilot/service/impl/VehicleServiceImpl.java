@@ -1,11 +1,15 @@
 package com.tropilot.service.impl;
 
+import com.tropilot.dto.request.AdminVehicleCreateRequest;
 import com.tropilot.mapper.VehicleMapper;
 import com.tropilot.dto.request.VehicleRegistrationRequest;
 import com.tropilot.dto.response.VehicleResponse;
 import com.tropilot.entity.Room;
 import com.tropilot.entity.RoomAssignment;
+import com.tropilot.entity.RoomMember;
+import com.tropilot.entity.User;
 import com.tropilot.entity.Vehicle;
+import com.tropilot.enums.NotificationEventType;
 import com.tropilot.enums.RoomAssignmentStatus;
 import com.tropilot.enums.RoomMemberStatus;
 import com.tropilot.enums.VehicleOwnerType;
@@ -17,7 +21,9 @@ import com.tropilot.exception.ResourceNotFoundException;
 import com.tropilot.repository.BuildingRepository;
 import com.tropilot.repository.RoomAssignmentRepository;
 import com.tropilot.repository.RoomMemberRepository;
+import com.tropilot.repository.UserRepository;
 import com.tropilot.repository.VehicleRepository;
+import com.tropilot.service.NotificationService;
 import com.tropilot.service.VehicleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -31,15 +37,25 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class VehicleServiceImpl implements VehicleService {
 
-    private static final List<VehicleStatus> CURRENT_VEHICLE_STATUSES = List.of(
+    private static final List<VehicleStatus> RESIDENT_VISIBLE_VEHICLE_STATUSES = List.of(
             VehicleStatus.PENDING,
-            VehicleStatus.ACTIVE
+            VehicleStatus.ACTIVE,
+            VehicleStatus.REJECTED
+    );
+
+    private static final List<VehicleStatus> BUILDING_MANAGED_VEHICLE_STATUSES = List.of(
+            VehicleStatus.PENDING,
+            VehicleStatus.ACTIVE,
+            VehicleStatus.INACTIVE,
+            VehicleStatus.REJECTED
     );
 
     private final VehicleRepository vehicleRepository;
     private final BuildingRepository buildingRepository;
     private final RoomAssignmentRepository roomAssignmentRepository;
     private final RoomMemberRepository roomMemberRepository;
+    private final UserRepository userRepository;
+    private final NotificationService notificationService;
     private final VehicleMapper vehicleMapper;
 
     @Override
@@ -74,7 +90,7 @@ public class VehicleServiceImpl implements VehicleService {
     public List<VehicleResponse> getResidentVehicles(Long residentHeadId) {
         RoomAssignment assignment = findActiveAssignment(residentHeadId);
 
-        return CURRENT_VEHICLE_STATUSES.stream()
+        return RESIDENT_VISIBLE_VEHICLE_STATUSES.stream()
                 .flatMap(status -> vehicleRepository
                         .findByRoomIdAndStatusWithDetails(assignment.getRoom().getId(), status)
                         .stream()
@@ -94,21 +110,17 @@ public class VehicleServiceImpl implements VehicleService {
             throw new BadRequestException("Vehicle is already inactive");
         }
 
-        if (vehicle.getStatus() == VehicleStatus.REJECTED) {
-            throw new BadRequestException("Rejected vehicles cannot be cancelled");
-        }
+        VehicleResponse response = vehicleMapper.toResponse(vehicle);
+        vehicleRepository.delete(vehicle);
 
-        vehicle.setStatus(VehicleStatus.INACTIVE);
-        vehicle.setEndDate(LocalDate.now());
-
-        return vehicleMapper.toResponse(vehicleRepository.save(vehicle));
+        return response;
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<VehicleResponse> getVehicles(Long buildingId) {
         List<Vehicle> vehicles = buildingId == null
-                ? vehicleRepository.findByStatusInWithDetails(CURRENT_VEHICLE_STATUSES)
+                ? vehicleRepository.findByStatusInWithDetails(BUILDING_MANAGED_VEHICLE_STATUSES)
                 : getCurrentBuildingVehicles(buildingId);
 
         return vehicles
@@ -118,16 +130,35 @@ public class VehicleServiceImpl implements VehicleService {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public List<VehicleResponse> getPendingVehicles(Long buildingId) {
-        List<Vehicle> vehicles = buildingId == null
-                ? vehicleRepository.findByStatusWithDetails(VehicleStatus.PENDING)
-                : getBuildingVehiclesByStatus(buildingId, VehicleStatus.PENDING);
+    @Transactional
+    public VehicleResponse createAdminVehicle(AdminVehicleCreateRequest request, Long buildingId) {
+        RoomAssignment assignment = roomAssignmentRepository
+                .findByRoomIdAndStatus(request.getRoomId(), RoomAssignmentStatus.ACTIVE)
+                .orElseThrow(() -> new BadRequestException("Room must have an active Head Resident"));
 
-        return vehicles
-                .stream()
-                .map(vehicleMapper::toResponse)
-                .toList();
+        validateVehicleBelongsToBuilding(assignment.getRoom(), buildingId);
+
+        if (!Objects.equals(assignment.getResidentHead().getId(), request.getResidentHeadId())) {
+            throw new BadRequestException("Selected Head Resident does not match the active room assignment");
+        }
+
+        VehicleOwnerType ownerType = parseOwnerType(request.getOwnerType());
+        VehicleType vehicleType = parseVehicleType(request.getVehicleType());
+        String licensePlate = normalizeLicensePlate(request.getLicensePlate());
+
+        validateActiveLicensePlateAvailability(licensePlate);
+
+        Vehicle vehicle = Vehicle.builder()
+                .room(assignment.getRoom())
+                .ownerName(resolveAdminOwnerName(assignment, ownerType, request.getRoomMemberId()))
+                .ownerType(ownerType)
+                .vehicleType(vehicleType)
+                .licensePlate(licensePlate)
+                .startDate(LocalDate.now())
+                .status(VehicleStatus.ACTIVE)
+                .build();
+
+        return vehicleMapper.toResponse(vehicleRepository.save(vehicle));
     }
 
     @Override
@@ -156,8 +187,17 @@ public class VehicleServiceImpl implements VehicleService {
 
     @Override
     @Transactional
-    public VehicleResponse rejectVehicle(Long id, Long buildingId) {
+    public void deleteVehicle(Long id, Long buildingId) {
         Vehicle vehicle = findVehicle(id);
+        validateVehicleBelongsToBuilding(vehicle, buildingId);
+        vehicleRepository.delete(vehicle);
+    }
+
+    @Override
+    @Transactional
+    public VehicleResponse rejectVehicle(Long id, Long rejectedById, Long buildingId) {
+        Vehicle vehicle = findVehicle(id);
+        User rejectedBy = findUser(rejectedById);
         validateVehicleBelongsToBuilding(vehicle, buildingId);
 
         if (vehicle.getStatus() != VehicleStatus.PENDING) {
@@ -166,27 +206,10 @@ public class VehicleServiceImpl implements VehicleService {
 
         vehicle.setStatus(VehicleStatus.REJECTED);
 
-        return vehicleMapper.toResponse(vehicleRepository.save(vehicle));
-    }
+        Vehicle savedVehicle = vehicleRepository.save(vehicle);
+        notifyResidentAboutVehicleRejection(rejectedBy, savedVehicle);
 
-    @Override
-    @Transactional
-    public VehicleResponse deactivateVehicle(Long id, Long buildingId) {
-        Vehicle vehicle = findVehicle(id);
-        validateVehicleBelongsToBuilding(vehicle, buildingId);
-
-        if (vehicle.getStatus() == VehicleStatus.REJECTED) {
-            throw new BadRequestException("Rejected vehicles cannot be deactivated");
-        }
-
-        if (vehicle.getStatus() == VehicleStatus.INACTIVE) {
-            throw new BadRequestException("Vehicle is already inactive");
-        }
-
-        vehicle.setStatus(VehicleStatus.INACTIVE);
-        vehicle.setEndDate(LocalDate.now());
-
-        return vehicleMapper.toResponse(vehicleRepository.save(vehicle));
+        return vehicleMapper.toResponse(savedVehicle);
     }
 
     private RoomAssignment findActiveAssignment(Long residentHeadId) {
@@ -200,14 +223,14 @@ public class VehicleServiceImpl implements VehicleService {
                 .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found"));
     }
 
-    private List<Vehicle> getCurrentBuildingVehicles(Long buildingId) {
-        validateBuildingExists(buildingId);
-        return vehicleRepository.findByBuildingIdAndStatusInWithDetails(buildingId, CURRENT_VEHICLE_STATUSES);
+    private User findUser(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
-    private List<Vehicle> getBuildingVehiclesByStatus(Long buildingId, VehicleStatus status) {
+    private List<Vehicle> getCurrentBuildingVehicles(Long buildingId) {
         validateBuildingExists(buildingId);
-        return vehicleRepository.findByBuildingIdAndStatusWithDetails(buildingId, status);
+        return vehicleRepository.findByBuildingIdAndStatusInWithDetails(buildingId, BUILDING_MANAGED_VEHICLE_STATUSES);
     }
 
     private void validateBuildingExists(Long buildingId) {
@@ -225,6 +248,18 @@ public class VehicleServiceImpl implements VehicleService {
 
         if (!Objects.equals(vehicle.getRoom().getBuilding().getId(), buildingId)) {
             throw new BadRequestException("Vehicle does not belong to the selected building");
+        }
+    }
+
+    private void validateVehicleBelongsToBuilding(Room room, Long buildingId) {
+        if (buildingId == null) {
+            return;
+        }
+
+        validateBuildingExists(buildingId);
+
+        if (!Objects.equals(room.getBuilding().getId(), buildingId)) {
+            throw new BadRequestException("Room does not belong to the selected building");
         }
     }
 
@@ -268,6 +303,45 @@ public class VehicleServiceImpl implements VehicleService {
         }
 
         return normalizedOwnerName;
+    }
+
+    private String resolveAdminOwnerName(RoomAssignment assignment, VehicleOwnerType ownerType, Long roomMemberId) {
+        if (ownerType == VehicleOwnerType.RESIDENT_HEAD) {
+            return assignment.getResidentHead().getFullName();
+        }
+
+        if (roomMemberId == null) {
+            throw new BadRequestException("Room member is required for room member vehicles");
+        }
+
+        RoomMember member = roomMemberRepository.findByIdWithDetails(roomMemberId)
+                .orElseThrow(() -> new ResourceNotFoundException("Room member not found"));
+
+        if (member.getStatus() != RoomMemberStatus.APPROVED) {
+            throw new BadRequestException("Room member must be approved");
+        }
+
+        if (!Objects.equals(member.getRoom().getId(), assignment.getRoom().getId())
+                || !Objects.equals(member.getResidentHead().getId(), assignment.getResidentHead().getId())) {
+            throw new BadRequestException("Room member does not belong to the selected room");
+        }
+
+        return member.getFullName();
+    }
+
+    private void notifyResidentAboutVehicleRejection(User rejectedBy, Vehicle vehicle) {
+        roomAssignmentRepository.findByRoomIdAndStatus(
+                vehicle.getRoom().getId(),
+                RoomAssignmentStatus.ACTIVE
+        ).ifPresent(assignment -> notificationService.notifyUser(
+                rejectedBy,
+                assignment.getResidentHead(),
+                NotificationEventType.VEHICLE_REJECTED,
+                "Yêu cầu đăng ký xe bị từ chối",
+                "Yêu cầu đăng ký xe " + vehicle.getLicensePlate() + " không được duyệt.",
+                "/resident/vehicles",
+                vehicle.getRoom().getBuilding()
+        ));
     }
 
     private LocalDate resolveStartDate(LocalDate startDate) {

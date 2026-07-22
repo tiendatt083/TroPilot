@@ -17,6 +17,7 @@ const EVENT_ICONS = {
   MEMBER_REQUESTED: 'userPlus',
   MEMBER_APPROVED: 'userCheck',
   MEMBER_REJECTED: 'users',
+  VEHICLE_REJECTED: 'car',
   MANUAL: 'bell'
 };
 
@@ -50,7 +51,7 @@ export default function NotificationInboxList({
           <span className="notification-inbox-content">
             <span className="notification-inbox-topline">
               <span className="notification-inbox-heading">
-                <strong>{translateInterfaceText(notification.title)}</strong>
+                <span className="notification-inbox-title">{translateInterfaceText(notification.title)}</span>
                 {showReadState && !notification.read && (
                   <span className="notification-unread-dot" aria-label={t('enum.readStatus.UNREAD')} />
                 )}

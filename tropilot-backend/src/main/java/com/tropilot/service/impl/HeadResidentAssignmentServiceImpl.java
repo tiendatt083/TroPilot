@@ -16,7 +16,6 @@ import com.tropilot.enums.RoomMemberStatus;
 import com.tropilot.enums.RoomStatus;
 import com.tropilot.enums.UserRole;
 import com.tropilot.enums.UserStatus;
-import com.tropilot.enums.VehicleStatus;
 import com.tropilot.exception.BadRequestException;
 import com.tropilot.exception.ResourceNotFoundException;
 import com.tropilot.repository.RentalContractRepository;
@@ -71,7 +70,7 @@ public class HeadResidentAssignmentServiceImpl implements HeadResidentAssignment
         }
 
         markRoomMembersAsLeft(room.getId(), request.getStartDate());
-        deactivateRoomVehicles(room.getId(), request.getStartDate());
+        deleteRoomVehicles(room.getId());
 
         RoomAssignment assignment = RoomAssignment.builder()
                 .room(room)
@@ -142,7 +141,7 @@ public class HeadResidentAssignmentServiceImpl implements HeadResidentAssignment
         }
 
         markRoomMembersAsLeft(room.getId(), removalDate);
-        deactivateRoomVehicles(room.getId(), removalDate);
+        deleteRoomVehicles(room.getId());
 
         room.setStatus(RoomStatus.EMPTY);
         roomRepository.save(room);
@@ -223,20 +222,9 @@ public class HeadResidentAssignmentServiceImpl implements HeadResidentAssignment
         roomMemberRepository.saveAll(members);
     }
 
-    private void deactivateRoomVehicles(Long roomId, LocalDate endDate) {
-        List<Vehicle> vehicles = vehicleRepository.findByRoom_IdAndStatusIn(
-                roomId,
-                List.of(VehicleStatus.PENDING, VehicleStatus.ACTIVE)
-        );
-
-        vehicles.forEach(vehicle -> {
-            vehicle.setStatus(VehicleStatus.INACTIVE);
-            if (vehicle.getEndDate() == null || vehicle.getEndDate().isAfter(endDate)) {
-                vehicle.setEndDate(endDate);
-            }
-        });
-
-        vehicleRepository.saveAll(vehicles);
+    private void deleteRoomVehicles(Long roomId) {
+        List<Vehicle> vehicles = vehicleRepository.findByRoomIdWithDetails(roomId);
+        vehicleRepository.deleteAll(vehicles);
     }
 
     private HeadResidentAssignmentResponse toAssignedResponse(

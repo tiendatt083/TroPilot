@@ -34,11 +34,6 @@ export async function uploadAdminContract(id, file, filters) {
   return response.data;
 }
 
-export async function markContractNeedUpdate(id, filters) {
-  const response = await apiClient.put(`/api/admin/contracts/${id}/mark-need-update`, null, filterConfig(filters));
-  return response.data;
-}
-
 export async function getCurrentResidentContract() {
   const response = await apiClient.get('/api/resident/contracts/current');
   return response.data;

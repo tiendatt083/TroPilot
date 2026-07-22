@@ -15,8 +15,6 @@ public interface UtilityReadingService {
 
     UtilityReadingOverviewResponse getOverview(Long buildingId, String month);
 
-    UtilityReadingResponse getReading(Long id);
-
     UtilityReadingResponse updateReading(Long id, UtilityReadingUpdateRequest request);
 
     List<UtilityReadingResponse> getCurrentResidentRoomReadings(Long residentHeadId);

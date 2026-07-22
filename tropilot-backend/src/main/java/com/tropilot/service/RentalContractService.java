@@ -13,8 +13,6 @@ public interface RentalContractService {
 
     RentalContractResponse uploadContract(Long id, Long buildingId, MultipartFile file);
 
-    RentalContractResponse markNeedUpdate(Long id, Long buildingId);
-
     RentalContractResponse getCurrentResidentContract(Long residentHeadId);
 
     RentalContractResponse confirmResidentContract(Long residentHeadId, Long id);

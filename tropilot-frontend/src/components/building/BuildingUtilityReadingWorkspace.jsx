@@ -96,9 +96,9 @@ export default function BuildingUtilityReadingWorkspace({
     ? (reading) => (
         <button
           className="icon-action-button"
+          data-tooltip={t('common.edit')}
           type="button"
           aria-label={t('common.edit')}
-          title={t('common.edit')}
           onClick={() => {
             setEditingReading(reading);
             setFormOpen(true);

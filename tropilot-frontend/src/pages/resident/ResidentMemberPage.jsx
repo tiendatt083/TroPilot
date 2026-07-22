@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as memberApi from '../../features/residents/api.js';
 import MemberForm from '../../components/MemberForm.jsx';
-import PageHeader from '../../components/PageHeader.jsx';
+import ActionDialog from '../../components/common/ActionDialog.jsx';
 import ManagementPageHero from '../../components/common/ManagementPageHero.jsx';
 import LineIcon from '../../components/common/LineIcon.jsx';
 import { formatDateInputValue, formatDisplayDate } from '../../utils/dateFormat.js';
@@ -106,6 +106,10 @@ export default function ResidentMemberPage() {
   };
 
   const handleCancelFormAction = () => {
+    if (saving) {
+      return;
+    }
+
     setShowCreateForm(false);
     setEditingMember(null);
     setReturnRequestDraft(null);
@@ -166,32 +170,7 @@ export default function ResidentMemberPage() {
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
 
-      <section className={`member-workspace ${showForm ? '' : 'member-workspace-list-only'}`}>
-        {showForm && (
-          <div>
-            <>
-              <PageHeader
-                eyebrow={isEditing ? t('resident.members.editEyebrow') : t('resident.members.newEyebrow')}
-                title={isEditing ? editingMember.fullName : t('resident.members.addTitle')}
-              />
-              <MemberForm
-                key={formKey}
-                initialValues={activeFormMember}
-                loading={saving}
-                submitLabel={
-                  isEditing
-                    ? t('resident.members.saveChanges')
-                    : returnRequestDraft
-                      ? t('resident.members.submitAgain')
-                      : t('resident.members.submitApproval')
-                }
-                onSubmit={isEditing ? handleUpdate : handleCreate}
-                onCancel={handleCancelFormAction}
-              />
-            </>
-          </div>
-        )}
-
+      <section className="member-workspace member-workspace-list-only">
         <div>
           {loading ? (
             <div className="empty-state">{t('resident.members.loading')}</div>
@@ -205,7 +184,7 @@ export default function ResidentMemberPage() {
                     <th>{t('forms.member.relationship')}</th>
                     <th>{t('forms.member.moveInDate')}</th>
                     <th>{t('tables.common.status')}</th>
-                    <th>{t('tables.common.actions')}</th>
+                    <th className="resident-member-actions-column">{t('tables.common.actions')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -223,7 +202,7 @@ export default function ResidentMemberPage() {
                           {formatEnumLabel(t, 'memberStatus', member.status)}
                         </span>
                       </td>
-                      <td>
+                      <td className="resident-member-actions-cell">
                         <div className="table-actions">
                           {member.status === 'LEFT' ? (
                             <button
@@ -271,6 +250,31 @@ export default function ResidentMemberPage() {
           )}
         </div>
       </section>
+
+      <ActionDialog
+        className="resident-member-dialog"
+        eyebrow={isEditing ? t('resident.members.editEyebrow') : t('resident.members.newEyebrow')}
+        labelledBy="resident-member-dialog-title"
+        open={showForm}
+        title={isEditing ? editingMember.fullName : t('resident.members.addTitle')}
+        onClose={handleCancelFormAction}
+      >
+        <MemberForm
+          key={formKey}
+          className="resident-member-dialog-form"
+          initialValues={activeFormMember}
+          loading={saving}
+          submitLabel={
+            isEditing
+              ? t('resident.members.saveChanges')
+              : returnRequestDraft
+                ? t('resident.members.submitAgain')
+                : t('resident.members.submitApproval')
+          }
+          onSubmit={isEditing ? handleUpdate : handleCreate}
+          onCancel={handleCancelFormAction}
+        />
+      </ActionDialog>
     </section>
   );
 }

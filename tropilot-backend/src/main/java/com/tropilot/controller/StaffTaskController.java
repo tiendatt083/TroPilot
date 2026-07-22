@@ -1,7 +1,6 @@
 package com.tropilot.controller;
 
 import com.tropilot.dto.request.TaskCompleteRequest;
-import com.tropilot.dto.request.TaskRejectRequest;
 import com.tropilot.dto.response.ApiResponse;
 import com.tropilot.dto.response.TaskResponse;
 import com.tropilot.exception.UnauthorizedException;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -58,15 +56,6 @@ public class StaffTaskController {
             @Valid @ModelAttribute TaskCompleteRequest request
     ) {
         return ApiResponse.success("Task completed successfully", taskService.completeTask(getUserId(user), id, request));
-    }
-
-    @PutMapping("/{id}/reject")
-    public ApiResponse<TaskResponse> rejectTask(
-            @AuthenticationPrincipal AuthenticatedUser user,
-            @PathVariable(name = "id") Long id,
-            @Valid @RequestBody(required = false) TaskRejectRequest request
-    ) {
-        return ApiResponse.success("Task rejected successfully", taskService.rejectTask(getUserId(user), id, request));
     }
 
     private Long getUserId(AuthenticatedUser user) {

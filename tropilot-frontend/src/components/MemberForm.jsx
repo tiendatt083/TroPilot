@@ -9,7 +9,7 @@ const emptyForm = {
   moveInDate: ''
 };
 
-export default function MemberForm({ initialValues, loading, submitLabel, onSubmit, onCancel }) {
+export default function MemberForm({ className = '', initialValues, loading, submitLabel, onSubmit, onCancel }) {
   const { t } = useTranslation();
   const [form, setForm] = useState(emptyForm);
 
@@ -41,7 +41,7 @@ export default function MemberForm({ initialValues, loading, submitLabel, onSubm
   };
 
   return (
-    <form className="panel-form" onSubmit={handleSubmit}>
+    <form className={`panel-form ${className}`.trim()} onSubmit={handleSubmit}>
       <label htmlFor="fullName">{t('forms.member.fullName')}</label>
       <input
         id="fullName"

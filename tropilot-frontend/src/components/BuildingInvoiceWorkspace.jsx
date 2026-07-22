@@ -14,6 +14,7 @@ import ActionDialog from './common/ActionDialog.jsx';
 import FilterBar from './common/FilterBar.jsx';
 import InvoiceDetail from './InvoiceDetail.jsx';
 import InvoiceTable, { formatInvoiceCode } from './InvoiceTable.jsx';
+import LineIcon from './common/LineIcon.jsx';
 
 const INVOICE_STATUS_FILTERS = [
   'ALL',
@@ -69,6 +70,10 @@ function getInvoiceTime(invoice) {
   const dateValue = invoice.createdAt || invoice.invoiceDate || invoice.dueDate || invoice.month;
   const time = Date.parse(dateValue);
   return Number.isFinite(time) ? time : 0;
+}
+
+function invoiceBelongsToMonth(invoice, month) {
+  return invoice.month === month || String(invoice.invoiceDate || '').startsWith(month);
 }
 
 function buildExportFileName(building) {
@@ -364,7 +369,7 @@ function BulkPreviewPanel({ preview }) {
   );
 }
 
-export default function BuildingInvoiceWorkspace({ role = 'admin' }) {
+export default function BuildingInvoiceWorkspace() {
   const { t } = useTranslation();
   const { building } = useOutletContext();
   const [rooms, setRooms] = useState([]);
@@ -385,7 +390,6 @@ export default function BuildingInvoiceWorkspace({ role = 'admin' }) {
   const [processing, setProcessing] = useState(false);
   const [loadingDetailId, setLoadingDetailId] = useState(null);
 
-  const isAdmin = role === 'admin';
   const invoiceMonth = form.invoiceDate ? form.invoiceDate.slice(0, 7) : '';
   const currentSinglePreviewKey = useMemo(() => buildSinglePreviewKey(form), [
     form.roomId,
@@ -407,6 +411,42 @@ export default function BuildingInvoiceWorkspace({ role = 'admin' }) {
       return isOccupiedRoom(room) && !invoicedRoomIdsForMonth.has(room.id);
     });
   }, [rooms, invoicedRoomIdsForMonth]);
+  const invoiceSummary = useMemo(() => {
+    const totalInvoices = rooms.filter(isOccupiedRoom).length;
+    const createdInvoices = invoices.filter((invoice) => invoiceBelongsToMonth(invoice, invoiceMonth)).length;
+
+    return {
+      totalInvoices,
+      createdInvoices,
+      missingInvoices: Math.max(totalInvoices - createdInvoices, 0)
+    };
+  }, [invoices, invoiceMonth, rooms]);
+  const invoiceSummaryCards = [
+    {
+      key: 'total',
+      icon: 'fileText',
+      label: t('buildingInvoices.summary.total'),
+      meta: t('buildingInvoices.summary.totalMeta'),
+      tone: 'total',
+      value: invoiceSummary.totalInvoices
+    },
+    {
+      key: 'created',
+      icon: 'checkShield',
+      label: t('buildingInvoices.summary.created'),
+      meta: t('buildingInvoices.summary.createdMeta'),
+      tone: 'created',
+      value: invoiceSummary.createdInvoices
+    },
+    {
+      key: 'missing',
+      icon: 'clock',
+      label: t('buildingInvoices.summary.missing'),
+      meta: t('buildingInvoices.summary.missingMeta'),
+      tone: 'missing',
+      value: invoiceSummary.missingInvoices
+    }
+  ];
   const filteredInvoices = useMemo(() => {
     const searchValue = normalize(search);
 
@@ -439,10 +479,8 @@ export default function BuildingInvoiceWorkspace({ role = 'admin' }) {
 
     try {
       const [roomsResponse, invoicesResponse] = await Promise.all([
-        isAdmin ? roomApi.getAdminRooms({ buildingId: building.id }) : roomApi.getStaffRooms({ buildingId: building.id }),
-        isAdmin
-          ? invoiceApi.getAdminBuildingInvoices(building.id)
-          : invoiceApi.getStaffBuildingInvoices(building.id)
+        roomApi.getAdminRooms({ buildingId: building.id }),
+        invoiceApi.getAdminBuildingInvoices(building.id)
       ]);
       setRooms(roomsResponse.data);
       setInvoices(invoicesResponse.data);
@@ -458,7 +496,7 @@ export default function BuildingInvoiceWorkspace({ role = 'admin' }) {
     setSinglePreviewKey('');
     setBulkPreview(null);
     loadData().finally(() => setLoading(false));
-  }, [building.id, role, t]);
+  }, [building.id, t]);
 
   const handleFormChange = (event) => {
     const { name, value } = event.target;
@@ -557,9 +595,7 @@ export default function BuildingInvoiceWorkspace({ role = 'admin' }) {
     setError('');
 
     try {
-      const response = isAdmin
-        ? await invoiceApi.previewBuildingInvoice(building.id, getSinglePayload())
-        : await invoiceApi.previewStaffBuildingInvoice(building.id, getSinglePayload());
+      const response = await invoiceApi.previewBuildingInvoice(building.id, getSinglePayload());
       setSinglePreview(applyAdditionalChargeToPreview(response.data, form.additionalChargeAmount, form.additionalChargeNote));
       setSinglePreviewKey(buildSinglePreviewKey(form));
     } catch (apiError) {
@@ -575,9 +611,7 @@ export default function BuildingInvoiceWorkspace({ role = 'admin' }) {
     setError('');
 
     try {
-      const response = isAdmin
-        ? await invoiceApi.generateBuildingInvoice(building.id, getSinglePayload())
-        : await invoiceApi.generateStaffBuildingInvoice(building.id, getSinglePayload());
+      const response = await invoiceApi.generateBuildingInvoice(building.id, getSinglePayload());
       setSelectedInvoice(applyAdditionalChargeToPreview(response.data, form.additionalChargeAmount, form.additionalChargeNote));
       setSinglePreview(null);
       setSinglePreviewKey('');
@@ -598,9 +632,7 @@ export default function BuildingInvoiceWorkspace({ role = 'admin' }) {
     setError('');
 
     try {
-      const response = isAdmin
-        ? await invoiceApi.previewBuildingBulkInvoices(building.id, getBulkPayload())
-        : await invoiceApi.previewStaffBuildingBulkInvoices(building.id, getBulkPayload());
+      const response = await invoiceApi.previewBuildingBulkInvoices(building.id, getBulkPayload());
       setBulkPreview(response.data);
     } catch (apiError) {
       setError(getInvoiceErrorMessage(apiError, t, 'buildingInvoices.bulkPreviewError'));
@@ -615,9 +647,7 @@ export default function BuildingInvoiceWorkspace({ role = 'admin' }) {
     setError('');
 
     try {
-      const response = isAdmin
-        ? await invoiceApi.generateBuildingBulkInvoices(building.id, getBulkPayload())
-        : await invoiceApi.generateStaffBuildingBulkInvoices(building.id, getBulkPayload());
+      const response = await invoiceApi.generateBuildingBulkInvoices(building.id, getBulkPayload());
       setBulkPreview(null);
       setComposerOpen(false);
       setMessage(t('buildingInvoices.bulkGenerated', { count: response.data.length }));
@@ -630,9 +660,7 @@ export default function BuildingInvoiceWorkspace({ role = 'admin' }) {
   };
 
   const loadInvoiceDetail = async (invoiceId) => {
-    return isAdmin
-      ? invoiceApi.getAdminBuildingInvoice(building.id, invoiceId)
-      : invoiceApi.getStaffBuildingInvoice(building.id, invoiceId);
+    return invoiceApi.getAdminBuildingInvoice(building.id, invoiceId);
   };
 
   const handleView = async (invoice) => {
@@ -650,7 +678,7 @@ export default function BuildingInvoiceWorkspace({ role = 'admin' }) {
   };
 
   const handleDelete = async (invoice) => {
-    if (!isAdmin || !window.confirm(t('buildingInvoices.deleteConfirm', { room: formatRoomCode(invoice), month: formatDisplayMonth(invoice.month) }))) {
+    if (!window.confirm(t('buildingInvoices.deleteConfirm', { room: formatRoomCode(invoice), month: formatDisplayMonth(invoice.month) }))) {
       return;
     }
 
@@ -672,7 +700,7 @@ export default function BuildingInvoiceWorkspace({ role = 'admin' }) {
 
   const fetchSelectedInvoice = useCallback(() => {
     return loadInvoiceDetail(selectedInvoice.id);
-  }, [building.id, role, selectedInvoice?.id]);
+  }, [building.id, selectedInvoice?.id]);
 
   const handleInvoicePollingUpdate = useCallback((updatedInvoice) => {
     setSelectedInvoice(updatedInvoice);
@@ -699,7 +727,7 @@ export default function BuildingInvoiceWorkspace({ role = 'admin' }) {
       >
         <EyeIcon />
       </button>
-      {isAdmin && canDeleteInvoice(invoice) && (
+      {canDeleteInvoice(invoice) && (
         <button
           aria-label={t('common.delete')}
           className="icon-action-button icon-action-danger"
@@ -885,6 +913,21 @@ export default function BuildingInvoiceWorkspace({ role = 'admin' }) {
         <div className="empty-state">{t('buildingInvoices.loading')}</div>
       ) : (
         <section className="invoice-record-section">
+          <div className="invoice-summary-grid">
+            {invoiceSummaryCards.map((card) => (
+              <div className={`invoice-summary-card invoice-summary-card-${card.tone}`} key={card.key}>
+                <span className="invoice-summary-icon">
+                  <LineIcon name={card.icon} />
+                </span>
+                <div className="invoice-summary-copy">
+                  <span>{card.label}</span>
+                  <small>{card.meta}</small>
+                </div>
+                <strong>{card.value}</strong>
+              </div>
+            ))}
+          </div>
+
           <div className="invoice-filter-panel">
             <FilterBar
               as="div"

@@ -53,37 +53,6 @@ public class MaintenanceRequestServiceImpl implements MaintenanceRequestService 
 
     @Override
     @Transactional
-    public MaintenanceRequestResponse createResidentRequest(
-            Long residentHeadId,
-            MaintenanceRequestCreateRequest request
-    ) {
-        RoomAssignment assignment = findActiveAssignment(residentHeadId);
-        String imageUrl = maintenanceImageStorageService.store(request.getImage());
-
-        MaintenanceRequest maintenanceRequest = MaintenanceRequest.builder()
-                .room(assignment.getRoom())
-                .residentHead(assignment.getResidentHead())
-                .building(assignment.getRoom().getBuilding())
-                .requestedBy(assignment.getResidentHead())
-                .title(request.getTitle().trim())
-                .content(request.getContent().trim())
-                .imageUrl(imageUrl)
-                .status(MaintenanceStatus.PENDING)
-                .build();
-
-        MaintenanceRequest savedRequest = maintenanceRequestRepository.save(maintenanceRequest);
-        activityLogService.record(
-                assignment.getResidentHead(),
-                "MAINTENANCE_REQUEST_CREATED",
-                "Created maintenance request " + savedRequest.getTitle()
-                        + " for room " + assignment.getRoom().getRoomCode()
-        );
-
-        return maintenanceRequestMapper.toResponse(savedRequest);
-    }
-
-    @Override
-    @Transactional
     public MaintenanceRequestResponse createEquipmentRequest(
             Long requestedById,
             Long equipmentId,
@@ -179,16 +148,6 @@ public class MaintenanceRequestServiceImpl implements MaintenanceRequestService 
                 .stream()
                 .map(maintenanceRequestMapper::toResponse)
                 .toList();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public MaintenanceRequestResponse getResidentRequest(Long residentHeadId, Long id) {
-        RoomAssignment assignment = findActiveAssignment(residentHeadId);
-        MaintenanceRequest maintenanceRequest = findRequest(id);
-        validateResidentOwnership(maintenanceRequest, assignment);
-
-        return maintenanceRequestMapper.toResponse(maintenanceRequest);
     }
 
     @Override
@@ -378,20 +337,6 @@ public class MaintenanceRequestServiceImpl implements MaintenanceRequestService 
         }
 
         return user;
-    }
-
-    private void validateResidentOwnership(MaintenanceRequest request, RoomAssignment assignment) {
-        boolean sameRoom = request.getRoom() != null
-                && request.getRoom().getId().equals(assignment.getRoom().getId());
-        boolean sameResidentHead = request.getResidentHead() != null
-                && request.getResidentHead().getId().equals(assignment.getResidentHead().getId());
-        boolean requestedEquipmentMaintenance = request.getEquipment() != null
-                && request.getRequestedBy() != null
-                && request.getRequestedBy().getId().equals(assignment.getResidentHead().getId());
-
-        if ((!sameRoom || !sameResidentHead) && !requestedEquipmentMaintenance) {
-            throw new ForbiddenException("Maintenance request does not belong to the current Head Resident room");
-        }
     }
 
     private void validateResidentEquipmentAccess(Equipment equipment, RoomAssignment assignment) {

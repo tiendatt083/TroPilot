@@ -1,9 +1,17 @@
 package com.tropilot.controller;
 
+import com.tropilot.dto.request.AdminVehicleCreateRequest;
 import com.tropilot.dto.response.ApiResponse;
 import com.tropilot.dto.response.VehicleResponse;
+import com.tropilot.exception.UnauthorizedException;
+import com.tropilot.security.AuthenticatedUser;
 import com.tropilot.service.VehicleService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,9 +35,12 @@ public class AdminVehicleController {
         return ApiResponse.success("Vehicles loaded successfully", vehicleService.getVehicles(buildingId));
     }
 
-    @GetMapping("/pending")
-    public ApiResponse<List<VehicleResponse>> getPendingVehicles(@RequestParam(name = "buildingId", required = false) Long buildingId) {
-        return ApiResponse.success("Pending vehicles loaded successfully", vehicleService.getPendingVehicles(buildingId));
+    @PostMapping
+    public ApiResponse<VehicleResponse> createVehicle(
+            @Valid @RequestBody AdminVehicleCreateRequest request,
+            @RequestParam(name = "buildingId", required = false) Long buildingId
+    ) {
+        return ApiResponse.success("Vehicle created successfully", vehicleService.createAdminVehicle(request, buildingId));
     }
 
     @PutMapping("/{id}/approve")
@@ -42,17 +53,26 @@ public class AdminVehicleController {
 
     @PutMapping("/{id}/reject")
     public ApiResponse<VehicleResponse> rejectVehicle(
+            @AuthenticationPrincipal AuthenticatedUser user,
             @PathVariable(name = "id") Long id,
             @RequestParam(name = "buildingId", required = false) Long buildingId
     ) {
-        return ApiResponse.success("Vehicle rejected successfully", vehicleService.rejectVehicle(id, buildingId));
+        return ApiResponse.success("Vehicle rejected successfully", vehicleService.rejectVehicle(id, getUserId(user), buildingId));
     }
 
-    @PutMapping("/{id}/deactivate")
-    public ApiResponse<VehicleResponse> deactivateVehicle(
+    @DeleteMapping("/{id}")
+    public ApiResponse<Void> deleteVehicle(
             @PathVariable(name = "id") Long id,
             @RequestParam(name = "buildingId", required = false) Long buildingId
     ) {
-        return ApiResponse.success("Vehicle deactivated successfully", vehicleService.deactivateVehicle(id, buildingId));
+        vehicleService.deleteVehicle(id, buildingId);
+        return ApiResponse.success("Vehicle deleted successfully");
+    }
+
+    private Long getUserId(AuthenticatedUser user) {
+        if (user == null) {
+            throw new UnauthorizedException("Authentication is required");
+        }
+        return user.getId();
     }
 }

@@ -30,8 +30,8 @@ export async function getAdminVehicles(filters) {
   return response.data;
 }
 
-export async function getPendingVehicles(filters) {
-  const response = await apiClient.get('/api/admin/vehicles/pending', filterConfig(filters));
+export async function createAdminVehicle(payload, filters) {
+  const response = await apiClient.post('/api/admin/vehicles', payload, filterConfig(filters));
   return response.data;
 }
 
@@ -45,8 +45,8 @@ export async function rejectVehicle(id, filters) {
   return response.data;
 }
 
-export async function deactivateVehicle(id, filters) {
-  const response = await apiClient.put(`/api/admin/vehicles/${id}/deactivate`, null, filterConfig(filters));
+export async function deleteVehicle(id, filters) {
+  const response = await apiClient.delete(`/api/admin/vehicles/${id}`, filterConfig(filters));
   return response.data;
 }
 

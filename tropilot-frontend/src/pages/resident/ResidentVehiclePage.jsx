@@ -2,14 +2,14 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as memberApi from '../../features/residents/api.js';
 import * as vehicleApi from '../../features/residents/vehicleApi.js';
-import PageHeader from '../../components/PageHeader.jsx';
 import ManagementPageHero from '../../components/common/ManagementPageHero.jsx';
+import ActionDialog from '../../components/common/ActionDialog.jsx';
 import LineIcon from '../../components/common/LineIcon.jsx';
 import VehicleForm from '../../components/VehicleForm.jsx';
 import VehicleTable from '../../components/VehicleTable.jsx';
 
 function canRequestCancel(vehicle) {
-  return vehicle.status === 'PENDING' || vehicle.status === 'ACTIVE';
+  return vehicle.status === 'PENDING' || vehicle.status === 'ACTIVE' || vehicle.status === 'REJECTED';
 }
 
 export default function ResidentVehiclePage() {
@@ -87,6 +87,12 @@ export default function ResidentVehiclePage() {
     }
   };
 
+  const handleCloseRequestForm = () => {
+    if (!saving) {
+      setShowRequestForm(false);
+    }
+  };
+
   const renderActions = (vehicle) => (
     <div className="table-actions">
       {canRequestCancel(vehicle) ? (
@@ -124,22 +130,7 @@ export default function ResidentVehiclePage() {
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
 
-      <section className={`vehicle-workspace ${showRequestForm ? '' : 'vehicle-workspace-list-only'}`}>
-        {showRequestForm && (
-          <div>
-            <>
-              <PageHeader eyebrow={t('vehicles.requestEyebrow')} title={t('vehicles.requestTitle')} />
-              <VehicleForm
-                key={formKey}
-                approvedMembers={approvedMembers}
-                loading={saving}
-                onCancel={() => setShowRequestForm(false)}
-                onSubmit={handleRequestVehicle}
-              />
-            </>
-          </div>
-        )}
-
+      <section className="vehicle-workspace vehicle-workspace-list-only">
         <div>
           {loading ? (
             <div className="empty-state">{t('vehicles.loading')}</div>
@@ -148,6 +139,23 @@ export default function ResidentVehiclePage() {
           )}
         </div>
       </section>
+
+      <ActionDialog
+        className="resident-vehicle-request-dialog"
+        eyebrow={t('vehicles.requestEyebrow')}
+        labelledBy="resident-vehicle-request-dialog-title"
+        open={showRequestForm}
+        title={t('vehicles.requestTitle')}
+        onClose={handleCloseRequestForm}
+      >
+        <VehicleForm
+          key={formKey}
+          approvedMembers={approvedMembers}
+          loading={saving}
+          onCancel={handleCloseRequestForm}
+          onSubmit={handleRequestVehicle}
+        />
+      </ActionDialog>
     </section>
   );
 }

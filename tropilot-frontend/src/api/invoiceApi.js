@@ -1,35 +1,5 @@
 import apiClient from './axiosClient.js';
 
-export async function getStaffBuildingInvoices(buildingId) {
-  const response = await apiClient.get(`/api/staff/buildings/${buildingId}/invoices`);
-  return response.data;
-}
-
-export async function getStaffBuildingInvoice(buildingId, invoiceId) {
-  const response = await apiClient.get(`/api/staff/buildings/${buildingId}/invoices/${invoiceId}`);
-  return response.data;
-}
-
-export async function previewStaffBuildingInvoice(buildingId, payload) {
-  const response = await apiClient.post(`/api/staff/buildings/${buildingId}/invoices/preview`, payload);
-  return response.data;
-}
-
-export async function generateStaffBuildingInvoice(buildingId, payload) {
-  const response = await apiClient.post(`/api/staff/buildings/${buildingId}/invoices/generate`, payload);
-  return response.data;
-}
-
-export async function previewStaffBuildingBulkInvoices(buildingId, payload) {
-  const response = await apiClient.post(`/api/staff/buildings/${buildingId}/invoices/bulk-preview`, payload);
-  return response.data;
-}
-
-export async function generateStaffBuildingBulkInvoices(buildingId, payload) {
-  const response = await apiClient.post(`/api/staff/buildings/${buildingId}/invoices/bulk-generate`, payload);
-  return response.data;
-}
-
 export async function getAdminBuildingInvoices(buildingId) {
   const response = await apiClient.get(`/api/admin/buildings/${buildingId}/invoices`);
   return response.data;

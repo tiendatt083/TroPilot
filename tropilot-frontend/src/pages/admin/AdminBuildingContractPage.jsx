@@ -46,6 +46,20 @@ function contractMatchesSearch(contract, searchValue) {
   return searchableValues.some((value) => normalizeSearchText(value).includes(searchValue));
 }
 
+function ContractInfoItem({ icon, label, value }) {
+  return (
+    <div className="contract-info-item">
+      <span className={`contract-info-icon contract-info-icon-${icon}`}>
+        <LineIcon name={icon} />
+      </span>
+      <span className="contract-info-copy">
+        <span>{label}</span>
+        <strong>{value}</strong>
+      </span>
+    </div>
+  );
+}
+
 export default function AdminBuildingContractPage() {
   const { t } = useTranslation();
   const { building } = useOutletContext();
@@ -53,6 +67,8 @@ export default function AdminBuildingContractPage() {
   const [selectedContract, setSelectedContract] = useState(null);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [uploadMessage, setUploadMessage] = useState('');
+  const [uploadError, setUploadError] = useState('');
   const [loading, setLoading] = useState(true);
   const [loadingDetailId, setLoadingDetailId] = useState(null);
   const [uploading, setUploading] = useState(false);
@@ -104,6 +120,8 @@ export default function AdminBuildingContractPage() {
     setLoadingDetailId(contract.id);
     setMessage('');
     setError('');
+    setUploadMessage('');
+    setUploadError('');
 
     try {
       const response = await contractApi.getAdminContract(contract.id, buildingFilter);
@@ -122,18 +140,18 @@ export default function AdminBuildingContractPage() {
     }
 
     setUploading(true);
-    setMessage('');
-    setError('');
+    setUploadMessage('');
+    setUploadError('');
 
     try {
       const isChangingContract = Boolean(selectedContract.contractFileUrl);
       const response = await contractApi.uploadAdminContract(selectedContract.id, file, buildingFilter);
       setSelectedContract(response.data);
       setShowUploadForm(false);
-      setMessage(isChangingContract ? t('contracts.changed') : t('contracts.uploaded'));
+      setUploadMessage(isChangingContract ? t('contracts.changed') : t('contracts.uploaded'));
       await loadContracts();
     } catch (apiError) {
-      setError(apiError.response?.data?.message || t('contracts.uploadError'));
+      setUploadError(apiError.response?.data?.message || t('contracts.uploadError'));
     } finally {
       setUploading(false);
     }
@@ -142,6 +160,8 @@ export default function AdminBuildingContractPage() {
   const handleChangeContract = () => {
     setMessage('');
     setError('');
+    setUploadMessage('');
+    setUploadError('');
     setShowUploadForm(true);
   };
 
@@ -150,7 +170,6 @@ export default function AdminBuildingContractPage() {
   };
 
   const hasSelectedContractFile = Boolean(selectedContract?.contractFileUrl);
-  const shouldShowUploadForm = Boolean(selectedContract) && (!hasSelectedContractFile || showUploadForm);
 
   return (
     <div className="building-workspace">
@@ -208,7 +227,7 @@ export default function AdminBuildingContractPage() {
                     <th>{t('tables.common.period')}</th>
                     <th>{t('tables.common.depositAmount')}</th>
                     <th>{t('tables.common.status')}</th>
-                    <th>{t('workspace.buildings.details')}</th>
+                    <th className="building-contract-action-header">{t('tables.common.actions')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -234,7 +253,7 @@ export default function AdminBuildingContractPage() {
                           {formatEnumLabel(t, 'contractStatus', contract.contractStatus)}
                         </span>
                       </td>
-                      <td>
+                      <td className="building-contract-action-cell">
                         <button
                           className="table-icon-button"
                           type="button"
@@ -264,107 +283,123 @@ export default function AdminBuildingContractPage() {
               if (!uploading) {
                 setSelectedContract(null);
                 setShowUploadForm(false);
+                setUploadMessage('');
+                setUploadError('');
               }
             }}
           >
             {selectedContract && (
               <div className="building-contract-detail-column">
-              <section className="detail-panel contract-detail-summary">
-                <div>
-                  <span>{t('tables.common.room')}</span>
-                  <strong>{formatRoomLabel(selectedContract)}</strong>
-                </div>
-                <div>
-                  <span>{t('tables.common.building')}</span>
-                  <strong>
-                    {selectedContract.buildingCode} - {selectedContract.buildingName}
-                  </strong>
-                </div>
-                <div>
-                  <span>{t('tables.common.headResident')}</span>
-                  <strong>{selectedContract.residentHeadName}</strong>
-                </div>
-                <div>
-                  <span>{t('profile.fields.email')}</span>
-                  <strong>{selectedContract.residentHeadEmail}</strong>
-                </div>
-                <div>
-                  <span>{t('contracts.period')}</span>
-                  <strong>
-                    {formatDisplayDate(selectedContract.startDate)} {t('common.to')} {formatDisplayDate(selectedContract.endDate)}
-                  </strong>
-                </div>
-                <div>
-                  <span>{t('tables.common.depositAmount')}</span>
-                  <strong>{formatNumber(selectedContract.depositAmount)}</strong>
-                </div>
-                <div>
-                  <span>{t('contracts.status')}</span>
-                  <strong>
-                    <span className={getContractStatusClass(selectedContract.contractStatus)}>
-                      {formatEnumLabel(t, 'contractStatus', selectedContract.contractStatus)}
-                    </span>
-                  </strong>
-                </div>
-                <div>
-                  <span>{t('contracts.rentalStatus')}</span>
-                  <strong>{formatEnumLabel(t, 'rentalStatus', selectedContract.rentalStatus)}</strong>
-                </div>
-              </section>
+                <div className="contract-detail-main-grid">
+                  <section className="contract-detail-card contract-info-card">
+                    <h3>{t('contracts.infoTitle', { defaultValue: 'Thông tin hợp đồng' })}</h3>
+                    <div className="contract-info-grid">
+                      <ContractInfoItem
+                        icon="building"
+                        label={t('tables.common.room')}
+                        value={formatRoomLabel(selectedContract)}
+                      />
+                      <ContractInfoItem
+                        icon="building"
+                        label={t('tables.common.building')}
+                        value={`${selectedContract.buildingCode} - ${selectedContract.buildingName}`}
+                      />
+                      <ContractInfoItem
+                        icon="user"
+                        label={t('tables.common.headResident')}
+                        value={selectedContract.residentHeadName}
+                      />
+                      <ContractInfoItem
+                        icon="mail"
+                        label={t('profile.fields.email')}
+                        value={selectedContract.residentHeadEmail}
+                      />
+                      <ContractInfoItem
+                        icon="calendar"
+                        label={t('contracts.period')}
+                        value={`${formatDisplayDate(selectedContract.startDate)} ${t('common.to')} ${formatDisplayDate(selectedContract.endDate)}`}
+                      />
+                      <ContractInfoItem
+                        icon="wallet"
+                        label={t('tables.common.depositAmount')}
+                        value={formatNumber(selectedContract.depositAmount)}
+                      />
+                      <ContractInfoItem
+                        icon="fileText"
+                        label={t('contracts.status')}
+                        value={(
+                          <span className={getContractStatusClass(selectedContract.contractStatus)}>
+                            {formatEnumLabel(t, 'contractStatus', selectedContract.contractStatus)}
+                          </span>
+                        )}
+                      />
+                      <ContractInfoItem
+                        icon="activity"
+                        label={t('contracts.rentalStatus')}
+                        value={formatEnumLabel(t, 'rentalStatus', selectedContract.rentalStatus)}
+                      />
+                    </div>
+                  </section>
 
-              <section className="assignment-panel">
-                <div className="page-title-row">
-                  <div>
-                    <span className="page-eyebrow">
-                      {hasSelectedContractFile ? t('contracts.uploadedFile') : t('contracts.uploadEyebrow')}
-                    </span>
-                    <h2>{hasSelectedContractFile ? t('contracts.currentFile') : t('contracts.upload.file')}</h2>
-                  </div>
-                  <div className="button-row">
-                    {hasSelectedContractFile && (
-                      <a
-                        className="secondary-button inline-button contract-file-action"
-                        href={resolveFileUrl(selectedContract.contractFileUrl)}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        {t('contracts.openFile')}
-                      </a>
-                    )}
-                    {hasSelectedContractFile && !showUploadForm && (
-                      <button className="secondary-button inline-button contract-file-action" type="button" onClick={handleChangeContract}>
-                        {t('contracts.change')}
-                      </button>
-                    )}
-                    {hasSelectedContractFile && showUploadForm && (
-                      <button
-                        className="secondary-button inline-button contract-file-action"
-                        type="button"
-                        disabled={uploading}
-                        onClick={() => setShowUploadForm(false)}
-                      >
-                        {t('contracts.cancelChange')}
-                      </button>
-                    )}
-                  </div>
-                </div>
-                {hasSelectedContractFile && !showUploadForm && (
-                  <div className="contract-file-summary">
-                    <strong>{t('contracts.fileUploaded')}</strong>
-                    <p>{t('contracts.changeHelp')}</p>
-                  </div>
-                )}
-                {shouldShowUploadForm && (
-                  <ContractUploadForm
-                    loading={uploading}
-                    loadingLabel={hasSelectedContractFile ? t('contracts.changing') : t('contracts.upload.uploading')}
-                    submitLabel={hasSelectedContractFile ? t('contracts.saveNew') : t('contracts.upload.submit')}
-                    onSubmit={handleUpload}
-                  />
-                )}
-              </section>
+                  <section className="contract-detail-card contract-upload-card">
+                    <div className="contract-upload-card-header">
+                      <h3>{t('contracts.uploadPanelTitle', { defaultValue: 'Tải lên hợp đồng' })}</h3>
+                    </div>
 
-              <ContractFileHistoryList files={selectedContract.previousContractFiles} />
+                    {hasSelectedContractFile && !showUploadForm ? (
+                      <div className="contract-file-summary">
+                        {uploadMessage && (
+                          <div className="contract-upload-feedback success">
+                            {uploadMessage}
+                          </div>
+                        )}
+                        <LineIcon name="fileText" className="contract-file-summary-icon" />
+                        <strong>{t('contracts.fileUploaded')}</strong>
+                        <p>{t('contracts.changeHelp')}</p>
+                        <div className="contract-file-actions">
+                          <a
+                            className="secondary-button inline-button contract-file-action"
+                            href={resolveFileUrl(selectedContract.contractFileUrl)}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            {t('contracts.openFile')}
+                          </a>
+                          <button className="secondary-button inline-button contract-file-action" type="button" onClick={handleChangeContract}>
+                            {t('contracts.change')}
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <ContractUploadForm
+                          loading={uploading}
+                          errorMessage={uploadError}
+                          successMessage={uploadMessage}
+                          onFileChange={() => {
+                            setUploadError('');
+                            setUploadMessage('');
+                          }}
+                          loadingLabel={hasSelectedContractFile ? t('contracts.changing') : t('contracts.upload.uploading')}
+                          submitLabel={hasSelectedContractFile ? t('contracts.saveNew') : t('contracts.upload.submit')}
+                          onSubmit={handleUpload}
+                        />
+                        {hasSelectedContractFile && (
+                          <button
+                            className="secondary-button inline-button contract-file-action contract-upload-cancel"
+                            type="button"
+                            disabled={uploading}
+                            onClick={() => setShowUploadForm(false)}
+                          >
+                            {t('contracts.cancelChange')}
+                          </button>
+                        )}
+                      </>
+                    )}
+                  </section>
+                </div>
+
+                <ContractFileHistoryList files={selectedContract.previousContractFiles} />
               </div>
             )}
           </ActionDialog>

@@ -6,7 +6,6 @@ import com.tropilot.service.ReceiptService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,13 +23,5 @@ public class AdminReceiptController {
     @GetMapping
     public ApiResponse<List<ReceiptResponse>> getReceipts(@RequestParam(name = "buildingId", required = false) Long buildingId) {
         return ApiResponse.success("Receipts loaded successfully", receiptService.getReceipts(buildingId));
-    }
-
-    @GetMapping("/{id}")
-    public ApiResponse<ReceiptResponse> getReceipt(
-            @PathVariable(name = "id") Long id,
-            @RequestParam(name = "buildingId", required = false) Long buildingId
-    ) {
-        return ApiResponse.success("Receipt loaded successfully", receiptService.getReceipt(id, buildingId));
     }
 }

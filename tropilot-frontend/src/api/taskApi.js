@@ -72,8 +72,3 @@ export async function completeStaffTask(id, payload) {
   const response = await apiClient.put(`/api/staff/tasks/${id}/complete`, toFormData(payload), multipartConfig);
   return response.data;
 }
-
-export async function rejectStaffTask(id, payload) {
-  const response = await apiClient.put(`/api/staff/tasks/${id}/reject`, payload || {});
-  return response.data;
-}

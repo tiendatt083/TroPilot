@@ -203,6 +203,16 @@
 
 .account-directory-table .account-actions-column {
   width: 190px;
+  text-align: center;
+}
+
+.account-directory-table .account-actions-cell {
+  text-align: center;
+}
+
+.account-directory-table .account-actions-cell .table-actions {
+  justify-content: center;
+  margin-inline: auto;
 }
 
 .building-user-modern-page .account-directory-table th,
@@ -233,6 +243,62 @@
 .building-actions-column,
 .building-actions-cell {
   width: 132px;
+  min-width: 132px;
+  padding-inline: 0.5rem;
+  text-align: center;
+}
+
+.building-list-table .building-actions-column,
+.building-list-table .building-actions-cell {
+  width: 132px;
+  min-width: 132px;
+  max-width: 132px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.building-actions-cell .table-actions {
+  display: inline-flex;
+  width: 100%;
+  justify-content: center;
+  margin-inline: auto;
+  flex-wrap: nowrap;
+}
+
+.building-list-table .building-actions-cell .table-actions {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.building-actions-cell .icon-table-actions {
+  justify-content: center;
+}
+
+.room-actions-column,
+.room-actions-cell {
+  width: 120px;
+  text-align: center;
+}
+
+.room-actions-cell .table-actions {
+  justify-content: center;
+  margin-inline: auto;
+}
+
+.task-actions-column,
+.task-actions-cell {
+  width: 120px;
+  text-align: center;
+}
+
+.task-actions-cell .table-action-buttons {
+  justify-content: center;
+  margin-inline: auto;
+}
+
+.task-actions-cell > .icon-action-button {
+  margin-inline: auto;
 }
 
 .modern-user-page {
@@ -565,8 +631,29 @@
   width: 10%;
 }
 
-.pending-member-review-table th:last-child {
+.pending-member-review-table th:last-child,
+.pending-member-review-table td:last-child,
+.pending-member-actions-column,
+.pending-member-actions-cell {
   width: 120px;
+  text-align: center;
+}
+
+.pending-member-actions-cell .table-actions,
+.pending-member-action-icons {
+  justify-content: center;
+  margin-inline: auto;
+}
+
+.resident-member-page .resident-member-actions-column,
+.resident-member-page .resident-member-actions-cell {
+  width: 136px;
+  text-align: center;
+}
+
+.resident-member-page .resident-member-actions-cell .table-actions {
+  justify-content: center;
+  margin-inline: auto;
 }
 
 .account-sequence-cell {
@@ -752,6 +839,233 @@
   padding: 1rem;
 }
 
+.account-directory-detail-modal {
+  width: min(860px, calc(100vw - 48px));
+  max-height: min(86vh, 820px);
+  padding: 1.55rem 1.65rem;
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at 12% 0%, rgba(63, 130, 246, 0.08), transparent 28%),
+    var(--color-surface);
+}
+
+.account-directory-detail-modal .account-modal-header {
+  padding-bottom: 1.15rem;
+}
+
+.account-directory-detail-modal .section-eyebrow {
+  color: var(--color-primary);
+  font-size: 0.82rem;
+  font-weight: var(--font-weight-strong);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.account-directory-detail-modal .account-modal-header h2 {
+  margin-top: 0.36rem;
+  color: var(--color-text);
+  font-size: clamp(1.45rem, 2vw, 1.85rem);
+  line-height: 1.15;
+}
+
+.account-directory-detail-modal .account-detail-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem 0.75rem;
+  margin-top: 1.05rem;
+  border: 0;
+  border-radius: 0;
+  overflow: visible;
+}
+
+.account-directory-detail-modal .account-detail-grid > div,
+.account-directory-detail-modal .account-detail-grid > div:nth-child(odd),
+.account-directory-detail-modal .account-detail-grid > div:last-child {
+  grid-column: auto;
+  border: 1px solid var(--color-border-soft);
+  border-radius: 12px;
+}
+
+.account-directory-detail-modal .account-detail-item {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  align-items: center;
+  gap: 0.8rem;
+  min-height: 76px;
+  padding: 0.78rem 0.86rem;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow:
+    0 10px 28px rgba(20, 35, 61, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.75);
+}
+
+.account-detail-icon,
+.account-member-icon {
+  display: inline-grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border-radius: 12px;
+  color: var(--color-primary);
+  background: rgba(63, 130, 246, 0.11);
+  box-shadow: inset 0 0 0 1px rgba(63, 130, 246, 0.08);
+}
+
+.account-detail-icon .line-icon,
+.account-member-icon .line-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.account-directory-detail-modal .account-detail-copy {
+  min-width: 0;
+}
+
+.account-directory-detail-modal .account-detail-grid dt {
+  margin: 0 0 0.32rem;
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  font-weight: var(--font-weight-strong);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.account-directory-detail-modal .account-detail-grid dd {
+  color: var(--color-text);
+  font-size: 0.98rem;
+  font-weight: var(--font-weight-medium);
+  line-height: 1.35;
+}
+
+.account-directory-detail-modal .account-detail-grid dd .status-pill {
+  font-weight: var(--font-weight-medium);
+}
+
+.account-directory-detail-modal .status-approved,
+.account-directory-detail-modal .status-active {
+  color: var(--color-success);
+  background: var(--color-success-bg);
+}
+
+.account-directory-detail-modal .status-pending {
+  color: var(--color-warning);
+  background: var(--color-warning-bg);
+}
+
+.account-directory-detail-modal .status-rejected,
+.account-directory-detail-modal .status-locked {
+  color: var(--color-danger);
+  background: var(--color-danger-bg);
+}
+
+.account-directory-detail-modal .status-left,
+.account-directory-detail-modal .status-inactive {
+  color: var(--color-text-muted);
+  background: var(--color-input-disabled);
+}
+
+.account-directory-detail-modal .account-member-section {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border-soft);
+}
+
+.account-directory-detail-modal .account-member-section h3 {
+  color: var(--color-text);
+  font-size: 1.05rem;
+  font-weight: var(--font-weight-strong);
+}
+
+.account-directory-detail-modal .account-member-section-header span {
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-medium);
+}
+
+.account-directory-detail-modal .account-member-list {
+  gap: 0.5rem;
+}
+
+.account-directory-detail-modal .account-member-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(150px, 0.8fr);
+  align-items: center;
+  padding: 0.62rem 0.72rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.64);
+}
+
+.account-member-main {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr);
+  align-items: center;
+  gap: 0.72rem;
+}
+
+.account-directory-detail-modal .account-member-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.account-directory-detail-modal .account-member-main strong {
+  display: block;
+  overflow: hidden;
+  color: var(--color-text);
+  font-size: 0.92rem;
+  font-weight: var(--font-weight-strong);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account-directory-detail-modal .account-member-contact {
+  display: grid;
+  gap: 0.18rem;
+  min-width: 0;
+  text-align: right;
+}
+
+.account-directory-detail-modal .account-member-contact span,
+.account-directory-detail-modal .account-member-main span {
+  overflow: hidden;
+  color: var(--color-text-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+html[data-theme="dark"] .account-directory-detail-modal {
+  border-color: rgba(116, 146, 188, 0.28);
+  background:
+    radial-gradient(circle at 14% 0%, rgba(70, 140, 255, 0.14), transparent 30%),
+    #132033;
+}
+
+html[data-theme="dark"] .account-directory-detail-modal .account-detail-item,
+html[data-theme="dark"] .account-directory-detail-modal .account-member-item {
+  border-color: rgba(135, 166, 204, 0.22);
+  background: rgba(20, 34, 54, 0.9);
+  box-shadow: none;
+}
+
+html[data-theme="dark"] .account-detail-icon,
+html[data-theme="dark"] .account-member-icon {
+  color: #8db7ff;
+  background: rgba(77, 139, 255, 0.16);
+}
+
+html[data-theme="dark"] .account-directory-detail-modal .account-detail-grid dt,
+html[data-theme="dark"] .account-directory-detail-modal .account-member-contact span,
+html[data-theme="dark"] .account-directory-detail-modal .account-member-main span,
+html[data-theme="dark"] .account-directory-detail-modal .account-member-section-header span {
+  color: #aebcd0;
+}
+
+html[data-theme="dark"] .account-directory-detail-modal .account-detail-grid dd,
+html[data-theme="dark"] .account-directory-detail-modal .account-member-main strong,
+html[data-theme="dark"] .account-directory-detail-modal .account-member-section h3,
+html[data-theme="dark"] .account-directory-detail-modal .account-modal-header h2 {
+  color: #f4f8ff;
+}
+
 @media (max-width: 720px) {
   .management-page-hero,
   .modern-user-page .account-page-hero,
@@ -789,6 +1103,16 @@
     grid-template-columns: 1fr;
   }
 
+  .account-directory-detail-modal {
+    width: 100%;
+    max-height: 92vh;
+    padding: 1.2rem;
+  }
+
+  .account-directory-detail-modal .account-detail-grid {
+    grid-template-columns: 1fr;
+  }
+
   .account-detail-grid > div:nth-child(odd) {
     border-right: 0;
   }
@@ -797,7 +1121,16 @@
     display: grid;
   }
 
+  .account-directory-detail-modal .account-member-item {
+    grid-template-columns: 1fr;
+  }
+
   .account-member-item > div:last-child {
+    text-align: left;
+  }
+
+  .account-directory-detail-modal .account-member-contact {
+    padding-left: 3.05rem;
     text-align: left;
   }
 
@@ -1554,14 +1887,20 @@ html[data-theme='dark'] .table-icon-button:hover:not(:disabled) {
   gap: var(--space-2);
 }
 
+.notification-inbox-title,
 .notification-inbox-heading strong {
   overflow: hidden;
   font-size: 0.95rem;
-  font-weight: 760;
+  font-weight: 520;
   letter-spacing: 0;
   line-height: 1.3;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.notification-inbox-item.is-unread .notification-inbox-title,
+.notification-inbox-item.is-unread .notification-inbox-heading strong {
+  font-weight: 760;
 }
 
 .notification-inbox-time {
@@ -1668,12 +2007,69 @@ html[data-theme='dark'] .table-icon-button:hover:not(:disabled) {
 
 .notification-user-detail-dialog {
   width: min(560px, 100%);
+  max-width: calc(100vw - 2rem);
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.notification-user-detail-dialog.account-detail-modal {
+  max-height: min(86vh, 760px);
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.notification-user-detail-dialog .account-modal-header {
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.notification-user-detail-dialog .account-modal-header > div {
+  min-width: 0;
+  max-width: calc(100% - 44px);
 }
 
 .user-notification-detail {
   display: grid;
   gap: var(--space-4);
+  min-width: 0;
   margin-top: var(--space-4);
+  overflow-x: hidden;
+}
+
+.notification-user-detail-dialog :is(.account-modal-header, .account-modal-header h2, .modal-header, .modal-header h2) {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.notification-detail-meta,
+.notification-detail-content {
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.notification-detail-meta :is(strong, span),
+.notification-detail-content :is(span, p) {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.notification-detail-content p {
+  overflow-x: hidden;
+  overflow-y: auto;
+  max-height: min(42vh, 360px);
+  white-space: pre-wrap;
+}
+
+.notification-user-detail-dialog,
+.notification-user-detail-dialog * {
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .user-notification-detail-status {
@@ -1744,6 +2140,7 @@ html[data-theme="dark"] .notification-event-icon {
     gap: 0.15rem;
   }
 
+  .notification-inbox-title,
   .notification-inbox-heading strong {
     white-space: normal;
   }

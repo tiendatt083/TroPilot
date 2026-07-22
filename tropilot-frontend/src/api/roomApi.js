@@ -67,3 +67,8 @@ export async function getStaffRoom(id) {
   const response = await apiClient.get(`/api/staff/rooms/${id}`);
   return response.data;
 }
+
+export async function getStaffHeadResidentAssignment(roomId) {
+  const response = await apiClient.get(`/api/staff/rooms/${roomId}/head-resident`);
+  return response.data;
+}

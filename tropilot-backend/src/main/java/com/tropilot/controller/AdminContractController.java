@@ -8,7 +8,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -46,17 +45,6 @@ public class AdminContractController {
         return ApiResponse.success(
                 "Rental contract uploaded successfully",
                 rentalContractService.uploadContract(id, buildingId, file)
-        );
-    }
-
-    @PutMapping("/{id}/mark-need-update")
-    public ApiResponse<RentalContractResponse> markNeedUpdate(
-            @PathVariable(name = "id") Long id,
-            @RequestParam(name = "buildingId", required = false) Long buildingId
-    ) {
-        return ApiResponse.success(
-                "Rental contract marked as needing update successfully",
-                rentalContractService.markNeedUpdate(id, buildingId)
         );
     }
 }

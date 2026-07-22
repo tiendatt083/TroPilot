@@ -1,6 +1,5 @@
 package com.tropilot.service.impl;
 
-import com.tropilot.dto.response.UtilityReadingFetchResponse;
 import com.tropilot.dto.response.UtilityMeterFetchResponse;
 import com.tropilot.entity.UtilityReading;
 import com.tropilot.exception.BadRequestException;
@@ -24,30 +23,6 @@ public class MockUtilityReadingProvider implements UtilityReadingProvider {
 
     private final RoomRepository roomRepository;
     private final UtilityReadingRepository utilityReadingRepository;
-
-    @Override
-    public UtilityReadingFetchResponse fetch(Long roomId, LocalDate readingDate) {
-        UtilityReading previousReading = findPreviousReading(roomId, readingDate);
-        BigDecimal oldElectricity = previousReading == null
-                ? BigDecimal.ZERO
-                : previousReading.getNewElectricity();
-        BigDecimal oldWater = previousReading == null
-                ? BigDecimal.ZERO
-                : previousReading.getNewWater();
-        BigDecimal electricityUsage = randomUsage(MAX_ELECTRICITY_USAGE);
-        BigDecimal waterUsage = randomUsage(MAX_WATER_USAGE);
-
-        return new UtilityReadingFetchResponse(
-                "MOCK",
-                readingDate,
-                oldElectricity,
-                oldElectricity.add(electricityUsage),
-                electricityUsage,
-                oldWater,
-                oldWater.add(waterUsage),
-                waterUsage
-        );
-    }
 
     @Override
     public UtilityMeterFetchResponse fetchElectricity(Long roomId, LocalDate readingDate) {

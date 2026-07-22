@@ -9,7 +9,6 @@ import AdminBuildingFeedbackPage from '../pages/admin/AdminBuildingFeedbackPage.
 import AdminBuildingInvoicePage from '../pages/admin/AdminBuildingInvoicePage.jsx';
 import AdminBuildingMaintenancePage from '../pages/admin/AdminBuildingMaintenancePage.jsx';
 import AdminBuildingNotificationPage from '../pages/admin/AdminBuildingNotificationPage.jsx';
-import AdminBuildingReceiptPage from '../pages/admin/AdminBuildingReceiptPage.jsx';
 import AdminBuildingRoomsPage from '../pages/admin/AdminBuildingRoomsPage.jsx';
 import AdminBuildingServiceFeePage from '../pages/admin/AdminBuildingServiceFeePage.jsx';
 import AdminBuildingTaskDetailPage from '../pages/admin/AdminBuildingTaskDetailPage.jsx';
@@ -48,7 +47,7 @@ export const adminBuildingWorkspaceRoutes = (
     <Route path="service-fees" element={<AdminBuildingServiceFeePage />} />
     <Route path="vehicles" element={<AdminBuildingVehiclePage />} />
     <Route path="payments" element={<Navigate to="../invoices" replace />} />
-    <Route path="receipts" element={<AdminBuildingReceiptPage />} />
+    <Route path="receipts" element={<Navigate to="../cashflow" replace />} />
     <Route path="members" element={<Navigate to="../users" replace />} />
     <Route path="maintenance" element={<AdminBuildingMaintenancePage />} />
     <Route path="cashflow" element={<AdminBuildingCashFlowPage />} />

@@ -47,7 +47,7 @@ export default function VehicleTable({ vehicles, renderActions, variant = 'defau
               <th>{t('tables.common.owner')}</th>
               <th>{t('tables.common.period')}</th>
               <th>{t('tables.common.status')}</th>
-              {hasActions && <th>{t('tables.common.actions')}</th>}
+              {hasActions && <th className="vehicle-actions-column">{t('tables.common.actions')}</th>}
             </tr>
           </thead>
           <tbody>
@@ -71,7 +71,7 @@ export default function VehicleTable({ vehicles, renderActions, variant = 'defau
                     {formatEnumLabel(t, 'vehicleStatus', vehicle.status)}
                   </span>
                 </td>
-                {hasActions && <td>{renderActions(vehicle)}</td>}
+                {hasActions && <td className="vehicle-actions-cell">{renderActions(vehicle)}</td>}
               </tr>
             ))}
           </tbody>
@@ -100,7 +100,7 @@ export default function VehicleTable({ vehicles, renderActions, variant = 'defau
               <th>{t('tables.common.owner')}</th>
               <th>{t('tables.common.period')}</th>
               <th>{t('tables.common.status')}</th>
-              {hasActions && <th>{t('tables.common.actions')}</th>}
+              {hasActions && <th className="vehicle-actions-column">{t('tables.common.actions')}</th>}
             </tr>
           </thead>
           <tbody>
@@ -117,7 +117,7 @@ export default function VehicleTable({ vehicles, renderActions, variant = 'defau
                     {formatEnumLabel(t, 'vehicleStatus', vehicle.status)}
                   </span>
                 </td>
-                {hasActions && <td>{renderActions(vehicle)}</td>}
+                {hasActions && <td className="vehicle-actions-cell">{renderActions(vehicle)}</td>}
               </tr>
             ))}
           </tbody>

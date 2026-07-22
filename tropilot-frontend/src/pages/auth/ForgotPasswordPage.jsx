@@ -3,7 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { requestPasswordResetCode } from '../../api/authApi.js';
+import LineIcon from '../../components/common/LineIcon.jsx';
 import { getDashboardPath } from '../../utils/roleRoutes.js';
+import brandLogo from '../../assets/no_name_backgroud.png';
 
 export default function ForgotPasswordPage() {
   const { t } = useTranslation();
@@ -47,38 +49,55 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <main className="auth-page">
-      <section className="auth-panel" aria-labelledby="forgot-password-title">
-        <div>
-          <p className="eyebrow">Tropilot</p>
-          <h1 id="forgot-password-title">{t('auth.forgotPassword.title')}</h1>
+    <main className="auth-page login-page forgot-password-page">
+      <div className="login-backdrop" aria-hidden="true">
+        <span className="login-dots login-dots-top" />
+        <span className="login-dots login-dots-bottom" />
+        <span className="login-city login-city-left" />
+        <span className="login-city login-city-right" />
+        <span className="login-wave" />
+      </div>
+
+      <section className="auth-panel login-panel forgot-password-panel" aria-labelledby="forgot-password-title">
+        <div className="login-heading">
+          <div className="login-brand" aria-label="Tropilot">
+            <span className="login-wordmark">Tropilot</span>
+            <img className="auth-logo-image" src={brandLogo} alt="" aria-hidden="true" />
+          </div>
+          <div>
+            <h1 id="forgot-password-title">{t('auth.forgotPassword.title')}</h1>
+            <p className="helper-text forgot-password-description">{t('auth.forgotPassword.description')}</p>
+          </div>
         </div>
 
-        <p className="helper-text">{t('auth.forgotPassword.description')}</p>
-        {error && <div className="alert error-alert">{error}</div>}
+        {error && <div className="alert error-alert login-error">{error}</div>}
 
-        <form className="auth-form" onSubmit={handleSubmit}>
-          <label htmlFor="forgot-email">{t('auth.forgotPassword.email')}</label>
-          <input
-            id="forgot-email"
-            name="email"
-            type="email"
-            autoComplete="email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            required
-          />
+        <form className="auth-form login-form forgot-password-form" onSubmit={handleSubmit}>
+          <div className="login-field">
+            <label htmlFor="forgot-email">{t('auth.forgotPassword.email')}</label>
+            <div className="login-input-wrap">
+              <LineIcon name="mail" className="login-input-icon" />
+              <input
+                id="forgot-email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                placeholder={t('auth.forgotPassword.emailPlaceholder')}
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                required
+              />
+            </div>
+          </div>
 
-          <button type="submit" disabled={loading}>
+          <button className="login-submit-button" type="submit" disabled={loading}>
             {loading ? t('auth.forgotPassword.submitting') : t('auth.forgotPassword.submit')}
           </button>
-        </form>
 
-        <div className="auth-footer-links">
           <Link className="auth-link" to="/login">
             {t('auth.common.backToLogin')}
           </Link>
-        </div>
+        </form>
       </section>
     </main>
   );

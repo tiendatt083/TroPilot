@@ -4,7 +4,6 @@ import com.tropilot.storage.TaskResultImageStorageService;
 import com.tropilot.mapper.TaskMapper;
 import com.tropilot.dto.request.TaskCompleteRequest;
 import com.tropilot.dto.request.TaskCreateRequest;
-import com.tropilot.dto.request.TaskRejectRequest;
 import com.tropilot.dto.request.TaskUpdateRequest;
 import com.tropilot.dto.response.TaskResponse;
 import com.tropilot.entity.Building;
@@ -241,12 +240,6 @@ public class TaskServiceImpl implements TaskService {
         );
 
         return taskMapper.toResponse(savedTask);
-    }
-
-    @Override
-    @Transactional
-    public TaskResponse rejectTask(Long staffId, Long id, TaskRejectRequest request) {
-        throw new ForbiddenException("Staff cannot reject assigned tasks");
     }
 
     private void notifyTaskCreator(

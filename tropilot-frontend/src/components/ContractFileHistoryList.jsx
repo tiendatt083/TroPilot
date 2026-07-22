@@ -13,10 +13,7 @@ export default function ContractFileHistoryList({ files }) {
   return (
     <section className="contract-history-panel">
       <div className="contract-history-header">
-        <div>
-          <span>{t('contracts.history.eyebrow')}</span>
-          <strong>{t('contracts.history.title')}</strong>
-        </div>
+        <span>{t('contracts.history.eyebrow')}</span>
         <p>{t('contracts.history.description')}</p>
       </div>
 
@@ -24,7 +21,9 @@ export default function ContractFileHistoryList({ files }) {
         {previousFiles.map((file, index) => (
           <article className="contract-history-item" key={file.id || `${file.fileUrl}-${index}`}>
             <div>
-              <strong>{t('contracts.history.item', { number: previousFiles.length - index })}</strong>
+              <span className="contract-history-item-title">
+                {t('contracts.history.item', { number: previousFiles.length - index })}
+              </span>
               <span>
                 {t('contracts.history.replaced', {
                   name: file.replacedByName || t('role.admin'),

@@ -153,12 +153,6 @@ public class UtilityReadingServiceImpl implements UtilityReadingService {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public UtilityReadingResponse getReading(Long id) {
-        return toResponseWithPreviousReading(findReading(id));
-    }
-
-    @Override
     @Transactional
     public UtilityReadingResponse updateReading(Long id, UtilityReadingUpdateRequest request) {
         UtilityReading reading = findReading(id);

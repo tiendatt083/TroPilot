@@ -144,7 +144,7 @@ export default function StaffRoomListPage() {
                 <th>{t('tables.common.floor')}</th>
                 <th>{t('tables.common.price')}</th>
                 <th>{t('tables.common.status')}</th>
-                <th>{t('common.details')}</th>
+                <th className="room-actions-column">{t('tables.common.actions')}</th>
               </tr>
             </thead>
             <tbody>
@@ -158,10 +158,12 @@ export default function StaffRoomListPage() {
                   <td>
                     <span className={statusClass(room.status)}>{formatEnumLabel(t, 'roomStatus', room.status)}</span>
                   </td>
-                  <td>
-                    <Link className="secondary-link compact-link" to={`/staff/rooms/${room.id}`}>
-                      {t('common.view')}
-                    </Link>
+                  <td className="room-actions-cell">
+                    <div className="table-actions">
+                      <Link className="secondary-link compact-link" to={`/staff/rooms/${room.id}`}>
+                        {t('common.view')}
+                      </Link>
+                    </div>
                   </td>
                 </tr>
               ))}

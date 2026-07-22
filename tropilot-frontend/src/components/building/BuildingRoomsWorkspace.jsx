@@ -166,7 +166,7 @@ export default function BuildingRoomsWorkspace({
                 <th>{t('tables.common.area')}</th>
                 <th>{t('workspace.rooms.maxOccupants')}</th>
                 <th>{t('tables.common.status')}</th>
-                <th>{canManage ? t('tables.common.actions') : t('workspace.rooms.details')}</th>
+                <th className="room-actions-column">{t('tables.common.actions')}</th>
               </tr>
             </thead>
             <tbody>
@@ -181,12 +181,12 @@ export default function BuildingRoomsWorkspace({
                   <td>
                     <span className={statusClass(room.status)}>{formatEnumLabel(t, 'roomStatus', room.status)}</span>
                   </td>
-                  <td>
+                  <td className="room-actions-cell">
                     <div className="table-actions">
                       <Link
-                        className="btn btn-outline icon-action-btn"
+                        className="icon-action-button"
+                        data-tooltip={canManage ? t('workspace.rooms.manage') : t('common.view')}
                         to={`${roomBasePath}/${room.id}`}
-                        title={canManage ? t('workspace.rooms.manage') : t('common.view')}
                         aria-label={canManage ? t('workspace.rooms.manage') : t('common.view')}
                       >
                         <LineIcon name={canManage ? 'settings' : 'eye'} size={16} />

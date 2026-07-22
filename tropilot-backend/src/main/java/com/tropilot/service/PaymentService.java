@@ -1,6 +1,5 @@
 package com.tropilot.service;
 
-import com.tropilot.dto.request.PaymentDecisionRequest;
 import com.tropilot.dto.request.PaymentUploadRequest;
 import com.tropilot.dto.response.PaymentResponse;
 
@@ -10,11 +9,5 @@ public interface PaymentService {
 
     PaymentResponse uploadPaymentProof(Long residentHeadId, PaymentUploadRequest request);
 
-    List<PaymentResponse> getResidentPayments(Long residentHeadId);
-
     List<PaymentResponse> getPendingPayments(Long buildingId);
-
-    PaymentResponse approvePayment(Long paymentId, Long confirmedById, PaymentDecisionRequest request, Long buildingId);
-
-    PaymentResponse rejectPayment(Long paymentId, Long confirmedById, PaymentDecisionRequest request, Long buildingId);
 }
