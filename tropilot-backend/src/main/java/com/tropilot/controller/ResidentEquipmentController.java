@@ -2,8 +2,9 @@ package com.tropilot.controller;
 
 import com.tropilot.dto.response.ApiResponse;
 import com.tropilot.dto.response.EquipmentResponse;
-import com.tropilot.exception.UnauthorizedException;
 import com.tropilot.security.AuthenticatedUser;
+
+import static com.tropilot.security.AuthenticatedUsers.requireUserId;
 import com.tropilot.service.EquipmentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,14 +29,7 @@ public class ResidentEquipmentController {
     ) {
         return ApiResponse.success(
                 "Equipment loaded successfully",
-                equipmentService.getResidentEquipment(getUserId(user))
+                equipmentService.getResidentEquipment(requireUserId(user))
         );
-    }
-
-    private Long getUserId(AuthenticatedUser user) {
-        if (user == null) {
-            throw new UnauthorizedException("Authentication is required");
-        }
-        return user.getId();
     }
 }

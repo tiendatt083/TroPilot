@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useOutletContext, useParams } from 'react-router-dom';
-import * as taskApi from '../../features/maintenance/taskApi.js';
-import * as roomApi from '../../features/rooms/api.js';
-import * as adminUserApi from '../../features/users/api.js';
-import PageHeader from '../../components/PageHeader.jsx';
+import * as taskApi from '../../api/taskApi.js';
+import * as roomApi from '../../api/roomApi.js';
+import * as adminUserApi from '../../api/adminUserApi.js';
+import PageHeader from '../../components/common/PageHeader.jsx';
 import TaskDetail from '../../components/TaskDetail.jsx';
 import TaskForm from '../../components/TaskForm.jsx';
 

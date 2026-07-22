@@ -3,6 +3,7 @@ package com.tropilot.config;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.util.StringUtils;
 
 @Getter
 @Setter
@@ -27,12 +28,8 @@ public class SepayProperties {
 
     public boolean isReady() {
         return enabled
-                && hasText(bankCode)
-                && hasText(accountNumber)
-                && hasText(accountName);
-    }
-
-    private boolean hasText(String value) {
-        return value != null && !value.isBlank();
+                && StringUtils.hasText(bankCode)
+                && StringUtils.hasText(accountNumber)
+                && StringUtils.hasText(accountName);
     }
 }

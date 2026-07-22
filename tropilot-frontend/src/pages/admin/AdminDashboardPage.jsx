@@ -7,7 +7,7 @@ import * as feedbackApi from '../../api/feedbackApi.js';
 import * as invoiceApi from '../../api/invoiceApi.js';
 import * as maintenanceApi from '../../api/maintenanceApi.js';
 import * as roomApi from '../../api/roomApi.js';
-import * as dashboardApi from '../../features/buildings/dashboardApi.js';
+import * as dashboardApi from '../../api/dashboardApi.js';
 import LineIcon from '../../components/common/LineIcon.jsx';
 import { CHART_COLORS, ChartPanel, DonutChart, GroupedBarChart } from '../../components/common/DashboardCharts.jsx';
 import { useAuth } from '../../context/AuthContext.jsx';

@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
-import * as taskApi from '../../features/maintenance/taskApi.js';
-import PageHeader from '../../components/PageHeader.jsx';
+import * as taskApi from '../../api/taskApi.js';
+import PageHeader from '../../components/common/PageHeader.jsx';
 import TaskDetail from '../../components/TaskDetail.jsx';
 
 export default function StaffTaskDetailPage() {

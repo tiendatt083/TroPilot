@@ -15,14 +15,6 @@ export const FEEDBACK_STATUS_OPTIONS = [
   localizedOption('RESOLVED', 'Resolved')
 ];
 
-export function getFeedbackTypeLabel(type) {
-  return FEEDBACK_TYPE_OPTIONS.find((option) => option.value === type)?.label || type;
-}
-
-export function getFeedbackStatusLabel(status) {
-  return FEEDBACK_STATUS_OPTIONS.find((option) => option.value === status)?.label || status;
-}
-
 export function getFeedbackStatusClass(status) {
   return `status-pill feedback-status-${String(status || 'PENDING').toLowerCase().replaceAll('_', '-')}`;
 }

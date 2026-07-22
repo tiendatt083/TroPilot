@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import * as invoiceApi from '../../features/invoices/api.js';
-import { InvoiceTable } from '../../features/invoices/components/index.js';
+import * as invoiceApi from '../../api/invoiceApi.js';
+import InvoiceTable from '../../components/InvoiceTable.jsx';
 import ManagementPageHero from '../../components/common/ManagementPageHero.jsx';
 
 export default function ResidentInvoiceListPage() {

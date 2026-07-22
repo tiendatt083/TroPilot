@@ -2105,8 +2105,7 @@ html[data-theme='dark'] .invoice-summary-copy small {
 .vehicle-workspace .panel-form .form-grid,
 .utility-reading-workspace .panel-form .form-grid,
 .invoice-workspace .panel-form .form-grid,
-.service-fee-workspace .panel-form .form-grid,
-.billing-form-stack .panel-form .form-grid {
+.service-fee-workspace .panel-form .form-grid {
   grid-template-columns: 1fr;
 }
 
@@ -4026,10 +4025,7 @@ html[data-theme="dark"] .staff-maintenance-page .maintenance-card-meta {
   gap: 0.85rem;
 }
 
-.invoice-list-column,
-.invoice-detail-panel,
-.receipt-detail-panel,
-.payment-panel {
+.invoice-detail-panel {
   display: grid;
   gap: 1rem;
 }
@@ -6336,7 +6332,6 @@ html[data-theme='dark'] .cashflow-room-table .table-subtext {
 
 /* Phase 5: shared form and filter normalization. */
 .panel-form,
-.form-card,
 .invoice-command-panel,
 .invoice-preview-panel,
 .settings-card,
@@ -6350,29 +6345,17 @@ html[data-theme='dark'] .cashflow-room-table .table-subtext {
   box-shadow: var(--shadow-xs);
 }
 
-.panel-form,
-.form-card {
+.panel-form {
   gap: var(--space-4);
   padding: clamp(0.95rem, 1.7vw, 1.25rem);
 }
 
-.form-card-header {
-  gap: var(--space-1);
-  border-bottom: 1px solid var(--color-border-soft);
-  padding-bottom: var(--space-3);
-}
-
-.form-card-header h2,
 .settings-card-heading h2,
 .billing-setting-title-row h2,
 .billing-setting-card h3,
 .equipment-record-groups h3 {
   font-weight: var(--font-weight-strong);
   line-height: 1.25;
-}
-
-.form-card-header h2 {
-  font-size: var(--font-size-lg);
 }
 
 .panel-form label,

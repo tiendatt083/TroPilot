@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import * as notificationApi from '../features/notifications/api.js';
+import * as notificationApi from '../api/notificationApi.js';
 import ActionDialog from './common/ActionDialog.jsx';
 import ManagementPageHero from './common/ManagementPageHero.jsx';
 import NotificationInboxList from './NotificationInboxList.jsx';

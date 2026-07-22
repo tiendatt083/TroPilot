@@ -1,5 +1,5 @@
-import * as invoiceApi from '../../features/invoices/api.js';
-import * as paymentApi from '../../features/payments/api.js';
+import * as invoiceApi from '../../api/invoiceApi.js';
+import * as paymentApi from '../../api/paymentApi.js';
 import BuildingCashFlowWorkspace from '../../components/building/BuildingCashFlowWorkspace.jsx';
 
 export default function AdminBuildingCashFlowPage() {

@@ -1,8 +1,7 @@
-export default function EmptyState({ children, message, flat = false, compact = false, className = '' }) {
+export default function EmptyState({ children, message, flat = false, className = '' }) {
   const classes = [
     'empty-state',
     flat ? 'flat-empty-state' : '',
-    compact ? 'compact-empty-state' : '',
     className,
   ]
     .filter(Boolean)

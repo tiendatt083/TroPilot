@@ -2,8 +2,9 @@ package com.tropilot.controller;
 
 import com.tropilot.dto.response.ApiResponse;
 import com.tropilot.dto.response.MaintenanceRequestResponse;
-import com.tropilot.exception.UnauthorizedException;
 import com.tropilot.security.AuthenticatedUser;
+
+import static com.tropilot.security.AuthenticatedUsers.requireUserId;
 import com.tropilot.service.MaintenanceRequestService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,15 +27,7 @@ public class ResidentMaintenanceRequestController {
     public ApiResponse<List<MaintenanceRequestResponse>> getRequests(@AuthenticationPrincipal AuthenticatedUser user) {
         return ApiResponse.success(
                 "Maintenance requests loaded successfully",
-                maintenanceRequestService.getResidentRequests(getUserId(user))
+                maintenanceRequestService.getResidentRequests(requireUserId(user))
         );
-    }
-
-    private Long getUserId(AuthenticatedUser user) {
-        if (user == null) {
-            throw new UnauthorizedException("Authentication is required");
-        }
-
-        return user.getId();
     }
 }

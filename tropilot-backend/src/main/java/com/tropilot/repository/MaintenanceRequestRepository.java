@@ -23,6 +23,36 @@ public interface MaintenanceRequestRepository extends JpaRepository<MaintenanceR
             Collection<com.tropilot.enums.MaintenanceStatus> statuses
     );
 
+    @Query("""
+            select case when count(request) > 0 then true else false end
+            from MaintenanceRequest request
+            where request.imageUrl in :urls
+               or request.resultImageUrl in :urls
+            """)
+    boolean existsByAnyImageUrlIn(@Param("urls") Collection<String> urls);
+
+    @Query("""
+            select case when count(request) > 0 then true else false end
+            from MaintenanceRequest request
+            where (request.imageUrl in :urls or request.resultImageUrl in :urls)
+              and request.assignedTo.id = :staffId
+            """)
+    boolean existsByAnyImageUrlInAndAssignedToId(
+            @Param("urls") Collection<String> urls,
+            @Param("staffId") Long staffId
+    );
+
+    @Query("""
+            select case when count(request) > 0 then true else false end
+            from MaintenanceRequest request
+            where (request.imageUrl in :urls or request.resultImageUrl in :urls)
+              and (request.residentHead.id = :residentHeadId or request.requestedBy.id = :residentHeadId)
+            """)
+    boolean existsByAnyImageUrlInAndResidentHeadId(
+            @Param("urls") Collection<String> urls,
+            @Param("residentHeadId") Long residentHeadId
+    );
+
     @EntityGraph(attributePaths = {
             "room",
             "room.building",

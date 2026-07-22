@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import * as buildingApi from '../../features/buildings/api.js';
-import * as roomApi from '../../features/rooms/api.js';
-import PageHeader from '../../components/PageHeader.jsx';
+import * as buildingApi from '../../api/buildingApi.js';
+import * as roomApi from '../../api/roomApi.js';
+import PageHeader from '../../components/common/PageHeader.jsx';
 import FilterBar from '../../components/common/FilterBar.jsx';
 import { formatRoomCode } from '../../utils/roomDisplay.js';
 import { ROOM_STATUS_OPTIONS } from '../../utils/roomStatusOptions.js';

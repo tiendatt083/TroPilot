@@ -767,29 +767,6 @@
       "optionsLoadError": "Head Residents or empty rooms could not be loaded"
     }
   },
-  "buildingBilling": {
-    "eyebrow": "Building billing",
-    "title": "Utility readings and invoices",
-    "description": "Record or update room readings, then generate room invoices from the same workspace.",
-    "loading": "Loading billing data...",
-    "loadError": "Billing data could not be loaded",
-    "readingCreated": "Utility reading created successfully.",
-    "readingCreateError": "Utility reading could not be created",
-    "readingUpdated": "Utility reading updated successfully.",
-    "readingUpdateError": "Utility reading could not be updated",
-    "invoiceGenerated": "Invoice generated successfully.",
-    "invoiceGenerateError": "Invoice could not be generated",
-    "invoiceLoadError": "Invoice could not be loaded",
-    "editReading": "Edit reading",
-    "readingEntry": "Reading entry",
-    "recordReading": "Record reading",
-    "saveChanges": "Save changes",
-    "invoiceGeneration": "Invoice generation",
-    "newInvoice": "New invoice",
-    "billingRecords": "Billing records",
-    "utilityReadings": "Utility readings",
-    "invoices": "Invoices"
-  },
   "buildingUtilityReadings": {
     "eyebrow": "Building utility readings",
     "title": "Utility readings in this building",
@@ -1515,6 +1492,7 @@
       "submit": "Upload contract",
       "uploading": "Uploading...",
       "file": "Contract file",
+      "maxSizeError": "Contract file size must not exceed 10 MB.",
       "help": "Allowed file types: jpg, jpeg, png, pdf. Maximum size: 10 MB."
     },
     "history": {
@@ -1932,24 +1910,6 @@
     "saveChanges": "Save changes",
     "selectRoom": "Select room"
   },
-  "utilityReadingManagement": {
-    "title": "Utility readings",
-    "record": "Record reading",
-    "recordTitle": "Record utility reading",
-    "newReading": "New reading",
-    "editReading": "Edit reading",
-    "edit": "Edit",
-    "approve": "Approve",
-    "back": "Back to readings",
-    "loading": "Loading utility readings...",
-    "loadingRooms": "Loading rooms...",
-    "loadError": "Utility readings could not be loaded",
-    "roomsLoadError": "Rooms could not be loaded",
-    "created": "Utility reading created successfully.",
-    "createError": "Utility reading could not be created",
-    "updated": "Utility reading updated successfully.",
-    "updateError": "Utility reading could not be updated"
-  },
   "vehicleManagement": {
     "title": "Vehicles",
     "pendingTitle": "Pending vehicles",
@@ -1984,20 +1944,6 @@
     "updateError": "Building could not be updated",
     "saveChanges": "Save changes",
     "noDescription": "No description provided."
-  },
-  "pendingPaymentManagement": {
-    "title": "Pending payments",
-    "loading": "Loading pending payments...",
-    "loadError": "Pending payments could not be loaded",
-    "approvedNote": "Payment proof approved",
-    "approved": "Payment approved successfully.",
-    "approveError": "Payment could not be approved",
-    "rejectionPrompt": "Enter rejection note",
-    "rejectedNote": "Payment proof rejected",
-    "rejected": "Payment rejected successfully.",
-    "rejectError": "Payment could not be rejected",
-    "approve": "Approve",
-    "reject": "Reject"
   },
   "workspace": {
     "filters": {

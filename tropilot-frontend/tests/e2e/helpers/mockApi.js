@@ -441,19 +441,6 @@ async function handleApiRoute(route, state) {
     }));
   }
 
-  if (method === 'POST' && path === '/api/staff/utility-readings/fetch') {
-    return fulfillJson(route, success({
-      source: 'MOCK',
-      recordedAt: getQuery(request.url()).get('readingDate'),
-      oldElectricity: 350,
-      newElectricity: 437,
-      electricityUsage: 87,
-      oldWater: 24,
-      newWater: 31,
-      waterUsage: 7
-    }));
-  }
-
   if (method === 'POST' && path === '/api/staff/utility-readings/fetch/electricity') {
     return fulfillJson(route, success({
       source: 'MOCK',

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
-import * as serviceFeeApi from '../../features/invoices/serviceFeeApi.js';
+import * as serviceFeeApi from '../../api/serviceFeeApi.js';
 import ActionDialog from '../../components/common/ActionDialog.jsx';
 import FilterBar from '../../components/common/FilterBar.jsx';
 import LineIcon from '../../components/common/LineIcon.jsx';

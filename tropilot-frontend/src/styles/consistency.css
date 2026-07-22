@@ -452,7 +452,6 @@ html[data-theme="dark"] .building-workspace-tabs .workspace-tab-group-toggle.act
 }
 
 .resident-invoice-detail-page .invoice-detail-panel .detail-panel span,
-.resident-invoice-detail-page .payment-panel .page-header span,
 .resident-invoice-detail-page .invoice-item-table th {
   font-weight: var(--font-weight-medium);
   text-transform: none;
@@ -461,16 +460,8 @@ html[data-theme="dark"] .building-workspace-tabs .workspace-tab-group-toggle.act
 .resident-invoice-detail-page .invoice-detail-panel .detail-panel strong,
 .resident-invoice-detail-page .invoice-detail-panel .detail-panel .status-pill,
 .resident-invoice-detail-page .invoice-item-table td,
-.resident-invoice-detail-page .invoice-item-table td strong,
-.resident-invoice-detail-page .payment-panel .empty-state,
-.resident-invoice-detail-page .payment-panel .data-table td {
+.resident-invoice-detail-page .invoice-item-table td strong {
   font-weight: var(--font-weight-regular);
-}
-
-.resident-invoice-detail-page .payment-panel .page-header h1,
-.resident-invoice-detail-page .payment-panel .page-header h2,
-.resident-invoice-detail-page .payment-panel .page-header h3 {
-  font-weight: var(--font-weight-medium);
 }
 
 .resident-notification-page .notification-inbox-list {
@@ -1845,13 +1836,6 @@ html[data-theme="dark"] .resident-profile-page .profile-role-pill {
 .invoice-modern-page .invoice-status-filter select {
   width: 100%;
   min-width: 0;
-}
-
-.receipt-detail-dialog .receipt-detail-panel .detail-panel span,
-.receipt-detail-dialog .receipt-detail-panel .detail-panel strong,
-.receipt-detail-dialog .receipt-detail-panel .detail-panel p,
-.receipt-detail-dialog .receipt-detail-panel .status-pill {
-  font-weight: var(--font-weight-regular);
 }
 
 .receipt-table td:last-child {

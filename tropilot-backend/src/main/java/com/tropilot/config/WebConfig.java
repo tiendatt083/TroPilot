@@ -8,11 +8,9 @@ import org.springframework.http.HttpMethod;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import java.nio.file.Path;
 import java.util.List;
 
 @Configuration
@@ -20,7 +18,6 @@ import java.util.List;
 public class WebConfig implements WebMvcConfigurer {
 
     private final CorsProperties corsProperties;
-    private final UploadProperties uploadProperties;
     private final ResidentRoomAccessInterceptor residentRoomAccessInterceptor;
 
     @Bean
@@ -42,22 +39,6 @@ public class WebConfig implements WebMvcConfigurer {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
-    }
-
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        String uploadLocation = Path.of(uploadProperties.getBasePath())
-                .toAbsolutePath()
-                .normalize()
-                .toUri()
-                .toString();
-
-        if (!uploadLocation.endsWith("/")) {
-            uploadLocation = uploadLocation + "/";
-        }
-
-        registry.addResourceHandler("/uploads/**")
-                .addResourceLocations(uploadLocation);
     }
 
     @Override

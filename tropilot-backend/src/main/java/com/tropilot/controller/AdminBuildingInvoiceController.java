@@ -6,8 +6,9 @@ import com.tropilot.dto.response.ApiResponse;
 import com.tropilot.dto.response.BulkInvoicePreviewResponse;
 import com.tropilot.dto.response.InvoicePreviewResponse;
 import com.tropilot.dto.response.InvoiceResponse;
-import com.tropilot.exception.UnauthorizedException;
 import com.tropilot.security.AuthenticatedUser;
+
+import static com.tropilot.security.AuthenticatedUsers.requireUserId;
 import com.tropilot.service.InvoiceService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -69,7 +70,7 @@ public class AdminBuildingInvoiceController {
     ) {
         return ApiResponse.success(
                 "Invoice generated successfully",
-                invoiceService.generateBuildingInvoice(buildingId, request, getUserId(user))
+                invoiceService.generateBuildingInvoice(buildingId, request, requireUserId(user))
         );
     }
 
@@ -92,7 +93,7 @@ public class AdminBuildingInvoiceController {
     ) {
         return ApiResponse.success(
                 "Bulk invoices generated successfully",
-                invoiceService.generateBuildingInvoices(buildingId, request, getUserId(user))
+                invoiceService.generateBuildingInvoices(buildingId, request, requireUserId(user))
         );
     }
 
@@ -102,15 +103,7 @@ public class AdminBuildingInvoiceController {
             @PathVariable(name = "invoiceId") Long invoiceId,
             @AuthenticationPrincipal AuthenticatedUser user
     ) {
-        invoiceService.deleteBuildingInvoice(buildingId, invoiceId, getUserId(user));
+        invoiceService.deleteBuildingInvoice(buildingId, invoiceId, requireUserId(user));
         return ApiResponse.success("Invoice deleted successfully");
-    }
-
-    private Long getUserId(AuthenticatedUser user) {
-        if (user == null) {
-            throw new UnauthorizedException("Authentication is required");
-        }
-
-        return user.getId();
     }
 }

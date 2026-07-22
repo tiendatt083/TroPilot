@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
-import * as feedbackApi from '../../features/notifications/feedbackApi.js';
-import * as taskApi from '../../features/maintenance/taskApi.js';
-import * as adminUserApi from '../../features/users/api.js';
+import * as feedbackApi from '../../api/feedbackApi.js';
+import * as taskApi from '../../api/taskApi.js';
+import * as adminUserApi from '../../api/adminUserApi.js';
 import LineIcon from '../../components/common/LineIcon.jsx';
 import {
   FEEDBACK_STATUS_OPTIONS,

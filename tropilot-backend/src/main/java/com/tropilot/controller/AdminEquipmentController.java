@@ -5,8 +5,9 @@ import com.tropilot.dto.response.ApiResponse;
 import com.tropilot.dto.response.EquipmentMaintenanceHistoryResponse;
 import com.tropilot.dto.response.EquipmentResponse;
 import com.tropilot.dto.response.MaintenanceRequestResponse;
-import com.tropilot.exception.UnauthorizedException;
 import com.tropilot.security.AuthenticatedUser;
+
+import static com.tropilot.security.AuthenticatedUsers.requireUserId;
 import com.tropilot.service.EquipmentService;
 import com.tropilot.service.MaintenanceRequestService;
 import jakarta.validation.Valid;
@@ -67,14 +68,7 @@ public class AdminEquipmentController {
     ) {
         return ApiResponse.success(
                 "Equipment maintenance request created successfully",
-                maintenanceRequestService.createEquipmentRequest(getUserId(user), id, request)
+                maintenanceRequestService.createEquipmentRequest(requireUserId(user), id, request)
         );
-    }
-
-    private Long getUserId(AuthenticatedUser user) {
-        if (user == null) {
-            throw new UnauthorizedException("Authentication is required");
-        }
-        return user.getId();
     }
 }

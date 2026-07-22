@@ -945,17 +945,6 @@ export function translateInterfaceText(value) {
   return exactTranslation || translateParameterizedText(trimmed);
 }
 
-export function localizeOption(option) {
-  return {
-    ...option,
-    label: translateInterfaceText(option.label)
-  };
-}
-
-export function localizeOptions(options) {
-  return options.map(localizeOption);
-}
-
 export function localizedOption(value, label) {
   return {
     value,

@@ -23,6 +23,31 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
             Collection<com.tropilot.enums.TaskStatus> statuses
     );
 
+    @Query("""
+            select case when count(taskEntity) > 0 then true else false end
+            from Task taskEntity
+            where taskEntity.resultImageUrl in :urls
+              and taskEntity.assignedTo.id = :staffId
+            """)
+    boolean existsByResultImageUrlInAndAssignedToId(
+            @Param("urls") Collection<String> urls,
+            @Param("staffId") Long staffId
+    );
+
+    @Query("""
+            select case when count(taskEntity) > 0 then true else false end
+            from Task taskEntity
+            left join taskEntity.feedback feedback
+            left join taskEntity.room room
+            where taskEntity.resultImageUrl in :urls
+              and (room.id = :roomId or feedback.residentHead.id = :residentHeadId)
+            """)
+    boolean existsByResultImageUrlInAndResidentAccess(
+            @Param("urls") Collection<String> urls,
+            @Param("roomId") Long roomId,
+            @Param("residentHeadId") Long residentHeadId
+    );
+
     @EntityGraph(attributePaths = {
             "building",
             "room",

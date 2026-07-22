@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
-import * as serviceFeeApi from '../../features/invoices/serviceFeeApi.js';
-import { ServiceFeeTable } from '../../features/invoices/components/index.js';
+import * as serviceFeeApi from '../../api/serviceFeeApi.js';
+import ServiceFeeTable from '../../components/ServiceFeeTable.jsx';
 import { isServiceFeeActive } from '../../utils/serviceFeeOptions.js';
 
 export default function StaffBuildingServiceFeePage() {

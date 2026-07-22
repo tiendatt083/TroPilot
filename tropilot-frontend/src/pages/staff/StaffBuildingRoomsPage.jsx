@@ -1,6 +1,6 @@
 import { useOutletContext } from 'react-router-dom';
-import { BuildingRoomsWorkspace } from '../../features/rooms/components/index.js';
-import * as roomApi from '../../features/rooms/api.js';
+import BuildingRoomsWorkspace from '../../components/building/BuildingRoomsWorkspace.jsx';
+import * as roomApi from '../../api/roomApi.js';
 
 export default function StaffBuildingRoomsPage() {
   const { building } = useOutletContext();

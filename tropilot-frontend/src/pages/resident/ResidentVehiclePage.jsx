@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import * as memberApi from '../../features/residents/api.js';
-import * as vehicleApi from '../../features/residents/vehicleApi.js';
+import * as memberApi from '../../api/memberApi.js';
+import * as vehicleApi from '../../api/vehicleApi.js';
 import ManagementPageHero from '../../components/common/ManagementPageHero.jsx';
 import ActionDialog from '../../components/common/ActionDialog.jsx';
 import LineIcon from '../../components/common/LineIcon.jsx';

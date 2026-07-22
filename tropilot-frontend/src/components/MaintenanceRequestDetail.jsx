@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { getMaintenanceStatusClass } from '../utils/maintenanceOptions.js';
-import { resolveFileUrl } from '../utils/fileUrl.js';
+import { openFileUrl, resolveFileUrl } from '../utils/fileUrl.js';
 import { formatDateTime, formatEnumLabel } from '../utils/i18nFormat.js';
 import { formatRoomLabel } from '../utils/roomDisplay.js';
 import LineIcon from './common/LineIcon.jsx';
@@ -101,12 +101,12 @@ export default function MaintenanceRequestDetail({ request }) {
             <span>{t('tables.common.images')}</span>
             <div className="evidence-links">
             {request.imageUrl && (
-              <a href={resolveFileUrl(request.imageUrl)} target="_blank" rel="noreferrer">
+              <a href={resolveFileUrl(request.imageUrl)} target="_blank" rel="noreferrer" onClick={(event) => openFileUrl(request.imageUrl, event)}>
                 {t('details.issueImage')}
               </a>
             )}
             {request.resultImageUrl && (
-              <a href={resolveFileUrl(request.resultImageUrl)} target="_blank" rel="noreferrer">
+              <a href={resolveFileUrl(request.resultImageUrl)} target="_blank" rel="noreferrer" onClick={(event) => openFileUrl(request.resultImageUrl, event)}>
                 {t('details.resultImage')}
               </a>
             )}

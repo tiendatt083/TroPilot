@@ -4,7 +4,6 @@ import com.tropilot.dto.response.ApiResponse;
 import com.tropilot.dto.response.HeadResidentAssignmentResponse;
 import com.tropilot.dto.response.ServiceFeeResponse;
 import com.tropilot.exception.BadRequestException;
-import com.tropilot.exception.UnauthorizedException;
 import com.tropilot.security.AuthenticatedUser;
 import com.tropilot.service.HeadResidentAssignmentService;
 import com.tropilot.service.ServiceFeeService;
@@ -16,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+
+import static com.tropilot.security.AuthenticatedUsers.requireUserId;
 
 @RestController
 @RequestMapping("/api/resident/service-fees")
@@ -30,12 +31,8 @@ public class ResidentServiceFeeController {
     public ApiResponse<List<ServiceFeeResponse>> getCurrentBuildingServiceFees(
             @AuthenticationPrincipal AuthenticatedUser user
     ) {
-        if (user == null) {
-            throw new UnauthorizedException("Authentication is required");
-        }
-
         HeadResidentAssignmentResponse assignment =
-                headResidentAssignmentService.getResidentAssignedRoom(user.getId());
+                headResidentAssignmentService.getResidentAssignedRoom(requireUserId(user));
 
         if (assignment == null || !assignment.isAssigned() || assignment.getBuildingId() == null) {
             throw new BadRequestException("Assigned room is required");

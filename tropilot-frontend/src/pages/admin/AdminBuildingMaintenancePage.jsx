@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
-import * as maintenanceApi from '../../features/maintenance/api.js';
-import * as adminUserApi from '../../features/users/api.js';
+import * as maintenanceApi from '../../api/maintenanceApi.js';
+import * as adminUserApi from '../../api/adminUserApi.js';
 import ActionDialog from '../../components/common/ActionDialog.jsx';
 import FilterBar from '../../components/common/FilterBar.jsx';
 import LineIcon from '../../components/common/LineIcon.jsx';

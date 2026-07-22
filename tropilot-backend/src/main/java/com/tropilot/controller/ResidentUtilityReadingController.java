@@ -2,8 +2,9 @@ package com.tropilot.controller;
 
 import com.tropilot.dto.response.ApiResponse;
 import com.tropilot.dto.response.UtilityReadingResponse;
-import com.tropilot.exception.UnauthorizedException;
 import com.tropilot.security.AuthenticatedUser;
+
+import static com.tropilot.security.AuthenticatedUsers.requireUserId;
 import com.tropilot.service.UtilityReadingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,15 +29,7 @@ public class ResidentUtilityReadingController {
     ) {
         return ApiResponse.success(
                 "Utility readings loaded successfully",
-                utilityReadingService.getCurrentResidentRoomReadings(getUserId(user))
+                utilityReadingService.getCurrentResidentRoomReadings(requireUserId(user))
         );
-    }
-
-    private Long getUserId(AuthenticatedUser user) {
-        if (user == null) {
-            throw new UnauthorizedException("Authentication is required");
-        }
-
-        return user.getId();
     }
 }

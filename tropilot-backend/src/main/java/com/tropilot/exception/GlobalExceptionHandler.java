@@ -63,7 +63,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ApiResponse<Void>> handleHttpMessageNotReadable(HttpMessageNotReadableException exception) {
+    public ResponseEntity<ApiResponse<Void>> handleHttpMessageNotReadable() {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.failure("Invalid request body"));
@@ -73,42 +73,42 @@ public class GlobalExceptionHandler {
             MethodArgumentTypeMismatchException.class,
             MissingServletRequestParameterException.class
     })
-    public ResponseEntity<ApiResponse<Void>> handleRequestParameterException(Exception exception) {
+    public ResponseEntity<ApiResponse<Void>> handleRequestParameterException() {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.failure("Invalid request parameters"));
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ResponseEntity<ApiResponse<Void>> handleMethodNotSupported(HttpRequestMethodNotSupportedException exception) {
+    public ResponseEntity<ApiResponse<Void>> handleMethodNotSupported() {
         return ResponseEntity
                 .status(HttpStatus.METHOD_NOT_ALLOWED)
                 .body(ApiResponse.failure("Request method is not supported"));
     }
 
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
-    public ResponseEntity<ApiResponse<Void>> handleMediaTypeNotSupported(HttpMediaTypeNotSupportedException exception) {
+    public ResponseEntity<ApiResponse<Void>> handleMediaTypeNotSupported() {
         return ResponseEntity
                 .status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
                 .body(ApiResponse.failure("Content type is not supported"));
     }
 
     @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<ApiResponse<Void>> handleAuthenticationException(AuthenticationException exception) {
+    public ResponseEntity<ApiResponse<Void>> handleAuthenticationException() {
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
                 .body(ApiResponse.failure("Authentication is required"));
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ApiResponse<Void>> handleAccessDeniedException(AccessDeniedException exception) {
+    public ResponseEntity<ApiResponse<Void>> handleAccessDeniedException() {
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
                 .body(ApiResponse.failure("Access denied"));
     }
 
     @ExceptionHandler({NoHandlerFoundException.class, NoResourceFoundException.class})
-    public ResponseEntity<ApiResponse<Void>> handleMissingResourceException(Exception exception) {
+    public ResponseEntity<ApiResponse<Void>> handleMissingResourceException() {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .body(ApiResponse.failure("Resource not found"));

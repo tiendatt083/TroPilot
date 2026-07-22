@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import * as buildingApi from '../../features/buildings/api.js';
-import * as roomApi from '../../features/rooms/api.js';
-import useRoomRouteContext from '../../features/rooms/useRoomRouteContext.js';
-import PageHeader from '../../components/PageHeader.jsx';
+import * as buildingApi from '../../api/buildingApi.js';
+import * as roomApi from '../../api/roomApi.js';
+import useRoomRouteContext from '../../hooks/useRoomRouteContext.js';
+import PageHeader from '../../components/common/PageHeader.jsx';
 import RoomForm from '../../components/RoomForm.jsx';
 import { translateInterfaceText } from '../../utils/interfaceTranslations.js';
 

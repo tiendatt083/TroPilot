@@ -2,8 +2,9 @@ package com.tropilot.controller;
 
 import com.tropilot.dto.response.ApiResponse;
 import com.tropilot.dto.response.NotificationResponse;
-import com.tropilot.exception.UnauthorizedException;
 import com.tropilot.security.AuthenticatedUser;
+
+import static com.tropilot.security.AuthenticatedUsers.requireUserId;
 import com.tropilot.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -28,7 +29,7 @@ public class NotificationController {
     ) {
         return ApiResponse.success(
                 "Notifications loaded successfully",
-                notificationService.getMyNotifications(getUserId(user))
+                notificationService.getMyNotifications(requireUserId(user))
         );
     }
 
@@ -37,14 +38,6 @@ public class NotificationController {
             @AuthenticationPrincipal AuthenticatedUser user,
             @PathVariable(name = "id") Long id
     ) {
-        return ApiResponse.success("Notification marked as read successfully", notificationService.markRead(getUserId(user), id));
-    }
-
-    private Long getUserId(AuthenticatedUser user) {
-        if (user == null) {
-            throw new UnauthorizedException("Authentication is required");
-        }
-
-        return user.getId();
+        return ApiResponse.success("Notification marked as read successfully", notificationService.markRead(requireUserId(user), id));
     }
 }

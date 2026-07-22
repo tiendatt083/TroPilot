@@ -1,5 +1,5 @@
-import { BuildingUtilityReadingWorkspace } from '../../features/invoices/components/index.js';
-import * as utilityReadingApi from '../../features/invoices/utilityReadingApi.js';
+import BuildingUtilityReadingWorkspace from '../../components/building/BuildingUtilityReadingWorkspace.jsx';
+import * as utilityReadingApi from '../../api/utilityReadingApi.js';
 
 export default function AdminBuildingUtilityReadingPage() {
   return (

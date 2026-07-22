@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import * as adminUserApi from '../../features/users/api.js';
-import PageHeader from '../../components/PageHeader.jsx';
+import * as adminUserApi from '../../api/adminUserApi.js';
+import PageHeader from '../../components/common/PageHeader.jsx';
 import AdminUserCreateForm from '../../components/AdminUserCreateForm.jsx';
 
 const ALLOWED_ROLES = new Set(['STAFF', 'RESIDENT_HEAD']);

@@ -6,8 +6,9 @@ import com.tropilot.dto.response.ApiResponse;
 import com.tropilot.dto.response.UtilityMeterFetchResponse;
 import com.tropilot.dto.response.UtilityReadingOverviewResponse;
 import com.tropilot.dto.response.UtilityReadingResponse;
-import com.tropilot.exception.UnauthorizedException;
 import com.tropilot.security.AuthenticatedUser;
+
+import static com.tropilot.security.AuthenticatedUsers.requireUserId;
 import com.tropilot.service.UtilityReadingProvider;
 import com.tropilot.service.UtilityReadingService;
 import jakarta.validation.Valid;
@@ -44,7 +45,7 @@ public class StaffUtilityReadingController {
     ) {
         return ApiResponse.success(
                 "Utility reading created successfully",
-                utilityReadingService.createReading(request, getUserId(user))
+                utilityReadingService.createReading(request, requireUserId(user))
         );
     }
 
@@ -95,13 +96,5 @@ public class StaffUtilityReadingController {
                 "Utility reading overview loaded successfully",
                 utilityReadingService.getOverview(buildingId, month)
         );
-    }
-
-    private Long getUserId(AuthenticatedUser user) {
-        if (user == null) {
-            throw new UnauthorizedException("Authentication is required");
-        }
-
-        return user.getId();
     }
 }

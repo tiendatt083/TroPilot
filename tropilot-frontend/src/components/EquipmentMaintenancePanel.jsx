@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { formatDisplayDate } from '../utils/dateFormat.js';
-import { resolveFileUrl } from '../utils/fileUrl.js';
+import { openFileUrl, resolveFileUrl } from '../utils/fileUrl.js';
 
 const EMPTY_REQUEST = {
   title: '',
@@ -87,6 +87,7 @@ export default function EquipmentMaintenancePanel({
                       href={resolveFileUrl(item.resultImageUrl)}
                       target="_blank"
                       rel="noreferrer"
+                      onClick={(event) => openFileUrl(item.resultImageUrl, event)}
                     >
                       {t('details.resultImage')}
                     </a>

@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import * as dashboardApi from '../../features/buildings/dashboardApi.js';
-import * as invoiceApi from '../../features/invoices/api.js';
-import * as utilityReadingApi from '../../features/invoices/utilityReadingApi.js';
+import * as dashboardApi from '../../api/dashboardApi.js';
+import * as invoiceApi from '../../api/invoiceApi.js';
+import * as utilityReadingApi from '../../api/utilityReadingApi.js';
 import { ChartPanel, GroupedBarChart, HorizontalBarChart } from '../../components/common/DashboardCharts.jsx';
 import DashboardMetricGrid from '../../components/DashboardMetricGrid.jsx';
 import DashboardSection from '../../components/DashboardSection.jsx';
-import PageHeader from '../../components/PageHeader.jsx';
+import PageHeader from '../../components/common/PageHeader.jsx';
 import { formatDisplayDate, formatDisplayMonth } from '../../utils/dateFormat.js';
 import { getInvoiceStatusClass } from '../../utils/invoiceStatusOptions.js';
 import { getMaintenanceStatusClass } from '../../utils/maintenanceOptions.js';
@@ -233,7 +233,7 @@ export default function ResidentDashboardPage() {
           <PageHeader eyebrow={t('dashboard.resident.eyebrow')} title={t('dashboard.resident.title')} />
           <p>{t('dashboard.resident.heroDescription')}</p>
         </div>
-        {dashboard && <DashboardMetricGrid metrics={metrics} compact />}
+        {dashboard && <DashboardMetricGrid metrics={metrics} />}
       </div>
 
       {error && <div className="alert error-alert">{error}</div>}

@@ -3,8 +3,9 @@ package com.tropilot.controller;
 import com.tropilot.dto.request.FeedbackCreateRequest;
 import com.tropilot.dto.response.ApiResponse;
 import com.tropilot.dto.response.FeedbackResponse;
-import com.tropilot.exception.UnauthorizedException;
 import com.tropilot.security.AuthenticatedUser;
+
+import static com.tropilot.security.AuthenticatedUsers.requireUserId;
 import com.tropilot.service.FeedbackService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +31,7 @@ public class ResidentFeedbackController {
     public ApiResponse<List<FeedbackResponse>> getFeedbacks(
             @AuthenticationPrincipal AuthenticatedUser user
     ) {
-        return ApiResponse.success("Feedbacks loaded successfully", feedbackService.getResidentFeedbacks(getUserId(user)));
+        return ApiResponse.success("Feedbacks loaded successfully", feedbackService.getResidentFeedbacks(requireUserId(user)));
     }
 
     @PostMapping
@@ -38,14 +39,6 @@ public class ResidentFeedbackController {
             @AuthenticationPrincipal AuthenticatedUser user,
             @Valid @RequestBody FeedbackCreateRequest request
     ) {
-        return ApiResponse.success("Feedback submitted successfully", feedbackService.createResidentFeedback(getUserId(user), request));
-    }
-
-    private Long getUserId(AuthenticatedUser user) {
-        if (user == null) {
-            throw new UnauthorizedException("Authentication is required");
-        }
-
-        return user.getId();
+        return ApiResponse.success("Feedback submitted successfully", feedbackService.createResidentFeedback(requireUserId(user), request));
     }
 }

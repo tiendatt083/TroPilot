@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import * as buildingApi from '../../features/buildings/api.js';
-import * as roomApi from '../../features/rooms/api.js';
-import * as adminUserApi from '../../features/users/api.js';
+import * as buildingApi from '../../api/buildingApi.js';
+import * as roomApi from '../../api/roomApi.js';
+import * as adminUserApi from '../../api/adminUserApi.js';
 import AdminAccountDirectoryTable from '../../components/AdminAccountDirectoryTable.jsx';
 import FilterBar from '../../components/common/FilterBar.jsx';
 import ModalCloseButton from '../../components/common/ModalCloseButton.jsx';

@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
-import * as invoiceApi from '../../features/invoices/api.js';
-import * as paymentApi from '../../features/payments/api.js';
-import { InvoiceDetail } from '../../features/invoices/components/index.js';
+import * as invoiceApi from '../../api/invoiceApi.js';
+import * as paymentApi from '../../api/paymentApi.js';
+import InvoiceDetail from '../../components/InvoiceDetail.jsx';
 import ManagementPageHero from '../../components/common/ManagementPageHero.jsx';
-import { PaymentProofUploadForm } from '../../features/payments/components/index.js';
+import PaymentProofUploadForm from '../../components/PaymentProofUploadForm.jsx';
 import useInvoicePaymentPolling from '../../hooks/useInvoicePaymentPolling.js';
 
 export default function ResidentInvoiceDetailPage() {
@@ -104,7 +104,7 @@ export default function ResidentInvoiceDetailPage() {
           invoice={invoice}
           paymentUploadSlot={
             canUploadPayment ? (
-              <PaymentProofUploadForm compact invoiceId={invoice.id} loading={uploading} onSubmit={handlePaymentUpload} />
+              <PaymentProofUploadForm invoiceId={invoice.id} loading={uploading} onSubmit={handlePaymentUpload} />
             ) : null
           }
           showPaymentInstructions

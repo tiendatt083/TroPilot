@@ -3,8 +3,9 @@ package com.tropilot.controller;
 import com.tropilot.dto.request.MaintenanceCompleteRequest;
 import com.tropilot.dto.response.ApiResponse;
 import com.tropilot.dto.response.MaintenanceRequestResponse;
-import com.tropilot.exception.UnauthorizedException;
 import com.tropilot.security.AuthenticatedUser;
+
+import static com.tropilot.security.AuthenticatedUsers.requireUserId;
 import com.tropilot.service.MaintenanceRequestService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +37,7 @@ public class StaffMaintenanceRequestController {
     ) {
         return ApiResponse.success(
                 "Maintenance requests loaded successfully",
-                maintenanceRequestService.getStaffRequests(getUserId(user), buildingId)
+                maintenanceRequestService.getStaffRequests(requireUserId(user), buildingId)
         );
     }
 
@@ -47,7 +48,7 @@ public class StaffMaintenanceRequestController {
     ) {
         return ApiResponse.success(
                 "Maintenance request started successfully",
-                maintenanceRequestService.startRequest(getUserId(user), id)
+                maintenanceRequestService.startRequest(requireUserId(user), id)
         );
     }
 
@@ -59,15 +60,7 @@ public class StaffMaintenanceRequestController {
     ) {
         return ApiResponse.success(
                 "Maintenance request completed successfully",
-                maintenanceRequestService.completeRequest(getUserId(user), id, request)
+                maintenanceRequestService.completeRequest(requireUserId(user), id, request)
         );
-    }
-
-    private Long getUserId(AuthenticatedUser user) {
-        if (user == null) {
-            throw new UnauthorizedException("Authentication is required");
-        }
-
-        return user.getId();
     }
 }

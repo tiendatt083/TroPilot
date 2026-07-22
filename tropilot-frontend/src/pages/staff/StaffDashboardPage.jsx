@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import * as dashboardApi from '../../features/buildings/dashboardApi.js';
-import * as maintenanceApi from '../../features/maintenance/api.js';
-import * as taskApi from '../../features/maintenance/taskApi.js';
+import * as dashboardApi from '../../api/dashboardApi.js';
+import * as maintenanceApi from '../../api/maintenanceApi.js';
+import * as taskApi from '../../api/taskApi.js';
 import LineIcon from '../../components/common/LineIcon.jsx';
 import { CHART_COLORS, ChartPanel, DonutChart } from '../../components/common/DashboardCharts.jsx';
-import PageHeader from '../../components/PageHeader.jsx';
+import PageHeader from '../../components/common/PageHeader.jsx';
 import { formatDate, formatEnumLabel } from '../../utils/i18nFormat.js';
 import { getMaintenanceStatusClass } from '../../utils/maintenanceOptions.js';
 import { formatRoomLabel } from '../../utils/roomDisplay.js';

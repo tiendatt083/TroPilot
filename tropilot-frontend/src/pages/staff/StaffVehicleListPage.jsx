@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import * as vehicleApi from '../../features/residents/vehicleApi.js';
-import PageHeader from '../../components/PageHeader.jsx';
+import * as vehicleApi from '../../api/vehicleApi.js';
+import PageHeader from '../../components/common/PageHeader.jsx';
 import VehicleTable from '../../components/VehicleTable.jsx';
 
 export default function StaffVehicleListPage() {

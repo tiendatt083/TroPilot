@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import * as memberApi from '../../features/residents/api.js';
-import * as roomApi from '../../features/rooms/api.js';
-import useRoomRouteContext from '../../features/rooms/useRoomRouteContext.js';
-import PageHeader from '../../components/PageHeader.jsx';
+import * as memberApi from '../../api/memberApi.js';
+import * as roomApi from '../../api/roomApi.js';
+import useRoomRouteContext from '../../hooks/useRoomRouteContext.js';
+import PageHeader from '../../components/common/PageHeader.jsx';
 import { formatDisplayDate } from '../../utils/dateFormat.js';
 import { formatEnumLabel } from '../../utils/i18nFormat.js';
 import { formatRoomCode } from '../../utils/roomDisplay.js';

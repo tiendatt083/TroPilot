@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import * as buildingApi from '../../features/buildings/api.js';
-import * as memberApi from '../../features/residents/api.js';
-import * as adminUserApi from '../../features/users/api.js';
+import * as buildingApi from '../../api/buildingApi.js';
+import * as memberApi from '../../api/memberApi.js';
+import * as adminUserApi from '../../api/adminUserApi.js';
 import AdminAccountDirectoryTable from '../../components/AdminAccountDirectoryTable.jsx';
 import AdminUserCreateDialog from '../../components/AdminUserCreateDialog.jsx';
 import FilterBar from '../../components/common/FilterBar.jsx';
@@ -126,11 +126,6 @@ export default function AdminResidentListPage() {
     () => filterResidents(residents, filters),
     [residents, filters]
   );
-
-  const handleFilterChange = (event) => {
-    const { name, value } = event.target;
-    setFilters((current) => ({ ...current, [name]: value }));
-  };
 
   const handleDelete = async (resident) => {
     if (!window.confirm(t('accountDirectory.confirmations.delete', { name: resident.fullName }))) {

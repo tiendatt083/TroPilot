@@ -1,7 +1,5 @@
 package com.tropilot.mapper;
 
-import com.tropilot.mapper.SepayPaymentMapper;
-
 import com.tropilot.dto.response.InvoiceItemResponse;
 import com.tropilot.dto.response.InvoiceResponse;
 import com.tropilot.entity.Building;

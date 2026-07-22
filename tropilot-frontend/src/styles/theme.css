@@ -251,14 +251,6 @@ a:focus-visible {
   margin-top: -0.35rem;
 }
 
-.auth-footer-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem 1rem;
-  justify-content: space-between;
-  margin-top: 1rem;
-}
-
 .auth-link {
   color: var(--color-primary);
   font-weight: var(--font-weight-strong);
@@ -398,80 +390,6 @@ a:focus-visible {
   align-items: center;
   justify-content: center;
   gap: 1.1rem;
-}
-
-.login-logo-mark {
-  position: relative;
-  width: 6.45rem;
-  height: 2.45rem;
-}
-
-.login-logo-mark::before,
-.login-logo-mark::after,
-.login-logo-wing {
-  position: absolute;
-  display: block;
-  content: "";
-  border-radius: 0.2rem;
-  transform-origin: center;
-}
-
-.login-logo-mark::before {
-  left: 0.35rem;
-  bottom: 0.5rem;
-  width: 3.1rem;
-  height: 0.34rem;
-  background: linear-gradient(90deg, #123d8f, #1a74f4);
-  transform: rotate(-46deg);
-}
-
-.login-logo-mark::after {
-  right: 0.2rem;
-  bottom: 0.5rem;
-  width: 3.85rem;
-  height: 0.34rem;
-  background: linear-gradient(90deg, #19c2d3, #123d8f);
-  transform: rotate(46deg);
-}
-
-.login-logo-wing-left {
-  left: 1.55rem;
-  bottom: 0.55rem;
-  width: 2.95rem;
-  height: 0.36rem;
-  background: linear-gradient(90deg, #164aa5, #20bdd5);
-  transform: rotate(39deg);
-}
-
-.login-logo-wing-right {
-  left: 3.05rem;
-  bottom: 0.95rem;
-  width: 2.75rem;
-  height: 0.34rem;
-  background: linear-gradient(90deg, #20bdd5, #2977f0);
-  transform: rotate(-43deg);
-}
-
-.login-logo-window {
-  position: absolute;
-  display: block;
-  width: 0.28rem;
-  height: 0.28rem;
-  background: #1c75ff;
-  box-shadow:
-    0.42rem 0 0 #19b8d3,
-    0 0.42rem 0 #19b8d3,
-    0.42rem 0.42rem 0 #1c75ff;
-}
-
-.login-logo-window-one {
-  left: 1.72rem;
-  bottom: 0.55rem;
-}
-
-.login-logo-window-two {
-  right: 1.55rem;
-  bottom: 0.78rem;
 }
 
 .login-wordmark {
@@ -676,12 +594,6 @@ a:focus-visible {
   background: var(--color-success-bg);
 }
 
-.warning-alert {
-  border: 1px solid #efd99b;
-  color: var(--color-warning);
-  background: var(--color-warning-bg);
-}
-
 .route-state {
   display: grid;
   min-height: 100vh;
@@ -721,22 +633,6 @@ a:focus-visible {
   max-width: 100%;
   height: auto;
   object-fit: contain;
-}
-
-.login-logo-mark,
-.login-logo-wing,
-.login-logo-window {
-  display: none !important;
-}
-
-.login-logo-mark::before,
-.login-logo-mark::after,
-.login-input-icon-email::before,
-.login-input-icon-email::after,
-.login-input-icon-lock::before,
-.login-input-icon-lock::after {
-  content: none !important;
-  display: none !important;
 }
 
 .login-wordmark {

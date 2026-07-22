@@ -13,8 +13,6 @@ import jakarta.persistence.OrderColumn;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -25,9 +23,7 @@ import java.util.List;
 
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "system_contacts")
 public class SystemContact {
@@ -45,7 +41,6 @@ public class SystemContact {
     @Column(name = "working_hours", nullable = false, length = 160)
     private String workingHours;
 
-    @Builder.Default
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
             name = "system_contact_phones",

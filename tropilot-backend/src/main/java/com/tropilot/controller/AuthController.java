@@ -8,8 +8,9 @@ import com.tropilot.dto.request.ResetPasswordWithCodeRequest;
 import com.tropilot.dto.response.ApiResponse;
 import com.tropilot.dto.response.LoginResponse;
 import com.tropilot.dto.response.UserResponse;
-import com.tropilot.exception.UnauthorizedException;
 import com.tropilot.security.AuthenticatedUser;
+
+import static com.tropilot.security.AuthenticatedUsers.requireUserId;
 import com.tropilot.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -47,7 +48,7 @@ public class AuthController {
 
     @GetMapping("/me")
     public ApiResponse<UserResponse> me(@AuthenticationPrincipal AuthenticatedUser user) {
-        return ApiResponse.success("Current user loaded successfully", authService.getCurrentUser(getUserId(user)));
+        return ApiResponse.success("Current user loaded successfully", authService.getCurrentUser(requireUserId(user)));
     }
 
     @PutMapping("/me")
@@ -55,7 +56,7 @@ public class AuthController {
             @AuthenticationPrincipal AuthenticatedUser user,
             @Valid @RequestBody ProfileUpdateRequest request
     ) {
-        return ApiResponse.success("Profile updated successfully", authService.updateCurrentUser(getUserId(user), request));
+        return ApiResponse.success("Profile updated successfully", authService.updateCurrentUser(requireUserId(user), request));
     }
 
     @PostMapping("/change-password-first-time")
@@ -65,15 +66,7 @@ public class AuthController {
     ) {
         return ApiResponse.success(
                 "Password changed successfully",
-                authService.changePasswordFirstTime(getUserId(user), request)
+                authService.changePasswordFirstTime(requireUserId(user), request)
         );
-    }
-
-    private Long getUserId(AuthenticatedUser user) {
-        if (user == null) {
-            throw new UnauthorizedException("Authentication is required");
-        }
-
-        return user.getId();
     }
 }

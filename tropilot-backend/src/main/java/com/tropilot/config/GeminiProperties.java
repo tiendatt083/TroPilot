@@ -3,6 +3,7 @@ package com.tropilot.config;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,12 +31,8 @@ public class GeminiProperties {
 
     public boolean isReady() {
         return enabled
-                && hasText(apiKey)
-                && hasText(baseUrl)
-                && hasText(model);
-    }
-
-    private boolean hasText(String value) {
-        return value != null && !value.isBlank();
+                && StringUtils.hasText(apiKey)
+                && StringUtils.hasText(baseUrl)
+                && StringUtils.hasText(model);
     }
 }

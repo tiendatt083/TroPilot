@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import LineIcon from './common/LineIcon.jsx';
-import { resolveFileUrl } from '../utils/fileUrl.js';
+import { openFileUrl, resolveFileUrl } from '../utils/fileUrl.js';
 import { formatDisplayDate, formatDisplayMonth } from '../utils/dateFormat.js';
 import { formatRoomCode } from '../utils/roomDisplay.js';
 
@@ -32,7 +32,7 @@ function EvidenceLinks({ reading, t }) {
   return (
     <div className="utility-reading-evidence-links">
       {links.map((link) => (
-        <a key={link.key} href={resolveFileUrl(link.url)} target="_blank" rel="noreferrer">
+        <a key={link.key} href={resolveFileUrl(link.url)} target="_blank" rel="noreferrer" onClick={(event) => openFileUrl(link.url, event)}>
           <LineIcon name="fileText" />
           {link.label}
         </a>

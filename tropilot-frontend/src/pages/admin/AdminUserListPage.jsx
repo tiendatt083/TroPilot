@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import * as adminUserApi from '../../features/users/api.js';
+import * as adminUserApi from '../../api/adminUserApi.js';
 import AdminAccountDirectoryTable from '../../components/AdminAccountDirectoryTable.jsx';
 import AdminUserCreateDialog from '../../components/AdminUserCreateDialog.jsx';
 import FilterBar from '../../components/common/FilterBar.jsx';

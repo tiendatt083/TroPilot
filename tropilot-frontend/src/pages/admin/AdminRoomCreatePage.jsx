@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import * as buildingApi from '../../features/buildings/api.js';
-import * as roomApi from '../../features/rooms/api.js';
-import PageHeader from '../../components/PageHeader.jsx';
+import * as buildingApi from '../../api/buildingApi.js';
+import * as roomApi from '../../api/roomApi.js';
+import PageHeader from '../../components/common/PageHeader.jsx';
 import RoomForm from '../../components/RoomForm.jsx';
 import { translateInterfaceText } from '../../utils/interfaceTranslations.js';
 

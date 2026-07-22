@@ -1,26 +1,22 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link, NavLink, Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Link, NavLink, Outlet, useLocation, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import PageHeader from '../components/PageHeader.jsx';
+import PageHeader from '../components/common/PageHeader.jsx';
 
 export default function BuildingWorkspaceLayout({
   getBuilding,
-  deleteBuilding,
   listPath,
   basePath,
   tabs = [],
-  eyebrowKey = 'buildingWorkspace.eyebrow',
-  actions = {}
+  eyebrowKey = 'buildingWorkspace.eyebrow'
 }) {
   const { t } = useTranslation();
   const { id } = useParams();
   const location = useLocation();
-  const navigate = useNavigate();
   const [building, setBuilding] = useState(null);
-  const [message, setMessage] = useState(location.state?.message || '');
+  const message = location.state?.message || '';
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
-  const [deleting, setDeleting] = useState(false);
   const [openGroupId, setOpenGroupId] = useState(null);
   const buildingPath = `${basePath}/${id}`;
   const isStaffWorkspace = basePath.startsWith('/staff');
@@ -29,7 +25,7 @@ export default function BuildingWorkspaceLayout({
     'building-workspace-shell',
     isStaffWorkspace ? 'staff-building-workspace-shell' : 'admin-building-workspace-shell'
   ].join(' ');
-  const navigationGroups = useMemo(() => normalizeNavigationGroups(tabs), [tabs]);
+  const navigationGroups = tabs;
   const activeGroupId = useMemo(
     () => findActiveGroupId(navigationGroups, buildingPath, location.pathname),
     [buildingPath, location.pathname, navigationGroups]
@@ -62,30 +58,6 @@ export default function BuildingWorkspaceLayout({
       active = false;
     };
   }, [getBuilding, id, t]);
-
-  const handleDelete = async () => {
-    if (!deleteBuilding || !building) {
-      return;
-    }
-
-    const confirmed = window.confirm(t('buildingWorkspace.deleteConfirm', { code: building.buildingCode }));
-    if (!confirmed) {
-      return;
-    }
-
-    setDeleting(true);
-    setMessage('');
-    setError('');
-
-    try {
-      await deleteBuilding(building.id);
-      navigate(listPath, { replace: true });
-    } catch (apiError) {
-      setError(apiError.response?.data?.message || t('buildingWorkspace.deleteError'));
-    } finally {
-      setDeleting(false);
-    }
-  };
 
   useEffect(() => {
     if (!activeGroupId) {
@@ -126,26 +98,6 @@ export default function BuildingWorkspaceLayout({
             <Link className="secondary-link" to={listPath}>
               {t('buildingWorkspace.allBuildings')}
             </Link>
-            {actions.showRoomsLink && (
-              <Link className="secondary-link" to={`${buildingPath}/rooms`}>
-                {t('buildingWorkspace.roomsInBuilding')}
-              </Link>
-            )}
-            {actions.canCreateRoom && (
-              <Link className="button-link" to={`${buildingPath}/rooms/create`}>
-                {t('buildingWorkspace.createRoom')}
-              </Link>
-            )}
-            {actions.canEditBuilding && (
-              <Link className="secondary-link" to={`${buildingPath}/edit`}>
-                {t('common.edit')}
-              </Link>
-            )}
-            {actions.canDeleteBuilding && (
-              <button className="secondary-button inline-button" type="button" disabled={deleting} onClick={handleDelete}>
-                {t('common.delete')}
-              </button>
-            )}
           </div>
         </div>
 
@@ -203,24 +155,6 @@ export default function BuildingWorkspaceLayout({
       </div>
     </section>
   );
-}
-
-function normalizeNavigationGroups(tabs) {
-  if (!tabs.length) {
-    return [];
-  }
-
-  if (tabs[0].items) {
-    return tabs;
-  }
-
-  return [
-    {
-      id: 'workspace',
-      standalone: true,
-      items: tabs
-    }
-  ];
 }
 
 function findActiveGroupId(groups, buildingPath, pathname) {

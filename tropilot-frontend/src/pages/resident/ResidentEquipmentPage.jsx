@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import * as equipmentApi from '../../features/equipment/api.js';
+import * as equipmentApi from '../../api/equipmentApi.js';
 import EquipmentTable from '../../components/EquipmentTable.jsx';
 import ManagementPageHero from '../../components/common/ManagementPageHero.jsx';
 

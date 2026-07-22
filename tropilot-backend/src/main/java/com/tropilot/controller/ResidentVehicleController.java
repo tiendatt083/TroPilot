@@ -3,8 +3,9 @@ package com.tropilot.controller;
 import com.tropilot.dto.request.VehicleRegistrationRequest;
 import com.tropilot.dto.response.ApiResponse;
 import com.tropilot.dto.response.VehicleResponse;
-import com.tropilot.exception.UnauthorizedException;
 import com.tropilot.security.AuthenticatedUser;
+
+import static com.tropilot.security.AuthenticatedUsers.requireUserId;
 import com.tropilot.service.VehicleService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +36,7 @@ public class ResidentVehicleController {
     ) {
         return ApiResponse.success(
                 "Vehicle registration requested successfully",
-                vehicleService.requestVehicle(getUserId(user), request)
+                vehicleService.requestVehicle(requireUserId(user), request)
         );
     }
 
@@ -43,7 +44,7 @@ public class ResidentVehicleController {
     public ApiResponse<List<VehicleResponse>> getVehicles(@AuthenticationPrincipal AuthenticatedUser user) {
         return ApiResponse.success(
                 "Vehicles loaded successfully",
-                vehicleService.getResidentVehicles(getUserId(user))
+                vehicleService.getResidentVehicles(requireUserId(user))
         );
     }
 
@@ -54,15 +55,7 @@ public class ResidentVehicleController {
     ) {
         return ApiResponse.success(
                 "Vehicle cancellation requested successfully",
-                vehicleService.requestCancel(getUserId(user), id)
+                vehicleService.requestCancel(requireUserId(user), id)
         );
-    }
-
-    private Long getUserId(AuthenticatedUser user) {
-        if (user == null) {
-            throw new UnauthorizedException("Authentication is required");
-        }
-
-        return user.getId();
     }
 }

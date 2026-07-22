@@ -4,8 +4,9 @@ import com.tropilot.dto.request.TaskCreateRequest;
 import com.tropilot.dto.request.TaskUpdateRequest;
 import com.tropilot.dto.response.ApiResponse;
 import com.tropilot.dto.response.TaskResponse;
-import com.tropilot.exception.UnauthorizedException;
 import com.tropilot.security.AuthenticatedUser;
+
+import static com.tropilot.security.AuthenticatedUsers.requireUserId;
 import com.tropilot.service.TaskService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +38,7 @@ public class AdminTaskController {
             @RequestParam(name = "buildingId", required = false) Long buildingId,
             @Valid @RequestBody TaskCreateRequest request
     ) {
-        return ApiResponse.success("Task created successfully", taskService.createTask(request, getUserId(user), buildingId));
+        return ApiResponse.success("Task created successfully", taskService.createTask(request, requireUserId(user), buildingId));
     }
 
     @GetMapping
@@ -69,13 +70,5 @@ public class AdminTaskController {
     ) {
         taskService.deleteTask(id, buildingId);
         return ApiResponse.success("Task deleted successfully", null);
-    }
-
-    private Long getUserId(AuthenticatedUser user) {
-        if (user == null) {
-            throw new UnauthorizedException("Authentication is required");
-        }
-
-        return user.getId();
     }
 }

@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import * as invoiceApi from '../../features/invoices/api.js';
-import * as serviceFeeApi from '../../features/invoices/serviceFeeApi.js';
+import * as invoiceApi from '../../api/invoiceApi.js';
+import * as serviceFeeApi from '../../api/serviceFeeApi.js';
 import LineIcon from '../../components/common/LineIcon.jsx';
 import ManagementPageHero from '../../components/common/ManagementPageHero.jsx';
 import { formatEnumLabel } from '../../utils/i18nFormat.js';

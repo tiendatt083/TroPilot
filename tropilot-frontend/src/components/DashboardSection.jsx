@@ -15,7 +15,7 @@ export default function DashboardSection({ title, description, metrics, children
           {description && <p>{description}</p>}
         </div>
       </div>
-      {metrics && <DashboardMetricGrid metrics={metrics} compact />}
+      {metrics && <DashboardMetricGrid metrics={metrics} />}
       {children}
     </section>
   );

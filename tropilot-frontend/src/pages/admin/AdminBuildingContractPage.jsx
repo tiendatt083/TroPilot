@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
-import * as contractApi from '../../features/contracts/api.js';
+import * as contractApi from '../../api/contractApi.js';
 import ActionDialog from '../../components/common/ActionDialog.jsx';
 import ContractFileHistoryList from '../../components/ContractFileHistoryList.jsx';
 import ContractUploadForm from '../../components/ContractUploadForm.jsx';
@@ -9,7 +9,7 @@ import FilterBar from '../../components/common/FilterBar.jsx';
 import LineIcon from '../../components/common/LineIcon.jsx';
 import { getContractStatusClass } from '../../utils/contractStatusOptions.js';
 import { formatDisplayDate } from '../../utils/dateFormat.js';
-import { resolveFileUrl } from '../../utils/fileUrl.js';
+import { openFileUrl, resolveFileUrl } from '../../utils/fileUrl.js';
 import { formatEnumLabel } from '../../utils/i18nFormat.js';
 import { formatRoomCode, formatRoomLabel } from '../../utils/roomDisplay.js';
 import { normalizeSearchText } from '../../utils/searchText.js';
@@ -362,6 +362,7 @@ export default function AdminBuildingContractPage() {
                             href={resolveFileUrl(selectedContract.contractFileUrl)}
                             target="_blank"
                             rel="noreferrer"
+                            onClick={(event) => openFileUrl(selectedContract.contractFileUrl, event)}
                           >
                             {t('contracts.openFile')}
                           </a>

@@ -85,7 +85,7 @@ class HeadResidentAssignmentServiceImplTest {
         when(roomAssignmentRepository.existsByResidentHead_IdAndStatus(residentHead.getId(), RoomAssignmentStatus.ACTIVE))
                 .thenReturn(false);
         when(roomMemberRepository.findByRoom_IdAndStatusIn(any(), anyList())).thenReturn(List.of(previousMember));
-        when(vehicleRepository.findByRoom_IdAndStatusIn(any(), anyList())).thenReturn(List.of(previousVehicle));
+        when(vehicleRepository.findByRoomIdWithDetails(room.getId())).thenReturn(List.of(previousVehicle));
         when(roomRepository.save(any(Room.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(roomAssignmentRepository.save(any(RoomAssignment.class))).thenAnswer(invocation -> {
             RoomAssignment assignment = invocation.getArgument(0);
@@ -105,8 +105,6 @@ class HeadResidentAssignmentServiceImplTest {
         assertThat(room.getStatus()).isEqualTo(RoomStatus.OCCUPIED);
         assertThat(previousMember.getStatus()).isEqualTo(RoomMemberStatus.LEFT);
         assertThat(previousMember.getMoveOutDate()).isEqualTo(startDate);
-        assertThat(previousVehicle.getStatus()).isEqualTo(VehicleStatus.INACTIVE);
-        assertThat(previousVehicle.getEndDate()).isEqualTo(startDate);
 
         ArgumentCaptor<RoomAssignment> assignmentCaptor = ArgumentCaptor.forClass(RoomAssignment.class);
         ArgumentCaptor<RentalContract> contractCaptor = ArgumentCaptor.forClass(RentalContract.class);
@@ -122,6 +120,7 @@ class HeadResidentAssignmentServiceImplTest {
         assertThat(savedContract.getRentalStatus()).isEqualTo(RentalStatus.ACTIVE);
         assertThat(savedContract.getContractStatus()).isEqualTo(ContractStatus.NOT_UPLOADED);
         assertThat(savedContract.getDepositAmount()).isEqualByComparingTo(room.getPrice());
+        verify(vehicleRepository).deleteAll(List.of(previousVehicle));
     }
 
     @Test
@@ -163,7 +162,7 @@ class HeadResidentAssignmentServiceImplTest {
         )).thenReturn(Optional.of(contract));
         when(roomMemberRepository.findByRoom_IdAndStatusIn(any(), anyList()))
                 .thenReturn(List.of(approvedMember, pendingMember));
-        when(vehicleRepository.findByRoom_IdAndStatusIn(any(), anyList()))
+        when(vehicleRepository.findByRoomIdWithDetails(room.getId()))
                 .thenReturn(List.of(activeVehicle, pendingVehicle));
 
         HeadResidentAssignmentResponse response = service.removeHeadResident(room.getId());
@@ -177,16 +176,11 @@ class HeadResidentAssignmentServiceImplTest {
                     assertThat(member.getStatus()).isEqualTo(RoomMemberStatus.LEFT);
                     assertThat(member.getMoveOutDate()).isEqualTo(LocalDate.now());
                 });
-        assertThat(List.of(activeVehicle, pendingVehicle))
-                .allSatisfy(vehicle -> {
-                    assertThat(vehicle.getStatus()).isEqualTo(VehicleStatus.INACTIVE);
-                    assertThat(vehicle.getEndDate()).isEqualTo(LocalDate.now());
-                });
         verify(roomRepository).save(room);
         verify(roomAssignmentRepository).save(assignment);
         verify(rentalContractRepository).save(contract);
         verify(roomMemberRepository).saveAll(List.of(approvedMember, pendingMember));
-        verify(vehicleRepository).saveAll(List.of(activeVehicle, pendingVehicle));
+        verify(vehicleRepository).deleteAll(List.of(activeVehicle, pendingVehicle));
     }
 
     private AssignHeadResidentRequest assignmentRequest(Long residentHeadId, LocalDate startDate, LocalDate endDate) {

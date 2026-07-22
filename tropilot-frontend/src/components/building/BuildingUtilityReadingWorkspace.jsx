@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
-import * as utilityReadingApi from '../../features/invoices/utilityReadingApi.js';
+import * as utilityReadingApi from '../../api/utilityReadingApi.js';
 import ActionDialog from '../common/ActionDialog.jsx';
 import LineIcon from '../common/LineIcon.jsx';
 import UtilityReadingForm from '../UtilityReadingForm.jsx';

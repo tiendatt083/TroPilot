@@ -3,8 +3,9 @@ package com.tropilot.controller;
 import com.tropilot.dto.request.AdminVehicleCreateRequest;
 import com.tropilot.dto.response.ApiResponse;
 import com.tropilot.dto.response.VehicleResponse;
-import com.tropilot.exception.UnauthorizedException;
 import com.tropilot.security.AuthenticatedUser;
+
+import static com.tropilot.security.AuthenticatedUsers.requireUserId;
 import com.tropilot.service.VehicleService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -57,7 +58,7 @@ public class AdminVehicleController {
             @PathVariable(name = "id") Long id,
             @RequestParam(name = "buildingId", required = false) Long buildingId
     ) {
-        return ApiResponse.success("Vehicle rejected successfully", vehicleService.rejectVehicle(id, getUserId(user), buildingId));
+        return ApiResponse.success("Vehicle rejected successfully", vehicleService.rejectVehicle(id, requireUserId(user), buildingId));
     }
 
     @DeleteMapping("/{id}")
@@ -67,12 +68,5 @@ public class AdminVehicleController {
     ) {
         vehicleService.deleteVehicle(id, buildingId);
         return ApiResponse.success("Vehicle deleted successfully");
-    }
-
-    private Long getUserId(AuthenticatedUser user) {
-        if (user == null) {
-            throw new UnauthorizedException("Authentication is required");
-        }
-        return user.getId();
     }
 }

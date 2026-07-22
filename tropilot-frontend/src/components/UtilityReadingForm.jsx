@@ -7,7 +7,7 @@ import {
   getMonthDateRange,
   getMonthFromDateInput
 } from '../utils/dateFormat.js';
-import { resolveFileUrl } from '../utils/fileUrl.js';
+import { openFileUrl, resolveFileUrl } from '../utils/fileUrl.js';
 import { formatNumber } from '../utils/numberFormat.js';
 import { formatRoomCode } from '../utils/roomDisplay.js';
 import LineIcon from './common/LineIcon.jsx';
@@ -530,13 +530,25 @@ function PreviousReadingEvidence({ previousReading, t }) {
       </div>
       <div className="previous-reading-images">
         {electricityImageUrl && (
-          <a className="secondary-link compact-link previous-reading-image-link" href={electricityImageUrl} target="_blank" rel="noreferrer">
+          <a
+            className="secondary-link compact-link previous-reading-image-link"
+            href={electricityImageUrl}
+            target="_blank"
+            rel="noreferrer"
+            onClick={(event) => openFileUrl(previousReading.electricityImageUrl, event)}
+          >
             <LineIcon name="eye" />
             {t('forms.utilityReading.previousElectricityImage')}
           </a>
         )}
         {waterImageUrl && (
-          <a className="secondary-link compact-link previous-reading-image-link" href={waterImageUrl} target="_blank" rel="noreferrer">
+          <a
+            className="secondary-link compact-link previous-reading-image-link"
+            href={waterImageUrl}
+            target="_blank"
+            rel="noreferrer"
+            onClick={(event) => openFileUrl(previousReading.waterImageUrl, event)}
+          >
             <LineIcon name="eye" />
             {t('forms.utilityReading.previousWaterImage')}
           </a>

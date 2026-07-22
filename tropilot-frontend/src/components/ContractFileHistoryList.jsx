@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { formatDisplayDateTime } from '../utils/dateFormat.js';
-import { resolveFileUrl } from '../utils/fileUrl.js';
+import { openFileUrl, resolveFileUrl } from '../utils/fileUrl.js';
 
 export default function ContractFileHistoryList({ files }) {
   const { t } = useTranslation();
@@ -31,7 +31,7 @@ export default function ContractFileHistoryList({ files }) {
                 })}
               </span>
             </div>
-            <a className="secondary-link" href={resolveFileUrl(file.fileUrl)} target="_blank" rel="noreferrer">
+            <a className="secondary-link" href={resolveFileUrl(file.fileUrl)} target="_blank" rel="noreferrer" onClick={(event) => openFileUrl(file.fileUrl, event)}>
               {t('contracts.history.open')}
             </a>
           </article>

@@ -49,7 +49,6 @@ public class SecurityConfig {
                                 "/api/auth/reset-password"
                         ).permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/sepay/webhook").permitAll()
-                        .requestMatchers("/uploads/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/staff/utility-readings/**").hasAnyRole("STAFF", "ADMIN")
                         .requestMatchers("/api/staff/invoices/**").hasAnyRole("STAFF", "ADMIN")

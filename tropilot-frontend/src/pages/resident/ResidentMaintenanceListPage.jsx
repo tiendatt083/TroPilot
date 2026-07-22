@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
-import * as maintenanceApi from '../../features/maintenance/api.js';
+import * as maintenanceApi from '../../api/maintenanceApi.js';
 import MaintenanceRequestTable from '../../components/MaintenanceRequestTable.jsx';
 import ManagementPageHero from '../../components/common/ManagementPageHero.jsx';
 
@@ -9,7 +9,7 @@ export default function ResidentMaintenanceListPage() {
   const { t } = useTranslation();
   const location = useLocation();
   const [requests, setRequests] = useState([]);
-  const [message, setMessage] = useState(location.state?.message || '');
+  const message = location.state?.message || '';
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
 

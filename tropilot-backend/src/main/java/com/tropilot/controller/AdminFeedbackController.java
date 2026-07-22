@@ -4,8 +4,9 @@ import com.tropilot.dto.request.FeedbackReplyRequest;
 import com.tropilot.dto.request.FeedbackStatusUpdateRequest;
 import com.tropilot.dto.response.ApiResponse;
 import com.tropilot.dto.response.FeedbackResponse;
-import com.tropilot.exception.UnauthorizedException;
 import com.tropilot.security.AuthenticatedUser;
+
+import static com.tropilot.security.AuthenticatedUsers.requireUserId;
 import com.tropilot.service.FeedbackService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +42,7 @@ public class AdminFeedbackController {
             @RequestParam(name = "buildingId", required = false) Long buildingId,
             @Valid @RequestBody FeedbackReplyRequest request
     ) {
-        return ApiResponse.success("Feedback replied successfully", feedbackService.replyFeedback(id, getUserId(user), request, buildingId));
+        return ApiResponse.success("Feedback replied successfully", feedbackService.replyFeedback(id, requireUserId(user), request, buildingId));
     }
 
     @PutMapping("/{id}/status")
@@ -53,15 +54,7 @@ public class AdminFeedbackController {
     ) {
         return ApiResponse.success(
                 "Feedback status updated successfully",
-                feedbackService.updateFeedbackStatus(id, getUserId(user), request, buildingId)
+                feedbackService.updateFeedbackStatus(id, requireUserId(user), request, buildingId)
         );
-    }
-
-    private Long getUserId(AuthenticatedUser user) {
-        if (user == null) {
-            throw new UnauthorizedException("Authentication is required");
-        }
-
-        return user.getId();
     }
 }

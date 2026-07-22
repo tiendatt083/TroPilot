@@ -2,7 +2,6 @@ package com.tropilot.controller;
 
 import com.tropilot.dto.response.ActivityLogResponse;
 import com.tropilot.dto.response.ApiResponse;
-import com.tropilot.exception.UnauthorizedException;
 import com.tropilot.security.AuthenticatedUser;
 import com.tropilot.service.ActivityLogService;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+
+import static com.tropilot.security.AuthenticatedUsers.requireUserId;
 
 @RestController
 @RequestMapping("/api/activity-logs")
@@ -27,13 +28,11 @@ public class ActivityLogController {
             @RequestParam(name = "query", required = false) String query,
             @RequestParam(name = "action", required = false) String action
     ) {
-        if (user == null) {
-            throw new UnauthorizedException("Authentication is required");
-        }
+        Long userId = requireUserId(user);
 
         return ApiResponse.success(
                 "Activity logs loaded successfully",
-                activityLogService.getMyLogs(user.getId(), resolveQuery(query, action))
+                activityLogService.getMyLogs(userId, resolveQuery(query, action))
         );
     }
 

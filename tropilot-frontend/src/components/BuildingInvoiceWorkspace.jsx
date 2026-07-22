@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
-import * as invoiceApi from '../features/invoices/api.js';
-import * as roomApi from '../features/rooms/api.js';
+import * as invoiceApi from '../api/invoiceApi.js';
+import * as roomApi from '../api/roomApi.js';
 import useInvoicePaymentPolling from '../hooks/useInvoicePaymentPolling.js';
 import { formatDateInputValue, formatDisplayDate, formatDisplayMonth } from '../utils/dateFormat.js';
 import { formatInvoiceAmount, formatInvoiceText } from '../utils/invoiceDisplay.js';
@@ -1010,15 +1010,6 @@ function DownloadIcon() {
       <path d="M12 3v12" />
       <path d="m7 10 5 5 5-5" />
       <path d="M5 21h14" />
-    </svg>
-  );
-}
-
-function SearchIcon() {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24">
-      <path d="m21 21-4.4-4.4" />
-      <path d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" />
     </svg>
   );
 }

@@ -2,8 +2,9 @@ package com.tropilot.controller;
 
 import com.tropilot.dto.response.ApiResponse;
 import com.tropilot.dto.response.RoomMemberResponse;
-import com.tropilot.exception.UnauthorizedException;
 import com.tropilot.security.AuthenticatedUser;
+
+import static com.tropilot.security.AuthenticatedUsers.requireUserId;
 import com.tropilot.service.RoomMemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -48,7 +49,7 @@ public class AdminMemberController {
     ) {
         return ApiResponse.success(
                 "Room member approved successfully",
-                roomMemberService.approveMember(id, getUserId(user), buildingId)
+                roomMemberService.approveMember(id, requireUserId(user), buildingId)
         );
     }
 
@@ -60,14 +61,7 @@ public class AdminMemberController {
     ) {
         return ApiResponse.success(
                 "Room member rejected successfully",
-                roomMemberService.rejectMember(id, getUserId(user), buildingId)
+                roomMemberService.rejectMember(id, requireUserId(user), buildingId)
         );
-    }
-
-    private Long getUserId(AuthenticatedUser user) {
-        if (user == null) {
-            throw new UnauthorizedException("Authentication is required");
-        }
-        return user.getId();
     }
 }

@@ -2,8 +2,9 @@ package com.tropilot.controller;
 
 import com.tropilot.dto.response.ApiResponse;
 import com.tropilot.dto.response.InvoiceResponse;
-import com.tropilot.exception.UnauthorizedException;
 import com.tropilot.security.AuthenticatedUser;
+
+import static com.tropilot.security.AuthenticatedUsers.requireUserId;
 import com.tropilot.service.InvoiceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,7 +26,7 @@ public class ResidentInvoiceController {
 
     @GetMapping
     public ApiResponse<List<InvoiceResponse>> getInvoices(@AuthenticationPrincipal AuthenticatedUser user) {
-        return ApiResponse.success("Invoices loaded successfully", invoiceService.getResidentInvoices(getUserId(user)));
+        return ApiResponse.success("Invoices loaded successfully", invoiceService.getResidentInvoices(requireUserId(user)));
     }
 
     @GetMapping("/{id}")
@@ -33,14 +34,6 @@ public class ResidentInvoiceController {
             @AuthenticationPrincipal AuthenticatedUser user,
             @PathVariable(name = "id") Long id
     ) {
-        return ApiResponse.success("Invoice loaded successfully", invoiceService.getResidentInvoice(getUserId(user), id));
-    }
-
-    private Long getUserId(AuthenticatedUser user) {
-        if (user == null) {
-            throw new UnauthorizedException("Authentication is required");
-        }
-
-        return user.getId();
+        return ApiResponse.success("Invoice loaded successfully", invoiceService.getResidentInvoice(requireUserId(user), id));
     }
 }

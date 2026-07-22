@@ -3,8 +3,9 @@ package com.tropilot.controller;
 import com.tropilot.dto.request.TaskCompleteRequest;
 import com.tropilot.dto.response.ApiResponse;
 import com.tropilot.dto.response.TaskResponse;
-import com.tropilot.exception.UnauthorizedException;
 import com.tropilot.security.AuthenticatedUser;
+
+import static com.tropilot.security.AuthenticatedUsers.requireUserId;
 import com.tropilot.service.TaskService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +31,7 @@ public class StaffTaskController {
 
     @GetMapping
     public ApiResponse<List<TaskResponse>> getTasks(@AuthenticationPrincipal AuthenticatedUser user) {
-        return ApiResponse.success("Tasks loaded successfully", taskService.getStaffTasks(getUserId(user)));
+        return ApiResponse.success("Tasks loaded successfully", taskService.getStaffTasks(requireUserId(user)));
     }
 
     @GetMapping("/{id}")
@@ -38,7 +39,7 @@ public class StaffTaskController {
             @AuthenticationPrincipal AuthenticatedUser user,
             @PathVariable(name = "id") Long id
     ) {
-        return ApiResponse.success("Task loaded successfully", taskService.getStaffTask(getUserId(user), id));
+        return ApiResponse.success("Task loaded successfully", taskService.getStaffTask(requireUserId(user), id));
     }
 
     @PutMapping("/{id}/start")
@@ -46,7 +47,7 @@ public class StaffTaskController {
             @AuthenticationPrincipal AuthenticatedUser user,
             @PathVariable(name = "id") Long id
     ) {
-        return ApiResponse.success("Task started successfully", taskService.startTask(getUserId(user), id));
+        return ApiResponse.success("Task started successfully", taskService.startTask(requireUserId(user), id));
     }
 
     @PutMapping(path = "/{id}/complete", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -55,14 +56,6 @@ public class StaffTaskController {
             @PathVariable(name = "id") Long id,
             @Valid @ModelAttribute TaskCompleteRequest request
     ) {
-        return ApiResponse.success("Task completed successfully", taskService.completeTask(getUserId(user), id, request));
-    }
-
-    private Long getUserId(AuthenticatedUser user) {
-        if (user == null) {
-            throw new UnauthorizedException("Authentication is required");
-        }
-
-        return user.getId();
+        return ApiResponse.success("Task completed successfully", taskService.completeTask(requireUserId(user), id, request));
     }
 }

@@ -2,7 +2,6 @@ package com.tropilot.controller;
 
 import com.tropilot.dto.response.ApiResponse;
 import com.tropilot.dto.response.ResidentDashboardResponse;
-import com.tropilot.exception.UnauthorizedException;
 import com.tropilot.security.AuthenticatedUser;
 import com.tropilot.service.DashboardService;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +10,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import static com.tropilot.security.AuthenticatedUsers.requireUserId;
 
 @RestController
 @RequestMapping("/api/resident/dashboard")
@@ -22,10 +23,6 @@ public class ResidentDashboardController {
 
     @GetMapping
     public ApiResponse<ResidentDashboardResponse> getDashboard(@AuthenticationPrincipal AuthenticatedUser user) {
-        if (user == null) {
-            throw new UnauthorizedException("Authentication is required");
-        }
-
-        return ApiResponse.success("Resident dashboard loaded successfully", dashboardService.getResidentDashboard(user.getId()));
+        return ApiResponse.success("Resident dashboard loaded successfully", dashboardService.getResidentDashboard(requireUserId(user)));
     }
 }

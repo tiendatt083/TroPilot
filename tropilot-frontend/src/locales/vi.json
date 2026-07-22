@@ -767,29 +767,6 @@
       "optionsLoadError": "Không thể tải danh sách chủ hộ hoặc phòng trống"
     }
   },
-  "buildingBilling": {
-    "eyebrow": "Lập hóa đơn của tòa nhà",
-    "title": "Chỉ số điện nước và hóa đơn",
-    "description": "Ghi hoặc cập nhật chỉ số phòng, sau đó tạo hóa đơn phòng trong cùng một khu vực làm việc.",
-    "loading": "Đang tải dữ liệu lập hóa đơn...",
-    "loadError": "Không thể tải dữ liệu lập hóa đơn",
-    "readingCreated": "Đã tạo chỉ số điện nước thành công.",
-    "readingCreateError": "Không thể tạo chỉ số điện nước",
-    "readingUpdated": "Đã cập nhật chỉ số điện nước thành công.",
-    "readingUpdateError": "Không thể cập nhật chỉ số điện nước",
-    "invoiceGenerated": "Đã tạo hóa đơn thành công.",
-    "invoiceGenerateError": "Không thể tạo hóa đơn",
-    "invoiceLoadError": "Không thể tải hóa đơn",
-    "editReading": "Sửa chỉ số",
-    "readingEntry": "Nhập chỉ số",
-    "recordReading": "Ghi chỉ số",
-    "saveChanges": "Lưu thay đổi",
-    "invoiceGeneration": "Tạo hóa đơn",
-    "newInvoice": "Hóa đơn mới",
-    "billingRecords": "Dữ liệu lập hóa đơn",
-    "utilityReadings": "Chỉ số điện nước",
-    "invoices": "Hóa đơn"
-  },
   "buildingUtilityReadings": {
     "eyebrow": "Chỉ số điện nước của tòa nhà",
     "title": "Chỉ số điện nước trong tòa nhà này",
@@ -1933,24 +1910,6 @@
     "saveChanges": "Lưu thay đổi",
     "selectRoom": "Chọn phòng"
   },
-  "utilityReadingManagement": {
-    "title": "Chỉ số điện nước",
-    "record": "Ghi chỉ số",
-    "recordTitle": "Ghi chỉ số điện nước",
-    "newReading": "Chỉ số mới",
-    "editReading": "Sửa chỉ số",
-    "edit": "Sửa",
-    "approve": "Duyệt",
-    "back": "Quay lại chỉ số",
-    "loading": "Đang tải chỉ số điện nước...",
-    "loadingRooms": "Đang tải phòng...",
-    "loadError": "Không thể tải chỉ số điện nước",
-    "roomsLoadError": "Không thể tải phòng",
-    "created": "Đã tạo chỉ số điện nước thành công.",
-    "createError": "Không thể tạo chỉ số điện nước",
-    "updated": "Đã cập nhật chỉ số điện nước thành công.",
-    "updateError": "Không thể cập nhật chỉ số điện nước"
-  },
   "vehicleManagement": {
     "title": "Xe",
     "pendingTitle": "Xe đang chờ duyệt",
@@ -1985,20 +1944,6 @@
     "updateError": "Không thể cập nhật tòa nhà",
     "saveChanges": "Lưu thay đổi",
     "noDescription": "Chưa có mô tả."
-  },
-  "pendingPaymentManagement": {
-    "title": "Thanh toán chờ xác nhận",
-    "loading": "Đang tải thanh toán chờ xác nhận...",
-    "loadError": "Không thể tải thanh toán chờ xác nhận",
-    "approvedNote": "Đã duyệt bằng chứng thanh toán",
-    "approved": "Đã duyệt thanh toán thành công.",
-    "approveError": "Không thể duyệt thanh toán",
-    "rejectionPrompt": "Nhập ghi chú từ chối",
-    "rejectedNote": "Bằng chứng thanh toán bị từ chối",
-    "rejected": "Đã từ chối thanh toán thành công.",
-    "rejectError": "Không thể từ chối thanh toán",
-    "approve": "Duyệt",
-    "reject": "Từ chối"
   },
   "workspace": {
     "filters": {

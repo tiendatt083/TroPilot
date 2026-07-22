@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
 import * as memberApi from '../../api/memberApi.js';
 import * as roomApi from '../../api/roomApi.js';
-import * as vehicleApi from '../../features/residents/vehicleApi.js';
+import * as vehicleApi from '../../api/vehicleApi.js';
 import AdminVehicleForm from '../AdminVehicleForm.jsx';
 import ActionDialog from '../common/ActionDialog.jsx';
 import FilterBar from '../common/FilterBar.jsx';

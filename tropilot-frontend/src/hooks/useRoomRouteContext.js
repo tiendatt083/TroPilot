@@ -5,8 +5,6 @@ export default function useRoomRouteContext(role) {
   const isBuildingWorkspace = Boolean(roomId);
 
   return {
-    buildingId: isBuildingWorkspace ? id : null,
-    isBuildingWorkspace,
     roomBasePath: isBuildingWorkspace ? `/${role}/buildings/${id}/rooms` : `/${role}/rooms`,
     roomId: roomId || id
   };

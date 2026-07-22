@@ -1,4 +1,4 @@
-import * as vehicleApi from '../../features/residents/vehicleApi.js';
+import * as vehicleApi from '../../api/vehicleApi.js';
 import BuildingVehicleWorkspace from '../../components/building/BuildingVehicleWorkspace.jsx';
 
 export default function StaffBuildingVehiclePage() {

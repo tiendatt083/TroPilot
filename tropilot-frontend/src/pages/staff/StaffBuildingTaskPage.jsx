@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate, useOutletContext } from 'react-router-dom';
-import * as taskApi from '../../features/maintenance/taskApi.js';
+import * as taskApi from '../../api/taskApi.js';
 import ActionDialog from '../../components/common/ActionDialog.jsx';
 import FilterBar from '../../components/common/FilterBar.jsx';
-import PageHeader from '../../components/PageHeader.jsx';
+import PageHeader from '../../components/common/PageHeader.jsx';
 import TaskDetail from '../../components/TaskDetail.jsx';
 import TaskTable from '../../components/TaskTable.jsx';
 import { formatEnumLabel } from '../../utils/i18nFormat.js';

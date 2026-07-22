@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,6 +15,25 @@ public interface UtilityReadingRepository extends JpaRepository<UtilityReading, 
     boolean existsByRoom_IdAndMonth(Long roomId, LocalDate month);
 
     boolean existsByRoom_IdAndMonthAndIdNot(Long roomId, LocalDate month, Long id);
+
+    @Query("""
+            select case when count(reading) > 0 then true else false end
+            from UtilityReading reading
+            where reading.electricityImageUrl in :urls
+               or reading.waterImageUrl in :urls
+            """)
+    boolean existsByAnyImageUrlIn(@Param("urls") Collection<String> urls);
+
+    @Query("""
+            select case when count(reading) > 0 then true else false end
+            from UtilityReading reading
+            where (reading.electricityImageUrl in :urls or reading.waterImageUrl in :urls)
+              and reading.room.id = :roomId
+            """)
+    boolean existsByAnyImageUrlInAndRoomId(
+            @Param("urls") Collection<String> urls,
+            @Param("roomId") Long roomId
+    );
 
     Optional<UtilityReading> findFirstByRoom_IdAndMonthBeforeOrderByMonthDescCreatedAtDesc(Long roomId, LocalDate month);
 

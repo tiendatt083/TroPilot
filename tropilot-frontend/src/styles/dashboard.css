@@ -292,21 +292,6 @@
   gap: var(--space-2);
 }
 
-.building-billing-workspace {
-  display: grid;
-  grid-template-columns: minmax(300px, 380px) minmax(0, 1fr);
-  gap: var(--space-5);
-  align-items: start;
-  min-width: 0;
-}
-
-.billing-form-stack,
-.billing-data-stack {
-  display: grid;
-  gap: var(--space-5);
-  min-width: 0;
-}
-
 .building-summary-grid {
   margin-top: 0;
 }
@@ -1455,7 +1440,6 @@ html[data-theme="dark"] .settings-group-icon-danger {
 
 .action-dialog .invoice-composer-panel,
 .action-dialog .invoice-detail-panel,
-.action-dialog .receipt-detail-panel,
 .action-dialog .building-contract-detail-column {
   margin-top: var(--space-4);
 }

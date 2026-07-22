@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { getMaintenanceStatusClass } from '../utils/maintenanceOptions.js';
-import { resolveFileUrl } from '../utils/fileUrl.js';
+import { openFileUrl, resolveFileUrl } from '../utils/fileUrl.js';
 import { formatDateTime, formatEnumLabel } from '../utils/i18nFormat.js';
 import { formatRoomLabel } from '../utils/roomDisplay.js';
 
@@ -68,7 +68,7 @@ export default function MaintenanceRequestTable({ requests, renderActions, onSel
               <td className="maintenance-col-images">
                 <div className="evidence-links">
                   {request.imageUrl && (
-                    <a href={resolveFileUrl(request.imageUrl)} target="_blank" rel="noreferrer" onClick={(event) => event.stopPropagation()}>
+                    <a href={resolveFileUrl(request.imageUrl)} target="_blank" rel="noreferrer" onClick={(event) => openFileUrl(request.imageUrl, event)}>
                       {t('tables.maintenanceRequests.issue')}
                     </a>
                   )}
@@ -77,7 +77,7 @@ export default function MaintenanceRequestTable({ requests, renderActions, onSel
                       href={resolveFileUrl(request.resultImageUrl)}
                       target="_blank"
                       rel="noreferrer"
-                      onClick={(event) => event.stopPropagation()}
+                      onClick={(event) => openFileUrl(request.resultImageUrl, event)}
                     >
                       {t('tables.maintenanceRequests.result')}
                     </a>

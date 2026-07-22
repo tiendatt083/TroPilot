@@ -60,10 +60,6 @@ export const STAFF_BUILDING_TABS = [
   ])
 ];
 
-export const ADMIN_BUILDING_ACTIONS = {};
-
-export const STAFF_BUILDING_ACTIONS = {};
-
 function filterBuildingWorkspaceGroups(allowedPaths) {
   const allowed = new Set(allowedPaths);
 

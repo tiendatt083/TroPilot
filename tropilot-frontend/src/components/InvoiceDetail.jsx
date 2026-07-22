@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { getInvoiceStatusClass } from '../utils/invoiceStatusOptions.js';
-import { resolveFileUrl } from '../utils/fileUrl.js';
+import { openFileUrl, resolveFileUrl } from '../utils/fileUrl.js';
 import { formatDisplayDate, formatDisplayMonth } from '../utils/dateFormat.js';
 import { formatEnumLabel } from '../utils/i18nFormat.js';
 import { formatInvoiceAmount, formatInvoiceText } from '../utils/invoiceDisplay.js';
@@ -192,12 +192,12 @@ export default function InvoiceDetail({
   const evidenceLinks = (
     <div className="invoice-evidence-row">
       {invoice.electricityImageUrl && (
-        <a className="secondary-link compact-link" href={resolveFileUrl(invoice.electricityImageUrl)} target="_blank" rel="noreferrer">
+        <a className="secondary-link compact-link" href={resolveFileUrl(invoice.electricityImageUrl)} target="_blank" rel="noreferrer" onClick={(event) => openFileUrl(invoice.electricityImageUrl, event)}>
           {t('tables.invoiceItems.electricityEvidence')}
         </a>
       )}
       {invoice.waterImageUrl && (
-        <a className="secondary-link compact-link" href={resolveFileUrl(invoice.waterImageUrl)} target="_blank" rel="noreferrer">
+        <a className="secondary-link compact-link" href={resolveFileUrl(invoice.waterImageUrl)} target="_blank" rel="noreferrer" onClick={(event) => openFileUrl(invoice.waterImageUrl, event)}>
           {t('tables.invoiceItems.waterEvidence')}
         </a>
       )}

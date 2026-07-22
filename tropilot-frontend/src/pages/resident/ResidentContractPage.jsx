@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import * as contractApi from '../../features/contracts/api.js';
+import * as contractApi from '../../api/contractApi.js';
 import ContractFileHistoryList from '../../components/ContractFileHistoryList.jsx';
 import ActionDialog from '../../components/common/ActionDialog.jsx';
 import LineIcon from '../../components/common/LineIcon.jsx';
 import ManagementPageHero from '../../components/common/ManagementPageHero.jsx';
 import { getContractStatusClass } from '../../utils/contractStatusOptions.js';
 import { formatDisplayDate } from '../../utils/dateFormat.js';
-import { resolveFileUrl } from '../../utils/fileUrl.js';
+import { openFileUrl, resolveFileUrl } from '../../utils/fileUrl.js';
 import { formatRoomLabel } from '../../utils/roomDisplay.js';
 import { formatEnumLabel } from '../../utils/i18nFormat.js';
 
@@ -148,7 +148,7 @@ export default function ResidentContractPage() {
 
           <div className="button-row contract-actions">
             {contract.contractFileUrl ? (
-              <a className="button-link" href={resolveFileUrl(contract.contractFileUrl)} target="_blank" rel="noreferrer">
+              <a className="button-link" href={resolveFileUrl(contract.contractFileUrl)} target="_blank" rel="noreferrer" onClick={(event) => openFileUrl(contract.contractFileUrl, event)}>
                 {t('contracts.open')}
               </a>
             ) : (

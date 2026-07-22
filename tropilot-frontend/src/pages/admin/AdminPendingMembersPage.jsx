@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import * as memberApi from '../../features/residents/api.js';
+import * as memberApi from '../../api/memberApi.js';
 import FilterBar from '../../components/common/FilterBar.jsx';
 import { exportRowsToExcel } from '../../utils/excelExport.js';
 import { formatRoomCode } from '../../utils/roomDisplay.js';

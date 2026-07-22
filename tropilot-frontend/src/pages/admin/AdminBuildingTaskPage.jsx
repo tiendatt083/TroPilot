@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
-import * as taskApi from '../../features/maintenance/taskApi.js';
-import * as roomApi from '../../features/rooms/api.js';
-import * as adminUserApi from '../../features/users/api.js';
+import * as taskApi from '../../api/taskApi.js';
+import * as roomApi from '../../api/roomApi.js';
+import * as adminUserApi from '../../api/adminUserApi.js';
 import ActionDialog from '../../components/common/ActionDialog.jsx';
 import FilterBar from '../../components/common/FilterBar.jsx';
 import TaskForm from '../../components/TaskForm.jsx';

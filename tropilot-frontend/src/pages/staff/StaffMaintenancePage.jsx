@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate, useOutletContext } from 'react-router-dom';
-import * as maintenanceApi from '../../features/maintenance/api.js';
+import * as maintenanceApi from '../../api/maintenanceApi.js';
 import ActionDialog from '../../components/common/ActionDialog.jsx';
 import FilterBar from '../../components/common/FilterBar.jsx';
 import LineIcon from '../../components/common/LineIcon.jsx';
 import MaintenanceRequestDetail from '../../components/MaintenanceRequestDetail.jsx';
-import PageHeader from '../../components/PageHeader.jsx';
+import PageHeader from '../../components/common/PageHeader.jsx';
 import { formatDateTime, formatEnumLabel } from '../../utils/i18nFormat.js';
 import { getMaintenanceStatusClass, MAINTENANCE_STATUS_OPTIONS } from '../../utils/maintenanceOptions.js';
 import { formatRoomCode } from '../../utils/roomDisplay.js';

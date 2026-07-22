@@ -1,7 +1,6 @@
 package com.tropilot.service.impl;
 
 import com.tropilot.dto.response.UtilityMeterFetchResponse;
-import com.tropilot.dto.response.UtilityReadingFetchResponse;
 import com.tropilot.entity.UtilityReading;
 import com.tropilot.exception.BadRequestException;
 import com.tropilot.repository.RoomRepository;
@@ -49,17 +48,20 @@ class MockUtilityReadingProviderTest {
                 READING_MONTH
         )).thenReturn(Optional.of(previousReading));
 
-        UtilityReadingFetchResponse response = provider.fetch(ROOM_ID, READING_DATE);
+        UtilityMeterFetchResponse electricity = provider.fetchElectricity(ROOM_ID, READING_DATE);
+        UtilityMeterFetchResponse water = provider.fetchWater(ROOM_ID, READING_DATE);
 
-        assertThat(response.source()).isEqualTo("MOCK");
-        assertThat(response.recordedAt()).isEqualTo(READING_DATE);
-        assertThat(response.oldElectricity()).isEqualByComparingTo("350");
-        assertThat(response.electricityUsage()).isBetween(BigDecimal.ONE, new BigDecimal("150"));
-        assertThat(response.newElectricity())
-                .isEqualByComparingTo(response.oldElectricity().add(response.electricityUsage()));
-        assertThat(response.oldWater()).isEqualByComparingTo("24");
-        assertThat(response.waterUsage()).isBetween(BigDecimal.ONE, new BigDecimal("150"));
-        assertThat(response.newWater()).isEqualByComparingTo(response.oldWater().add(response.waterUsage()));
+        assertThat(electricity.source()).isEqualTo("MOCK");
+        assertThat(electricity.recordedAt()).isEqualTo(READING_DATE);
+        assertThat(electricity.oldReading()).isEqualByComparingTo("350");
+        assertThat(electricity.usage()).isBetween(BigDecimal.ONE, new BigDecimal("150"));
+        assertThat(electricity.newReading()).isEqualByComparingTo(electricity.oldReading().add(electricity.usage()));
+
+        assertThat(water.source()).isEqualTo("MOCK");
+        assertThat(water.recordedAt()).isEqualTo(READING_DATE);
+        assertThat(water.oldReading()).isEqualByComparingTo("24");
+        assertThat(water.usage()).isBetween(BigDecimal.ONE, new BigDecimal("150"));
+        assertThat(water.newReading()).isEqualByComparingTo(water.oldReading().add(water.usage()));
     }
 
     @Test
@@ -98,10 +100,11 @@ class MockUtilityReadingProviderTest {
                 READING_MONTH
         )).thenReturn(Optional.empty());
 
-        UtilityReadingFetchResponse response = provider.fetch(ROOM_ID, READING_DATE);
+        UtilityMeterFetchResponse electricity = provider.fetchElectricity(ROOM_ID, READING_DATE);
+        UtilityMeterFetchResponse water = provider.fetchWater(ROOM_ID, READING_DATE);
 
-        assertThat(response.oldElectricity()).isEqualByComparingTo(BigDecimal.ZERO);
-        assertThat(response.oldWater()).isEqualByComparingTo(BigDecimal.ZERO);
+        assertThat(electricity.oldReading()).isEqualByComparingTo(BigDecimal.ZERO);
+        assertThat(water.oldReading()).isEqualByComparingTo(BigDecimal.ZERO);
     }
 
     @Test
@@ -109,7 +112,7 @@ class MockUtilityReadingProviderTest {
         when(roomRepository.existsById(ROOM_ID)).thenReturn(true);
         when(utilityReadingRepository.existsByRoom_IdAndMonth(ROOM_ID, READING_MONTH)).thenReturn(true);
 
-        assertThatThrownBy(() -> provider.fetch(ROOM_ID, READING_DATE))
+        assertThatThrownBy(() -> provider.fetchElectricity(ROOM_ID, READING_DATE))
                 .isInstanceOf(BadRequestException.class)
                 .hasMessageContaining("already exists");
     }

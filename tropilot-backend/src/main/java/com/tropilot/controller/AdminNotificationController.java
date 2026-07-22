@@ -3,8 +3,9 @@ package com.tropilot.controller;
 import com.tropilot.dto.request.NotificationCreateRequest;
 import com.tropilot.dto.response.ApiResponse;
 import com.tropilot.dto.response.NotificationResponse;
-import com.tropilot.exception.UnauthorizedException;
 import com.tropilot.security.AuthenticatedUser;
+
+import static com.tropilot.security.AuthenticatedUsers.requireUserId;
 import com.tropilot.service.NotificationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +36,7 @@ public class AdminNotificationController {
     ) {
         return ApiResponse.success(
                 "Notification created successfully",
-                notificationService.createNotification(request, getUserId(user), buildingId)
+                notificationService.createNotification(request, requireUserId(user), buildingId)
         );
     }
 
@@ -57,13 +58,5 @@ public class AdminNotificationController {
                 "Sent notifications loaded successfully",
                 notificationService.getAdminNotifications(buildingId)
         );
-    }
-
-    private Long getUserId(AuthenticatedUser user) {
-        if (user == null) {
-            throw new UnauthorizedException("Authentication is required");
-        }
-
-        return user.getId();
     }
 }

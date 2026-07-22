@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import * as feedbackApi from '../../features/notifications/feedbackApi.js';
+import * as feedbackApi from '../../api/feedbackApi.js';
 import FeedbackTable from '../../components/FeedbackTable.jsx';
 import ActionDialog from '../../components/common/ActionDialog.jsx';
 import ManagementPageHero from '../../components/common/ManagementPageHero.jsx';

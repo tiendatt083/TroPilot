@@ -16,6 +16,10 @@ import java.util.Date;
 @Service
 public class JwtService {
 
+    private static final String INSECURE_DEFAULT_SECRET =
+            "TropilotJwtSecretForAcademicProjectChangeBeforeProduction2026";
+    private static final int MIN_SECRET_LENGTH = 32;
+
     private final SecretKey signingKey;
     private final long expirationMinutes;
 
@@ -23,6 +27,14 @@ public class JwtService {
             @Value("${app.jwt.secret}") String secret,
             @Value("${app.jwt.expiration-minutes}") long expirationMinutes
     ) {
+        if (secret == null || secret.isBlank() || secret.length() < MIN_SECRET_LENGTH) {
+            throw new IllegalStateException("APP_JWT_SECRET must contain at least 32 characters");
+        }
+
+        if (INSECURE_DEFAULT_SECRET.equals(secret)) {
+            throw new IllegalStateException("APP_JWT_SECRET must not use the demo default value");
+        }
+
         signingKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         this.expirationMinutes = expirationMinutes;
     }

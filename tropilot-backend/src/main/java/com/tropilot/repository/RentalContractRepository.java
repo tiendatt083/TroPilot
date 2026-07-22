@@ -8,12 +8,15 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
 public interface RentalContractRepository extends JpaRepository<RentalContract, Long> {
 
     long countByRentalStatusAndEndDateBetween(RentalStatus rentalStatus, LocalDate startDate, LocalDate endDate);
+
+    boolean existsByContractFileUrlInAndResidentHead_Id(Collection<String> contractFileUrls, Long residentHeadId);
 
     @Query("""
             select contract from RentalContract contract

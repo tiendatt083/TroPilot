@@ -3,8 +3,9 @@ package com.tropilot.controller;
 import com.tropilot.dto.request.PaymentUploadRequest;
 import com.tropilot.dto.response.ApiResponse;
 import com.tropilot.dto.response.PaymentResponse;
-import com.tropilot.exception.UnauthorizedException;
 import com.tropilot.security.AuthenticatedUser;
+
+import static com.tropilot.security.AuthenticatedUsers.requireUserId;
 import com.tropilot.service.PaymentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -31,15 +32,7 @@ public class ResidentPaymentController {
     ) {
         return ApiResponse.success(
                 "Payment proof uploaded successfully",
-                paymentService.uploadPaymentProof(getUserId(user), request)
+                paymentService.uploadPaymentProof(requireUserId(user), request)
         );
-    }
-
-    private Long getUserId(AuthenticatedUser user) {
-        if (user == null) {
-            throw new UnauthorizedException("Authentication is required");
-        }
-
-        return user.getId();
     }
 }

@@ -392,7 +392,6 @@ html[data-theme="dark"] input[type="month"]::-webkit-calendar-picker-indicator {
   .admin-home-chart-grid,
   .dashboard-two-column,
   .building-workspace-body,
-  .building-billing-workspace,
   .building-contract-detail-column,
   .cashflow-summary {
     grid-template-columns: 1fr;
@@ -679,10 +678,6 @@ html[data-theme="dark"] input[type="month"]::-webkit-calendar-picker-indicator {
     gap: var(--space-4);
   }
 
-  .split-workspace {
-    grid-template-columns: 1fr;
-  }
-
   .page-title-row {
     align-items: stretch;
   }
@@ -706,7 +701,6 @@ html[data-theme="dark"] input[type="month"]::-webkit-calendar-picker-indicator {
   }
 
   .building-workspace-body,
-  .building-billing-workspace,
   .building-contract-detail-column,
   .contact-layout.is-editable,
   .profile-detail-grid,
@@ -1643,7 +1637,6 @@ html[data-theme="dark"] :is(
   .action-dialog > form,
   .action-dialog .invoice-composer-panel,
   .action-dialog .invoice-detail-panel,
-  .action-dialog .receipt-detail-panel,
   .action-dialog .building-contract-detail-column,
   .workspace-tabs,
   .building-filter-row,

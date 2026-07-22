@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import * as memberApi from '../../features/residents/api.js';
+import * as memberApi from '../../api/memberApi.js';
 import MemberForm from '../../components/MemberForm.jsx';
 import ActionDialog from '../../components/common/ActionDialog.jsx';
 import ManagementPageHero from '../../components/common/ManagementPageHero.jsx';

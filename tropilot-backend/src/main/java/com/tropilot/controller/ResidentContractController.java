@@ -2,8 +2,9 @@ package com.tropilot.controller;
 
 import com.tropilot.dto.response.ApiResponse;
 import com.tropilot.dto.response.RentalContractResponse;
-import com.tropilot.exception.UnauthorizedException;
 import com.tropilot.security.AuthenticatedUser;
+
+import static com.tropilot.security.AuthenticatedUsers.requireUserId;
 import com.tropilot.service.RentalContractService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,7 +28,7 @@ public class ResidentContractController {
     public ApiResponse<RentalContractResponse> getCurrentContract(@AuthenticationPrincipal AuthenticatedUser user) {
         return ApiResponse.success(
                 "Current rental contract loaded successfully",
-                rentalContractService.getCurrentResidentContract(getUserId(user))
+                rentalContractService.getCurrentResidentContract(requireUserId(user))
         );
     }
 
@@ -38,7 +39,7 @@ public class ResidentContractController {
     ) {
         return ApiResponse.success(
                 "Rental contract confirmed successfully",
-                rentalContractService.confirmResidentContract(getUserId(user), id)
+                rentalContractService.confirmResidentContract(requireUserId(user), id)
         );
     }
 
@@ -49,15 +50,7 @@ public class ResidentContractController {
     ) {
         return ApiResponse.success(
                 "Rental contract issue reported successfully",
-                rentalContractService.reportResidentContractIssue(getUserId(user), id)
+                rentalContractService.reportResidentContractIssue(requireUserId(user), id)
         );
-    }
-
-    private Long getUserId(AuthenticatedUser user) {
-        if (user == null) {
-            throw new UnauthorizedException("Authentication is required");
-        }
-
-        return user.getId();
     }
 }

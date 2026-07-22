@@ -3,8 +3,9 @@ package com.tropilot.controller;
 import com.tropilot.dto.request.RoomMemberUpsertRequest;
 import com.tropilot.dto.response.ApiResponse;
 import com.tropilot.dto.response.RoomMemberResponse;
-import com.tropilot.exception.UnauthorizedException;
 import com.tropilot.security.AuthenticatedUser;
+
+import static com.tropilot.security.AuthenticatedUsers.requireUserId;
 import com.tropilot.service.RoomMemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +36,7 @@ public class ResidentMemberController {
     ) {
         return ApiResponse.success(
                 "Room member submitted for approval successfully",
-                roomMemberService.createResidentMember(getUserId(user), request)
+                roomMemberService.createResidentMember(requireUserId(user), request)
         );
     }
 
@@ -43,7 +44,7 @@ public class ResidentMemberController {
     public ApiResponse<List<RoomMemberResponse>> getMembers(@AuthenticationPrincipal AuthenticatedUser user) {
         return ApiResponse.success(
                 "Room members loaded successfully",
-                roomMemberService.getResidentMembers(getUserId(user))
+                roomMemberService.getResidentMembers(requireUserId(user))
         );
     }
 
@@ -55,7 +56,7 @@ public class ResidentMemberController {
     ) {
         return ApiResponse.success(
                 "Room member updated successfully",
-                roomMemberService.updateResidentMember(getUserId(user), id, request)
+                roomMemberService.updateResidentMember(requireUserId(user), id, request)
         );
     }
 
@@ -66,15 +67,7 @@ public class ResidentMemberController {
     ) {
         return ApiResponse.success(
                 "Room member marked as left successfully",
-                roomMemberService.markResidentMemberLeft(getUserId(user), id)
+                roomMemberService.markResidentMemberLeft(requireUserId(user), id)
         );
-    }
-
-    private Long getUserId(AuthenticatedUser user) {
-        if (user == null) {
-            throw new UnauthorizedException("Authentication is required");
-        }
-
-        return user.getId();
     }
 }

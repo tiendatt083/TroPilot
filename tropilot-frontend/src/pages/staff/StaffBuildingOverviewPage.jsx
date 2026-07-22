@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import * as maintenanceApi from '../../features/maintenance/api.js';
-import * as taskApi from '../../features/maintenance/taskApi.js';
-import * as vehicleApi from '../../features/residents/vehicleApi.js';
-import * as roomApi from '../../features/rooms/api.js';
-import * as utilityReadingApi from '../../features/invoices/utilityReadingApi.js';
+import * as maintenanceApi from '../../api/maintenanceApi.js';
+import * as taskApi from '../../api/taskApi.js';
+import * as vehicleApi from '../../api/vehicleApi.js';
+import * as roomApi from '../../api/roomApi.js';
+import * as utilityReadingApi from '../../api/utilityReadingApi.js';
 import LineIcon from '../../components/common/LineIcon.jsx';
 import { CHART_COLORS, ChartPanel, DonutChart } from '../../components/common/DashboardCharts.jsx';
 import { formatDisplayDate } from '../../utils/dateFormat.js';

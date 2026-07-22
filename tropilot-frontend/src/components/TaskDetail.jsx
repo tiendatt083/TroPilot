@@ -3,7 +3,7 @@ import {
   getTaskStatusClass,
 } from '../utils/taskOptions.js';
 import LineIcon from './common/LineIcon.jsx';
-import { resolveFileUrl } from '../utils/fileUrl.js';
+import { openFileUrl, resolveFileUrl } from '../utils/fileUrl.js';
 import { formatDate, formatEnumLabel } from '../utils/i18nFormat.js';
 import { formatRoomLabel } from '../utils/roomDisplay.js';
 
@@ -107,7 +107,7 @@ export default function TaskDetail({ task }) {
             </span>
             <div className="task-detail-copy">
               <span>{t('tables.common.resultImage')}</span>
-              <a className="secondary-link compact-link" href={resolveFileUrl(task.resultImageUrl)} target="_blank" rel="noreferrer">
+              <a className="secondary-link compact-link" href={resolveFileUrl(task.resultImageUrl)} target="_blank" rel="noreferrer" onClick={(event) => openFileUrl(task.resultImageUrl, event)}>
                 {t('details.viewImage')}
               </a>
             </div>
