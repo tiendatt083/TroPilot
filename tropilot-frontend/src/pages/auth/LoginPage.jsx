@@ -60,8 +60,8 @@ export default function LoginPage() {
       <section className="auth-panel login-panel" aria-labelledby="login-title">
         <div className="login-heading">
           <div className="login-brand" aria-label="Tropilot">
-            <span className="login-wordmark">Tropilot</span>
             <img className="auth-logo-image" src={brandLogo} alt="" aria-hidden="true" />
+            <span className="login-wordmark"><span className="login-wordmark-dark">TRO</span><span className="login-wordmark-blue">PILOT</span></span>
           </div>
           <h1 id="login-title">{t('auth.signIn.title')}</h1>
         </div>

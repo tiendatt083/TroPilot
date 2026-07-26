@@ -17,6 +17,8 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 
     long countByStatus(VehicleStatus status);
 
+    long countByRoom_IdAndStatus(Long roomId, VehicleStatus status);
+
     List<Vehicle> findByRoom_IdAndStatusIn(Long roomId, List<VehicleStatus> statuses);
 
     @Query("""

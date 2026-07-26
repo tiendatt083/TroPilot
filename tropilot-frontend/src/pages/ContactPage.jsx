@@ -303,40 +303,24 @@ function ContactEditor({
               <label htmlFor="contactWorkingStartTime">
                 {t('contact.fields.workingStartTime')}
               </label>
-              <ContactFieldControl icon="clock">
-                <input
-                  id="contactWorkingStartTime"
-                  inputMode="numeric"
-                  maxLength={5}
-                  name="workingStartTime"
-                  pattern="([01][0-9]|2[0-3]):[0-5][0-9]"
-                  placeholder="08:00"
-                  required
-                  type="text"
-                  value={form.workingStartTime}
-                  onChange={onFieldChange}
-                />
-              </ContactFieldControl>
+              <ContactTimeSelect
+                id="contactWorkingStartTime"
+                name="workingStartTime"
+                value={form.workingStartTime}
+                onChange={onFieldChange}
+              />
             </div>
 
             <div className="contact-field">
               <label htmlFor="contactWorkingEndTime">
                 {t('contact.fields.workingEndTime')}
               </label>
-              <ContactFieldControl icon="clock">
-                <input
-                  id="contactWorkingEndTime"
-                  inputMode="numeric"
-                  maxLength={5}
-                  name="workingEndTime"
-                  pattern="([01][0-9]|2[0-3]):[0-5][0-9]"
-                  placeholder="17:00"
-                  required
-                  type="text"
-                  value={form.workingEndTime}
-                  onChange={onFieldChange}
-                />
-              </ContactFieldControl>
+              <ContactTimeSelect
+                id="contactWorkingEndTime"
+                name="workingEndTime"
+                value={form.workingEndTime}
+                onChange={onFieldChange}
+              />
             </div>
 
             <div className="form-grid-wide contact-field">
@@ -450,6 +434,25 @@ function ContactSectionHeading({ eyebrow, icon, title }) {
         {eyebrow && <span className="section-eyebrow">{eyebrow}</span>}
         <h2>{title}</h2>
       </div>
+    </div>
+  );
+}
+
+function ContactTimeSelect({ id, name, value, onChange }) {
+  return (
+    <div className="contact-field-control contact-time-picker-control">
+      <input
+        id={id}
+        lang="vi"
+        max="23:59"
+        min="00:00"
+        name={name}
+        required
+        step="60"
+        type="time"
+        value={value}
+        onChange={onChange}
+      />
     </div>
   );
 }

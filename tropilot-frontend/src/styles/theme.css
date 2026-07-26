@@ -404,6 +404,14 @@ a:focus-visible {
   color: #1e7cff;
 }
 
+.login-wordmark .login-wordmark-dark {
+  color: #111827;
+}
+
+.login-wordmark .login-wordmark-blue {
+  color: #126fff;
+}
+
 .login-panel h1 {
   margin: 0;
   color: #111d35;
@@ -612,13 +620,13 @@ a:focus-visible {
 }
 
 .auth-panel.login-panel {
-  padding: clamp(1.35rem, 2.4vw, 1.85rem) clamp(1.15rem, 2.7vw, 1.9rem);
+  padding: clamp(0.95rem, 2vw, 1.25rem) clamp(1.15rem, 2.7vw, 1.9rem);
   border-radius: 1rem;
 }
 
 .login-heading {
-  gap: 0.85rem;
-  margin-bottom: 1rem;
+  gap: 0.55rem;
+  margin-bottom: 0.75rem;
 }
 
 .login-brand {
@@ -629,10 +637,11 @@ a:focus-visible {
 
 .auth-logo-image {
   display: block;
-  width: 5.35rem;
+  width: 8.025rem;
   max-width: 100%;
-  height: auto;
-  object-fit: contain;
+  height: 2.85rem;
+  object-fit: cover;
+  object-position: center;
 }
 
 .login-wordmark {
@@ -799,7 +808,8 @@ a:focus-visible {
 
 @media (max-width: 720px) {
   .auth-logo-image {
-    width: 4.85rem;
+    width: 7.275rem;
+    height: 2.6rem;
   }
 
   .auth-panel.login-panel,

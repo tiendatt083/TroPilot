@@ -4688,10 +4688,17 @@ html[data-theme="dark"] .staff-maintenance-page .maintenance-card-meta {
 }
 
 .utility-reading-dialog .utility-reading-meter-form legend {
+  align-items: center;
   justify-content: flex-start;
+  min-height: 2.5rem;
   padding: 0.5rem 0.65rem;
   font-size: 0.88rem;
   font-weight: 650;
+}
+
+.utility-reading-dialog .utility-reading-meter-form legend > .utility-reading-meter-title {
+  align-items: center;
+  line-height: 1;
 }
 
 .utility-reading-dialog .meter-title-unit {
@@ -4709,6 +4716,7 @@ html[data-theme="dark"] .staff-maintenance-page .maintenance-card-meta {
 }
 
 .utility-reading-dialog .meter-mock-control {
+  align-self: center;
   margin-left: auto;
   gap: 0.25rem;
 }
@@ -5239,6 +5247,13 @@ html[data-theme="dark"] .staff-maintenance-page .maintenance-card-meta {
 
 .service-fee-editor-dialog .additional-service-actions {
   justify-content: flex-end;
+}
+
+.service-fee-editor-dialog .additional-service-actions button {
+  width: auto;
+  min-width: 5rem;
+  min-height: 2.3rem;
+  padding-inline: 0.9rem;
 }
 
 .additional-service-table {

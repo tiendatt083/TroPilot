@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview",
+    "preview": "echo. && echo Public website: https://tropilot.io.vn && echo Local preview:  http://127.0.0.1:4173 && echo. && vite preview --host 127.0.0.1 --port 4173 --strictPort",
     "test:e2e": "playwright test",
     "test:e2e:headed": "playwright test --headed"
   },

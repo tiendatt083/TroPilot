@@ -682,7 +682,8 @@
     "methods": {
       "FIXED": "Per room",
       "BY_USAGE": "By usage",
-      "BY_PERSON": "Per person"
+      "BY_PERSON": "Per person",
+      "BY_QUANTITY": "Per vehicle"
     },
     "utility": {
       "electricityIcon": "E",
@@ -1788,7 +1789,7 @@
         "FIXED": "Per room",
         "BY_USAGE": "By usage",
         "BY_PERSON": "Per person",
-        "BY_QUANTITY": "By quantity"
+        "BY_QUANTITY": "Per vehicle"
       }
     }
   },
@@ -2207,7 +2208,7 @@
       "FIXED": "Per room",
       "BY_USAGE": "By usage",
       "BY_PERSON": "Per person",
-      "BY_QUANTITY": "By quantity"
+      "BY_QUANTITY": "Per vehicle"
     },
     "vehicleOwnerType": {
       "RESIDENT_HEAD": "Head Resident",

@@ -677,12 +677,13 @@
     "recordsEyebrow": "Cấu hình hóa đơn",
     "recordsTitle": "Danh sách phí đã cấu hình",
     "create": "Tạo phí dịch vụ",
-    "save": "Lưu thay đổi",
-    "cancelEdit": "Hủy sửa",
+    "save": "Lưu",
+    "cancelEdit": "Hủy",
     "methods": {
       "FIXED": "Theo phòng",
       "BY_USAGE": "Theo mức dùng",
-      "BY_PERSON": "Theo người"
+      "BY_PERSON": "Theo người",
+      "BY_QUANTITY": "Theo xe"
     },
     "utility": {
       "electricityIcon": "E",
@@ -1378,7 +1379,7 @@
     },
     "forgotPassword": {
       "title": "Quên mật khẩu",
-      "description": "Nhập email tài khoản để nhận mã xác nhận đặt lại mật khẩu.",
+      "description": "Nhập email tài khoản để nhận mã xác nhận.",
       "email": "Địa chỉ email",
       "emailPlaceholder": "Nhập email của bạn",
       "submitting": "Đang gửi mã...",
@@ -1788,7 +1789,7 @@
         "FIXED": "Theo phòng",
         "BY_USAGE": "Theo mức dùng",
         "BY_PERSON": "Theo người",
-        "BY_QUANTITY": "Theo số lượng"
+        "BY_QUANTITY": "Theo xe"
       }
     }
   },
@@ -2207,7 +2208,7 @@
       "FIXED": "Theo phòng",
       "BY_USAGE": "Theo mức dùng",
       "BY_PERSON": "Theo người",
-      "BY_QUANTITY": "Theo số lượng"
+      "BY_QUANTITY": "Theo xe"
     },
     "vehicleOwnerType": {
       "RESIDENT_HEAD": "Chủ hộ",
