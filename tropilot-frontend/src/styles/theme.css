@@ -550,6 +550,10 @@ a:focus-visible {
 
 .login-error {
   margin: -0.55rem 0 1.15rem;
+  border-color: #fecaca;
+  color: #b42318;
+  background: #fff1f2;
+  box-shadow: 0 0.5rem 1.25rem rgba(185, 28, 28, 0.1);
 }
 
 .forgot-password-panel .login-heading {

@@ -1,0 +1,124 @@
+direction: right
+
+Administrator: Administrator {
+  shape: person
+  style: {
+    fill: "#E8F0FE"
+    stroke: "#3E70B6"
+    shadow: true
+  }
+}
+
+Staff: Staff {
+  shape: person
+  style: {
+    fill: "#FFF4E5"
+    stroke: "#C9822E"
+    shadow: true
+  }
+}
+
+HeadResident: Head Resident {
+  shape: person
+  style: {
+    fill: "#F3E8FF"
+    stroke: "#8157C2"
+    shadow: true
+  }
+}
+
+Presentation: "Presentation Layer (Frontend)" {
+  style: {
+    fill: "#EEF5FF"
+    stroke: "#7AA7D9"
+    stroke-dash: 3
+  }
+
+  ReactApp: "React Application" {
+    icon: https://cdn.simpleicons.org/react/61DAFB
+    style: {
+      fill: "#FFFFFF"
+      stroke: "#6D9ED5"
+      shadow: true
+    }
+  }
+
+  Router: "Role-based routes"
+  Client: "Axios API Client"
+}
+
+Application: "Application Layer (Backend)" {
+  style: {
+    fill: "#FFF9DB"
+    stroke: "#D5B653"
+    stroke-dash: 3
+  }
+
+  Security: "Spring Security / JWT"
+  API: "REST Controllers"
+  Services: "Business Services" {
+    icon: https://cdn.simpleicons.org/springboot/6DB33F
+    style: {
+      fill: "#FFFFFF"
+      stroke: "#93B95E"
+      shadow: true
+    }
+  }
+}
+
+Data: "Data and Storage" {
+  style: {
+    fill: "#F0FAEE"
+    stroke: "#7EB67B"
+    stroke-dash: 3
+  }
+
+  MySQL: "MySQL Database" {
+    shape: cylinder
+    icon: https://cdn.simpleicons.org/mysql/4479A1
+    style.fill: "#FFFFFF"
+  }
+
+  Files: "Contract and Proof Storage" {
+    shape: document
+    style.fill: "#FFFFFF"
+  }
+}
+
+External: "External API Services" {
+  style: {
+    fill: "#FFF3F0"
+    stroke: "#D79890"
+    stroke-dash: 3
+  }
+
+  SePay: "SePay Payment Gateway" {
+    icon: https://cdn.simpleicons.org/visa/1A1F71
+    style.fill: "#FFFFFF"
+  }
+
+  Gemini: "Gemini API" {
+    icon: https://cdn.simpleicons.org/google/4285F4
+    style.fill: "#FFFFFF"
+  }
+
+  SMTP: "SMTP Email Service" {
+    icon: https://cdn.simpleicons.org/gmail/EA4335
+    style.fill: "#FFFFFF"
+  }
+}
+
+Administrator -> Presentation.ReactApp: manage buildings and accounts
+Staff -> Presentation.ReactApp: operate rooms and billing
+HeadResident -> Presentation.ReactApp: view invoices and submit requests
+
+Presentation.ReactApp -> Presentation.Router: role-based navigation
+Presentation.ReactApp -> Presentation.Client: API requests
+Presentation.Client -> Application.Security: JWT request
+Application.Security -> Application.API: authorize request
+Application.API -> Application.Services: business operations
+Application.Services -> Data.MySQL: query operational data
+Application.Services -> Data.Files: upload contract and payment proof
+Application.Services -> External.SePay: payment status and webhook
+Application.Services -> External.Gemini: chatbot request and reply
+Application.Services -> External.SMTP: send notification emails

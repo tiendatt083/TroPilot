@@ -49,6 +49,7 @@ import com.tropilot.repository.UtilityReadingRepository;
 import com.tropilot.repository.VehicleRepository;
 import com.tropilot.service.ActivityLogService;
 import com.tropilot.service.InvoiceService;
+import com.tropilot.service.PaymentEmailService;
 import com.tropilot.service.SepayPaymentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -94,6 +95,7 @@ public class InvoiceServiceImpl implements InvoiceService {
     private final SepayPaymentRepository sepayPaymentRepository;
     private final InvoiceMapper invoiceMapper;
     private final SepayPaymentService sepayPaymentService;
+    private final PaymentEmailService paymentEmailService;
     private final ActivityLogService activityLogService;
 
     @Override
@@ -455,6 +457,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         );
 
         SepayPayment sepayPayment = sepayPaymentService.createForInvoice(savedInvoice).orElse(null);
+        paymentEmailService.sendInvoiceIssuedEmail(savedInvoice, sepayPayment);
         return invoiceMapper.toResponse(savedInvoice, calculation.utilityReading(), findInvoiceComplaint(savedInvoice), sepayPayment);
     }
 

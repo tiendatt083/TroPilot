@@ -36,6 +36,7 @@ import com.tropilot.repository.UserRepository;
 import com.tropilot.repository.UtilityReadingRepository;
 import com.tropilot.repository.VehicleRepository;
 import com.tropilot.service.ActivityLogService;
+import com.tropilot.service.PaymentEmailService;
 import com.tropilot.service.SepayPaymentService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -92,6 +93,8 @@ class InvoiceServiceImplTest {
     private InvoiceMapper invoiceMapper;
     @Mock
     private SepayPaymentService sepayPaymentService;
+    @Mock
+    private PaymentEmailService paymentEmailService;
     @Mock
     private ActivityLogService activityLogService;
 
@@ -174,6 +177,7 @@ class InvoiceServiceImplTest {
                 .isEqualByComparingTo(new BigDecimal("10000000"));
         assertThat(savedInvoice.getInvoiceDate()).isEqualTo(request.getInvoiceDate());
         assertThat(savedInvoice.getMonth()).isEqualTo(LocalDate.of(2026, 6, 1));
+        verify(paymentEmailService).sendInvoiceIssuedEmail(savedInvoice, null);
     }
 
     @Test
