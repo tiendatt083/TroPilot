@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1200" viewBox="0 0 1800 1200" role="img" aria-labelledby="title desc">
+  <title id="title">Corrected Tropilot Use-Case Diagram</title>
+  <desc id="desc">A UML use-case diagram for Tropilot with Administrator, Staff, Resident Head, SePay and Gemini API actors.</desc>
+  <defs>
+    <marker id="includeArrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M1 1 L11 6 L1 11" fill="none" stroke="#20252d" stroke-width="1.8"/></marker>
+    <style>
+      .title{font:700 40px Arial,sans-serif;fill:#151a22}.subtitle{font:400 20px Arial,sans-serif;fill:#4f5967}.system{font:700 25px Arial,sans-serif;fill:#151a22}.group{font:700 21px Arial,sans-serif;fill:#3b4655}.use{font:600 18px Arial,sans-serif;fill:#1f2732}.actor{font:700 21px Arial,sans-serif;fill:#151a22}.note{font:400 15px Arial,sans-serif;fill:#4f5967}.boundary{fill:#fff;stroke:#20252d;stroke-width:2.5}.ellipse{fill:#fafafa;stroke:#20252d;stroke-width:2}.association{fill:none;stroke:#20252d;stroke-width:2}.include{fill:none;stroke:#56606e;stroke-width:1.8;stroke-dasharray:7 6;marker-end:url(#includeArrow)}
+    </style>
+  </defs>
+  <rect width="1800" height="1200" fill="#fff"/>
+  <text x="70" y="67" class="title">5.3 Use-Case Diagram — Tropilot</text>
+  <text x="70" y="102" class="subtitle">Primary user interactions with the rental property operations management system</text>
+
+  <!-- system boundary -->
+  <rect x="440" y="155" width="1000" height="935" rx="10" class="boundary"/>
+  <text x="940" y="200" text-anchor="middle" class="system">Tropilot Rental Property Operations Management System</text>
+  <line x1="475" y1="222" x2="1405" y2="222" stroke="#20252d" stroke-width="1.5"/>
+
+  <!-- common use cases -->
+  <text x="520" y="270" class="group">Common functions</text>
+  <ellipse cx="650" cy="325" rx="145" ry="39" class="ellipse"/><text x="650" y="332" text-anchor="middle" class="use">Authenticate &amp; manage profile</text>
+  <ellipse cx="1010" cy="325" rx="125" ry="39" class="ellipse"/><text x="1010" y="332" text-anchor="middle" class="use">View notifications</text>
+
+  <!-- administrator functions -->
+  <text x="520" y="415" class="group">Administrator functions</text>
+  <ellipse cx="665" cy="475" rx="160" ry="39" class="ellipse"/><text x="665" y="482" text-anchor="middle" class="use">Manage buildings &amp; staff</text>
+  <ellipse cx="665" cy="575" rx="170" ry="39" class="ellipse"/><text x="665" y="582" text-anchor="middle" class="use">Manage resident accounts &amp; contracts</text>
+  <ellipse cx="665" cy="675" rx="160" ry="39" class="ellipse"/><text x="665" y="682" text-anchor="middle" class="use">View dashboard &amp; activity logs</text>
+
+  <!-- staff functions -->
+  <text x="860" y="415" class="group">Staff functions</text>
+  <ellipse cx="1050" cy="475" rx="150" ry="39" class="ellipse"/><text x="1050" y="482" text-anchor="middle" class="use">Manage rooms &amp; members</text>
+  <ellipse cx="1050" cy="575" rx="180" ry="39" class="ellipse"/><text x="1050" y="582" text-anchor="middle" class="use">Manage fees, readings &amp; invoices</text>
+  <ellipse cx="1050" cy="675" rx="190" ry="39" class="ellipse"/><text x="1050" y="682" text-anchor="middle" class="use">Manage tasks, equipment &amp; maintenance</text>
+  <ellipse cx="1050" cy="755" rx="135" ry="34" class="ellipse"/><text x="1050" y="762" text-anchor="middle" class="use">Send notifications</text>
+
+  <!-- resident head functions -->
+  <text x="520" y="795" class="group">Resident Head self-service</text>
+  <ellipse cx="665" cy="855" rx="175" ry="39" class="ellipse"/><text x="665" y="862" text-anchor="middle" class="use">View room, contract &amp; invoices</text>
+  <ellipse cx="665" cy="950" rx="175" ry="39" class="ellipse"/><text x="665" y="957" text-anchor="middle" class="use">Manage room members &amp; vehicles</text>
+  <ellipse cx="665" cy="1030" rx="180" ry="34" class="ellipse"/><text x="665" y="1037" text-anchor="middle" class="use">Submit maintenance request &amp; feedback</text>
+  <ellipse cx="1080" cy="855" rx="135" ry="39" class="ellipse"/><text x="1080" y="862" text-anchor="middle" class="use">Submit payment proof</text>
+  <ellipse cx="1080" cy="950" rx="105" ry="39" class="ellipse"/><text x="1080" y="957" text-anchor="middle" class="use">Ask chatbot</text>
+  <ellipse cx="1260" cy="1030" rx="138" ry="34" class="ellipse"/><text x="1260" y="1037" text-anchor="middle" class="use">Process SePay webhook</text>
+  <ellipse cx="1080" cy="1030" rx="145" ry="34" class="ellipse"/><text x="1080" y="1037" text-anchor="middle" class="use">Generate chatbot reply</text>
+
+  <!-- actors: administrator -->
+  <g transform="translate(150 405)" stroke="#20252d" stroke-width="3" fill="none"><circle cx="55" cy="22" r="16"/><path d="M55 38v58M23 57h64M55 96l-30 42M55 96l30 42"/></g><text x="205" y="575" text-anchor="middle" class="actor">Administrator</text>
+  <!-- actors: staff -->
+  <g transform="translate(150 640)" stroke="#20252d" stroke-width="3" fill="none"><circle cx="55" cy="22" r="16"/><path d="M55 38v58M23 57h64M55 96l-30 42M55 96l30 42"/></g><text x="205" y="810" text-anchor="middle" class="actor">Staff</text>
+  <!-- actors: resident head -->
+  <g transform="translate(150 865)" stroke="#20252d" stroke-width="3" fill="none"><circle cx="55" cy="22" r="16"/><path d="M55 38v58M23 57h64M55 96l-30 42M55 96l30 42"/></g><text x="205" y="1035" text-anchor="middle" class="actor">Resident Head</text>
+  <!-- external actors -->
+  <g transform="translate(1570 700)" stroke="#20252d" stroke-width="3" fill="none"><circle cx="55" cy="22" r="16"/><path d="M55 38v58M23 57h64M55 96l-30 42M55 96l30 42"/></g><text x="1625" y="870" text-anchor="middle" class="actor">SePay</text><text x="1625" y="895" text-anchor="middle" class="note">Payment gateway</text>
+  <g transform="translate(1570 940)" stroke="#20252d" stroke-width="3" fill="none"><circle cx="55" cy="22" r="16"/><path d="M55 38v58M23 57h64M55 96l-30 42M55 96l30 42"/></g><text x="1625" y="1110" text-anchor="middle" class="actor">Gemini API</text>
+
+  <!-- associations: solid lines without arrowheads -->
+  <path d="M270 462 H390 V325 H505" class="association"/>
+  <path d="M270 462 H405 V475 H505" class="association"/>
+  <path d="M270 462 H420 V575 H495" class="association"/>
+  <path d="M270 697 H405 V475 H900" class="association"/>
+  <path d="M270 697 H420 V575 H870" class="association"/>
+  <path d="M270 697 H435 V675 H860" class="association"/>
+  <path d="M270 922 H405 V855 H490" class="association"/>
+  <path d="M270 922 H420 V950 H490" class="association"/>
+  <path d="M270 922 H435 V1030 H485" class="association"/>
+  <path d="M270 922 H455 V950 H975" class="association"/>
+  <path d="M1603 757 H1500 V1030 H1398" class="association"/>
+  <path d="M1603 997 H1500 V1030 H1225" class="association"/>
+
+  <!-- one valid include relationship -->
+  <path d="M1080 989 V996 H1080" class="include"/>
+  <text x="1098" y="1005" class="note">&lt;&lt;include&gt;&gt;</text>
+
+  <text x="70" y="1155" class="note">Solid lines represent actor associations. The dashed arrow denotes that asking the chatbot includes generating a chatbot reply.</text>
+</svg>
