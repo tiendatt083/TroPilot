@@ -1,0 +1,142 @@
+@startuml
+title Tropilot — Identity and Property Class Diagram
+caption Core JPA domain classes and the assignment rules enforced by the application
+
+skinparam dpi 160
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam defaultFontSize 18
+skinparam titleFontSize 28
+skinparam titleFontStyle bold
+skinparam captionFontSize 15
+skinparam classFontSize 20
+skinparam classAttributeFontSize 18
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam ArrowColor #475569
+skinparam class {
+  BackgroundColor #F8FBFF
+  BorderColor #5B7FA8
+  FontColor #172033
+  AttributeFontColor #24364B
+}
+skinparam class<<entity>> {
+  BackgroundColor #EDF5FF
+  BorderColor #3978B8
+}
+skinparam class<<association_entity>> {
+  BackgroundColor #FFF8DE
+  BorderColor #B88716
+}
+skinparam class<<enumeration>> {
+  BackgroundColor #F4F0FF
+  BorderColor #8065B8
+}
+hide empty members
+
+class User <<entity>> {
+  + id: Long <<PK>>
+  + fullName: String
+  + email: String <<unique>>
+  + phone: String
+  + password: String {hashed}
+  + temporaryPasswordEncrypted: String [0..1]
+  + role: UserRole
+  + status: UserStatus
+  + mustChangePassword: boolean
+  + createdAt: LocalDateTime
+  + updatedAt: LocalDateTime
+}
+
+class Building <<entity>> {
+  + id: Long <<PK>>
+  + buildingCode: String <<unique>>
+  + name: String
+  + address: String
+  + floors: Integer
+  + description: String [0..1]
+  + createdAt: LocalDateTime
+  + updatedAt: LocalDateTime
+}
+
+class Room <<entity>> {
+  + id: Long <<PK>>
+  + roomCode: String <<unique>>
+  + roomName: String
+  + floor: Integer
+  + price: BigDecimal
+  + area: BigDecimal
+  + maxOccupants: Integer
+  + status: RoomStatus
+  + description: String [0..1]
+  + createdAt: LocalDateTime
+  + updatedAt: LocalDateTime
+}
+
+class RoomAssignment <<association_entity>> {
+  + id: Long <<PK>>
+  + startDate: LocalDate
+  + endDate: LocalDate
+  + status: RoomAssignmentStatus
+  + createdAt: LocalDateTime
+  + updatedAt: LocalDateTime
+}
+
+enum UserRole <<enumeration>> {
+  ADMIN
+  STAFF
+  RESIDENT_HEAD
+}
+
+enum UserStatus <<enumeration>> {
+  ACTIVE
+  LOCKED
+  INACTIVE
+}
+
+enum RoomStatus <<enumeration>> {
+  EMPTY
+  OCCUPIED
+  MAINTENANCE
+  RESERVED
+}
+
+enum RoomAssignmentStatus <<enumeration>> {
+  ACTIVE
+  ENDED
+  TRANSFERRED
+  RENEWED
+}
+
+Building -[hidden]right- User
+Building -[hidden]down- Room
+User -[hidden]down- RoomAssignment
+Room -[hidden]right- RoomAssignment
+
+Building "1" -- "0..*" Room : contains
+User "1" -- "0..*" RoomAssignment : resident head / assignment history
+Room "1" -- "0..*" RoomAssignment : room / assignment history
+
+User ..> UserRole : role
+User ..> UserStatus : status
+Room ..> RoomStatus : status
+RoomAssignment ..> RoomAssignmentStatus : status
+
+note bottom of RoomAssignment
+  Assignment invariants
+  • room and resident head are mandatory
+  • residentHead.role = RESIDENT_HEAD
+  • residentHead.status = ACTIVE when assigned
+  • at most one ACTIVE assignment per room
+  • at most one ACTIVE assignment per resident head
+  • ACTIVE assignment implies Room.status = OCCUPIED
+end note
+
+note bottom of Building
+  A Room belongs to exactly one Building.
+  RoomAssignment preserves the occupancy history
+  instead of overwriting previous assignments.
+end note
+
+@enduml

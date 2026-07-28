@@ -21,6 +21,7 @@ const ADMIN_ACCOUNT_ITEMS = [
 
 const ADMIN_INFORMATION_ITEMS = [
   { to: '/admin/notifications', labelKey: 'navigation.notifications', icon: 'bell' },
+  { to: '/admin/feedbacks', labelKey: 'navigation.feedbacks', icon: 'feedback' },
   { to: '/admin/contact', labelKey: 'navigation.contact', icon: 'contact' }
 ];
 

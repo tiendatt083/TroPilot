@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate, useOutletContext } from 'react-router-d
 import * as buildingApi from '../../api/buildingApi.js';
 import * as roomApi from '../../api/roomApi.js';
 import * as adminUserApi from '../../api/adminUserApi.js';
+import * as memberApi from '../../api/memberApi.js';
 import useRoomRouteContext from '../../hooks/useRoomRouteContext.js';
 import HeadResidentAssignmentForm from '../../components/HeadResidentAssignmentForm.jsx';
 import RoomForm from '../../components/RoomForm.jsx';
@@ -83,6 +84,7 @@ export default function AdminRoomDetailPage() {
   const [room, setRoom] = useState(null);
   const [buildings, setBuildings] = useState([]);
   const [headInfo, setHeadInfo] = useState(null);
+  const [roomMembers, setRoomMembers] = useState([]);
   const [residentHeads, setResidentHeads] = useState([]);
   const [showAssignForm, setShowAssignForm] = useState(false);
   const [message, setMessage] = useState(location.state?.message || '');
@@ -96,15 +98,17 @@ export default function AdminRoomDetailPage() {
   const [deleting, setDeleting] = useState(false);
 
   const loadRoomDetails = async () => {
-    const [roomResponse, headResponse, usersResponse, buildingsResponse] = await Promise.all([
+    const [roomResponse, headResponse, usersResponse, buildingsResponse, membersResponse] = await Promise.all([
       roomApi.getAdminRoom(roomId),
       roomApi.getHeadResidentAssignment(roomId),
       adminUserApi.getUsers(),
-      buildingApi.getAdminBuildings()
+      buildingApi.getAdminBuildings(),
+      memberApi.getAdminRoomMembers(roomId)
     ]);
 
     setRoom(roomResponse.data);
     setHeadInfo(headResponse.data);
+    setRoomMembers(membersResponse.data);
     setResidentHeads(getActiveResidentHeads(usersResponse.data));
     setBuildings(buildingsResponse.data);
   };
@@ -240,6 +244,9 @@ export default function AdminRoomDetailPage() {
 
   const hasHeadResident = Boolean(headInfo?.assigned);
   const canAssignHead = !hasHeadResident && room.status === 'EMPTY';
+  const currentOccupantCount = hasHeadResident
+    ? 1 + roomMembers.filter((member) => member.status === 'APPROVED').length
+    : 0;
   const buildingAddress = room.buildingAddress || building?.address || t('common.notProvided');
 
   return (
@@ -348,8 +355,11 @@ export default function AdminRoomDetailPage() {
             <RoomDetailInfoItem icon="wallet" label={t('roomManagement.assignment.deposit')}>
               {formatNumber(headInfo.depositAmount)}
             </RoomDetailInfoItem>
-            <RoomDetailInfoItem icon="checkShield" label={t('roomManagement.assignment.rentalStatus')}>
-              {formatEnumLabel(t, 'rentalStatus', headInfo.rentalStatus)}
+            <RoomDetailInfoItem icon="users" label={t('roomManagement.currentOccupants')}>
+              {t('roomManagement.activeOccupants', {
+                count: currentOccupantCount,
+                max: room.maxOccupants
+              })}
             </RoomDetailInfoItem>
             <RoomDetailInfoItem icon="fileText" label={t('roomManagement.assignment.contractStatus')}>
               {formatEnumLabel(t, 'contractStatus', headInfo.contractStatus)}

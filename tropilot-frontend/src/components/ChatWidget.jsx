@@ -56,6 +56,7 @@ export default function ChatWidget() {
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState('');
   const [messages, setMessages] = useState([]);
+  const [suggestionsVisible, setSuggestionsVisible] = useState(true);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
   const nextMessageId = useRef(1);
@@ -96,6 +97,7 @@ export default function ChatWidget() {
       .map(({ role, content }) => ({ role, content }));
 
     setMessages((current) => [...current, userMessage]);
+    setSuggestionsVisible(false);
     setDraft('');
     setError('');
     setSending(true);
@@ -124,12 +126,14 @@ export default function ChatWidget() {
 
   const clearConversation = () => {
     setMessages([]);
+    setSuggestionsVisible(true);
     setError('');
     setDraft('');
     textareaRef.current?.focus();
   };
 
   const selectSuggestion = (suggestion) => {
+    setSuggestionsVisible(false);
     setDraft(suggestion);
     setError('');
     textareaRef.current?.focus();
@@ -205,22 +209,24 @@ export default function ChatWidget() {
           </div>
 
           <form className="chat-composer" onSubmit={handleSubmit}>
-            <div className="chat-suggestions" aria-label={t('chat.suggestions.label')}>
-              {suggestionKeys.map((key) => {
-                const suggestion = t(key);
+            {suggestionsVisible && (
+              <div className="chat-suggestions" aria-label={t('chat.suggestions.label')}>
+                {suggestionKeys.map((key) => {
+                  const suggestion = t(key);
 
-                return (
-                  <button
-                    key={key}
-                    type="button"
-                    onClick={() => selectSuggestion(suggestion)}
-                    disabled={sending}
-                  >
-                    {suggestion}
-                  </button>
-                );
-              })}
-            </div>
+                  return (
+                    <button
+                      key={key}
+                      type="button"
+                      onClick={() => selectSuggestion(suggestion)}
+                      disabled={sending}
+                    >
+                      {suggestion}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
             <label className="visually-hidden" htmlFor="chat-message">
               {t('chat.inputLabel')}
             </label>

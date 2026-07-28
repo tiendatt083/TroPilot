@@ -1,0 +1,85 @@
+@startuml
+title Tropilot — Administrator Use-Case Diagram
+left to right direction
+
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam defaultFontSize 20
+skinparam titleFontSize 28
+skinparam actorFontSize 21
+skinparam usecaseFontSize 20
+skinparam rectangleFontSize 23
+skinparam packageFontSize 21
+skinparam ArrowFontSize 16
+skinparam usecase {
+  BackgroundColor #FFFFFF
+  BorderColor #3F4D63
+}
+skinparam package {
+  BorderColor #8091A8
+  BackgroundColor #F8FAFD
+}
+
+actor Administrator as Admin
+actor SePay
+actor "SMTP Email Service" as SMTP
+
+rectangle "Tropilot Rental Property Operations Management System" {
+  package "Property and Residents" #FFF3D6 {
+    usecase "Manage user accounts" as UC1
+    usecase "Manage buildings" as UC2
+    usecase "Manage rooms" as UC3
+    usecase "Assign or remove\nHead Resident" as UC4
+    usecase "Manage contracts\nand contract files" as UC5
+    usecase "Manage room members\nand vehicles" as UC6
+  }
+
+  package "Billing and Finance" #EAF2FF {
+    usecase "Configure service fees" as UC7
+    usecase "Manage utility readings" as UC8
+    usecase "Preview and generate invoices" as UC9
+    usecase "Verify or reject\nmanual payments" as UC10
+    usecase "View receipts" as UC11
+    usecase "Monitor cash flow" as UC12
+    usecase "Process SePay QR payment\nand payment webhook" as UC13
+  }
+
+  package "Operations" #F2F9E9 {
+    usecase "Manage maintenance requests" as UC14
+    usecase "Manage tasks" as UC15
+    usecase "Manage equipment\nand maintenance history" as UC16
+  }
+
+  package "Communication and Audit" #F7EEFF {
+    usecase "Create and manage notifications" as UC17
+    usecase "Send notification and\ntransaction email" as UC18
+    usecase "View activity logs" as UC19
+  }
+}
+
+Admin -- UC1
+Admin -- UC2
+Admin -- UC3
+Admin -- UC4
+Admin -- UC5
+Admin -- UC6
+Admin -- UC7
+Admin -- UC8
+Admin -- UC9
+Admin -- UC10
+Admin -- UC11
+Admin -- UC12
+Admin -- UC14
+Admin -- UC15
+Admin -- UC16
+Admin -- UC17
+Admin -- UC19
+
+SePay -- UC13
+SMTP -- UC18
+
+' Only evidence-backed relationships are shown; no speculative include/extend.
+@enduml

@@ -1,0 +1,184 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2000" height="1500" viewBox="0 0 2000 1500" role="img" aria-labelledby="title desc">
+  <title id="title">Tropilot — Resident and Contract Class Diagram</title>
+  <desc id="desc">Class diagram showing RoomMember, Vehicle, RentalContract and RentalContractFileHistory linked to Room and RoomAssignment.</desc>
+  <defs>
+    <style>
+      .page{fill:#fff}.title{font:700 32px Arial,sans-serif;fill:#172033}.subtitle{font:17px Arial,sans-serif;fill:#52657a}
+      .box{fill:#fff;stroke:#5e7d9c;stroke-width:2}.ref{fill:#f3f6fa}.member{fill:#edf5ff;stroke:#4989c8}.contract{fill:#fff8e2;stroke:#bd8b18}.enum{fill:#f5f0ff;stroke:#8065b8}
+      .header{font:700 23px Arial,sans-serif;fill:#172033}.stereo{font:italic 14px Arial,sans-serif;fill:#52657a}.field{font:16px Arial,sans-serif;fill:#27384a}.fieldbold{font:700 16px Arial,sans-serif;fill:#27384a}
+      .divider{stroke:#9ab0c5;stroke-width:1.2}.assoc{fill:none;stroke:#334e68;stroke-width:2.4}.depend{fill:none;stroke:#8b6b1a;stroke-width:2.2;stroke-dasharray:9 7}.card{font:700 15px Arial,sans-serif;fill:#334e68}.edgeLabel{font:italic 14px Arial,sans-serif;fill:#8b6b1a}
+      .note{fill:#fffde9;stroke:#c7a844;stroke-width:1.5}.noteText{font:15px Arial,sans-serif;fill:#514217}.enumTitle{font:700 17px Arial,sans-serif;fill:#3c2a62}.enumText{font:14px Arial,sans-serif;fill:#4b3b6d}
+      .legend{font:14px Arial,sans-serif;fill:#43566b}
+    </style>
+  </defs>
+
+  <rect class="page" width="2000" height="1500"/>
+  <text x="1000" y="55" text-anchor="middle" class="title">Tropilot — Resident and Contract Class Diagram</text>
+  <text x="1000" y="84" text-anchor="middle" class="subtitle">Resident records, contract lifecycle records, and their property-assignment scope</text>
+
+  <!-- Persistent associations: top reference classes -->
+  <path class="assoc" d="M420 275 H710"/>
+  <text x="443" y="258" class="card">1</text><text x="655" y="258" class="card">0..*</text>
+  <path class="assoc" d="M1170 320 H1450"/>
+  <text x="1193" y="303" class="card">0..*</text><text x="1402" y="303" class="card">1</text>
+
+  <!-- Room associations -->
+  <path class="assoc" d="M175 405 V560"/>
+  <text x="188" y="437" class="card">1</text><text x="188" y="543" class="card">0..*</text>
+  <path class="assoc" d="M305 405 V500 H735 V560"/>
+  <text x="318" y="437" class="card">1</text><text x="708" y="543" class="card">0..*</text>
+  <path class="assoc" d="M395 405 V475 H1235 V560"/>
+  <text x="408" y="437" class="card">1</text><text x="1203" y="543" class="card">0..*</text>
+
+  <!-- Contract file history -->
+  <path class="assoc" d="M1480 705 H1560"/>
+  <text x="1494" y="687" class="card">1</text><text x="1522" y="687" class="card">0..*</text>
+
+  <!-- Application dependencies to RoomAssignment -->
+  <path class="depend" d="M350 560 L810 430"/>
+  <text x="500" y="468" class="edgeLabel">active resident scope</text>
+  <path class="depend" d="M735 560 L925 430"/>
+  <text x="770" y="468" class="edgeLabel">active owner scope</text>
+  <path class="depend" d="M1240 560 L1060 430"/>
+  <text x="1085" y="468" class="edgeLabel">same Room + resident head</text>
+
+  <!-- Room -->
+  <g>
+    <rect x="70" y="130" width="350" height="275" rx="10" class="box ref"/>
+    <text x="245" y="158" text-anchor="middle" class="stereo">«reference class»</text>
+    <text x="245" y="187" text-anchor="middle" class="header">Room</text>
+    <line x1="70" y1="205" x2="420" y2="205" class="divider"/>
+    <text x="92" y="233" class="fieldbold">id: Long «PK»</text>
+    <text x="92" y="260" class="field">roomCode: String «unique»</text>
+    <text x="92" y="287" class="field">roomName: String</text>
+    <text x="92" y="314" class="field">maxOccupants: Integer</text>
+    <text x="92" y="341" class="field">status: RoomStatus</text>
+  </g>
+
+  <!-- Room Assignment -->
+  <g>
+    <rect x="710" y="120" width="460" height="310" rx="10" class="box ref"/>
+    <text x="940" y="148" text-anchor="middle" class="stereo">«association class / reference»</text>
+    <text x="940" y="177" text-anchor="middle" class="header">RoomAssignment</text>
+    <line x1="710" y1="195" x2="1170" y2="195" class="divider"/>
+    <text x="734" y="223" class="fieldbold">id: Long «PK»</text>
+    <text x="734" y="250" class="field">roomId: Long «FK → Room»</text>
+    <text x="734" y="277" class="field">residentHeadId: Long «FK → User»</text>
+    <text x="734" y="304" class="field">startDate: LocalDate</text>
+    <text x="734" y="331" class="field">endDate: LocalDate</text>
+    <text x="734" y="358" class="field">status: RoomAssignmentStatus</text>
+    <text x="734" y="385" class="field">createdAt / updatedAt: LocalDateTime</text>
+  </g>
+
+  <!-- User -->
+  <g>
+    <rect x="1450" y="130" width="350" height="275" rx="10" class="box ref"/>
+    <text x="1625" y="158" text-anchor="middle" class="stereo">«reference class»</text>
+    <text x="1625" y="187" text-anchor="middle" class="header">User</text>
+    <line x1="1450" y1="205" x2="1800" y2="205" class="divider"/>
+    <text x="1472" y="233" class="fieldbold">id: Long «PK»</text>
+    <text x="1472" y="260" class="field">fullName: String</text>
+    <text x="1472" y="287" class="field">email: String «unique»</text>
+    <text x="1472" y="314" class="field">role: UserRole</text>
+    <text x="1472" y="341" class="field">status: UserStatus</text>
+  </g>
+
+  <!-- RoomMember -->
+  <g>
+    <rect x="70" y="560" width="420" height="465" rx="10" class="box member"/>
+    <text x="280" y="589" text-anchor="middle" class="stereo">«entity»</text>
+    <text x="280" y="618" text-anchor="middle" class="header">RoomMember</text>
+    <line x1="70" y1="636" x2="490" y2="636" class="divider"/>
+    <text x="92" y="664" class="fieldbold">id: Long «PK»</text>
+    <text x="92" y="691" class="field">roomId: Long «FK → Room»</text>
+    <text x="92" y="718" class="field">residentHeadId: Long «FK → User»</text>
+    <text x="92" y="745" class="field">fullName: String</text>
+    <text x="92" y="772" class="field">phone: String</text>
+    <text x="92" y="799" class="field">email: String [0..1]</text>
+    <text x="92" y="826" class="field">dateOfBirth: LocalDate [0..1]</text>
+    <text x="92" y="853" class="field">relationship: String [0..1]</text>
+    <text x="92" y="880" class="field">moveInDate: LocalDate</text>
+    <text x="92" y="907" class="field">moveOutDate: LocalDate [0..1]</text>
+    <text x="92" y="934" class="field">status: RoomMemberStatus</text>
+    <text x="92" y="961" class="field">note: String [0..1]</text>
+    <text x="92" y="988" class="field">createdAt / updatedAt: LocalDateTime</text>
+  </g>
+
+  <!-- Vehicle -->
+  <g>
+    <rect x="540" y="560" width="390" height="430" rx="10" class="box member"/>
+    <text x="735" y="589" text-anchor="middle" class="stereo">«entity»</text>
+    <text x="735" y="618" text-anchor="middle" class="header">Vehicle</text>
+    <line x1="540" y1="636" x2="930" y2="636" class="divider"/>
+    <text x="562" y="664" class="fieldbold">id: Long «PK»</text>
+    <text x="562" y="691" class="field">roomId: Long «FK → Room»</text>
+    <text x="562" y="718" class="field">ownerName: String</text>
+    <text x="562" y="745" class="field">ownerType: VehicleOwnerType</text>
+    <text x="562" y="772" class="field">vehicleType: VehicleType</text>
+    <text x="562" y="799" class="field">licensePlate: String</text>
+    <text x="562" y="826" class="field">brand: String [0..1]</text>
+    <text x="562" y="853" class="field">color: String [0..1]</text>
+    <text x="562" y="880" class="field">startDate: LocalDate</text>
+    <text x="562" y="907" class="field">endDate: LocalDate [0..1]</text>
+    <text x="562" y="934" class="field">status: VehicleStatus</text>
+    <text x="562" y="961" class="field">createdAt / updatedAt: LocalDateTime</text>
+  </g>
+
+  <!-- Rental Contract -->
+  <g>
+    <rect x="1030" y="560" width="450" height="365" rx="10" class="box contract"/>
+    <text x="1255" y="589" text-anchor="middle" class="stereo">«entity»</text>
+    <text x="1255" y="618" text-anchor="middle" class="header">RentalContract</text>
+    <line x1="1030" y1="636" x2="1480" y2="636" class="divider"/>
+    <text x="1052" y="664" class="fieldbold">id: Long «PK»</text>
+    <text x="1052" y="691" class="field">roomId: Long «FK → Room»</text>
+    <text x="1052" y="718" class="field">residentHeadId: Long «FK → User»</text>
+    <text x="1052" y="745" class="field">startDate / endDate: LocalDate</text>
+    <text x="1052" y="772" class="field">depositAmount: BigDecimal</text>
+    <text x="1052" y="799" class="field">rentalStatus: RentalStatus</text>
+    <text x="1052" y="826" class="field">contractFileUrl: String [0..1]</text>
+    <text x="1052" y="853" class="field">contractStatus: ContractStatus</text>
+    <text x="1052" y="880" class="field">createdAt / updatedAt: LocalDateTime</text>
+  </g>
+
+  <!-- File history -->
+  <g>
+    <rect x="1560" y="650" width="370" height="230" rx="10" class="box contract"/>
+    <text x="1745" y="679" text-anchor="middle" class="stereo">«entity»</text>
+    <text x="1745" y="708" text-anchor="middle" class="header">RentalContractFileHistory</text>
+    <line x1="1560" y1="726" x2="1930" y2="726" class="divider"/>
+    <text x="1582" y="754" class="fieldbold">id: Long «PK»</text>
+    <text x="1582" y="781" class="field">rentalContractId: Long «FK»</text>
+    <text x="1582" y="808" class="field">fileUrl: String</text>
+    <text x="1582" y="835" class="field">replacedById: Long «FK → User»</text>
+    <text x="1582" y="862" class="field">replacedAt: LocalDateTime</text>
+  </g>
+
+  <!-- Legend and FK note -->
+  <g>
+    <rect x="70" y="1045" width="1860" height="135" rx="10" class="note"/>
+    <text x="95" y="1075" class="noteText"><tspan font-weight="700">Direct persisted JPA associations (all):</tspan><tspan> Room (1) — (0..*) RoomAssignment, RoomMember, Vehicle and RentalContract.</tspan></text>
+    <text x="95" y="1102" class="noteText">User (1) — (0..*) RoomAssignment, RoomMember, RentalContract and RentalContractFileHistory; RentalContract (1) — (0..*) RentalContractFileHistory.</text>
+    <text x="95" y="1129" class="noteText"><tspan font-weight="700">Notation:</tspan><tspan> solid lines = persisted associations; dotted lines = application dependencies, not foreign keys.</tspan></text>
+    <text x="95" y="1156" class="noteText">An ACTIVE RoomAssignment scopes resident-member and vehicle operations; contract lookup matches the same Room + resident-head pair.</text>
+  </g>
+
+  <!-- Enumerations -->
+  <text x="70" y="1215" class="header">Relevant Status Enumerations</text>
+  <g>
+    <rect x="70" y="1235" width="410" height="180" rx="10" class="box enum"/>
+    <text x="275" y="1265" text-anchor="middle" class="enumTitle">RoomMemberStatus</text>
+    <text x="95" y="1295" class="enumText">PENDING · APPROVED</text><text x="95" y="1320" class="enumText">REJECTED · LEFT</text>
+    <rect x="530" y="1235" width="470" height="180" rx="10" class="box enum"/>
+    <text x="765" y="1265" text-anchor="middle" class="enumTitle">RentalStatus</text>
+    <text x="555" y="1295" class="enumText">ACTIVE · EXPIRING_SOON · EXPIRED</text><text x="555" y="1320" class="enumText">RENEWED · ENDED · TRANSFERRED</text>
+    <rect x="1050" y="1235" width="410" height="180" rx="10" class="box enum"/>
+    <text x="1255" y="1265" text-anchor="middle" class="enumTitle">ContractStatus</text>
+    <text x="1075" y="1295" class="enumText">NOT_UPLOADED · UPLOADED</text><text x="1075" y="1320" class="enumText">CONFIRMED · NEED_UPDATE</text>
+    <rect x="1510" y="1235" width="420" height="180" rx="10" class="box enum"/>
+    <text x="1720" y="1265" text-anchor="middle" class="enumTitle">VehicleStatus</text>
+    <text x="1535" y="1295" class="enumText">PENDING · ACTIVE</text><text x="1535" y="1320" class="enumText">INACTIVE · REJECTED</text>
+  </g>
+
+  <text x="1000" y="1470" text-anchor="middle" class="subtitle">Source: Tropilot JPA entities and enum definitions</text>
+</svg>

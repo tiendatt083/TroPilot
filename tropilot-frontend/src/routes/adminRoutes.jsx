@@ -5,6 +5,7 @@ import AdminBuildingCreatePage from '../pages/admin/AdminBuildingCreatePage.jsx'
 import AdminBuildingEditPage from '../pages/admin/AdminBuildingEditPage.jsx';
 import AdminBuildingListPage from '../pages/admin/AdminBuildingListPage.jsx';
 import AdminDashboardPage from '../pages/admin/AdminDashboardPage.jsx';
+import AdminFeedbackOverviewPage from '../pages/admin/AdminFeedbackOverviewPage.jsx';
 import AdminNotificationPage from '../pages/admin/AdminNotificationPage.jsx';
 import AdminPendingMembersPage from '../pages/admin/AdminPendingMembersPage.jsx';
 import AdminResidentListPage from '../pages/admin/AdminResidentListPage.jsx';
@@ -25,7 +26,7 @@ export const adminRoutes = (
       <Route path="settings" element={<Settings />} />
       <Route path="notifications" element={<AdminNotificationPage />} />
       <Route path="activity-logs" element={<AdminActivityLogPage />} />
-      <Route path="feedbacks" element={<Navigate to="/admin/buildings" replace />} />
+      <Route path="feedbacks" element={<AdminFeedbackOverviewPage />} />
       <Route path="invoice-complaints" element={<Navigate to="/admin/buildings" replace />} />
       <Route path="users" element={<AdminUserListPage />} />
       <Route path="users/create" element={<AdminUserCreatePage />} />

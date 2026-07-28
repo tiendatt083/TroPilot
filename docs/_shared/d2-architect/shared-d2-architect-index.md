@@ -10,3 +10,4 @@ updated: 2026-07-28
 | --- | --- | --- | --- | --- |
 | [System Context Diagram](system-context-diagram.svg) | Tropilot system | React, Spring Boot, MySQL, File Storage | SePay, Gemini API, SMTP Email Service | 2026-07-28 |
 | [Three-Tier System Architecture](three-tier-system-architecture.svg) | Tropilot system | Presentation, Application, Data | Gemini API, SePay, SMTP Email, Cloudflare Tunnel | 2026-07-28 |
+| [Deployment Diagram](deployment-diagram.svg) | Tropilot runtime | Browser, React/Vite, Spring Boot, MySQL, uploads | SePay, Gemini API, SMTP Email Service | 2026-07-28 |
