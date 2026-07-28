@@ -61,8 +61,8 @@ export default function ForgotPasswordPage() {
       <section className="auth-panel login-panel forgot-password-panel" aria-labelledby="forgot-password-title">
         <div className="login-heading">
           <div className="login-brand" aria-label="Tropilot">
-            <span className="login-wordmark">Tropilot</span>
             <img className="auth-logo-image" src={brandLogo} alt="" aria-hidden="true" />
+            <span className="login-wordmark"><span className="login-wordmark-dark">TRO</span><span className="login-wordmark-blue">PILOT</span></span>
           </div>
           <div>
             <h1 id="forgot-password-title">{t('auth.forgotPassword.title')}</h1>

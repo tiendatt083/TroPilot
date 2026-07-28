@@ -1,0 +1,103 @@
+@startuml
+title Tropilot — Sơ đồ Use Case tổng quan
+left to right direction
+
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam roundcorner 12
+skinparam defaultFontName DejaVu Sans
+skinparam defaultFontSize 16
+skinparam titleFontSize 25
+skinparam actorFontSize 18
+skinparam usecaseFontSize 16
+skinparam rectangleFontSize 21
+skinparam packageFontSize 18
+skinparam ArrowFontSize 14
+skinparam usecase {
+  BackgroundColor #FFFFFF
+  BorderColor #3F4D63
+}
+skinparam package {
+  BorderColor #8091A8
+  BackgroundColor #F8FAFD
+}
+
+actor "Quản trị viên" as Admin
+actor "Nhân viên" as Staff
+actor "Chủ hộ" as Resident
+actor "SePay" as SePay
+actor "Gemini API" as Gemini
+actor "Dịch vụ SMTP" as SMTP
+
+rectangle "Hệ thống quản lý nhà trọ Tropilot" {
+  package "Truy cập và dùng chung" #EAF2FF {
+    usecase "Đăng nhập, quên/đổi mật khẩu\nvà cập nhật hồ sơ" as UC_Access
+    usecase "Xem thông báo\nvà nhật ký hoạt động" as UC_Notifications
+    usecase "Hỏi trợ lý AI\ntheo phạm vi quyền" as UC_Chatbot
+  }
+
+  package "Quản trị tòa nhà" #FFF3D6 {
+    usecase "Quản lý tài khoản\nnhân viên, chủ hộ và thành viên" as UC_Users
+    usecase "Quản lý tòa nhà, phòng\nvà gán chủ hộ" as UC_Buildings
+    usecase "Quản lý hợp đồng\nvà tệp hợp đồng" as UC_Contracts
+    usecase "Thiết lập phí dịch vụ\nvà ghi chỉ số điện nước" as UC_Fees
+    usecase "Tạo hóa đơn, theo dõi thanh toán,\nbiên lai và dòng tiền" as UC_Billing
+    usecase "Quản lý thiết bị, công việc,\nbảo trì, liên hệ và thông báo" as UC_Administration
+  }
+
+  package "Vận hành tòa nhà" #F2F9E9 {
+    usecase "Xem tòa nhà, phòng\nvà bảng điều khiển được phân công" as UC_OperationsView
+    usecase "Ghi chỉ số điện nước\nvà xem phí dịch vụ" as UC_Utility
+    usecase "Tạo hóa đơn và\nkiểm tra thanh toán" as UC_StaffBilling
+    usecase "Xử lý công việc, bảo trì\nvà kiểm tra thiết bị" as UC_OperationsWork
+  }
+
+  package "Tự phục vụ của chủ hộ" #F7EEFF {
+    usecase "Xem phòng, hợp đồng,\nphí dịch vụ và chỉ số điện nước" as UC_ResidentInfo
+    usecase "Xem hóa đơn\nvà trạng thái thanh toán" as UC_ResidentInvoice
+    usecase "Thanh toán bằng QR SePay\nhoặc gửi minh chứng thanh toán" as UC_Payment
+    usecase "Quản lý thành viên\nvà phương tiện" as UC_ResidentMembers
+    usecase "Gửi yêu cầu bảo trì\nvà phản hồi" as UC_ResidentRequests
+    usecase "Xem thiết bị\ncủa phòng" as UC_ResidentEquipment
+  }
+
+  package "Tích hợp bên ngoài" #FFF1EA {
+    usecase "Tạo QR thanh toán\nvà xử lý webhook SePay" as UC_SePay
+    usecase "Gửi email hóa đơn mới,\nthanh toán và đặt lại mật khẩu" as UC_Email
+  }
+}
+
+Admin -- UC_Access
+Admin -- UC_Notifications
+Admin -- UC_Chatbot
+Admin -- UC_Users
+Admin -- UC_Buildings
+Admin -- UC_Contracts
+Admin -- UC_Fees
+Admin -- UC_Billing
+Admin -- UC_Administration
+
+Staff -- UC_Access
+Staff -- UC_Notifications
+Staff -- UC_Chatbot
+Staff -- UC_OperationsView
+Staff -- UC_Utility
+Staff -- UC_StaffBilling
+Staff -- UC_OperationsWork
+
+Resident -- UC_Access
+Resident -- UC_Notifications
+Resident -- UC_Chatbot
+Resident -- UC_ResidentInfo
+Resident -- UC_ResidentInvoice
+Resident -- UC_Payment
+Resident -- UC_ResidentMembers
+Resident -- UC_ResidentRequests
+Resident -- UC_ResidentEquipment
+
+Gemini -- UC_Chatbot
+SePay -- UC_Payment
+SePay -- UC_SePay
+SMTP -- UC_Email
+@enduml

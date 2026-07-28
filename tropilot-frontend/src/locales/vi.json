@@ -677,12 +677,13 @@
     "recordsEyebrow": "Cấu hình hóa đơn",
     "recordsTitle": "Danh sách phí đã cấu hình",
     "create": "Tạo phí dịch vụ",
-    "save": "Lưu thay đổi",
-    "cancelEdit": "Hủy sửa",
+    "save": "Lưu",
+    "cancelEdit": "Hủy",
     "methods": {
       "FIXED": "Theo phòng",
       "BY_USAGE": "Theo mức dùng",
-      "BY_PERSON": "Theo người"
+      "BY_PERSON": "Theo người",
+      "BY_QUANTITY": "Theo xe"
     },
     "utility": {
       "electricityIcon": "E",
@@ -1378,7 +1379,7 @@
     },
     "forgotPassword": {
       "title": "Quên mật khẩu",
-      "description": "Nhập email tài khoản để nhận mã xác nhận đặt lại mật khẩu.",
+      "description": "Nhập email tài khoản để nhận mã xác nhận.",
       "email": "Địa chỉ email",
       "emailPlaceholder": "Nhập email của bạn",
       "submitting": "Đang gửi mã...",
@@ -1615,6 +1616,12 @@
     "adminEyebrow": "Admin",
     "feedbacksTitle": "Phản hồi",
     "feedbacksOverviewDescription": "Theo dõi phản hồi theo tòa và phòng. Chọn một dòng để mở trang phản hồi của tòa và xử lý chi tiết.",
+    "searchFeedbacks": "Tìm phản hồi, cư dân hoặc phòng...",
+    "filterBuilding": "Lọc theo tòa nhà",
+    "filterStatus": "Lọc theo trạng thái",
+    "allBuildings": "Tất cả tòa nhà",
+    "allStatuses": "Tất cả trạng thái",
+    "noUnresolvedFeedbacks": "Không có phản hồi nào đang chờ xử lý.",
     "complaintsTitle": "Khiếu nại hóa đơn",
     "feedbacksLoading": "Đang tải phản hồi...",
     "complaintsLoading": "Đang tải khiếu nại hóa đơn...",
@@ -1788,7 +1795,7 @@
         "FIXED": "Theo phòng",
         "BY_USAGE": "Theo mức dùng",
         "BY_PERSON": "Theo người",
-        "BY_QUANTITY": "Theo số lượng"
+        "BY_QUANTITY": "Theo xe"
       }
     }
   },
@@ -1833,6 +1840,7 @@
     "empty": "Không tìm thấy phòng.",
     "noDescription": "Chưa có mô tả.",
     "maximumOccupants": "Số người tối đa",
+    "currentOccupants": "Số người đang ở",
     "relationship": "Quan hệ",
     "moveIn": "Ngày chuyển vào",
     "moveOut": "Ngày chuyển đi",
@@ -2207,7 +2215,7 @@
       "FIXED": "Theo phòng",
       "BY_USAGE": "Theo mức dùng",
       "BY_PERSON": "Theo người",
-      "BY_QUANTITY": "Theo số lượng"
+      "BY_QUANTITY": "Theo xe"
     },
     "vehicleOwnerType": {
       "RESIDENT_HEAD": "Chủ hộ",

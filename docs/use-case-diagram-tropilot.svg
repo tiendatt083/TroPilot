@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1200" viewBox="0 0 1800 1200" role="img" aria-labelledby="title desc">
+  <title id="title">Tropilot Use-Case Diagram</title>
+  <desc id="desc">A clean UML use-case diagram showing the actual Tropilot roles and external integrations.</desc>
+  <defs>
+    <marker id="includeArrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M1 1 L11 6 L1 11" fill="none" stroke="#20252d" stroke-width="1.8"/></marker>
+    <style>
+      .title{font:700 40px Arial,sans-serif;fill:#151a22}.subtitle{font:400 20px Arial,sans-serif;fill:#4f5967}.system{font:700 25px Arial,sans-serif;fill:#151a22}.group{font:700 21px Arial,sans-serif;fill:#3b4655}.use{font:600 18px Arial,sans-serif;fill:#1f2732}.actor{font:700 21px Arial,sans-serif;fill:#151a22}.note{font:400 15px Arial,sans-serif;fill:#4f5967}.boundary{fill:#fff;stroke:#20252d;stroke-width:2.5}.ellipse{fill:#fafafa;stroke:#20252d;stroke-width:2}.association{fill:none;stroke:#20252d;stroke-width:2}.include{fill:none;stroke:#56606e;stroke-width:1.8;stroke-dasharray:7 6;marker-end:url(#includeArrow)}
+    </style>
+  </defs>
+  <rect width="1800" height="1200" fill="#fff"/>
+  <text x="70" y="67" class="title">5.3 Use-Case Diagram — Tropilot</text>
+  <text x="70" y="102" class="subtitle">Primary user interactions with the rental property operations management system</text>
+
+  <rect x="430" y="150" width="970" height="1000" rx="10" class="boundary"/>
+  <text x="915" y="198" text-anchor="middle" class="system">Tropilot Rental Property Operations Management System</text>
+  <line x1="465" y1="220" x2="1365" y2="220" stroke="#20252d" stroke-width="1.5"/>
+
+  <!-- shared capability -->
+  <ellipse cx="700" cy="285" rx="145" ry="38" class="ellipse"/>
+  <text x="700" y="292" text-anchor="middle" class="use">Authenticate &amp; manage profile</text>
+
+  <!-- administrator use cases -->
+  <text x="525" y="360" class="group">Administrator functions</text>
+  <ellipse cx="700" cy="410" rx="155" ry="38" class="ellipse"/>
+  <text x="700" y="417" text-anchor="middle" class="use">Manage buildings &amp; staff</text>
+  <ellipse cx="700" cy="500" rx="175" ry="38" class="ellipse"/>
+  <text x="700" y="507" text-anchor="middle" class="use">Manage resident accounts &amp; contracts</text>
+  <ellipse cx="700" cy="590" rx="162" ry="38" class="ellipse"/>
+  <text x="700" y="597" text-anchor="middle" class="use">View dashboard &amp; activity logs</text>
+
+  <!-- staff use cases -->
+  <text x="525" y="665" class="group">Staff functions</text>
+  <ellipse cx="700" cy="715" rx="150" ry="38" class="ellipse"/>
+  <text x="700" y="722" text-anchor="middle" class="use">Manage rooms &amp; members</text>
+  <ellipse cx="700" cy="805" rx="180" ry="38" class="ellipse"/>
+  <text x="700" y="812" text-anchor="middle" class="use">Manage fees, readings &amp; invoices</text>
+  <ellipse cx="700" cy="895" rx="190" ry="38" class="ellipse"/>
+  <text x="700" y="902" text-anchor="middle" class="use">Manage tasks, equipment &amp; maintenance</text>
+
+  <!-- resident head use cases -->
+  <text x="525" y="970" class="group">Resident Head self-service</text>
+  <ellipse cx="700" cy="1010" rx="175" ry="34" class="ellipse"/>
+  <text x="700" y="1017" text-anchor="middle" class="use">View room, contract &amp; invoices</text>
+  <ellipse cx="700" cy="1080" rx="178" ry="34" class="ellipse"/>
+  <text x="700" y="1087" text-anchor="middle" class="use">Manage members, payments &amp; requests</text>
+
+  <!-- integrations -->
+  <text x="975" y="665" class="group">Integration use cases</text>
+  <ellipse cx="1145" cy="750" rx="150" ry="38" class="ellipse"/>
+  <text x="1145" y="757" text-anchor="middle" class="use">Process SePay payment webhook</text>
+  <ellipse cx="1070" cy="955" rx="108" ry="38" class="ellipse"/>
+  <text x="1070" y="962" text-anchor="middle" class="use">Ask chatbot</text>
+  <ellipse cx="1160" cy="1050" rx="145" ry="38" class="ellipse"/>
+  <text x="1160" y="1057" text-anchor="middle" class="use">Generate chatbot reply</text>
+
+  <!-- actors -->
+  <g transform="translate(145 380)" stroke="#20252d" stroke-width="3" fill="none"><circle cx="55" cy="22" r="16"/><path d="M55 38v58M23 57h64M55 96l-30 42M55 96l30 42"/></g>
+  <text x="200" y="550" text-anchor="middle" class="actor">Administrator</text>
+  <g transform="translate(145 665)" stroke="#20252d" stroke-width="3" fill="none"><circle cx="55" cy="22" r="16"/><path d="M55 38v58M23 57h64M55 96l-30 42M55 96l30 42"/></g>
+  <text x="200" y="835" text-anchor="middle" class="actor">Staff</text>
+  <g transform="translate(145 920)" stroke="#20252d" stroke-width="3" fill="none"><circle cx="55" cy="22" r="16"/><path d="M55 38v58M23 57h64M55 96l-30 42M55 96l30 42"/></g>
+  <text x="200" y="1090" text-anchor="middle" class="actor">Resident Head</text>
+  <g transform="translate(1540 640)" stroke="#20252d" stroke-width="3" fill="none"><circle cx="55" cy="22" r="16"/><path d="M55 38v58M23 57h64M55 96l-30 42M55 96l30 42"/></g>
+  <text x="1595" y="810" text-anchor="middle" class="actor">SePay</text><text x="1595" y="835" text-anchor="middle" class="note">Payment gateway</text>
+  <g transform="translate(1540 890)" stroke="#20252d" stroke-width="3" fill="none"><circle cx="55" cy="22" r="16"/><path d="M55 38v58M23 57h64M55 96l-30 42M55 96l30 42"/></g>
+  <text x="1595" y="1060" text-anchor="middle" class="actor">Gemini API</text>
+
+  <!-- actor associations: solid lines have no arrowheads -->
+  <path d="M265 437 H370 V285 H555" class="association"/>
+  <path d="M265 437 H385 V410 H545" class="association"/>
+  <path d="M265 437 H400 V500 H525" class="association"/>
+  <path d="M265 437 H415 V590 H538" class="association"/>
+  <path d="M265 722 H380 V715 H550" class="association"/>
+  <path d="M265 722 H395 V805 H520" class="association"/>
+  <path d="M265 722 H410 V895 H510" class="association"/>
+  <path d="M265 722 H355 V285 H555" class="association"/>
+  <path d="M265 977 H385 V1010 H525" class="association"/>
+  <path d="M265 977 H400 V1080 H522" class="association"/>
+  <path d="M265 977 H415 V1130 H890 V955 H962" class="association"/>
+  <path d="M265 977 H340 V285 H555" class="association"/>
+  <path d="M1563 697 H1450 V750 H1295" class="association"/>
+  <path d="M1563 947 H1450 V1050 H1305" class="association"/>
+
+  <!-- correctly directed include relation -->
+  <path d="M1070 993 V1050 H1015" class="include"/>
+  <text x="1025" y="1037" class="note">&lt;&lt;include&gt;&gt;</text>
+  <text x="70" y="1175" class="note">Solid lines represent actor associations. Asking the chatbot includes generating a chatbot reply.</text>
+</svg>

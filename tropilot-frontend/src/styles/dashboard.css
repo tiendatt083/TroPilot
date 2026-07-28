@@ -1043,8 +1043,8 @@
 }
 
 .settings-page .settings-panel {
-  justify-self: center;
-  width: min(100%, 860px);
+  justify-self: stretch;
+  width: 100%;
 }
 
 .settings-language-summary {
@@ -1207,6 +1207,7 @@ html[data-theme="dark"] .settings-group-icon-danger {
   display: grid;
   gap: var(--space-4);
   width: 100%;
+  margin-top: var(--space-4);
   border: 1px solid var(--color-border-soft);
   border-radius: var(--radius-lg);
   padding: clamp(1rem, 2vw, 1.25rem);
@@ -1537,8 +1538,8 @@ html[data-theme="dark"] .settings-group-icon-danger {
 }
 
 .contact-page-admin .contact-shell {
-  width: min(100%, 1380px);
-  margin-inline: auto;
+  width: 100%;
+  margin-inline: 0;
   gap: var(--space-4);
 }
 
@@ -1807,7 +1808,7 @@ html[data-theme="dark"] .settings-group-icon-danger {
 }
 
 .contact-page-admin .contact-general-grid {
-  grid-template-columns: minmax(260px, 1fr) repeat(2, minmax(140px, 170px));
+  grid-template-columns: minmax(280px, 2fr) repeat(2, minmax(180px, 1fr));
   gap: 0.8rem;
 }
 
@@ -1837,6 +1838,16 @@ html[data-theme="dark"] .settings-group-icon-danger {
 
 .contact-field-control input[type="time"] {
   font-variant-numeric: tabular-nums;
+}
+
+.contact-time-picker-control input[type="time"] {
+  min-height: 36px;
+  padding: 0 0.8rem;
+  font-variant-numeric: tabular-nums;
+  border-color: rgba(127, 154, 177, 0.3);
+  border-radius: 0.65rem;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.76);
 }
 
 .contact-field-icon {
@@ -2607,10 +2618,10 @@ html[data-theme="dark"] .settings-group-icon-danger {
 }
 
 .resident-dashboard-page .dashboard-section-panel {
-  border: 0;
-  padding: 0;
-  background: transparent;
-  box-shadow: none;
+  border: 1px solid var(--color-border-soft);
+  padding: clamp(1rem, 1.8vw, 1.25rem);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-xs);
 }
 
 .resident-dashboard-page .dashboard-section-header h2 {

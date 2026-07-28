@@ -23,7 +23,7 @@ const utilityFeeConfigs = [
 ];
 
 const utilityCalculationTypes = ['BY_USAGE', 'BY_PERSON', 'FIXED'];
-const additionalCalculationTypes = ['FIXED', 'BY_USAGE', 'BY_PERSON'];
+const additionalCalculationTypes = ['FIXED', 'BY_USAGE', 'BY_PERSON', 'BY_QUANTITY'];
 
 const emptyUtilityForm = {
   electricity: {
@@ -224,10 +224,18 @@ export default function AdminBuildingServiceFeePage() {
 
     const nextValue = name === 'unitPrice' ? value.replace(/\D/g, '') : value;
 
-    setAdditionalForm((current) => ({
-      ...current,
-      [name]: nextValue
-    }));
+    setAdditionalForm((current) => {
+      const nextForm = {
+        ...current,
+        [name]: nextValue
+      };
+
+      if (name === 'name' && nextValue.trim().toLocaleLowerCase('vi-VN') === 'gửi xe') {
+        nextForm.calculationType = 'BY_QUANTITY';
+      }
+
+      return nextForm;
+    });
   };
 
   const saveAdditionalFee = async () => {

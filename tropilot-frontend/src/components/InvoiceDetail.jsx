@@ -101,7 +101,7 @@ function InvoiceSummaryItem({ icon, label, value, showIcon }) {
         </span>
       )}
       <span className="invoice-summary-item-copy">
-        <span>{label}</span>
+        <span>{label}:</span>
         <strong>{value}</strong>
       </span>
     </div>
@@ -235,6 +235,7 @@ export default function InvoiceDetail({
       <div className="sepay-qr-card">
         <img src={invoice.sepayPayment.qrImageUrl} alt={t('sepayPayment.qrAlt')} />
         <span>STK: {invoice.sepayPayment.accountNumber}</span>
+        <span>NGUYEN TIEN DAT</span>
         <span>{t('sepayPayment.content')}: {invoice.sepayPayment.paymentCode}</span>
       </div>
     </section>

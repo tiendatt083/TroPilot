@@ -1,0 +1,68 @@
+@startuml
+title Tropilot — Head Resident Use-Case Diagram
+left to right direction
+
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam defaultFontSize 21
+skinparam titleFontSize 28
+skinparam actorFontSize 22
+skinparam usecaseFontSize 21
+skinparam rectangleFontSize 23
+skinparam packageFontSize 22
+skinparam ArrowFontSize 16
+skinparam usecase {
+  BackgroundColor #FFFFFF
+  BorderColor #3F4D63
+}
+skinparam package {
+  BorderColor #8091A8
+  BackgroundColor #F8FAFD
+}
+
+actor "Head Resident" as Resident
+actor SePay
+actor "Gemini API" as Gemini
+
+rectangle "Tropilot Rental Property Operations Management System" {
+  package "Room and Tenancy" #F7EEFF {
+    usecase "View active room\nand dashboard" as UC1
+    usecase "Manage room members" as UC2
+    usecase "Request or cancel vehicle\nregistration" as UC3
+    usecase "View, confirm or report\ncontract issue" as UC4
+  }
+
+  package "Billing and Payment" #FFF3D6 {
+    usecase "View invoices and\npayment status" as UC5
+    usecase "Pay by SePay QR or\nsubmit payment proof" as UC6
+    usecase "View payment status\nand receipt confirmation" as UC7
+  }
+
+  package "Communication and Support" #EAF2FF {
+    usecase "Submit and view\nmaintenance requests" as UC8
+    usecase "Submit and view feedback" as UC9
+    usecase "View notifications" as UC10
+    usecase "Ask AI assistant" as UC11
+  }
+}
+
+Resident -- UC1
+Resident -- UC2
+Resident -- UC3
+Resident -- UC4
+Resident -- UC5
+Resident -- UC6
+Resident -- UC7
+Resident -- UC8
+Resident -- UC9
+Resident -- UC10
+Resident -- UC11
+
+SePay -- UC6
+Gemini -- UC11
+
+' Associations map to RESIDENT_HEAD endpoints and implemented integrations.
+@enduml

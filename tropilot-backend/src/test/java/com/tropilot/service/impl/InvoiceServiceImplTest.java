@@ -18,6 +18,7 @@ import com.tropilot.enums.RentalStatus;
 import com.tropilot.enums.RoomAssignmentStatus;
 import com.tropilot.enums.RoomMemberStatus;
 import com.tropilot.enums.RoomStatus;
+import com.tropilot.enums.VehicleStatus;
 import com.tropilot.exception.BadRequestException;
 import com.tropilot.mapper.InvoiceMapper;
 import com.tropilot.repository.BuildingRepository;
@@ -33,7 +34,9 @@ import com.tropilot.repository.SepayPaymentRepository;
 import com.tropilot.repository.ServiceFeeRepository;
 import com.tropilot.repository.UserRepository;
 import com.tropilot.repository.UtilityReadingRepository;
+import com.tropilot.repository.VehicleRepository;
 import com.tropilot.service.ActivityLogService;
+import com.tropilot.service.PaymentEmailService;
 import com.tropilot.service.SepayPaymentService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -83,11 +86,15 @@ class InvoiceServiceImplTest {
     @Mock
     private RoomMemberRepository roomMemberRepository;
     @Mock
+    private VehicleRepository vehicleRepository;
+    @Mock
     private SepayPaymentRepository sepayPaymentRepository;
     @Mock
     private InvoiceMapper invoiceMapper;
     @Mock
     private SepayPaymentService sepayPaymentService;
+    @Mock
+    private PaymentEmailService paymentEmailService;
     @Mock
     private ActivityLogService activityLogService;
 
@@ -170,6 +177,68 @@ class InvoiceServiceImplTest {
                 .isEqualByComparingTo(new BigDecimal("10000000"));
         assertThat(savedInvoice.getInvoiceDate()).isEqualTo(request.getInvoiceDate());
         assertThat(savedInvoice.getMonth()).isEqualTo(LocalDate.of(2026, 6, 1));
+        verify(paymentEmailService).sendInvoiceIssuedEmail(savedInvoice, null);
+    }
+
+    @Test
+    void generateInvoiceChargesOnlyActiveRegisteredVehicles() {
+        Room room = BusinessRuleTestFixtures.room(RoomStatus.OCCUPIED);
+        User residentHead = BusinessRuleTestFixtures.residentHead();
+        User admin = BusinessRuleTestFixtures.admin();
+        RoomAssignment assignment = BusinessRuleTestFixtures.activeAssignment(room, residentHead);
+        RentalContract contract = BusinessRuleTestFixtures.activeContract(room, residentHead);
+        InvoicePreviewRequest request = invoiceRequest(room.getId());
+        ServiceFee parkingFee = BusinessRuleTestFixtures.serviceFee(
+                3L,
+                "Parking",
+                FeeType.OTHER,
+                CalculationType.BY_QUANTITY,
+                "50000"
+        );
+
+        when(userRepository.findById(admin.getId())).thenReturn(Optional.of(admin));
+        when(roomRepository.findById(room.getId())).thenReturn(Optional.of(room));
+        when(buildingRepository.existsById(room.getBuilding().getId())).thenReturn(true);
+        when(invoiceRepository.existsByRoom_IdAndMonth(room.getId(), LocalDate.of(2026, 6, 1))).thenReturn(false);
+        when(roomAssignmentRepository.findByRoomIdAndStatus(room.getId(), RoomAssignmentStatus.ACTIVE))
+                .thenReturn(Optional.of(assignment));
+        when(invoiceRepository.existsByRoom_IdAndResidentHead_Id(room.getId(), residentHead.getId()))
+                .thenReturn(false);
+        when(rentalContractRepository.findFirstByRoom_IdAndResidentHead_IdAndRentalStatusOrderByCreatedAtDesc(
+                room.getId(),
+                residentHead.getId(),
+                RentalStatus.ACTIVE
+        )).thenReturn(Optional.of(contract));
+        when(serviceFeeRepository.findByBuilding_IdAndIsActiveTrueOrderByCreatedAtDesc(room.getBuilding().getId()))
+                .thenReturn(List.of(parkingFee));
+        when(roomMemberRepository.countByRoom_IdAndResidentHead_IdAndStatus(
+                room.getId(),
+                residentHead.getId(),
+                RoomMemberStatus.APPROVED
+        )).thenReturn(0L);
+        when(vehicleRepository.countByRoom_IdAndStatus(room.getId(), VehicleStatus.ACTIVE))
+                .thenReturn(2L);
+        when(invoiceRepository.save(any(Invoice.class))).thenAnswer(invocation -> {
+            Invoice invoice = invocation.getArgument(0);
+            invoice.setId(301L);
+            return invoice;
+        });
+        when(sepayPaymentService.createForInvoice(any(Invoice.class))).thenReturn(Optional.empty());
+        when(invoiceMapper.toResponse(any(Invoice.class), isNull(), isNull(), isNull()))
+                .thenReturn(InvoiceResponse.builder().id(301L).build());
+
+        service.generateBuildingInvoice(room.getBuilding().getId(), request, admin.getId());
+
+        ArgumentCaptor<Invoice> invoiceCaptor = ArgumentCaptor.forClass(Invoice.class);
+        verify(invoiceRepository).save(invoiceCaptor.capture());
+        Invoice savedInvoice = invoiceCaptor.getValue();
+        assertThat(savedInvoice.getItems())
+                .filteredOn(item -> "Parking".equals(item.getItemName()))
+                .singleElement()
+                .satisfies(item -> {
+                    assertThat(item.getQuantity()).isEqualByComparingTo("2");
+                    assertThat(item.getAmount()).isEqualByComparingTo("100000");
+                });
     }
 
     @Test

@@ -682,7 +682,8 @@
     "methods": {
       "FIXED": "Per room",
       "BY_USAGE": "By usage",
-      "BY_PERSON": "Per person"
+      "BY_PERSON": "Per person",
+      "BY_QUANTITY": "Per vehicle"
     },
     "utility": {
       "electricityIcon": "E",
@@ -1615,6 +1616,12 @@
     "adminEyebrow": "Administrator",
     "feedbacksTitle": "Feedbacks",
     "feedbacksOverviewDescription": "Track feedback by building and room. Select a row to open the building feedback page and handle the details.",
+    "searchFeedbacks": "Search feedback, resident, or room...",
+    "filterBuilding": "Filter by building",
+    "filterStatus": "Filter by status",
+    "allBuildings": "All buildings",
+    "allStatuses": "All statuses",
+    "noUnresolvedFeedbacks": "There are no feedbacks awaiting resolution.",
     "complaintsTitle": "Invoice complaints",
     "feedbacksLoading": "Loading feedbacks...",
     "complaintsLoading": "Loading invoice complaints...",
@@ -1788,7 +1795,7 @@
         "FIXED": "Per room",
         "BY_USAGE": "By usage",
         "BY_PERSON": "Per person",
-        "BY_QUANTITY": "By quantity"
+        "BY_QUANTITY": "Per vehicle"
       }
     }
   },
@@ -1833,6 +1840,7 @@
     "empty": "No rooms found.",
     "noDescription": "No description provided.",
     "maximumOccupants": "Maximum occupants",
+    "currentOccupants": "Current occupants",
     "relationship": "Relationship",
     "moveIn": "Move-in",
     "moveOut": "Move-out",
@@ -2207,7 +2215,7 @@
       "FIXED": "Per room",
       "BY_USAGE": "By usage",
       "BY_PERSON": "Per person",
-      "BY_QUANTITY": "By quantity"
+      "BY_QUANTITY": "Per vehicle"
     },
     "vehicleOwnerType": {
       "RESIDENT_HEAD": "Head Resident",

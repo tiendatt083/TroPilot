@@ -2170,8 +2170,12 @@ html[data-theme="dark"] .login-input-wrap input {
   color: #111d35;
 }
 
-html[data-theme="dark"] .login-wordmark span {
-  color: #1e7cff;
+html[data-theme="dark"] .login-wordmark .login-wordmark-dark {
+  color: #111827;
+}
+
+html[data-theme="dark"] .login-wordmark .login-wordmark-blue {
+  color: #126fff;
 }
 
 html[data-theme="dark"] .login-input-wrap input {
@@ -2181,6 +2185,21 @@ html[data-theme="dark"] .login-input-wrap input {
 
 html[data-theme="dark"] .login-input-wrap input::placeholder {
   color: #98a8bd;
+}
+
+/* Authentication always uses the light brand surface, including Chrome autofill. */
+.login-page {
+  color-scheme: light;
+}
+
+html[data-theme] .login-page .login-input-wrap input:-webkit-autofill,
+html[data-theme] .login-page .login-input-wrap input:-webkit-autofill:hover,
+html[data-theme] .login-page .login-input-wrap input:-webkit-autofill:focus,
+html[data-theme] .login-page .login-input-wrap input:-webkit-autofill:active {
+  -webkit-text-fill-color: #12213a !important;
+  caret-color: #12213a;
+  -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+  box-shadow: 0 0 0 1000px #ffffff inset !important;
 }
 
 html[data-theme="dark"] .login-submit-button {
@@ -2260,4 +2279,107 @@ html[data-theme="dark"] .reset-notice-icon {
 html[data-theme="dark"] .forgot-password-description,
 html[data-theme="dark"] .reset-password-description {
   color: #637189;
+}
+
+/* Compact, left-aligned titles for the three authentication forms. */
+.login-panel h1 {
+  color: #126fff;
+  font-size: clamp(0.98rem, 1.7vw, 1.1rem);
+  font-weight: 500;
+  text-align: left;
+  text-transform: none;
+}
+
+html[data-theme="dark"] .login-panel h1 {
+  color: #126fff;
+}
+
+.auth-panel.login-panel {
+  padding-block: clamp(1.2rem, 2.1vw, 1.5rem);
+}
+
+.login-heading {
+  gap: 0.75rem;
+  margin-bottom: 0.9rem;
+}
+
+.login-brand {
+  gap: 0.15rem;
+}
+
+.login-page .auth-logo-image {
+  width: 10.4325rem;
+  height: 3.705rem;
+}
+
+.login-page .login-wordmark {
+  font-size: clamp(1.794rem, 3.9vw, 2.21rem);
+  margin-left: -1.35rem;
+}
+
+@media (max-width: 720px) {
+  .login-page .auth-logo-image {
+    width: 9.4575rem;
+    height: 3.38rem;
+  }
+
+  .login-page .login-wordmark {
+    font-size: clamp(1.55rem, 5.4vw, 1.9rem);
+  }
+}
+
+/* Success notifications on authentication pages follow the light brand theme. */
+html[data-theme="dark"] .login-page .success-alert {
+  border-color: #bfe8d8;
+  color: #15705e;
+  background: #e9f6f1;
+}
+
+html[data-theme="dark"] .login-page .reset-notice-icon {
+  color: #1c9d68;
+}
+
+/* Shared transient feedback for admin, staff, resident, and authentication flows. */
+@keyframes app-toast-lifecycle {
+  0% {
+    opacity: 0;
+    transform: translateX(-0.8rem);
+  }
+
+  10%,
+  82% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  100% {
+    visibility: hidden;
+    opacity: 0;
+    transform: translateX(-0.45rem);
+  }
+}
+
+.alert,
+.auth-toast {
+  position: fixed;
+  top: 1.25rem;
+  bottom: auto;
+  right: 1.25rem;
+  left: auto;
+  z-index: 1000;
+  width: min(calc(100vw - 2.5rem), 25rem);
+  margin: 0 !important;
+  box-shadow: 0 0.8rem 2rem rgba(15, 35, 65, 0.18);
+  animation: app-toast-lifecycle 4.5s ease-in-out forwards;
+}
+
+@media (max-width: 720px) {
+  .alert,
+  .auth-toast {
+    right: 1rem;
+    top: 1rem;
+    bottom: auto;
+    left: auto;
+    width: min(calc(100vw - 2rem), 25rem);
+  }
 }

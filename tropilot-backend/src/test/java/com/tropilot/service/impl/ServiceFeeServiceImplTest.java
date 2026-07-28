@@ -101,6 +101,23 @@ class ServiceFeeServiceImplTest {
     }
 
     @Test
+    void createParkingFeeAllowsVehicleCalculation() {
+        Building building = BusinessRuleTestFixtures.building();
+        ServiceFeeUpsertRequest request = request("Parking", FeeType.OTHER, CalculationType.BY_QUANTITY);
+        ServiceFeeResponse mappedResponse = ServiceFeeResponse.builder().id(12L).build();
+
+        when(buildingRepository.findById(building.getId())).thenReturn(Optional.of(building));
+        when(serviceFeeRepository.save(any(ServiceFee.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(serviceFeeMapper.toResponse(any(ServiceFee.class))).thenReturn(mappedResponse);
+
+        service.createBuildingServiceFee(building.getId(), request);
+
+        ArgumentCaptor<ServiceFee> feeCaptor = ArgumentCaptor.forClass(ServiceFee.class);
+        verify(serviceFeeRepository).save(feeCaptor.capture());
+        assertThat(feeCaptor.getValue().getCalculationType()).isEqualTo(CalculationType.BY_QUANTITY);
+    }
+
+    @Test
     void activateUtilityFeeRejectsDuplicateActiveTypeInBuilding() {
         Building building = BusinessRuleTestFixtures.building();
         ServiceFee waterFee = BusinessRuleTestFixtures.serviceFee(

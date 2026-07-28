@@ -29,6 +29,7 @@ import com.tropilot.enums.RentalStatus;
 import com.tropilot.enums.RoomAssignmentStatus;
 import com.tropilot.enums.RoomMemberStatus;
 import com.tropilot.enums.RoomStatus;
+import com.tropilot.enums.VehicleStatus;
 import com.tropilot.exception.BadRequestException;
 import com.tropilot.exception.ForbiddenException;
 import com.tropilot.exception.ResourceNotFoundException;
@@ -45,8 +46,10 @@ import com.tropilot.repository.SepayPaymentRepository;
 import com.tropilot.repository.ServiceFeeRepository;
 import com.tropilot.repository.UserRepository;
 import com.tropilot.repository.UtilityReadingRepository;
+import com.tropilot.repository.VehicleRepository;
 import com.tropilot.service.ActivityLogService;
 import com.tropilot.service.InvoiceService;
+import com.tropilot.service.PaymentEmailService;
 import com.tropilot.service.SepayPaymentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -88,9 +91,11 @@ public class InvoiceServiceImpl implements InvoiceService {
     private final UtilityReadingRepository utilityReadingRepository;
     private final ServiceFeeRepository serviceFeeRepository;
     private final RoomMemberRepository roomMemberRepository;
+    private final VehicleRepository vehicleRepository;
     private final SepayPaymentRepository sepayPaymentRepository;
     private final InvoiceMapper invoiceMapper;
     private final SepayPaymentService sepayPaymentService;
+    private final PaymentEmailService paymentEmailService;
     private final ActivityLogService activityLogService;
 
     @Override
@@ -373,6 +378,9 @@ public class InvoiceServiceImpl implements InvoiceService {
                 RoomMemberStatus.APPROVED
         );
         BigDecimal occupantQuantity = BigDecimal.valueOf(1L + approvedMemberCount);
+        BigDecimal activeVehicleQuantity = BigDecimal.valueOf(
+                vehicleRepository.countByRoom_IdAndStatus(room.getId(), VehicleStatus.ACTIVE)
+        );
         boolean utilityReadingRequired = !firstInvoiceForCurrentHead && hasUsageBasedUtilityFee(activeFees);
         LocalDate utilityMonth = invoiceMonth.minusMonths(1);
         UtilityReading utilityReading = findUtilityReadingForGeneration(room, utilityMonth, utilityReadingRequired);
@@ -397,6 +405,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         }
         addFixedFeeItems(draftInvoice, activeFees);
         addByPersonFeeItems(draftInvoice, activeFees, occupantQuantity);
+        addByVehicleFeeItems(draftInvoice, activeFees, activeVehicleQuantity);
         addAdditionalChargeItem(draftInvoice, additionalChargeAmount, additionalChargeNote);
 
         BigDecimal totalAmount = draftInvoice.getItems()
@@ -448,6 +457,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         );
 
         SepayPayment sepayPayment = sepayPaymentService.createForInvoice(savedInvoice).orElse(null);
+        paymentEmailService.sendInvoiceIssuedEmail(savedInvoice, sepayPayment);
         return invoiceMapper.toResponse(savedInvoice, calculation.utilityReading(), findInvoiceComplaint(savedInvoice), sepayPayment);
     }
 
@@ -633,6 +643,21 @@ public class InvoiceServiceImpl implements InvoiceService {
                 .filter(fee -> fee.getFeeType() == FeeType.OTHER)
                 .filter(fee -> fee.getCalculationType() == CalculationType.BY_PERSON)
                 .forEach(fee -> addServiceFeeItem(invoice, fee, occupantQuantity, "Head Resident plus approved room members"));
+    }
+
+    private void addByVehicleFeeItems(
+            Invoice invoice,
+            List<ServiceFee> activeFees,
+            BigDecimal activeVehicleQuantity
+    ) {
+        if (activeVehicleQuantity.compareTo(BigDecimal.ZERO) <= 0) {
+            return;
+        }
+
+        activeFees.stream()
+                .filter(fee -> fee.getFeeType() == FeeType.OTHER)
+                .filter(fee -> fee.getCalculationType() == CalculationType.BY_QUANTITY)
+                .forEach(fee -> addServiceFeeItem(invoice, fee, activeVehicleQuantity, "Active registered vehicles in this room"));
     }
 
     private void addServiceFeeItem(
