@@ -2373,6 +2373,26 @@ html[data-theme="dark"] .login-page .reset-notice-icon {
   animation: app-toast-lifecycle 4.5s ease-in-out forwards;
 }
 
+/* Login errors remain an inline, light surface even when the application uses dark mode. */
+.auth-panel.login-panel .login-error {
+  position: static;
+  z-index: auto;
+  width: auto;
+  margin: 0 0 1rem !important;
+  padding: 0.78rem 0.95rem;
+  border: 1px solid #fecaca;
+  border-radius: 0.72rem;
+  color: #b42318;
+  background: #fff1f2;
+  box-shadow: 0 0.5rem 1.25rem rgba(185, 28, 28, 0.1);
+  animation: none;
+}
+
+html[data-theme="dark"] .auth-panel.login-panel .login-error {
+  color: #b42318;
+  background: #fff1f2;
+}
+
 @media (max-width: 720px) {
   .alert,
   .auth-toast {
