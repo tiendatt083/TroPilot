@@ -94,7 +94,7 @@ test.describe('Tropilot smoke flow', () => {
     expect(createdRoom).toBeTruthy();
 
     await page.goto(`/admin/buildings/1/rooms/${createdRoom.id}`);
-    await page.getByRole('button', { name: 'Assign Head Resident' }).click();
+    await page.getByRole('button', { name: 'Assign' }).click();
     await page.locator('#residentHeadId').selectOption('3');
     await page.locator('.assignment-form button[type="submit"]').click();
 
