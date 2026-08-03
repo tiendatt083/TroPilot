@@ -15,6 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
+/** Vỏ bọc chung của API: success, thông báo, dữ liệu và chi tiết lỗi xác thực nếu có. */
 public class ApiResponse<T> {
 
     private boolean success;

@@ -24,6 +24,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+/** Quản lý cấu hình phí dịch vụ, kiểm tra quy tắc loại phí/cách tính và tránh trùng phí điện nước hoạt động. */
 public class ServiceFeeServiceImpl implements ServiceFeeService {
 
     private final ServiceFeeRepository serviceFeeRepository;
@@ -33,6 +34,7 @@ public class ServiceFeeServiceImpl implements ServiceFeeService {
 
     @Override
     @Transactional
+    /** Tạo khoản phí cho tòa nhà, kiểm tra quy tắc cách tính và mã phí. */
     public ServiceFeeResponse createBuildingServiceFee(Long buildingId, ServiceFeeUpsertRequest request) {
         Building building = findBuilding(buildingId);
         FeeType feeType = parseFeeType(request.getFeeType());
@@ -74,6 +76,7 @@ public class ServiceFeeServiceImpl implements ServiceFeeService {
 
     @Override
     @Transactional
+    /** Cập nhật khoản phí đúng thuộc tòa nhà, vẫn giữ các ràng buộc phí điện/nước đang hoạt động. */
     public ServiceFeeResponse updateBuildingServiceFee(Long buildingId, Long id, ServiceFeeUpsertRequest request) {
         ServiceFee serviceFee = findBuildingServiceFee(buildingId, id);
         FeeType feeType = parseFeeType(request.getFeeType());
@@ -91,6 +94,7 @@ public class ServiceFeeServiceImpl implements ServiceFeeService {
 
     @Override
     @Transactional
+    /** Xóa hoặc vô hiệu khoản phí tùy việc khoản phí đã được dùng trong hóa đơn hay chưa. */
     public ServiceFeeDeleteResponse deleteBuildingServiceFee(Long buildingId, Long id) {
         ServiceFee serviceFee = findBuildingServiceFee(buildingId, id);
         return deleteOrDeactivate(serviceFee);
@@ -98,6 +102,7 @@ public class ServiceFeeServiceImpl implements ServiceFeeService {
 
     @Override
     @Transactional
+    /** Bật/tắt áp dụng khoản phí sau khi kiểm tra các ràng buộc đang hoạt động. */
     public ServiceFeeResponse toggleBuildingServiceFee(Long buildingId, Long id) {
         ServiceFee serviceFee = findBuildingServiceFee(buildingId, id);
         boolean activating = !Boolean.TRUE.equals(serviceFee.getIsActive());

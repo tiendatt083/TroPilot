@@ -33,6 +33,11 @@ import java.util.List;
 @RequestMapping("/api/staff/utility-readings")
 @RequiredArgsConstructor
 @PreAuthorize("hasAnyRole('STAFF', 'ADMIN')")
+/**
+ * API ghi chỉ số điện, nước cho STAFF hoặc ADMIN.
+ * POST / tạo bản ghi; PUT /{id} sửa; POST /fetch/electricity và /fetch/water lấy chỉ số
+ * từ nguồn hỗ trợ; GET / xem danh sách, GET /overview xem tổng quan theo kỳ.
+ */
 public class StaffUtilityReadingController {
 
     private final UtilityReadingService utilityReadingService;

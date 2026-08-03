@@ -29,6 +29,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 @Table(name = "receipts")
+/** Phiếu thu hợp lệ hoặc đã hủy, liên kết Invoice, trưởng phòng và User đã tạo phiếu. */
 public class Receipt {
 
     @Id

@@ -1,5 +1,6 @@
 package com.tropilot.enums;
 
+/** Sự kiện nghiệp vụ tạo thông báo; MANUAL là thông báo do người dùng tự gửi. */
 public enum NotificationEventType {
     MANUAL,
     FEEDBACK_CREATED,

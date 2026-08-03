@@ -33,6 +33,7 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
+/** Nạp tệp đã lưu và kiểm tra người dùng hiện tại có quyền đọc tệp theo thư mục/nghiệp vụ hay không. */
 public class UploadedFileServiceImpl implements UploadedFileService {
 
     private static final Set<String> ALLOWED_DIRECTORIES = Set.of(
@@ -53,6 +54,7 @@ public class UploadedFileServiceImpl implements UploadedFileService {
     private final RoomAssignmentRepository roomAssignmentRepository;
 
     @Override
+    /** Chuẩn hóa đường dẫn, kiểm tra quyền theo role rồi trả resource và loại nội dung của tệp. */
     public AuthorizedFile load(String rawPath, AuthenticatedUser user) {
         if (user == null) {
             throw new AccessDeniedException("Authentication is required");

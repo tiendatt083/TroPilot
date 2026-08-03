@@ -21,6 +21,7 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
+/** Thực thi nghiệp vụ quản lý tòa nhà, gồm kiểm tra mã và đồng bộ mã phòng khi đổi mã tòa nhà. */
 public class BuildingServiceImpl implements BuildingService {
 
     private final BuildingRepository buildingRepository;
@@ -30,6 +31,7 @@ public class BuildingServiceImpl implements BuildingService {
 
     @Override
     @Transactional
+    /** Kiểm tra mã tòa nhà không trùng, lưu tòa nhà mới và ghi nhật ký thao tác. */
     public BuildingResponse createBuilding(BuildingUpsertRequest request) {
         String buildingCode = normalizeCode(request.getBuildingCode());
 
@@ -50,6 +52,7 @@ public class BuildingServiceImpl implements BuildingService {
 
     @Override
     @Transactional(readOnly = true)
+    /** Lấy toàn bộ tòa nhà hoặc tìm theo mã, tên, địa chỉ khi có từ khóa. */
     public List<BuildingResponse> getBuildings(String search) {
         String normalizedSearch = normalizeOptionalText(search);
         List<Building> buildings = normalizedSearch == null
@@ -63,12 +66,14 @@ public class BuildingServiceImpl implements BuildingService {
 
     @Override
     @Transactional(readOnly = true)
+    /** Tìm và trả về chi tiết một tòa nhà theo id. */
     public BuildingResponse getBuilding(Long id) {
         return buildingMapper.toResponse(findBuilding(id));
     }
 
     @Override
     @Transactional
+    /** Cập nhật tòa nhà; khi mã đổi thì chuẩn hóa lại mã các phòng thuộc tòa nhà đó. */
     public BuildingResponse updateBuilding(Long id, BuildingUpsertRequest request) {
         Building building = findBuilding(id);
         String previousBuildingCode = normalizeCode(building.getBuildingCode());
@@ -150,6 +155,7 @@ public class BuildingServiceImpl implements BuildingService {
 
     @Override
     @Transactional
+    /** Xóa tòa nhà sau khi kiểm tra các dữ liệu phụ thuộc theo quy tắc nghiệp vụ. */
     public void deleteBuilding(Long id) {
         Building building = findBuilding(id);
 

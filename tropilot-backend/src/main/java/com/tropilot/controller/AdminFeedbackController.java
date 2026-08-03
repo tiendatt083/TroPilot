@@ -26,6 +26,11 @@ import java.util.List;
 @RequestMapping("/api/admin/feedbacks")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
+/**
+ * API xử lý phản ánh của cư dân.
+ * GET / xem danh sách theo tòa nhà; PUT /{id}/reply gửi phản hồi;
+ * PUT /{id}/status thay đổi trạng thái xử lý của phản ánh.
+ */
 public class AdminFeedbackController {
 
     private final FeedbackService feedbackService;

@@ -16,6 +16,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 @RequiredArgsConstructor
+/** Nguồn dữ liệu giả lập chỉ số điện nước, dùng khi dự án chưa kết nối đồng hồ thực tế. */
 public class MockUtilityReadingProvider implements UtilityReadingProvider {
 
     private static final int MAX_ELECTRICITY_USAGE = 150;

@@ -14,6 +14,7 @@ import java.time.LocalDate;
 @Getter
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
+/** Quan hệ trưởng phòng, gộp thông tin phòng, cư dân và hợp đồng để frontend dùng một lần. */
 public class HeadResidentAssignmentResponse {
 
     private boolean assigned;

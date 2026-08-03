@@ -17,6 +17,10 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+/**
+ * Lưu ảnh kết quả thực hiện task vào uploads/tasks.
+ * Ảnh có thể không có; khi không gửi tệp service trả về null.
+ */
 public class TaskResultImageStorageService {
 
     private static final long MAX_FILE_SIZE_BYTES = 10L * 1024L * 1024L;
@@ -25,6 +29,7 @@ public class TaskResultImageStorageService {
 
     private final UploadProperties uploadProperties;
 
+    /** Lưu ảnh kết quả JPEG/PNG hợp lệ với tên UUID và trả URL để lưu vào task. */
     public String store(MultipartFile file) {
         if (file == null || file.isEmpty()) {
             return null;
@@ -56,6 +61,7 @@ public class TaskResultImageStorageService {
                 .toUriString();
     }
 
+    /** Kiểm tra dung lượng tối đa 10 MB và xác thực loại ảnh theo phần mở rộng lẫn content type. */
     private void validateFile(MultipartFile file) {
         if (file.getSize() > MAX_FILE_SIZE_BYTES) {
             throw new BadRequestException("Task result image must not exceed 10 MB");
@@ -72,6 +78,7 @@ public class TaskResultImageStorageService {
         }
     }
 
+    /** Tách phần mở rộng từ tên tệp và từ chối trường hợp thiếu hoặc không hợp lệ. */
     private String getExtension(String fileName) {
         if (fileName == null || fileName.isBlank() || !fileName.contains(".")) {
             throw new BadRequestException("Task result image type is not allowed");

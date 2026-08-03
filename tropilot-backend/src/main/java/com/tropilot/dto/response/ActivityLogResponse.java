@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
+/** Bản ghi lịch sử hoạt động: ai làm gì, mô tả, vai trò và thời điểm thực hiện. */
 public class ActivityLogResponse {
 
     private Long id;

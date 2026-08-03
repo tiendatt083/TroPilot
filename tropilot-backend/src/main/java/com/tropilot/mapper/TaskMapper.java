@@ -9,8 +9,16 @@ import com.tropilot.entity.User;
 import org.springframework.stereotype.Component;
 
 @Component
+/**
+ * Chuyển công việc được giao cho nhân viên thành TaskResponse.
+ * Mapper đưa vào ngữ cảnh phòng/tòa nhà, phản hồi nguồn (nếu có), người được giao và người tạo công việc.
+ */
 public class TaskMapper {
 
+    /**
+     * Tạo dữ liệu công việc để hiển thị. Nếu task không gắn trực tiếp với tòa nhà,
+     * mapper lấy tòa nhà từ phòng mà task đang gắn tới.
+     */
     public TaskResponse toResponse(Task task) {
         Room room = task.getRoom();
         Building building = task.getBuilding();

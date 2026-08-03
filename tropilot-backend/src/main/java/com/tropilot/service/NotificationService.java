@@ -11,6 +11,7 @@ import com.tropilot.enums.NotificationEventType;
 
 import java.util.List;
 
+/** Hợp đồng tạo, phân phối, đọc và tạo các thông báo tự động của hệ thống. */
 public interface NotificationService {
 
     NotificationResponse createNotification(NotificationCreateRequest request, Long createdById, Long buildingId);

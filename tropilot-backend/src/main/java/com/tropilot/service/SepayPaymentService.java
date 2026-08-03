@@ -6,6 +6,7 @@ import com.tropilot.entity.SepayPayment;
 
 import java.util.Optional;
 
+/** Hợp đồng tạo giao dịch QR SePay, tìm giao dịch và xử lý webhook ngân hàng. */
 public interface SepayPaymentService {
 
     Optional<SepayPayment> createForInvoice(Invoice invoice);

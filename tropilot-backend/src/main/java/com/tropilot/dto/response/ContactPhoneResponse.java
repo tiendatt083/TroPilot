@@ -11,6 +11,7 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+/** Một số liên hệ đã cấu hình, gồm tên hiển thị và số điện thoại. */
 public class ContactPhoneResponse {
 
     private String displayName;

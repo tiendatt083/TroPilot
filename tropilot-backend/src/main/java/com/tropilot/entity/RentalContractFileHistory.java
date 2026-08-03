@@ -25,6 +25,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 @Table(name = "rental_contract_file_histories")
+/** Lịch sử các file hợp đồng đã bị thay thế để không mất dấu phiên bản cũ. */
 public class RentalContractFileHistory {
 
     @Id

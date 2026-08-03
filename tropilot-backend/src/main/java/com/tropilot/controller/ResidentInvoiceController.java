@@ -20,6 +20,11 @@ import java.util.List;
 @RequestMapping("/api/resident/invoices")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('RESIDENT_HEAD')")
+/**
+ * API hóa đơn chỉ đọc của trưởng phòng.
+ * GET / xem danh sách hóa đơn của phòng; GET /{id} xem chi tiết sau khi service
+ * xác nhận hóa đơn đó thực sự thuộc phòng của người đang gọi.
+ */
 public class ResidentInvoiceController {
 
     private final InvoiceService invoiceService;

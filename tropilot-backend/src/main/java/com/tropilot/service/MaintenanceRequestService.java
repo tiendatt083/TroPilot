@@ -7,6 +7,7 @@ import com.tropilot.dto.response.MaintenanceRequestResponse;
 
 import java.util.List;
 
+/** Hợp đồng xử lý yêu cầu sửa chữa: xem, phân công, bắt đầu và hoàn thành. */
 public interface MaintenanceRequestService {
 
     MaintenanceRequestResponse createEquipmentRequest(

@@ -22,6 +22,10 @@ import static com.tropilot.security.AuthenticatedUsers.requireUserId;
 @RequestMapping("/api/resident/service-fees")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('RESIDENT_HEAD')")
+/**
+ * API xem phí dịch vụ của tòa nhà mà trưởng phòng đang ở.
+ * GET /current-building xác định phòng/tòa nhà qua JWT rồi trả các phí đang áp dụng.
+ */
 public class ResidentServiceFeeController {
 
     private final HeadResidentAssignmentService headResidentAssignmentService;

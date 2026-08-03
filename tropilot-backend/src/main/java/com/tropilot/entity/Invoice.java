@@ -42,6 +42,7 @@ import java.util.List;
                 columnNames = {"room_id", "invoice_month"}
         )
 )
+/** Hóa đơn của một phòng/trưởng phòng theo kỳ, gồm các InvoiceItem và người tạo. */
 public class Invoice {
 
     @Id

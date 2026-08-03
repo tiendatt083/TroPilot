@@ -12,16 +12,25 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Repository quản lý hóa đơn và các truy vấn thống kê công nợ.
+ * Những truy vấn "WithDetails" nạp sẵn phòng, tòa nhà, chủ hộ, người lập và các dòng phí của hóa đơn.
+ */
 public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
 
+    /** Kiểm tra một phòng đã có hóa đơn cho tháng được chọn hay chưa. */
     boolean existsByRoom_IdAndMonth(Long roomId, LocalDate month);
 
+    /** Kiểm tra phòng đã từng có hóa đơn gắn với chủ hộ này hay chưa. */
     boolean existsByRoom_IdAndResidentHead_Id(Long roomId, Long residentHeadId);
 
+    /** Đếm hóa đơn theo trạng thái để dùng trong thống kê. */
     long countByStatus(InvoiceStatus status);
 
+    /** Đếm hóa đơn quá hạn nhưng chưa ở trạng thái được loại trừ (thường là PAID). */
     long countByDueDateBeforeAndStatusNot(LocalDate dueDate, InvoiceStatus status);
 
+    /** Tìm hóa đơn theo id và nạp đủ dữ liệu cần cho trang chi tiết. */
     @EntityGraph(attributePaths = {
             "room",
             "room.building",
@@ -32,6 +41,7 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
     })
     Optional<Invoice> findById(Long id);
 
+    /** Lấy hóa đơn gần nhất của một phòng, ưu tiên tháng mới rồi đến thời điểm tạo mới. */
     @EntityGraph(attributePaths = {
             "room",
             "room.building",
@@ -42,6 +52,7 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
     })
     Optional<Invoice> findFirstByRoom_IdOrderByMonthDescCreatedAtDesc(Long roomId);
 
+    /** Lấy toàn bộ hóa đơn với dữ liệu chi tiết, sắp xếp từ tháng mới nhất. */
     @Query("""
             select distinct invoice from Invoice invoice
             join fetch invoice.room room
@@ -54,6 +65,7 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
             """)
     List<Invoice> findAllWithDetails();
 
+    /** Lấy các hóa đơn của một phòng với đầy đủ chi tiết. */
     @Query("""
             select distinct invoice from Invoice invoice
             join fetch invoice.room room
@@ -67,6 +79,7 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
             """)
     List<Invoice> findByRoomIdWithDetails(@Param("roomId") Long roomId);
 
+    /** Lấy các hóa đơn thuộc một tòa nhà với đầy đủ chi tiết. */
     @Query("""
             select distinct invoice from Invoice invoice
             join fetch invoice.room room
@@ -80,6 +93,7 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
             """)
     List<Invoice> findByBuildingIdWithDetails(@Param("buildingId") Long buildingId);
 
+    /** Tính tổng tiền chưa thanh toán của toàn hệ thống trong một tháng. */
     @Query("""
             select coalesce(sum(invoice.totalAmount), 0)
             from Invoice invoice
@@ -91,6 +105,7 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
             @Param("paidStatus") InvoiceStatus paidStatus
     );
 
+    /** Tính tổng tiền chưa thanh toán của một tòa nhà trong một tháng. */
     @Query("""
             select coalesce(sum(invoice.totalAmount), 0)
             from Invoice invoice
@@ -106,6 +121,7 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
             @Param("paidStatus") InvoiceStatus paidStatus
     );
 
+    /** Tính tổng công nợ chưa thanh toán của toàn bộ hệ thống, không giới hạn tháng. */
     @Query("""
             select coalesce(sum(invoice.totalAmount), 0)
             from Invoice invoice

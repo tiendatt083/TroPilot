@@ -24,6 +24,11 @@ import java.util.List;
 @RequestMapping("/api/admin/buildings/{buildingId}/equipment")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
+/**
+ * API cho ADMIN quản lý thiết bị của tòa nhà có buildingId trên URL.
+ * POST / thêm thiết bị; GET / xem/lọc thiết bị; PUT /{id} sửa; DELETE /{id} xóa
+ * và trả thêm thông tin cần thiết nếu thiết bị còn liên quan dữ liệu khác.
+ */
 public class AdminBuildingEquipmentController {
 
     private final EquipmentService equipmentService;

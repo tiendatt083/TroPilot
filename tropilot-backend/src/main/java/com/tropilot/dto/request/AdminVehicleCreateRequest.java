@@ -8,6 +8,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
+/** Dữ liệu ADMIN dùng để đăng ký phương tiện trực tiếp cho một phòng/cư dân. */
 public class AdminVehicleCreateRequest {
 
     @NotNull(message = "Room is required")
@@ -16,6 +17,7 @@ public class AdminVehicleCreateRequest {
     @NotNull(message = "Head Resident is required")
     private Long residentHeadId;
 
+    /** Thành viên sở hữu xe; có thể để trống khi xe thuộc trưởng phòng. */
     private Long roomMemberId;
 
     @NotBlank(message = "Owner type is required")

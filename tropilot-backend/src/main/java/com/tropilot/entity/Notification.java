@@ -36,6 +36,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Entity
 @Table(name = "notifications")
+/** Thông báo do User tạo; tập người nhận/tòa nhà được lưu qua hai bảng liên kết target. */
 public class Notification {
 
     @Id

@@ -15,6 +15,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+/** Tra cứu các biên lai đã lập, có giới hạn phạm vi theo tòa nhà khi cần. */
 public class ReceiptServiceImpl implements ReceiptService {
 
     private final ReceiptRepository receiptRepository;

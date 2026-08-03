@@ -7,6 +7,7 @@ import com.tropilot.dto.response.UtilityReadingResponse;
 
 import java.util.List;
 
+/** Hợp đồng nhập, cập nhật, xem tổng quan và tra cứu chỉ số điện nước. */
 public interface UtilityReadingService {
 
     UtilityReadingResponse createReading(UtilityReadingCreateRequest request, Long createdById);

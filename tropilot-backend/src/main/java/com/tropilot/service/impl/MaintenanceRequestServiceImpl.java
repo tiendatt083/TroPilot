@@ -39,6 +39,7 @@ import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
+/** Quản lý yêu cầu bảo trì từ lúc xem/phân công đến khi nhân viên bắt đầu và hoàn thành xử lý. */
 public class MaintenanceRequestServiceImpl implements MaintenanceRequestService {
 
     private final MaintenanceRequestRepository maintenanceRequestRepository;
@@ -140,6 +141,7 @@ public class MaintenanceRequestServiceImpl implements MaintenanceRequestService 
 
     @Override
     @Transactional(readOnly = true)
+    /** Lấy yêu cầu bảo trì mà chủ hộ được phép xem từ phân phòng hiện tại. */
     public List<MaintenanceRequestResponse> getResidentRequests(Long residentHeadId) {
         RoomAssignment assignment = findActiveAssignment(residentHeadId);
 
@@ -152,6 +154,7 @@ public class MaintenanceRequestServiceImpl implements MaintenanceRequestService 
 
     @Override
     @Transactional(readOnly = true)
+    /** Lấy yêu cầu bảo trì theo tòa nhà hoặc toàn bộ nếu không lọc tòa nhà. */
     public List<MaintenanceRequestResponse> getRequests(Long buildingId) {
         List<MaintenanceRequest> requests = buildingId == null
                 ? maintenanceRequestRepository.findAllWithDetails()
@@ -165,6 +168,7 @@ public class MaintenanceRequestServiceImpl implements MaintenanceRequestService 
 
     @Override
     @Transactional
+    /** Giao yêu cầu cho nhân viên phù hợp, kiểm tra tòa nhà và trạng thái trước khi chuyển sang được phân công. */
     public MaintenanceRequestResponse assignRequest(Long id, MaintenanceAssignRequest request, Long buildingId) {
         MaintenanceRequest maintenanceRequest = findRequest(id);
         validateRequestBelongsToBuilding(maintenanceRequest, buildingId);
@@ -183,6 +187,7 @@ public class MaintenanceRequestServiceImpl implements MaintenanceRequestService 
 
     @Override
     @Transactional
+    /** Xóa yêu cầu trong phạm vi tòa nhà khi trạng thái còn cho phép xóa. */
     public void deleteRequest(Long id, Long buildingId) {
         MaintenanceRequest maintenanceRequest = findRequest(id);
         validateRequestBelongsToBuilding(maintenanceRequest, buildingId);
@@ -203,6 +208,7 @@ public class MaintenanceRequestServiceImpl implements MaintenanceRequestService 
 
     @Override
     @Transactional(readOnly = true)
+    /** Lấy danh sách yêu cầu được giao cho nhân viên, có thể lọc theo tòa nhà. */
     public List<MaintenanceRequestResponse> getStaffRequests(Long staffId, Long buildingId) {
         List<MaintenanceRequest> requests = buildingId == null
                 ? maintenanceRequestRepository.findByAssignedToIdWithDetails(staffId)
@@ -216,6 +222,7 @@ public class MaintenanceRequestServiceImpl implements MaintenanceRequestService 
 
     @Override
     @Transactional
+    /** Đánh dấu yêu cầu nhân viên được giao đang bắt đầu xử lý. */
     public MaintenanceRequestResponse startRequest(Long staffId, Long id) {
         MaintenanceRequest maintenanceRequest = findAssignedRequest(staffId, id);
 
@@ -233,6 +240,7 @@ public class MaintenanceRequestServiceImpl implements MaintenanceRequestService 
 
     @Override
     @Transactional
+    /** Hoàn thành yêu cầu, lưu kết quả/ảnh và ghi lịch sử nếu yêu cầu liên quan đến thiết bị. */
     public MaintenanceRequestResponse completeRequest(Long staffId, Long id, MaintenanceCompleteRequest request) {
         MaintenanceRequest maintenanceRequest = findAssignedRequest(staffId, id);
 

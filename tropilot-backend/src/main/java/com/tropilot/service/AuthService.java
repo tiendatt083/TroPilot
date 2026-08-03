@@ -8,6 +8,7 @@ import com.tropilot.dto.request.ResetPasswordWithCodeRequest;
 import com.tropilot.dto.response.LoginResponse;
 import com.tropilot.dto.response.UserResponse;
 
+/** Hợp đồng cho các nghiệp vụ đăng nhập, quên mật khẩu và cập nhật hồ sơ cá nhân. */
 public interface AuthService {
 
     LoginResponse login(LoginRequest request);

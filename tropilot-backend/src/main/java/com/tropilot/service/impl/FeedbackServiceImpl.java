@@ -31,6 +31,7 @@ import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
+/** Xử lý phản hồi cư dân, giới hạn dữ liệu theo tòa nhà và tạo thông báo khi có phản hồi mới. */
 public class FeedbackServiceImpl implements FeedbackService {
 
     private final FeedbackRepository feedbackRepository;
@@ -43,6 +44,7 @@ public class FeedbackServiceImpl implements FeedbackService {
 
     @Override
     @Transactional
+    /** Tạo phản hồi của chủ hộ cho phòng đang được phân và thông báo cho quản trị viên. */
     public FeedbackResponse createResidentFeedback(Long residentHeadId, FeedbackCreateRequest request) {
         RoomAssignment assignment = findActiveAssignment(residentHeadId);
         FeedbackType type = parseFeedbackType(request.getType());
@@ -70,6 +72,7 @@ public class FeedbackServiceImpl implements FeedbackService {
 
     @Override
     @Transactional(readOnly = true)
+    /** Lấy các phản hồi thuộc phòng của chủ hộ đang có phân phòng hiệu lực. */
     public List<FeedbackResponse> getResidentFeedbacks(Long residentHeadId) {
         RoomAssignment assignment = findActiveAssignment(residentHeadId);
 
@@ -82,6 +85,7 @@ public class FeedbackServiceImpl implements FeedbackService {
 
     @Override
     @Transactional(readOnly = true)
+    /** Lấy phản hồi theo tòa nhà, hoặc toàn bộ hệ thống khi không giới hạn tòa nhà. */
     public List<FeedbackResponse> getFeedbacks(Long buildingId) {
         List<Feedback> feedbacks = buildingId == null
                 ? feedbackRepository.findAllWithDetails()

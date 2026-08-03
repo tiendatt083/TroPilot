@@ -28,6 +28,7 @@ import lombok.Setter;
                 columnNames = {"notification_id", "building_id"}
         )
 )
+/** Bảng liên kết Notification với Building khi thông báo chỉ gửi cho các tòa nhà được chọn. */
 public class NotificationTargetBuilding {
 
     @Id

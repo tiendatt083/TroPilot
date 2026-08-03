@@ -19,6 +19,11 @@ import java.util.List;
 @RequestMapping("/api/resident/equipment")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('RESIDENT_HEAD')")
+/**
+ * API thiết bị của phòng hiện tại.
+ * GET /current-room tự xác định phòng từ tài khoản đăng nhập, vì vậy client không thể
+ * truyền roomId của phòng khác để xem dữ liệu thiết bị.
+ */
 public class ResidentEquipmentController {
 
     private final EquipmentService equipmentService;

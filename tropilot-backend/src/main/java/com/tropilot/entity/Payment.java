@@ -28,6 +28,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 @Table(name = "payments")
+/** Minh chứng chuyển khoản cho Invoice do trưởng phòng tải lên, chờ người có quyền xác nhận. */
 public class Payment {
 
     @Id

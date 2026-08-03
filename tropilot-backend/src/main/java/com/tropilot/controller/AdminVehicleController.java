@@ -27,6 +27,11 @@ import java.util.List;
 @RequestMapping("/api/admin/vehicles")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
+/**
+ * API quản lý đăng ký phương tiện của cư dân.
+ * GET / xem/lọc theo tòa nhà; POST / tạo; PUT /{id}/approve hoặc /reject duyệt;
+ * DELETE /{id} xóa đăng ký không còn cần thiết.
+ */
 public class AdminVehicleController {
 
     private final VehicleService vehicleService;

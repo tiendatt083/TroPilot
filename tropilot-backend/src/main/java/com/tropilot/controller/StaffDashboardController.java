@@ -17,6 +17,10 @@ import static com.tropilot.security.AuthenticatedUsers.requireUserId;
 @RequestMapping("/api/staff/dashboard")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('STAFF')")
+/**
+ * API dashboard của STAFF.
+ * GET / lấy userId từ JWT để trả tổng quan công việc, yêu cầu bảo trì và dữ liệu đúng với nhân viên đó.
+ */
 public class StaffDashboardController {
 
     private final DashboardService dashboardService;

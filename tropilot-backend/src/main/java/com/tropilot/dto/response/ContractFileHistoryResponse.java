@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
+/** Một file hợp đồng cũ và thông tin file/thời điểm đã thay thế nó. */
 public class ContractFileHistoryResponse {
 
     private Long id;

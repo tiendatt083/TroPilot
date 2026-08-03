@@ -7,6 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
+/** Trạng thái mới mà ADMIN gán cho phản ánh, ví dụ đang xử lý hoặc đã hoàn tất. */
 public class FeedbackStatusUpdateRequest {
 
     @NotBlank(message = "Feedback status is required")

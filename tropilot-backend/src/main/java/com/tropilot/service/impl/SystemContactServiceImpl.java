@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+/** Đọc và cập nhật thông tin liên hệ, số điện thoại trực và khung giờ làm việc của ban quản lý. */
 public class SystemContactServiceImpl implements SystemContactService {
 
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");

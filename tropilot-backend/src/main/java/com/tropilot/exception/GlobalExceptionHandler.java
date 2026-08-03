@@ -23,11 +23,16 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 import java.util.List;
 
 @RestControllerAdvice
+/**
+ * Điểm xử lý lỗi chung cho toàn bộ API. Mọi lỗi được đổi thành ApiResponse thống nhất
+ * để frontend không phải tự xử lý nhiều dạng response lỗi khác nhau.
+ */
 public class GlobalExceptionHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(BusinessException.class)
+    // Các lỗi nghiệp vụ đã tự mang HTTP status phù hợp.
     public ResponseEntity<ApiResponse<Void>> handleBusinessException(BusinessException exception) {
         return ResponseEntity
                 .status(exception.getStatus())
@@ -35,6 +40,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
+    // Lỗi @Valid trên request body: gom lỗi theo từng field để frontend hiển thị cạnh input.
     public ResponseEntity<ApiResponse<Void>> handleMethodArgumentNotValid(MethodArgumentNotValidException exception) {
         List<ValidationErrorResponse> errors = exception.getBindingResult()
                 .getFieldErrors()
@@ -48,6 +54,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
+    // Lỗi validation trên tham số URL/query, không phải request body.
     public ResponseEntity<ApiResponse<Void>> handleConstraintViolation(ConstraintViolationException exception) {
         List<ValidationErrorResponse> errors = exception.getConstraintViolations()
                 .stream()
@@ -63,6 +70,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
+    // JSON sai cấu trúc hoặc không thể chuyển thành kiểu dữ liệu Java mong đợi.
     public ResponseEntity<ApiResponse<Void>> handleHttpMessageNotReadable() {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
@@ -80,6 +88,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    // Client gọi đúng URL nhưng dùng sai HTTP method, ví dụ POST thay vì GET.
     public ResponseEntity<ApiResponse<Void>> handleMethodNotSupported() {
         return ResponseEntity
                 .status(HttpStatus.METHOD_NOT_ALLOWED)
@@ -94,6 +103,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(AuthenticationException.class)
+    // Không xác thực được người gọi, thường do thiếu/hỏng token.
     public ResponseEntity<ApiResponse<Void>> handleAuthenticationException() {
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
@@ -115,6 +125,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
+    // Lưới an toàn cuối cùng: log stack trace nội bộ nhưng không trả chi tiết nhạy cảm cho client.
     public ResponseEntity<ApiResponse<Void>> handleException(Exception exception) {
         LOGGER.error("Unexpected server error", exception);
         return ResponseEntity

@@ -17,6 +17,14 @@ import java.util.List;
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @RequiredArgsConstructor
+/**
+ * Kiểm tra tính toàn vẹn của mật khẩu tạm ngay khi khởi động ứng dụng.
+ *
+ * <p>Một số người dùng buộc đổi mật khẩu đang có mật khẩu tạm được mã hóa trong
+ * DB. Nếu encryption secret bị thay đổi, dữ liệu này không thể giải mã. Kiểm tra
+ * sớm giúp dừng ứng dụng với thông báo rõ ràng thay vì chỉ phát hiện lỗi khi
+ * người dùng cố đăng nhập hoặc đổi mật khẩu.</p>
+ */
 public class TemporaryPasswordIntegrityValidator implements CommandLineRunner {
 
     private final UserRepository userRepository;
@@ -25,6 +33,7 @@ public class TemporaryPasswordIntegrityValidator implements CommandLineRunner {
     @Override
     @Transactional(readOnly = true)
     public void run(String... args) {
+        // Chỉ kiểm tra các tài khoản còn ở trạng thái phải đổi mật khẩu.
         List<User> pendingUsers = userRepository.findAllByMustChangePasswordTrue();
 
         for (User user : pendingUsers) {
@@ -37,11 +46,13 @@ public class TemporaryPasswordIntegrityValidator implements CommandLineRunner {
     private void validateEncryptedPassword(User user) {
         String encryptedPassword = user.getTemporaryPasswordEncrypted();
 
+        // Một tài khoản đang chờ đổi mật khẩu phải luôn có dữ liệu mật khẩu tạm.
         if (encryptedPassword == null || encryptedPassword.isBlank()) {
             throw integrityException(user, null);
         }
 
         try {
+            // Chỉ cần giải mã được là đủ; không sử dụng hay ghi log mật khẩu gốc.
             temporaryPasswordCipher.decrypt(encryptedPassword);
         } catch (IllegalStateException exception) {
             throw integrityException(user, exception);
@@ -49,6 +60,7 @@ public class TemporaryPasswordIntegrityValidator implements CommandLineRunner {
     }
 
     private IllegalStateException integrityException(User user, Exception cause) {
+        // Kèm ID/email để người vận hành biết chính xác bản ghi nào cần xử lý.
         return new IllegalStateException(
                 "Temporary password integrity check failed for user "
                         + user.getId()

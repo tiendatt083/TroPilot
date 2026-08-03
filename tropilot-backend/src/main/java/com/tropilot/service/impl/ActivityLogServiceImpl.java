@@ -21,6 +21,7 @@ import java.util.Locale;
 
 @Service
 @RequiredArgsConstructor
+/** Ghi nhận thao tác người dùng và cung cấp lịch sử hoạt động có thể tìm kiếm. */
 public class ActivityLogServiceImpl implements ActivityLogService {
 
     private final ActivityLogRepository activityLogRepository;
@@ -29,6 +30,7 @@ public class ActivityLogServiceImpl implements ActivityLogService {
 
     @Override
     @Transactional
+    /** Lưu một thao tác của entity User đã có sẵn; bỏ qua nếu không có người dùng. */
     public void record(User user, String action, String description) {
         if (user == null) {
             throw new UnauthorizedException("Activity log user is required");
@@ -43,18 +45,21 @@ public class ActivityLogServiceImpl implements ActivityLogService {
 
     @Override
     @Transactional
+    /** Tìm người dùng theo id rồi ghi nhật ký thao tác cho họ. */
     public void record(Long userId, String action, String description) {
         record(findUser(userId), action, description);
     }
 
     @Override
     @Transactional
+    /** Ghi nhật ký cho người dùng đang gửi request hiện tại. */
     public void recordCurrentUser(String action, String description) {
         record(getCurrentUser(), action, description);
     }
 
     @Override
     @Transactional(readOnly = true)
+    /** Lấy toàn bộ nhật ký hoặc tìm theo từ khóa sau khi chuẩn hóa dữ liệu tìm kiếm. */
     public List<ActivityLogResponse> getLogs(String query) {
         String normalizedQuery = normalizeOptionalQuery(query);
 
@@ -68,6 +73,7 @@ public class ActivityLogServiceImpl implements ActivityLogService {
 
     @Override
     @Transactional(readOnly = true)
+    /** Lấy lịch sử thao tác của một người dùng, có hỗ trợ tìm theo từ khóa. */
     public List<ActivityLogResponse> getMyLogs(Long userId, String query) {
         String normalizedQuery = normalizeOptionalQuery(query);
 

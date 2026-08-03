@@ -7,6 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
+/** Nội dung phản hồi của ADMIN đối với một phản ánh. */
 public class FeedbackReplyRequest {
 
     @NotBlank(message = "Reply content is required")

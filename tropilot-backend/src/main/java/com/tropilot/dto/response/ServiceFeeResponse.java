@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
+/** Một loại phí của tòa nhà: giá, cách tính, loại xe (nếu có) và trạng thái đang áp dụng. */
 public class ServiceFeeResponse {
 
     private Long id;

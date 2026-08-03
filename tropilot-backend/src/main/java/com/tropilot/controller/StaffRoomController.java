@@ -19,6 +19,11 @@ import java.util.List;
 @RequestMapping("/api/staff/rooms")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('STAFF')")
+/**
+ * API chỉ đọc phòng dành cho STAFF.
+ * GET / xem/lọc phòng; GET /{id} xem chi tiết; GET /{id}/head-resident xem người
+ * chịu trách nhiệm chính của phòng để liên hệ khi xử lý việc.
+ */
 public class StaffRoomController {
 
     private final RoomService roomService;

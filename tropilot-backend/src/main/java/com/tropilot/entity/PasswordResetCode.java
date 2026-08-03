@@ -25,6 +25,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 @Table(name = "password_reset_codes")
+/** Mã đặt lại mật khẩu của User; chỉ lưu mã băm, thời hạn, số lần thử và thời điểm đã dùng. */
 public class PasswordResetCode {
 
     @Id

@@ -19,6 +19,7 @@ import java.time.format.DateTimeFormatter;
 
 @Service
 @Slf4j
+/** Tạo nội dung và gửi email cho nhân viên khi họ được giao task mới. */
 public class TaskEmailServiceImpl implements TaskEmailService {
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");

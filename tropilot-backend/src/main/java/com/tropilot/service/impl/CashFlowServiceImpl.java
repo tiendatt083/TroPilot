@@ -25,6 +25,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+/** Tổng hợp tiền đã thu và công nợ để tạo báo cáo dòng tiền theo tháng/tòa nhà. */
 public class CashFlowServiceImpl implements CashFlowService {
 
     private static final DateTimeFormatter MONTH_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM");
@@ -36,6 +37,7 @@ public class CashFlowServiceImpl implements CashFlowService {
 
     @Override
     @Transactional(readOnly = true)
+    /** Tính tổng đã thu, công nợ và số dư cho tháng yêu cầu; có thể giới hạn trong một tòa nhà. */
     public CashFlowResponse getCashFlow(String month, Long buildingId) {
         validateBuildingExists(buildingId);
 

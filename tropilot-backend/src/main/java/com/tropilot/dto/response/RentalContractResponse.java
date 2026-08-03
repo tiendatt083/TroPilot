@@ -12,6 +12,7 @@ import java.util.List;
 
 @Getter
 @Builder
+/** Hợp đồng thuê phòng: thời hạn, đặt cọc, trạng thái, file hiện tại và lịch sử file cũ. */
 public class RentalContractResponse {
 
     private Long id;

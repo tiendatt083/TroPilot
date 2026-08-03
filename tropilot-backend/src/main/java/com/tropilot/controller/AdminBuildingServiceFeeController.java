@@ -23,6 +23,11 @@ import java.util.List;
 @RequestMapping("/api/admin/buildings/{buildingId}/service-fees")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
+/**
+ * API quản lý các loại phí dịch vụ của một tòa nhà.
+ * POST / thêm phí; GET / xem danh sách; PUT /{id} sửa; DELETE /{id} xóa;
+ * PUT /{id}/toggle bật hoặc tắt áp dụng phí mà không cần xóa bản ghi.
+ */
 public class AdminBuildingServiceFeeController {
 
     private final ServiceFeeService serviceFeeService;

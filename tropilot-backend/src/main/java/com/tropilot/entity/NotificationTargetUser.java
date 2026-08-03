@@ -28,6 +28,7 @@ import lombok.Setter;
                 columnNames = {"notification_id", "user_id"}
         )
 )
+/** Bảng liên kết Notification với User khi thông báo gửi cho một nhóm người cụ thể. */
 public class NotificationTargetUser {
 
     @Id

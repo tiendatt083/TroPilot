@@ -11,18 +11,26 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Repository quản lý công việc giao cho nhân viên.
+ * Các truy vấn chi tiết nạp sẵn tòa nhà, phòng, phản hồi nguồn, người được giao và người tạo task.
+ */
 public interface TaskRepository extends JpaRepository<Task, Long> {
 
+    /** Đếm task theo trạng thái để phục vụ thống kê công việc. */
     long countByStatus(com.tropilot.enums.TaskStatus status);
 
+    /** Đếm task của một nhân viên có trạng thái nằm trong danh sách truyền vào. */
     long countByAssignedTo_IdAndStatusIn(Long assignedToId, Collection<com.tropilot.enums.TaskStatus> statuses);
 
+    /** Đếm task của nhân viên đã quá hạn nhưng vẫn thuộc các trạng thái chưa hoàn thành. */
     long countByAssignedTo_IdAndDeadlineBeforeAndStatusIn(
             Long assignedToId,
             LocalDateTime deadline,
             Collection<com.tropilot.enums.TaskStatus> statuses
     );
 
+    /** Kiểm tra ảnh kết quả có thuộc task được giao cho một nhân viên cụ thể hay không. */
     @Query("""
             select case when count(taskEntity) > 0 then true else false end
             from Task taskEntity
@@ -34,6 +42,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
             @Param("staffId") Long staffId
     );
 
+    /** Kiểm tra ảnh kết quả có thuộc task mà cư dân được phép xem qua phòng hoặc phản hồi của mình hay không. */
     @Query("""
             select case when count(taskEntity) > 0 then true else false end
             from Task taskEntity
@@ -48,6 +57,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
             @Param("residentHeadId") Long residentHeadId
     );
 
+    /** Tìm task theo id và nạp đủ dữ liệu liên quan cho trang chi tiết. */
     @EntityGraph(attributePaths = {
             "building",
             "room",
@@ -58,6 +68,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     })
     Optional<Task> findById(Long id);
 
+    /** Lấy toàn bộ task với dữ liệu chi tiết, sắp xếp task tạo mới nhất trước. */
     @Query("""
             select taskEntity from Task taskEntity
             left join fetch taskEntity.building taskBuilding
@@ -70,6 +81,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
             """)
     List<Task> findAllWithDetails();
 
+    /** Lấy các task liên quan trực tiếp đến tòa nhà hoặc đến phòng thuộc tòa nhà đó. */
     @Query("""
             select taskEntity from Task taskEntity
             left join fetch taskEntity.building taskBuilding
@@ -83,6 +95,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
             """)
     List<Task> findByBuildingIdWithDetails(@Param("buildingId") Long buildingId);
 
+    /** Lấy các task được giao cho một nhân viên cụ thể. */
     @Query("""
             select taskEntity from Task taskEntity
             left join fetch taskEntity.building taskBuilding

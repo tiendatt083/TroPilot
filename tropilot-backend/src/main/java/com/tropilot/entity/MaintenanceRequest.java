@@ -29,6 +29,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 @Table(name = "maintenance_requests")
+/** Yêu cầu bảo trì liên kết phòng, thiết bị, người báo và nhân viên xử lý; lưu toàn bộ vòng đời xử lý. */
 public class MaintenanceRequest {
 
     @Id

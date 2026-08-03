@@ -11,6 +11,7 @@ import java.util.List;
 
 @Getter
 @Builder
+/** Thông báo và phạm vi người/tòa nhà nhận, nguồn tạo, đường dẫn hành động và trạng thái đã đọc. */
 public class NotificationResponse {
 
     private Long id;

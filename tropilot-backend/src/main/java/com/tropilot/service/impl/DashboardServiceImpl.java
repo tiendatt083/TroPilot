@@ -57,6 +57,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+/** Tính và tổng hợp các chỉ số dashboard riêng cho admin, nhân viên và chủ hộ. */
 public class DashboardServiceImpl implements DashboardService {
 
     private static final int CONTRACT_EXPIRING_DAYS = 30;
@@ -85,6 +86,7 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     @Transactional(readOnly = true)
+    /** Tổng hợp chỉ số toàn hệ thống cho dashboard quản trị viên. */
     public AdminDashboardResponse getAdminDashboard() {
         LocalDate today = LocalDate.now();
         long activeAssignedHeads = roomAssignmentRepository.countByStatus(RoomAssignmentStatus.ACTIVE);
@@ -130,6 +132,7 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     @Transactional(readOnly = true)
+    /** Tổng hợp số task, yêu cầu bảo trì và việc quá hạn của một nhân viên. */
     public StaffDashboardResponse getStaffDashboard(Long staffId) {
         LocalDateTime now = LocalDateTime.now();
         LocalDate currentMonth = YearMonth.now().atDay(1);
@@ -161,6 +164,7 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     @Transactional(readOnly = true)
+    /** Tổng hợp phòng, hóa đơn, hợp đồng, thông báo và dịch vụ liên quan đến một chủ hộ. */
     public ResidentDashboardResponse getResidentDashboard(Long residentHeadId) {
         HeadResidentAssignmentResponse currentRoom = headResidentAssignmentService.getResidentAssignedRoom(residentHeadId);
 

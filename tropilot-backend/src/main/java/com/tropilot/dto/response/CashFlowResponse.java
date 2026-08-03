@@ -8,6 +8,7 @@ import java.util.List;
 
 @Getter
 @Builder
+/** Tổng quan dòng tiền tháng và các phiếu thu tạo nên số liệu đó. */
 public class CashFlowResponse {
 
     private BigDecimal totalIncome;

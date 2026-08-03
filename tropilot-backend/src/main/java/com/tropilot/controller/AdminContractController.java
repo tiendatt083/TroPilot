@@ -19,6 +19,11 @@ import java.util.List;
 @RequestMapping("/api/admin/contracts")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
+/**
+ * API quản lý hợp đồng thuê phòng.
+ * GET / xem danh sách, có thể lọc theo buildingId; GET /{id} xem một hợp đồng;
+ * POST /{id}/upload nhận file hợp đồng và giao cho service lưu file an toàn.
+ */
 public class AdminContractController {
 
     private final RentalContractService rentalContractService;

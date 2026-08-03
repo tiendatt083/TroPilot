@@ -19,6 +19,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/admin/rooms/{roomId}/head-resident")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
+/**
+ * API gán trưởng phòng cho một roomId cụ thể.
+ * POST / chỉ định thành viên làm trưởng phòng; GET / xem người đang được gán;
+ * DELETE / gỡ phân công trưởng phòng hiện tại.
+ */
 public class AdminHeadResidentAssignmentController {
 
     private final HeadResidentAssignmentService headResidentAssignmentService;

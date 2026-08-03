@@ -23,6 +23,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+/** Quản lý phòng, kiểm tra tầng/mã/trạng thái và bảo vệ tính nhất quán khi phòng đang có người ở. */
 public class RoomServiceImpl implements RoomService {
 
     private final RoomRepository roomRepository;
@@ -34,6 +35,7 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     @Transactional
+    /** Tạo phòng mới sau khi kiểm tra tòa nhà, tầng, mã phòng và trạng thái ban đầu hợp lệ. */
     public RoomResponse createRoom(RoomUpsertRequest request) {
         Building building = findBuilding(request.getBuildingId());
         String roomCode = buildRoomCode(building, request.getRoomCode());
@@ -68,6 +70,7 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     @Transactional(readOnly = true)
+    /** Lọc danh sách phòng theo tòa nhà, trạng thái và từ khóa mã/tên phòng. */
     public List<RoomResponse> getRooms(Long buildingId, String status, String search) {
         if (buildingId != null && !buildingRepository.existsById(buildingId)) {
             throw new ResourceNotFoundException("Building not found");
@@ -90,6 +93,7 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     @Transactional
+    /** Cập nhật phòng nhưng không cho phép thay trạng thái trái với dữ liệu cư dân đang ở. */
     public RoomResponse updateRoom(Long id, RoomUpsertRequest request) {
         Room room = findRoom(id);
         Building building = findBuilding(request.getBuildingId());
@@ -125,6 +129,7 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     @Transactional
+    /** Xóa phòng khi không còn dữ liệu phụ thuộc làm mất tính toàn vẹn. */
     public void deleteRoom(Long id) {
         Room room = findRoom(id);
 

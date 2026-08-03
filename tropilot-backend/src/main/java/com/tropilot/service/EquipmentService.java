@@ -7,6 +7,7 @@ import com.tropilot.dto.response.EquipmentResponse;
 
 import java.util.List;
 
+/** Hợp đồng quản lý thiết bị và lịch sử bảo trì thiết bị trong tòa nhà/phòng. */
 public interface EquipmentService {
 
     EquipmentResponse createEquipment(Long buildingId, EquipmentUpsertRequest request);

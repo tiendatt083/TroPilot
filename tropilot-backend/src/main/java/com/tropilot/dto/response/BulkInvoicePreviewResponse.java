@@ -9,6 +9,7 @@ import java.util.List;
 
 @Getter
 @Builder
+/** Kết quả tính thử hóa đơn cả tòa nhà: phòng hợp lệ, phòng bị chặn và tổng tiền. */
 public class BulkInvoicePreviewResponse {
 
     private Long buildingId;

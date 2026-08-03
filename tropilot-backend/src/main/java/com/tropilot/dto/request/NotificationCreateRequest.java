@@ -9,6 +9,7 @@ import java.util.List;
 
 @Getter
 @Setter
+/** Dữ liệu ADMIN tạo thông báo, gồm nội dung và cách chọn nhóm/người nhận. */
 public class NotificationCreateRequest {
 
     @NotBlank(message = "Notification title is required")

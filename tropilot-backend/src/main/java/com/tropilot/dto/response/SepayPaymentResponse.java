@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
+/** Thông tin QR SePay và tiến độ nhận tiền tự động cho một hóa đơn. */
 public class SepayPaymentResponse {
 
     private Long id;

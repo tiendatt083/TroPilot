@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
+/** Thành viên phòng, kèm trạng thái ở và các số liệu sức chứa để kiểm tra phòng còn chỗ hay không. */
 public class RoomMemberResponse {
 
     private Long id;

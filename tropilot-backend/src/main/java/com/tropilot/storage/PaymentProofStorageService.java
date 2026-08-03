@@ -17,6 +17,10 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+/**
+ * Lưu ảnh minh chứng thanh toán của cư dân vào uploads/payments.
+ * Tệp minh chứng là bắt buộc, chỉ nhận JPEG/PNG tối đa 10 MB.
+ */
 public class PaymentProofStorageService {
 
     private static final long MAX_FILE_SIZE_BYTES = 10L * 1024L * 1024L;
@@ -25,6 +29,7 @@ public class PaymentProofStorageService {
 
     private final UploadProperties uploadProperties;
 
+    /** Kiểm tra ảnh minh chứng, lưu tên UUID và trả URL dùng trong dữ liệu phiếu thanh toán. */
     public String store(MultipartFile file) {
         validateFile(file);
 
@@ -52,6 +57,7 @@ public class PaymentProofStorageService {
                 .toUriString();
     }
 
+    /** Kiểm tra ảnh bắt buộc, dung lượng tối đa, phần mở rộng và kiểu nội dung an toàn. */
     private void validateFile(MultipartFile file) {
         if (file == null || file.isEmpty()) {
             throw new BadRequestException("Payment proof file is required");
@@ -72,6 +78,7 @@ public class PaymentProofStorageService {
         }
     }
 
+    /** Lấy phần mở rộng ảnh đã chuẩn hóa hoặc ném lỗi nếu tên tệp không hợp lệ. */
     private String getExtension(String fileName) {
         if (fileName == null || fileName.isBlank() || !fileName.contains(".")) {
             throw new BadRequestException("Payment proof file type is not allowed");

@@ -17,6 +17,10 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+/**
+ * Lưu ảnh đồng hồ điện hoặc nước vào uploads/utility-readings.
+ * fieldLabel được dùng để tạo thông báo lỗi đúng với trường ảnh đang được người dùng gửi lên.
+ */
 public class UtilityReadingImageStorageService {
 
     private static final long MAX_FILE_SIZE_BYTES = 10L * 1024L * 1024L;
@@ -25,6 +29,7 @@ public class UtilityReadingImageStorageService {
 
     private final UploadProperties uploadProperties;
 
+    /** Kiểm tra và lưu ảnh chỉ số bắt buộc, rồi trả URL phục vụ hiển thị/lưu bản ghi chỉ số. */
     public String store(MultipartFile file, String fieldLabel) {
         validateFile(file, fieldLabel);
 
@@ -52,6 +57,7 @@ public class UtilityReadingImageStorageService {
                 .toUriString();
     }
 
+    /** Kiểm tra tệp ảnh bắt buộc, tối đa 10 MB và chỉ chấp nhận JPEG hoặc PNG. */
     private void validateFile(MultipartFile file, String fieldLabel) {
         if (file == null || file.isEmpty()) {
             throw new BadRequestException(fieldLabel + " is required");
@@ -72,6 +78,7 @@ public class UtilityReadingImageStorageService {
         }
     }
 
+    /** Lấy phần mở rộng và đưa tên trường vào lỗi để người dùng biết ảnh nào không hợp lệ. */
     private String getExtension(String fileName, String fieldLabel) {
         if (fileName == null || fileName.isBlank() || !fileName.contains(".")) {
             throw new BadRequestException(fieldLabel + " type is not allowed");

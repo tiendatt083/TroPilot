@@ -7,6 +7,7 @@ import com.tropilot.dto.response.TaskResponse;
 
 import java.util.List;
 
+/** Hợp đồng tạo, giao, theo dõi và hoàn thành công việc cho nhân viên. */
 public interface TaskService {
 
     TaskResponse createTask(TaskCreateRequest request, Long createdById, Long buildingId);

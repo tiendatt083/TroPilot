@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
+/** Kết quả STAFF gửi khi hoàn tất bảo trì, có thể đính kèm ảnh chứng minh. */
 public class MaintenanceCompleteRequest {
 
     @NotBlank(message = "Result note is required when completing a maintenance request")

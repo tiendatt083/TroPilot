@@ -8,6 +8,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
+/** Một số điện thoại liên hệ, gồm nhãn hiển thị và số thực tế. */
 public class ContactPhoneRequest {
 
     @NotBlank(message = "Phone display name is required")

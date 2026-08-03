@@ -7,6 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
+/** Dữ liệu đổi mật khẩu bắt buộc ở lần đăng nhập đầu bằng mật khẩu tạm. */
 public class ChangePasswordFirstTimeRequest {
 
     @NotBlank(message = "Current password is required")

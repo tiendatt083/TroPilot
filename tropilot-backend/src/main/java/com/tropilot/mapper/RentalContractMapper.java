@@ -12,12 +12,22 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
+/**
+ * Chuyển hợp đồng thuê và lịch sử các tệp hợp đồng cũ thành dữ liệu phản hồi.
+ * Thông tin phòng, tòa nhà và người đại diện cư dân được đưa vào để client không phải gọi thêm API.
+ */
 public class RentalContractMapper {
 
+    /**
+     * Chuyển hợp đồng khi không cần trả về lịch sử tệp cũ.
+     */
     public RentalContractResponse toResponse(RentalContract contract) {
         return toResponse(contract, List.of());
     }
 
+    /**
+     * Chuyển hợp đồng kèm danh sách các tệp hợp đồng đã được thay thế trước đó.
+     */
     public RentalContractResponse toResponse(RentalContract contract, List<RentalContractFileHistory> previousFiles) {
         Room room = contract.getRoom();
         Building building = room.getBuilding();
@@ -46,6 +56,9 @@ public class RentalContractMapper {
                 .build();
     }
 
+    /**
+     * Chuyển danh sách lịch sử tệp; trả về danh sách rỗng nếu hợp đồng chưa từng thay tệp.
+     */
     private List<ContractFileHistoryResponse> toHistoryResponses(List<RentalContractFileHistory> previousFiles) {
         if (previousFiles == null || previousFiles.isEmpty()) {
             return List.of();
@@ -56,6 +69,7 @@ public class RentalContractMapper {
                 .toList();
     }
 
+    /** Chuyển một lần thay tệp hợp đồng, kèm người đã thực hiện thay thế. */
     private ContractFileHistoryResponse toHistoryResponse(RentalContractFileHistory history) {
         User replacedBy = history.getReplacedBy();
 

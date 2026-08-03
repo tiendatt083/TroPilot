@@ -5,6 +5,7 @@ import com.tropilot.dto.response.RoomMemberResponse;
 
 import java.util.List;
 
+/** Hợp đồng đăng ký, duyệt, từ chối và quản lý thành viên sống trong phòng. */
 public interface RoomMemberService {
 
     RoomMemberResponse createResidentMember(Long residentHeadId, RoomMemberUpsertRequest request);

@@ -19,11 +19,15 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/notifications")
 @RequiredArgsConstructor
+/**
+ * API để người dùng xem và đánh dấu đã đọc các thông báo thuộc về chính họ.
+ */
 public class NotificationController {
 
     private final NotificationService notificationService;
 
     @GetMapping("/me")
+    // Chỉ lấy thông báo theo userId từ JWT, không nhận userId do client gửi lên.
     public ApiResponse<List<NotificationResponse>> getMyNotifications(
             @AuthenticationPrincipal AuthenticatedUser user
     ) {
@@ -34,6 +38,7 @@ public class NotificationController {
     }
 
     @PutMapping("/{id}/read")
+    // Đánh dấu một thông báo là đã đọc sau khi service xác nhận nó thuộc người dùng hiện tại.
     public ApiResponse<NotificationResponse> markRead(
             @AuthenticationPrincipal AuthenticatedUser user,
             @PathVariable(name = "id") Long id

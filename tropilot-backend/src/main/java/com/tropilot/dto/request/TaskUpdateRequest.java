@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
+/** Toàn bộ dữ liệu thay thế khi ADMIN cập nhật một nhiệm vụ đã tồn tại, bao gồm trạng thái. */
 public class TaskUpdateRequest {
 
     @NotBlank(message = "Task title is required")

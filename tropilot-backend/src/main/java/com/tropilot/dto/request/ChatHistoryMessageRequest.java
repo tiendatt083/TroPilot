@@ -8,6 +8,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
+/** Một tin nhắn cũ trong lịch sử hội thoại gửi kèm chatbot để giữ ngữ cảnh. */
 public class ChatHistoryMessageRequest {
 
     @NotBlank(message = "Chat message role is required")

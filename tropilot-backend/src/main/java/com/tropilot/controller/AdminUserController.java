@@ -21,6 +21,11 @@ import java.util.List;
 @RequestMapping("/api/admin/users")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
+/**
+ * API quản lý tài khoản người dùng.
+ * POST / tạo tài khoản; GET / xem toàn bộ tài khoản; DELETE /{id} xóa tài khoản
+ * sau khi service kiểm tra các dữ liệu đang phụ thuộc vào tài khoản đó.
+ */
 public class AdminUserController {
 
     private final UserService userService;

@@ -14,6 +14,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Embeddable
+/** Một số điện thoại thuộc SystemContact; dùng Cascade/Orphan removal để đồng bộ danh sách liên hệ. */
 public class ContactPhone {
 
     @Column(name = "display_name", nullable = false, length = 100)

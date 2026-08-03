@@ -11,6 +11,7 @@ import java.time.LocalDate;
 
 @Getter
 @Setter
+/** Dữ liệu thêm hoặc sửa một thành viên ở trong phòng, kèm ngày bắt đầu ở và quan hệ. */
 public class RoomMemberUpsertRequest {
 
     @NotBlank(message = "Full name is required")

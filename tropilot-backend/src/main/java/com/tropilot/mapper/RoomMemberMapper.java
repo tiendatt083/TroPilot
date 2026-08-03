@@ -15,11 +15,18 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
+/**
+ * Chuyển thành viên phòng thành dữ liệu phản hồi và tính số người hiện đang ở phòng.
+ * Mapper tra cứu phân phòng đang hiệu lực để hiển thị số chủ hộ, thành viên đã duyệt và sức chứa tối đa.
+ */
 public class RoomMemberMapper {
 
     private final RoomMemberRepository roomMemberRepository;
     private final RoomAssignmentRepository roomAssignmentRepository;
 
+    /**
+     * Tạo RoomMemberResponse. Số người ở được tính theo phân phòng ACTIVE, không chỉ theo bản ghi thành viên đang map.
+     */
     public RoomMemberResponse toResponse(RoomMember member) {
         Room room = member.getRoom();
         Building building = room.getBuilding();

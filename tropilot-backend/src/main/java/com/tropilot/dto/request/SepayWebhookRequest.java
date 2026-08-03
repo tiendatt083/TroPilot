@@ -10,6 +10,10 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
+/**
+ * Dữ liệu giao dịch SePay gửi vào webhook. JsonAlias giúp nhận được nhiều cách đặt
+ * tên trường khác nhau từ SePay mà không làm request bị lỗi.
+ */
 public class SepayWebhookRequest {
 
     @JsonAlias({"id", "transactionId", "transaction_id"})

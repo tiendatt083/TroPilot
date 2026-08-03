@@ -11,10 +11,17 @@ import org.springframework.stereotype.Component;
 import java.time.format.DateTimeFormatter;
 
 @Component
+/**
+ * Chuyển biên lai đã lập thành dữ liệu trả về cho API.
+ * Mapper cung cấp cả mã biên lai, số tiền và ngữ cảnh hóa đơn/phòng/cư dân liên quan.
+ */
 public class ReceiptMapper {
 
     private static final DateTimeFormatter MONTH_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM");
 
+    /**
+     * Tạo ReceiptResponse và định dạng tháng của hóa đơn theo yyyy-MM để client dễ hiển thị.
+     */
     public ReceiptResponse toResponse(Receipt receipt) {
         Invoice invoice = receipt.getInvoice();
         Room room = receipt.getRoom();

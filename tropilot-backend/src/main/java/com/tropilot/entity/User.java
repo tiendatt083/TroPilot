@@ -27,6 +27,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 @Table(name = "users")
+/** Bảng tài khoản: thông tin đăng nhập, vai trò, trạng thái và mật khẩu tạm đã mã hóa. */
 public class User {
 
     @Id

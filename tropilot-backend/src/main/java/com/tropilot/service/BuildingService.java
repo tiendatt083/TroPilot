@@ -5,6 +5,7 @@ import com.tropilot.dto.response.BuildingResponse;
 
 import java.util.List;
 
+/** Hợp đồng quản lý vòng đời tòa nhà: tạo, tìm, cập nhật và xóa. */
 public interface BuildingService {
 
     BuildingResponse createBuilding(BuildingUpsertRequest request);

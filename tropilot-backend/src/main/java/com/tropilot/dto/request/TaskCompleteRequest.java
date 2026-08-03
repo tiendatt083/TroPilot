@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
+/** Kết quả STAFF nộp khi hoàn thành công việc, gồm ghi chú bắt buộc và ảnh tùy chọn. */
 public class TaskCompleteRequest {
 
     @NotBlank(message = "Result note is required when completing a task")

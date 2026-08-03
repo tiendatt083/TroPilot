@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
+/** Thông tin tài khoản trả về client; chỉ khi cần mới có temporaryPassword nhờ JsonInclude. */
 public class UserResponse {
 
     private Long id;

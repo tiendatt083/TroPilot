@@ -22,6 +22,11 @@ import java.util.List;
 @RequestMapping("/api/admin/maintenance-requests")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
+/**
+ * API quản lý yêu cầu bảo trì ở cấp ADMIN.
+ * GET / xem/lọc theo buildingId; PUT /{id}/assign phân công nhân viên;
+ * DELETE /{id} xóa yêu cầu khi nghiệp vụ cho phép.
+ */
 public class AdminMaintenanceRequestController {
 
     private final MaintenanceRequestService maintenanceRequestService;

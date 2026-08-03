@@ -29,6 +29,11 @@ import java.util.List;
 @RequestMapping("/api/admin/equipment")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
+/**
+ * API tra cứu thiết bị và mở yêu cầu bảo trì từ thiết bị đã chọn.
+ * GET / xem/lọc danh sách; GET /{id} xem chi tiết; GET /{id}/maintenance-history
+ * xem lịch sử sửa chữa; POST /{id}/maintenance-requests tạo yêu cầu kèm dữ liệu/ảnh.
+ */
 public class AdminEquipmentController {
 
     private final EquipmentService equipmentService;

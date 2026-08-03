@@ -23,6 +23,11 @@ import java.util.List;
 @RequestMapping("/api/admin/buildings")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
+/**
+ * API chỉ cho ADMIN quản lý tòa nhà.
+ * POST / tạo tòa nhà; GET / xem danh sách (có thể tìm kiếm); GET /{id} xem chi tiết;
+ * PUT /{id} sửa thông tin; DELETE /{id} xóa tòa nhà khi dữ liệu cho phép.
+ */
 public class AdminBuildingController {
 
     private final BuildingService buildingService;

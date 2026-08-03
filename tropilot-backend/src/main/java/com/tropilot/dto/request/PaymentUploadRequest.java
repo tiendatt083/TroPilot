@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
+/** Bằng chứng thanh toán của một hóa đơn: ID hóa đơn, ảnh/file bắt buộc và ghi chú tùy chọn. */
 public class PaymentUploadRequest {
 
     @NotNull(message = "Invoice is required")

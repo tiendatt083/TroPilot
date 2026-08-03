@@ -46,6 +46,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+/** Tạo, lọc quyền xem, đánh dấu đã đọc và phát sinh thông báo tự động cho các sự kiện hệ thống. */
 public class NotificationServiceImpl implements NotificationService {
 
     private final NotificationRepository notificationRepository;
@@ -59,6 +60,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     @Transactional
+    /** Tạo thông báo thủ công, kiểm tra đối tượng nhận và giới hạn tòa nhà của người tạo khi có. */
     public NotificationResponse createNotification(NotificationCreateRequest request, Long createdById, Long buildingId) {
         User createdBy = findUser(createdById);
         NotificationTargetType targetType = parseTargetType(request.getTargetType());
@@ -93,6 +95,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     @Transactional(readOnly = true)
+    /** Lấy thông báo cho quản trị viên, có thể thu hẹp theo tòa nhà. */
     public List<NotificationResponse> getAdminNotifications(Long buildingId) {
         if (buildingId != null) {
             validateBuildingExists(buildingId);
@@ -111,6 +114,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     @Transactional(readOnly = true)
+    /** Lấy thông báo đang hiển thị với người dùng hiện tại và gắn trạng thái đã đọc riêng của họ. */
     public List<NotificationResponse> getMyNotifications(Long userId) {
         User user = findUser(userId);
 
@@ -171,6 +175,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     @Transactional
+    /** Đánh dấu thông báo là đã đọc cho một người dùng, chỉ khi họ có quyền nhìn thấy thông báo. */
     public NotificationResponse markRead(Long userId, Long notificationId) {
         User user = findUser(userId);
         if (user.getRole() == UserRole.RESIDENT_HEAD) {

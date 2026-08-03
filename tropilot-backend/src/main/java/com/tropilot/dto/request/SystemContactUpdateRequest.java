@@ -14,6 +14,7 @@ import java.util.List;
 
 @Getter
 @Setter
+/** Dữ liệu ADMIN cập nhật thông tin liên hệ chung: email, địa chỉ, giờ làm và các số điện thoại. */
 public class SystemContactUpdateRequest {
 
     @NotBlank(message = "Contact email is required")

@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
+/** Minh chứng thanh toán hóa đơn, gồm ảnh, trạng thái xác nhận và người đã xác nhận. */
 public class PaymentResponse {
 
     private Long id;

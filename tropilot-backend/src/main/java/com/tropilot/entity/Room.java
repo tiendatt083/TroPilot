@@ -30,6 +30,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 @Table(name = "rooms")
+/** Bảng phòng, thuộc một Building và lưu giá thuê, diện tích, sức chứa, trạng thái. */
 public class Room {
 
     @Id

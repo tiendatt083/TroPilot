@@ -15,10 +15,14 @@ import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
+/**
+ * Chuyển lỗi chưa xác thực (401 Unauthorized) của Spring Security thành ApiResponse dạng JSON thống nhất.
+ */
 public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     private final ObjectMapper objectMapper;
 
+    /** Ghi HTTP 401 khi request cần đăng nhập nhưng không có token hợp lệ. */
     @Override
     public void commence(
             HttpServletRequest request,

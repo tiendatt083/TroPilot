@@ -11,6 +11,7 @@ import java.time.LocalDate;
 
 @Getter
 @Setter
+/** Dữ liệu tính thử một hóa đơn trước khi ADMIN quyết định tạo bản ghi chính thức. */
 public class InvoicePreviewRequest {
 
     @NotNull(message = "Room is required")

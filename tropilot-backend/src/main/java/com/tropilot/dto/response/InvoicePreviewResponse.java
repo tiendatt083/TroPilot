@@ -9,6 +9,7 @@ import java.util.List;
 
 @Getter
 @Builder
+/** Kết quả tính thử một hóa đơn, gồm các dòng phí, tổng tiền và cảnh báo trước khi tạo. */
 public class InvoicePreviewResponse {
 
     private Long roomId;

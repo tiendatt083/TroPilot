@@ -6,8 +6,13 @@ import com.tropilot.entity.Room;
 import org.springframework.stereotype.Component;
 
 @Component
+/**
+ * Chuyển dữ liệu phòng sang RoomResponse để trả về API.
+ * Response kèm thông tin tòa nhà chứa phòng vì đây là ngữ cảnh cần hiển thị thường xuyên.
+ */
 public class RoomMapper {
 
+    /** Chuyển một Room thành RoomResponse. */
     public RoomResponse toResponse(Room room) {
         Building building = room.getBuilding();
 

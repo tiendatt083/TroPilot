@@ -18,11 +18,15 @@ import static com.tropilot.security.AuthenticatedUsers.requireUserId;
 @RestController
 @RequestMapping("/api/activity-logs")
 @RequiredArgsConstructor
+/**
+ * Cho người dùng xem lịch sử hoạt động của chính mình, có thể lọc bằng từ khóa hoặc loại hành động.
+ */
 public class ActivityLogController {
 
     private final ActivityLogService activityLogService;
 
     @GetMapping("/me")
+    // userId luôn lấy từ tài khoản đăng nhập để người dùng không thể xem log của người khác.
     public ApiResponse<List<ActivityLogResponse>> getMyLogs(
             @AuthenticationPrincipal AuthenticatedUser user,
             @RequestParam(name = "query", required = false) String query,
@@ -37,6 +41,7 @@ public class ActivityLogController {
     }
 
     private String resolveQuery(String query, String legacyAction) {
+        // Hỗ trợ tham số action cũ; nếu client gửi query mới thì ưu tiên query.
         return query == null || query.isBlank() ? legacyAction : query;
     }
 }

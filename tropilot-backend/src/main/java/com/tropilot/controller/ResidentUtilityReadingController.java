@@ -19,6 +19,10 @@ import java.util.List;
 @RequestMapping("/api/resident/utility-readings")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('RESIDENT_HEAD')")
+/**
+ * API chỉ đọc chỉ số điện, nước của phòng hiện tại.
+ * GET /current-room trả danh sách kỳ ghi chỉ số sau khi kiểm tra quyền từ tài khoản đăng nhập.
+ */
 public class ResidentUtilityReadingController {
 
     private final UtilityReadingService utilityReadingService;

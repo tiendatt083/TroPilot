@@ -26,6 +26,11 @@ import java.util.List;
 @RequestMapping("/api/staff/maintenance-requests")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('STAFF')")
+/**
+ * API xử lý yêu cầu bảo trì do STAFF phụ trách.
+ * GET / xem yêu cầu được giao; PUT /{id}/start chuyển sang đang làm; PUT /{id}/complete
+ * hoàn tất và có thể gửi kết quả/ảnh theo multipart-form data.
+ */
 public class StaffMaintenanceRequestController {
 
     private final MaintenanceRequestService maintenanceRequestService;

@@ -29,6 +29,7 @@ import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
+/** Quản lý hợp đồng thuê, tệp đính kèm phiên bản cũ và các thao tác xác nhận/báo vấn đề của chủ hộ. */
 public class RentalContractServiceImpl implements RentalContractService {
 
     private final RentalContractRepository rentalContractRepository;
@@ -42,6 +43,7 @@ public class RentalContractServiceImpl implements RentalContractService {
 
     @Override
     @Transactional(readOnly = true)
+    /** Lấy hợp đồng thuê còn hiệu lực, có thể giới hạn trong một tòa nhà. */
     public List<RentalContractResponse> getContracts(Long buildingId) {
         List<RentalContract> contracts = buildingId == null
                 ? rentalContractRepository.findByRentalStatusAndAssignmentStatusWithDetails(
@@ -58,6 +60,7 @@ public class RentalContractServiceImpl implements RentalContractService {
 
     @Override
     @Transactional(readOnly = true)
+    /** Lấy chi tiết hợp đồng và kiểm tra phạm vi tòa nhà nếu có. */
     public RentalContractResponse getContract(Long id, Long buildingId) {
         RentalContract contract = findActiveContract(id);
         validateContractBelongsToBuilding(contract, buildingId);
@@ -66,6 +69,7 @@ public class RentalContractServiceImpl implements RentalContractService {
 
     @Override
     @Transactional
+    /** Tải tệp hợp đồng mới, lưu tệp cũ vào lịch sử và tạo thông báo cập nhật hợp đồng. */
     public RentalContractResponse uploadContract(Long id, Long buildingId, MultipartFile file) {
         RentalContract contract = findActiveContract(id);
         validateContractBelongsToBuilding(contract, buildingId);
@@ -104,12 +108,14 @@ public class RentalContractServiceImpl implements RentalContractService {
 
     @Override
     @Transactional(readOnly = true)
+    /** Lấy hợp đồng hiện tại của chủ hộ đang có phân phòng hợp lệ. */
     public RentalContractResponse getCurrentResidentContract(Long residentHeadId) {
         return toResponseWithHistory(findCurrentResidentContract(residentHeadId));
     }
 
     @Override
     @Transactional
+    /** Chủ hộ xác nhận đã đọc/đồng ý hợp đồng hiện tại của mình. */
     public RentalContractResponse confirmResidentContract(Long residentHeadId, Long id) {
         RentalContract contract = findResidentContract(residentHeadId, id);
 
@@ -130,6 +136,7 @@ public class RentalContractServiceImpl implements RentalContractService {
 
     @Override
     @Transactional
+    /** Chủ hộ báo có vấn đề với hợp đồng để ban quản lý theo dõi. */
     public RentalContractResponse reportResidentContractIssue(Long residentHeadId, Long id) {
         RentalContract contract = findResidentContract(residentHeadId, id);
         contract.setContractStatus(ContractStatus.NEED_UPDATE);

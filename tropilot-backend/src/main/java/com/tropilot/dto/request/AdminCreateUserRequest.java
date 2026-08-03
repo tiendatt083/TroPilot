@@ -11,10 +11,12 @@ import lombok.Setter;
 
 @Getter
 @Setter
+/** Dữ liệu ADMIN gửi để tạo tài khoản: thông tin liên hệ và vai trò ban đầu. */
 public class AdminCreateUserRequest {
 
     @NotBlank(message = "Full name is required")
     @Size(max = 120, message = "Full name must not exceed 120 characters")
+    /** Họ tên hiển thị của tài khoản; không được để trống. */
     private String fullName;
 
     @NotBlank(message = "Email is required")
@@ -26,5 +28,6 @@ public class AdminCreateUserRequest {
     private String phone;
 
     @NotNull(message = "Role is required")
+    /** Vai trò quyết định nhóm quyền của tài khoản sau khi tạo. */
     private UserRole role;
 }

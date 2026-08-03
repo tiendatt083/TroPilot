@@ -25,6 +25,11 @@ import java.util.List;
 @RequestMapping("/api/resident/vehicles")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('RESIDENT_HEAD')")
+/**
+ * API đăng ký phương tiện của phòng.
+ * POST /request gửi yêu cầu đăng ký; GET / xem các phương tiện; PUT /{id}/request-cancel
+ * yêu cầu hủy thay vì tự xóa một đăng ký đã được quản lý duyệt.
+ */
 public class ResidentVehicleController {
 
     private final VehicleService vehicleService;

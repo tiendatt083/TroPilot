@@ -5,8 +5,15 @@ import com.tropilot.entity.SepayPayment;
 import org.springframework.stereotype.Component;
 
 @Component
+/**
+ * Chuyển thông tin thanh toán qua SePay thành dữ liệu phản hồi.
+ * Mapper được dùng bên trong phản hồi hóa đơn khi hóa đơn có tạo mã thanh toán SePay.
+ */
 public class SepayPaymentMapper {
 
+    /**
+     * Chuyển một thanh toán SePay sang DTO; nếu chưa có thanh toán thì trả về null.
+     */
     public SepayPaymentResponse toResponse(SepayPayment payment) {
         if (payment == null) {
             return null;

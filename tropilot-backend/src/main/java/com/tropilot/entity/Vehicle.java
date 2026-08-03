@@ -32,6 +32,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 @Table(name = "vehicles")
+/** Đăng ký phương tiện thuộc Room, lưu chủ xe, biển số, thời hạn và trạng thái được duyệt. */
 public class Vehicle {
 
     @Id

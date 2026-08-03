@@ -8,6 +8,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
+/** Các thông tin cơ bản mà người dùng được phép tự sửa trong hồ sơ của mình. */
 public class ProfileUpdateRequest {
 
     @NotBlank(message = "Full name is required")

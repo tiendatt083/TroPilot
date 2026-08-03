@@ -26,6 +26,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "system_contacts")
+/** Bản ghi liên hệ chung của hệ thống, sở hữu danh sách ContactPhone và giờ làm việc. */
 public class SystemContact {
 
     @Id

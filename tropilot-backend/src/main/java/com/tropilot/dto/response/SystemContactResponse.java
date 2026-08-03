@@ -15,6 +15,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+/** Thông tin liên hệ chung để hiển thị, kèm configured cho biết hệ thống đã cấu hình hay chưa. */
 public class SystemContactResponse {
 
     private boolean configured;

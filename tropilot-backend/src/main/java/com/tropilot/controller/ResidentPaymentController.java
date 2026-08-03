@@ -21,6 +21,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/resident/payments")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('RESIDENT_HEAD')")
+/**
+ * API gửi minh chứng thanh toán hóa đơn.
+ * POST /upload nhận multipart/form-data (dữ liệu thanh toán và có thể có ảnh), sau đó
+ * service kiểm tra hóa đơn thuộc phòng của trưởng phòng trước khi lưu.
+ */
 public class ResidentPaymentController {
 
     private final PaymentService paymentService;

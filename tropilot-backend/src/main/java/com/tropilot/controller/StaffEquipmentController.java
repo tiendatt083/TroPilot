@@ -28,6 +28,11 @@ import java.util.List;
 @RequestMapping("/api/staff/equipment")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('STAFF')")
+/**
+ * API thao tác với một thiết bị khi STAFF làm việc tại hiện trường.
+ * GET /{id} xem thiết bị; GET /{id}/maintenance-history xem lịch sử; POST
+ * /{id}/maintenance-requests tạo yêu cầu bảo trì, có thể kèm ảnh multipart.
+ */
 public class StaffEquipmentController {
 
     private final EquipmentService equipmentService;

@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
+/** Dữ liệu ADMIN tạo nhiệm vụ mới: nội dung, người nhận, hạn chót, độ ưu tiên và liên kết liên quan. */
 public class TaskCreateRequest {
 
     @NotBlank(message = "Task title is required")

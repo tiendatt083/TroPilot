@@ -17,6 +17,10 @@ import static com.tropilot.security.AuthenticatedUsers.requireUserId;
 @RequestMapping("/api/resident")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('RESIDENT_HEAD')")
+/**
+ * API tra cứu phòng hiện tại của trưởng phòng.
+ * GET /room là endpoint nền tảng để frontend biết roomId trước khi hiển thị các màn hình liên quan.
+ */
 public class ResidentRoomController {
 
     private final HeadResidentAssignmentService headResidentAssignmentService;

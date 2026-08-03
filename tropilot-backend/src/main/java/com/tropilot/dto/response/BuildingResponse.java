@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
+/** Thông tin tòa nhà để hiển thị: mã, tên, địa chỉ, số tầng và các mốc tạo/sửa. */
 public class BuildingResponse {
 
     private Long id;

@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
+/** Thông tin thiết bị cùng vị trí, phạm vi dùng, tình trạng và lịch bảo trì. */
 public class EquipmentResponse {
 
     private Long id;

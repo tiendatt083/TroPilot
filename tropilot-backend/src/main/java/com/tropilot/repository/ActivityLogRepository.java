@@ -8,11 +8,19 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
+/**
+ * Repository làm việc với bảng nhật ký hoạt động của hệ thống.
+ * Các truy vấn luôn lấy kèm người thực hiện để phục vụ màn hình lịch sử thao tác.
+ */
 public interface ActivityLogRepository extends JpaRepository<ActivityLog, Long> {
 
+    /** Lấy toàn bộ nhật ký mới nhất trước, kèm thông tin người thực hiện. */
     @EntityGraph(attributePaths = "user")
     List<ActivityLog> findAllByOrderByCreatedAtDesc();
 
+    /**
+     * Tìm nhật ký theo từ khóa trong hành động, mô tả, họ tên hoặc email của người thực hiện.
+     */
     @EntityGraph(attributePaths = "user")
     @Query("""
             select log
@@ -26,9 +34,13 @@ public interface ActivityLogRepository extends JpaRepository<ActivityLog, Long> 
             """)
     List<ActivityLog> searchByQuery(@Param("query") String query);
 
+    /** Lấy các nhật ký thuộc riêng một người dùng, sắp xếp mới nhất trước. */
     @EntityGraph(attributePaths = "user")
     List<ActivityLog> findByUser_IdOrderByCreatedAtDesc(Long userId);
 
+    /**
+     * Tìm nhật ký của một người dùng cụ thể theo từ khóa, dùng khi lọc lịch sử thao tác cá nhân.
+     */
     @EntityGraph(attributePaths = "user")
     @Query("""
             select log

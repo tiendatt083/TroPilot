@@ -25,6 +25,11 @@ import java.util.List;
 @RequestMapping("/api/staff/tasks")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('STAFF')")
+/**
+ * API vòng đời công việc của STAFF.
+ * GET / và /{id} để xem; PUT /{id}/start bắt đầu; PUT /{id}/complete gửi kết quả
+ * hoàn thành và có thể đính kèm file/ảnh theo multipart-form data.
+ */
 public class StaffTaskController {
 
     private final TaskService taskService;

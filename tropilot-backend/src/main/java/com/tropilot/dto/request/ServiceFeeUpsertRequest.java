@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 
 @Getter
 @Setter
+/** Dữ liệu tạo/sửa một loại phí: giá, cách tính và loại xe nếu đó là phí gửi xe. */
 public class ServiceFeeUpsertRequest {
 
     @NotBlank(message = "Service fee name is required")

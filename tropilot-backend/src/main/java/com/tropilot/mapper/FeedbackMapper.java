@@ -13,8 +13,15 @@ import java.util.Comparator;
 import java.util.List;
 
 @Component
+/**
+ * Chuyển phản hồi/kiến nghị của cư dân sang dữ liệu trả về cho API.
+ * Kết quả bao gồm ngữ cảnh phòng, hóa đơn (nếu có), người trả lời và công việc xử lý mới nhất.
+ */
 public class FeedbackMapper {
 
+    /**
+     * Ghép các quan hệ của Feedback thành FeedbackResponse để client có đủ thông tin hiển thị chi tiết.
+     */
     public FeedbackResponse toResponse(Feedback feedback) {
         User residentHead = feedback.getResidentHead();
         Room room = feedback.getRoom();
@@ -56,6 +63,10 @@ public class FeedbackMapper {
                 .build();
     }
 
+    /**
+     * Chọn task được tạo mới nhất trong danh sách task gắn với phản hồi.
+     * Nếu chưa tạo task xử lý thì trả về null.
+     */
     private Task latestTask(List<Task> tasks) {
         if (tasks == null || tasks.isEmpty()) {
             return null;

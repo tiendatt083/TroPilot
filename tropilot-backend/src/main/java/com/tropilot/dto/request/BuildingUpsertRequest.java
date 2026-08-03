@@ -9,6 +9,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
+/** Dữ liệu dùng chung khi tạo mới hoặc cập nhật tòa nhà. */
 public class BuildingUpsertRequest {
 
     @NotBlank(message = "Building code is required")

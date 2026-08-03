@@ -16,11 +16,19 @@ import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
+/**
+ * Bộ lọc chạy một lần cho mỗi HTTP request để đọc JWT trong header Authorization.
+ * Nếu token hợp lệ, bộ lọc đặt người dùng và quyền của họ vào SecurityContext cho các bước phân quyền phía sau.
+ */
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final UserDetailsServiceImpl userDetailsService;
 
+    /**
+     * Đọc token dạng "Bearer <token>", kiểm tra token và trạng thái tài khoản rồi tạo phiên xác thực cho request.
+     * Token không hợp lệ chỉ làm SecurityContext trống; request tiếp tục để Spring Security quyết định có trả 401 hay không.
+     */
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,

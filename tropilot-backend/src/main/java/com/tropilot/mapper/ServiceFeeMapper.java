@@ -6,8 +6,15 @@ import com.tropilot.entity.ServiceFee;
 import org.springframework.stereotype.Component;
 
 @Component
+/**
+ * Chuyển cấu hình khoản phí/dịch vụ sang dữ liệu phản hồi cho API.
+ * Một khoản phí có thể áp dụng chung, vì vậy thông tin tòa nhà được phép là null.
+ */
 public class ServiceFeeMapper {
 
+    /**
+     * Tạo ServiceFeeResponse với loại phí, cách tính, đơn giá và tòa nhà áp dụng (nếu có).
+     */
     public ServiceFeeResponse toResponse(ServiceFee serviceFee) {
         Building building = serviceFee.getBuilding();
 

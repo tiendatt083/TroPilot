@@ -8,6 +8,7 @@ import java.time.LocalDate;
 
 @Getter
 @Setter
+/** Khoảng thời gian dùng để xem trước hoặc tạo hàng loạt hóa đơn trong một tòa nhà. */
 public class BulkInvoiceRequest {
 
     @NotNull(message = "Invoice date is required")

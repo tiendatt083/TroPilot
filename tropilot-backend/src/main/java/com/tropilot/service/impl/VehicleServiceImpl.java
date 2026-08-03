@@ -35,6 +35,7 @@ import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
+/** Quản lý đăng ký xe, duyệt/từ chối/hủy xe và giới hạn dữ liệu theo tòa nhà hoặc chủ hộ. */
 public class VehicleServiceImpl implements VehicleService {
 
     private static final List<VehicleStatus> RESIDENT_VISIBLE_VEHICLE_STATUSES = List.of(
@@ -60,6 +61,7 @@ public class VehicleServiceImpl implements VehicleService {
 
     @Override
     @Transactional
+    /** Chủ hộ đăng ký xe mới cho phòng của mình; xe được đưa vào trạng thái chờ duyệt. */
     public VehicleResponse requestVehicle(Long residentHeadId, VehicleRegistrationRequest request) {
         RoomAssignment assignment = findActiveAssignment(residentHeadId);
         VehicleOwnerType ownerType = parseOwnerType(request.getOwnerType());
@@ -101,6 +103,7 @@ public class VehicleServiceImpl implements VehicleService {
 
     @Override
     @Transactional
+    /** Chủ hộ gửi yêu cầu hủy xe thuộc phòng mình theo quy tắc trạng thái hiện tại. */
     public VehicleResponse requestCancel(Long residentHeadId, Long id) {
         RoomAssignment assignment = findActiveAssignment(residentHeadId);
         Vehicle vehicle = findVehicle(id);
@@ -131,6 +134,7 @@ public class VehicleServiceImpl implements VehicleService {
 
     @Override
     @Transactional
+    /** Admin tạo phương tiện trực tiếp cho cư dân/phòng trong phạm vi tòa nhà. */
     public VehicleResponse createAdminVehicle(AdminVehicleCreateRequest request, Long buildingId) {
         RoomAssignment assignment = roomAssignmentRepository
                 .findByRoomIdAndStatus(request.getRoomId(), RoomAssignmentStatus.ACTIVE)
@@ -163,6 +167,7 @@ public class VehicleServiceImpl implements VehicleService {
 
     @Override
     @Transactional
+    /** Duyệt đăng ký xe sau khi xác nhận xe thuộc tòa nhà và biển số đang khả dụng. */
     public VehicleResponse approveVehicle(Long id, Long buildingId) {
         Vehicle vehicle = findVehicle(id);
         validateVehicleBelongsToBuilding(vehicle, buildingId);
@@ -187,6 +192,7 @@ public class VehicleServiceImpl implements VehicleService {
 
     @Override
     @Transactional
+    /** Xóa xe trong phạm vi tòa nhà nếu xe ở trạng thái cho phép xóa. */
     public void deleteVehicle(Long id, Long buildingId) {
         Vehicle vehicle = findVehicle(id);
         validateVehicleBelongsToBuilding(vehicle, buildingId);
@@ -195,6 +201,7 @@ public class VehicleServiceImpl implements VehicleService {
 
     @Override
     @Transactional
+    /** Từ chối đăng ký xe, lưu người từ chối và gửi thông báo cho chủ hộ. */
     public VehicleResponse rejectVehicle(Long id, Long rejectedById, Long buildingId) {
         Vehicle vehicle = findVehicle(id);
         User rejectedBy = findUser(rejectedById);

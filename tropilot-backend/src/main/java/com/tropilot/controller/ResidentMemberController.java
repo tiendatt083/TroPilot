@@ -25,6 +25,11 @@ import java.util.List;
 @RequestMapping("/api/resident/members")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('RESIDENT_HEAD')")
+/**
+ * API quản lý thành viên phòng của trưởng phòng.
+ * POST / thêm người; GET / xem danh sách; PUT /{id} sửa thông tin; PUT /{id}/leave
+ * đánh dấu một thành viên đã rời phòng thay vì xóa mất lịch sử.
+ */
 public class ResidentMemberController {
 
     private final RoomMemberService roomMemberService;

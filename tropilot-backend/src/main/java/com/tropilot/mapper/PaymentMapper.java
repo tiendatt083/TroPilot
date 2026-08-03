@@ -11,10 +11,17 @@ import org.springframework.stereotype.Component;
 import java.time.format.DateTimeFormatter;
 
 @Component
+/**
+ * Chuyển phiếu thanh toán do cư dân gửi thành dữ liệu phản hồi cho API.
+ * Kết quả liên kết phiếu thanh toán với hóa đơn, phòng, tòa nhà và người xác nhận.
+ */
 public class PaymentMapper {
 
     private static final DateTimeFormatter MONTH_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM");
 
+    /**
+     * Tạo PaymentResponse; tháng hóa đơn được định dạng yyyy-MM để thống nhất khi hiển thị trên client.
+     */
     public PaymentResponse toResponse(Payment payment) {
         Invoice invoice = payment.getInvoice();
         Room room = invoice.getRoom();

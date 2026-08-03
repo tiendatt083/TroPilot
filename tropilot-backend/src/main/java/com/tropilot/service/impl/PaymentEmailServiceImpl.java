@@ -20,6 +20,7 @@ import java.util.Locale;
 
 @Service
 @Slf4j
+/** Gửi email phát hành hóa đơn và xác nhận thanh toán sau khi giao dịch được lưu thành công. */
 public class PaymentEmailServiceImpl implements PaymentEmailService {
 
     private static final DateTimeFormatter MONTH_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM");

@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+/** Quản trị tài khoản người dùng, gồm tạo mật khẩu tạm, hiển thị phân phòng và xóa tài khoản an toàn. */
 public class UserServiceImpl implements UserService {
 
     private static final String TEMPORARY_PASSWORD_CHARACTERS =
@@ -47,6 +48,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    /** Tạo tài khoản do admin quản lý, sinh mật khẩu tạm và yêu cầu người dùng đổi mật khẩu khi đăng nhập lần đầu. */
     public UserResponse createUser(AdminCreateUserRequest request) {
         validateAssignableRole(request.getRole());
         String email = normalizeEmail(request.getEmail());
@@ -76,6 +78,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
+    /** Lấy danh sách người dùng, kèm phân phòng ACTIVE nếu người dùng là chủ hộ. */
     public List<UserResponse> getUsers() {
         List<User> users = userRepository.findAllByOrderByCreatedAtDesc();
         Map<Long, RoomAssignment> activeAssignments = findActiveResidentHeadAssignments(users);
@@ -89,6 +92,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    /** Xóa tài khoản nếu không còn dữ liệu nghiệp vụ phụ thuộc; nếu cần, lưu vết email đã vô hiệu hóa. */
     public void deleteUser(Long id) {
         User user = findUser(id);
         String deletedEmail = user.getEmail();

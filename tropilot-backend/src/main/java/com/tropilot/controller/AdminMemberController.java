@@ -22,6 +22,11 @@ import java.util.List;
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
+/**
+ * API duyệt và theo dõi thành viên phòng.
+ * GET /members/pending xem đơn chờ duyệt; GET /members hoặc /rooms/{roomId}/members
+ * xem thành viên; PUT /members/{id}/approve hoặc /reject để quyết định đơn đăng ký.
+ */
 public class AdminMemberController {
 
     private final RoomMemberService roomMemberService;

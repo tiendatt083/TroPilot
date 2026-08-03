@@ -24,6 +24,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @Entity
 @Table(name = "invoice_items")
+/** Một dòng chi tiết của Invoice, lưu loại phí, cách tính, số lượng, đơn giá và thành tiền. */
 public class InvoiceItem {
 
     @Id

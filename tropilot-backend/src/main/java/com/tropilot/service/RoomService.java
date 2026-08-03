@@ -5,6 +5,7 @@ import com.tropilot.dto.response.RoomResponse;
 
 import java.util.List;
 
+/** Hợp đồng quản lý phòng và lọc danh sách phòng theo tòa nhà/trạng thái/từ khóa. */
 public interface RoomService {
 
     RoomResponse createRoom(RoomUpsertRequest request);

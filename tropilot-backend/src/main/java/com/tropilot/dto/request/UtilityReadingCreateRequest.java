@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 
 @Getter
 @Setter
+/** Dữ liệu ghi chỉ số điện nước mới của phòng, gồm chỉ số cũ/mới và ảnh xác nhận tùy chọn. */
 public class UtilityReadingCreateRequest {
 
     @NotNull(message = "Room is required")

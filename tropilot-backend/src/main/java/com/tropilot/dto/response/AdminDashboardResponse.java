@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 
 @Getter
 @Builder
+/** Các số đếm và tổng tiền để ADMIN nhìn nhanh tình trạng vận hành hệ thống. */
 public class AdminDashboardResponse {
 
     private long totalBuildings;

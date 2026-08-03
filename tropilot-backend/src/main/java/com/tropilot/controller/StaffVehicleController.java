@@ -16,6 +16,10 @@ import java.util.List;
 @RequestMapping("/api/staff/vehicles")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('STAFF')")
+/**
+ * API chỉ đọc đăng ký phương tiện cho STAFF.
+ * GET / trả về phương tiện và có thể lọc theo buildingId để phục vụ kiểm tra bãi xe.
+ */
 public class StaffVehicleController {
 
     private final VehicleService vehicleService;

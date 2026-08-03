@@ -14,11 +14,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/chat")
 @RequiredArgsConstructor
+/**
+ * Điểm nhận tin nhắn từ widget chatbot và trả về câu trả lời do ChatService tạo ra.
+ */
 public class ChatController {
 
     private final ChatService chatService;
 
     @PostMapping("/messages")
+    // Kiểm tra dữ liệu tin nhắn trước khi chuyển cho service xử lý ngữ cảnh và gọi AI.
     public ApiResponse<ChatMessageResponse> sendMessage(@Valid @RequestBody ChatMessageRequest request) {
         return ApiResponse.success("AI assistant reply generated successfully", chatService.reply(request));
     }

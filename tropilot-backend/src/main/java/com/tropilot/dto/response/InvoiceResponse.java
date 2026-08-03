@@ -11,6 +11,7 @@ import java.util.List;
 
 @Getter
 @Builder
+/** Hóa đơn đã tạo: phòng, kỳ tính, trạng thái, ảnh chỉ số, thanh toán SePay và các dòng phí. */
 public class InvoiceResponse {
 
     private Long id;

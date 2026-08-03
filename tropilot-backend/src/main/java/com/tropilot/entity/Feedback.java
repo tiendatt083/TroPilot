@@ -33,6 +33,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 @Table(name = "feedbacks")
+/** Phản ánh do trưởng phòng gửi cho Room, có thể liên quan Invoice và sinh ra các Task xử lý. */
 public class Feedback {
 
     @Id

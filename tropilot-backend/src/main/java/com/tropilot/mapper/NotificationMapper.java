@@ -9,8 +9,16 @@ import com.tropilot.entity.User;
 import org.springframework.stereotype.Component;
 
 @Component
+/**
+ * Chuyển thông báo thành dữ liệu phản hồi theo từng người dùng.
+ * Ngoài nội dung thông báo, mapper cho biết đối tượng nhận, người tạo và trạng thái đã đọc của người đang xem.
+ */
 public class NotificationMapper {
 
+    /**
+     * Tạo NotificationResponse. Tham số read là bản ghi người dùng đã đọc thông báo;
+     * nếu không có bản ghi này thì thông báo được đánh dấu là chưa đọc.
+     */
     public NotificationResponse toResponse(Notification notification, NotificationRead read) {
         User createdBy = notification.getCreatedBy();
 

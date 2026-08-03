@@ -40,6 +40,7 @@ import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
+/** Điều phối vòng đời task: tạo, gán người, cập nhật, hoàn thành và đồng bộ trạng thái phản hồi liên quan. */
 public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
@@ -55,6 +56,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @Transactional
+    /** Tạo task, kiểm tra người được giao/phòng/phản hồi nguồn và gửi thông báo hoặc email phân công. */
     public TaskResponse createTask(TaskCreateRequest request, Long createdById, Long buildingId) {
         User createdBy = findUser(createdById);
         User assignedTo = findActiveStaff(request.getAssignedToId());
@@ -121,6 +123,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @Transactional
+    /** Cập nhật task trong phạm vi tòa nhà và đồng bộ trạng thái phản hồi nếu task gắn với phản hồi cư dân. */
     public TaskResponse updateTask(Long id, TaskUpdateRequest request, Long buildingId) {
         Task task = findTask(id);
         User assignedTo = findActiveStaff(request.getAssignedToId());
@@ -183,6 +186,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @Transactional
+    /** Nhân viên bắt đầu task đã được giao cho mình. */
     public TaskResponse startTask(Long staffId, Long id) {
         Task task = findAssignedTask(staffId, id);
 
@@ -204,6 +208,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @Transactional
+    /** Nhân viên hoàn thành task, lưu kết quả/ảnh và đồng bộ thông báo cho cư dân nếu cần. */
     public TaskResponse completeTask(Long staffId, Long id, TaskCompleteRequest request) {
         Task task = findAssignedTask(staffId, id);
 

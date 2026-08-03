@@ -32,6 +32,7 @@ import java.time.LocalDateTime;
                 columnNames = {"notification_id", "user_id"}
         )
 )
+/** Dấu đã đọc của một Notification bởi một User, giúp trạng thái đọc là riêng cho từng người. */
 public class NotificationRead {
 
     @Id

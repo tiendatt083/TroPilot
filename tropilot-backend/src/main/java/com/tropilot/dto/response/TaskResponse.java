@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
+/** Công việc được giao: phòng/feedback liên quan, nhân viên nhận, hạn, kết quả và trạng thái. */
 public class TaskResponse {
 
     private Long id;

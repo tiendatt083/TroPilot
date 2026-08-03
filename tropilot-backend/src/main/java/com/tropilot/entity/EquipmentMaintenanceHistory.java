@@ -27,6 +27,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 @Table(name = "equipment_maintenance_history")
+/** Lịch sử hoàn tất bảo trì của Equipment, liên kết yêu cầu bảo trì và người thực hiện. */
 public class EquipmentMaintenanceHistory {
 
     @Id

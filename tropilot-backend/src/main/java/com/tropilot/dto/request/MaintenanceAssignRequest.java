@@ -6,6 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
+/** ID nhân viên mà ADMIN phân công xử lý một yêu cầu bảo trì. */
 public class MaintenanceAssignRequest {
 
     @NotNull(message = "Assigned staff is required")

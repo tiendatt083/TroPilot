@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
+/** Đăng ký phương tiện: chủ xe, phòng, biển số, thời hạn, trạng thái duyệt và khả năng tính phí. */
 public class VehicleResponse {
 
     private Long id;

@@ -9,8 +9,16 @@ import com.tropilot.entity.User;
 import org.springframework.stereotype.Component;
 
 @Component
+/**
+ * Chuyển yêu cầu bảo trì/sửa chữa thành dữ liệu phản hồi cho API.
+ * Mapper xử lý cả yêu cầu gắn với phòng lẫn yêu cầu gắn trực tiếp với tòa nhà hoặc thiết bị.
+ */
 public class MaintenanceRequestMapper {
 
+    /**
+     * Tạo MaintenanceRequestResponse kèm thông tin người gửi, người được giao, phòng, tòa nhà và thiết bị.
+     * Khi một quan hệ không tồn tại, các trường tương ứng được trả về null thay vì gây lỗi.
+     */
     public MaintenanceRequestResponse toResponse(MaintenanceRequest request) {
         Room room = request.getRoom();
         Building building = request.getBuilding() != null

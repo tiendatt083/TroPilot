@@ -61,6 +61,7 @@ import java.util.Map;
 import java.util.Set;
 
 @Service
+/** Xây dựng ngữ cảnh dữ liệu nghiệp vụ theo role trước khi gửi câu hỏi tới trợ lý chat. */
 public class ChatContextServiceImpl implements ChatContextService {
 
     private static final String BUSINESS_RULES_PATH = "chat/tropilot-business-rules.json";
@@ -129,6 +130,7 @@ public class ChatContextServiceImpl implements ChatContextService {
 
     @Override
     @Transactional(readOnly = true)
+    /** Phân loại chủ đề câu hỏi, chỉ tổng hợp dữ liệu phù hợp với role rồi chuyển thành JSON an toàn cho AI. */
     public String buildContext(User user, String message) {
         Set<ChatTopic> topics = classifyTopics(message);
         Map<String, Object> context = createBaseContext(user, topics);

@@ -35,6 +35,7 @@ import java.time.LocalDateTime;
                 columnNames = {"room_id", "reading_month"}
         )
 )
+/** Chỉ số điện nước của Room theo tháng, gồm ảnh xác nhận, lý do sửa và User đã ghi chỉ số. */
 public class UtilityReading {
 
     @Id

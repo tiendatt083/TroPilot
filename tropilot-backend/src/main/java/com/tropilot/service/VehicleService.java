@@ -6,6 +6,7 @@ import com.tropilot.dto.response.VehicleResponse;
 
 import java.util.List;
 
+/** Hợp đồng đăng ký, duyệt, từ chối, hủy và quản lý phương tiện cư dân. */
 public interface VehicleService {
 
     VehicleResponse requestVehicle(Long residentHeadId, VehicleRegistrationRequest request);

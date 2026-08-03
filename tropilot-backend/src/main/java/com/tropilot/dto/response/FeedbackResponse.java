@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
+/** Phản ánh đầy đủ: người gửi, phòng/hóa đơn liên quan, phản hồi và công việc xử lý. */
 public class FeedbackResponse {
 
     private Long id;

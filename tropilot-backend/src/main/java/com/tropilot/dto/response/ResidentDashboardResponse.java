@@ -8,6 +8,7 @@ import java.util.List;
 
 @Getter
 @Builder
+/** Dữ liệu dashboard trưởng phòng: phòng, hợp đồng, hóa đơn mới nhất, xe, thông báo và bảo trì. */
 public class ResidentDashboardResponse {
 
     private HeadResidentAssignmentResponse currentRoom;

@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
+/** Chỉ số điện nước theo tháng: số cũ/mới, mức tiêu thụ, ảnh, bản ghi trước và lý do chỉnh sửa. */
 public class UtilityReadingResponse {
 
     private Long id;

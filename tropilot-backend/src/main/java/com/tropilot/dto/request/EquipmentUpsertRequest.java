@@ -11,6 +11,7 @@ import java.time.LocalDate;
 
 @Getter
 @Setter
+/** Dữ liệu tạo/sửa thiết bị: phạm vi dùng chung hay trong phòng, số lượng và lịch bảo trì. */
 public class EquipmentUpsertRequest {
 
     @Size(max = 60, message = "Equipment code must not exceed 60 characters")

@@ -9,6 +9,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
+/** Dữ liệu hoàn tất quên mật khẩu: email, mã 6 số, mật khẩu mới và xác nhận lại. */
 public class ResetPasswordWithCodeRequest {
 
     @NotBlank(message = "Email is required")

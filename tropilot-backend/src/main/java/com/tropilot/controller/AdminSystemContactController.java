@@ -16,6 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/admin/contact")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
+/**
+ * API cập nhật thông tin liên hệ chung của hệ thống.
+ * PUT / nhận thông tin mới và trả lại bản ghi đã cập nhật để frontend hiển thị ngay.
+ */
 public class AdminSystemContactController {
 
     private final SystemContactService systemContactService;

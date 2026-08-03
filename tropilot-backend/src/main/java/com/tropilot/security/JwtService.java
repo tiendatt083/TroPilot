@@ -14,6 +14,10 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 @Service
+/**
+ * Dịch vụ tạo và kiểm tra JSON Web Token (JWT) dùng cho đăng nhập không lưu session.
+ * Token được ký bằng khóa bí mật cấu hình và chứa email cùng vai trò của người dùng.
+ */
 public class JwtService {
 
     private static final String INSECURE_DEFAULT_SECRET =
@@ -27,10 +31,12 @@ public class JwtService {
             @Value("${app.jwt.secret}") String secret,
             @Value("${app.jwt.expiration-minutes}") long expirationMinutes
     ) {
+        // Kiểm tra khóa ký có đủ mạnh trước khi ứng dụng nhận request.
         if (secret == null || secret.isBlank() || secret.length() < MIN_SECRET_LENGTH) {
             throw new IllegalStateException("APP_JWT_SECRET must contain at least 32 characters");
         }
 
+        // Không cho phép chạy production bằng khóa mẫu có sẵn trong mã nguồn.
         if (INSECURE_DEFAULT_SECRET.equals(secret)) {
             throw new IllegalStateException("APP_JWT_SECRET must not use the demo default value");
         }
@@ -39,6 +45,7 @@ public class JwtService {
         this.expirationMinutes = expirationMinutes;
     }
 
+    /** Tạo JWT chứa email, role, thời điểm phát hành và thời điểm hết hạn. */
     public String generateToken(String email, UserRole role) {
         Instant now = Instant.now();
 
@@ -51,16 +58,19 @@ public class JwtService {
                 .compact();
     }
 
+    /** Đọc email (subject) từ token đã được kiểm tra chữ ký. */
     public String extractEmail(String token) {
         return extractClaims(token).getSubject();
     }
 
+    /** Kiểm tra token thuộc đúng người dùng và tài khoản vẫn đang hoạt động, không bị khóa. */
     public boolean isTokenValid(String token, AuthenticatedUser user) {
         String email = extractEmail(token);
 
         return email.equals(user.getEmail()) && user.isEnabled() && user.isAccountNonLocked();
     }
 
+    /** Phân tích token, đồng thời xác minh chữ ký bằng khóa bí mật trước khi trả về claims. */
     private Claims extractClaims(String token) {
         return Jwts.parser()
                 .verifyWith(signingKey)

@@ -11,6 +11,7 @@ import java.util.List;
 
 @Getter
 @Setter
+/** Tin nhắn mới người dùng gửi chatbot và tối đa 8 tin nhắn gần nhất làm ngữ cảnh. */
 public class ChatMessageRequest {
 
     @NotBlank(message = "Message is required")

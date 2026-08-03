@@ -8,6 +8,7 @@ import com.tropilot.dto.response.InvoiceResponse;
 
 import java.util.List;
 
+/** Hợp đồng xem trước, tạo, tra cứu và xóa hóa đơn theo tòa nhà hoặc chủ hộ. */
 public interface InvoiceService {
 
     InvoicePreviewResponse previewBuildingInvoice(Long buildingId, InvoicePreviewRequest request);

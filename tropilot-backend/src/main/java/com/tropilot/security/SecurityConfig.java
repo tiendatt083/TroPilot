@@ -23,6 +23,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @EnableMethodSecurity
 @RequiredArgsConstructor
+/**
+ * Cấu hình an ninh trung tâm của ứng dụng Spring.
+ * Lớp quy định endpoint nào được công khai, role nào được phép truy cập từng nhóm API và thứ tự chạy bộ lọc JWT.
+ */
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -30,6 +34,9 @@ public class SecurityConfig {
     private final RestAccessDeniedHandler restAccessDeniedHandler;
     private final UserDetailsServiceImpl userDetailsService;
 
+    /**
+     * Tạo chuỗi lọc bảo mật: tắt session/CSRF cho REST API, cấu hình quyền endpoint và đặt JWT filter trước filter đăng nhập chuẩn.
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
@@ -67,11 +74,13 @@ public class SecurityConfig {
                 .build();
     }
 
+    /** Tạo bộ mã hóa BCrypt dùng để lưu và đối chiếu mật khẩu an toàn. */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    /** Kết nối Spring Security với cách tải user của dự án và bộ mã hóa mật khẩu BCrypt. */
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
@@ -80,6 +89,7 @@ public class SecurityConfig {
         return provider;
     }
 
+    /** Lấy AuthenticationManager do Spring cấu hình để service đăng nhập sử dụng. */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();

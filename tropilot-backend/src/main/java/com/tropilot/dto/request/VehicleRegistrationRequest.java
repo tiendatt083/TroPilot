@@ -9,6 +9,7 @@ import java.time.LocalDate;
 
 @Getter
 @Setter
+/** Yêu cầu trưởng phòng gửi để đăng ký phương tiện, gồm chủ xe, biển số và thời hạn sử dụng. */
 public class VehicleRegistrationRequest {
 
     @NotBlank(message = "Owner type is required")

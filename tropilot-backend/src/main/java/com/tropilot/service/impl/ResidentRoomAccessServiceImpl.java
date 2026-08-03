@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+/** Kiểm tra và trả về phân phòng ACTIVE của chủ hộ trước khi cho phép dùng dữ liệu cư dân. */
 public class ResidentRoomAccessServiceImpl implements ResidentRoomAccessService {
 
     static final String ACTIVE_ROOM_REQUIRED_MESSAGE =

@@ -24,6 +24,11 @@ import java.util.List;
 @RequestMapping("/api/admin/notifications")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
+/**
+ * API gửi và theo dõi thông báo do ADMIN tạo.
+ * POST / tạo/gửi thông báo; GET / xem thông báo nhận được theo bộ lọc;
+ * GET /sent xem các thông báo mà ADMIN đã gửi.
+ */
 public class AdminNotificationController {
 
     private final NotificationService notificationService;

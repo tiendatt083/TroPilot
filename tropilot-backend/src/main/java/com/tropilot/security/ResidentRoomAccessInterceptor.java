@@ -13,10 +13,17 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 @Component
 @RequiredArgsConstructor
+/**
+ * Interceptor kiểm tra chủ hộ còn quyền truy cập vào phòng đang được phân cho họ hay không.
+ * Nó chạy trước controller đối với request của RESIDENT_HEAD để chặn trường hợp phân phòng đã kết thúc.
+ */
 public class ResidentRoomAccessInterceptor implements HandlerInterceptor {
 
     private final ResidentRoomAccessService residentRoomAccessService;
 
+    /**
+     * Bỏ qua request OPTIONS cho CORS; với chủ hộ đã xác thực thì yêu cầu phải có phân phòng ACTIVE.
+     */
     @Override
     public boolean preHandle(
             HttpServletRequest request,

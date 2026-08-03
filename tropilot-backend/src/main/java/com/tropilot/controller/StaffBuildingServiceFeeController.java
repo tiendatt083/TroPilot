@@ -16,6 +16,10 @@ import java.util.List;
 @RequestMapping("/api/staff/buildings/{buildingId}/service-fees")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('STAFF')")
+/**
+ * API chỉ đọc phí dịch vụ theo buildingId.
+ * GET / giúp STAFF tra cứu các mức phí khi hỗ trợ cư dân, không cho sửa cấu hình phí.
+ */
 public class StaffBuildingServiceFeeController {
 
     private final ServiceFeeService serviceFeeService;

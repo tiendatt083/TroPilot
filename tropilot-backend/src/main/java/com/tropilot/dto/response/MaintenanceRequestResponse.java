@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
+/** Yêu cầu bảo trì từ lúc tạo tới hoàn tất: sự cố, người gửi, người xử lý, ảnh và trạng thái. */
 public class MaintenanceRequestResponse {
 
     private Long id;

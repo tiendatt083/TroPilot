@@ -12,6 +12,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 @Service
+/** Tạo biên lai hợp lệ, bao gồm mã biên lai và trạng thái theo hóa đơn đã thanh toán. */
 public class ReceiptCreationServiceImpl implements ReceiptCreationService {
 
     private static final DateTimeFormatter RECEIPT_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");

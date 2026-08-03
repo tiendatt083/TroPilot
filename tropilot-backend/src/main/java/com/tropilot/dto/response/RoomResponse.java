@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
+/** Thông tin phòng: tòa nhà, giá, diện tích, sức chứa và trạng thái khai thác. */
 public class RoomResponse {
 
     private Long id;

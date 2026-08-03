@@ -25,6 +25,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 @Table(name = "activity_logs")
+/** Bảng nhật ký hoạt động: mỗi bản ghi thuộc một User và lưu hành động, mô tả, thời điểm. */
 public class ActivityLog {
 
     @Id

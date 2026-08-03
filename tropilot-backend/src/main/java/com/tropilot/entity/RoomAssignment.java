@@ -30,6 +30,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 @Table(name = "room_assignments")
+/** Lịch sử phân công trưởng phòng cho Room, gồm khoảng thời gian và trạng thái hiệu lực. */
 public class RoomAssignment {
 
     @Id

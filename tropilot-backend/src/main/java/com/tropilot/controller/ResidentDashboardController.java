@@ -17,6 +17,10 @@ import static com.tropilot.security.AuthenticatedUsers.requireUserId;
 @RequestMapping("/api/resident/dashboard")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('RESIDENT_HEAD')")
+/**
+ * API dashboard của trưởng phòng.
+ * GET / lấy userId từ JWT rồi trả các thông tin tổng quan của đúng phòng người đó quản lý.
+ */
 public class ResidentDashboardController {
 
     private final DashboardService dashboardService;

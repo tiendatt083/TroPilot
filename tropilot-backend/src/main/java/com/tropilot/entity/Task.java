@@ -31,6 +31,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 @Table(name = "tasks")
+/** Công việc giao cho STAFF, có thể liên quan Building, Room hoặc Feedback; lưu hạn, ưu tiên, kết quả. */
 public class Task {
 
     @Id

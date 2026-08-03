@@ -31,6 +31,7 @@ import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
+/** Quản lý thành viên phòng: đăng ký, duyệt, từ chối, chuyển ra ở và kiểm tra sức chứa. */
 public class RoomMemberServiceImpl implements RoomMemberService {
 
     private final RoomMemberRepository roomMemberRepository;
@@ -44,6 +45,7 @@ public class RoomMemberServiceImpl implements RoomMemberService {
 
     @Override
     @Transactional
+    /** Chủ hộ đăng ký thêm thành viên; service kiểm tra phân phòng và sức chứa trước khi lưu. */
     public RoomMemberResponse createResidentMember(Long residentHeadId, RoomMemberUpsertRequest request) {
         RoomAssignment assignment = findActiveAssignment(residentHeadId);
 
@@ -83,6 +85,7 @@ public class RoomMemberServiceImpl implements RoomMemberService {
 
     @Override
     @Transactional(readOnly = true)
+    /** Lấy thành viên do chủ hộ hiện tại quản lý trong phòng của họ. */
     public List<RoomMemberResponse> getResidentMembers(Long residentHeadId) {
         RoomAssignment assignment = findActiveAssignment(residentHeadId);
 
@@ -95,6 +98,7 @@ public class RoomMemberServiceImpl implements RoomMemberService {
 
     @Override
     @Transactional
+    /** Chủ hộ cập nhật thông tin thành viên thuộc chính phòng của mình. */
     public RoomMemberResponse updateResidentMember(Long residentHeadId, Long memberId, RoomMemberUpsertRequest request) {
         RoomAssignment assignment = findActiveAssignment(residentHeadId);
         RoomMember member = findMember(memberId);
@@ -117,6 +121,7 @@ public class RoomMemberServiceImpl implements RoomMemberService {
 
     @Override
     @Transactional
+    /** Đánh dấu thành viên đã rời phòng sau khi kiểm tra quyền sở hữu của chủ hộ. */
     public RoomMemberResponse markResidentMemberLeft(Long residentHeadId, Long memberId) {
         RoomAssignment assignment = findActiveAssignment(residentHeadId);
         RoomMember member = findMember(memberId);
@@ -171,6 +176,7 @@ public class RoomMemberServiceImpl implements RoomMemberService {
 
     @Override
     @Transactional
+    /** Ban quản lý duyệt thành viên chờ xử lý, kiểm tra tòa nhà và sức chứa phòng. */
     public RoomMemberResponse approveMember(Long memberId, Long approvedById, Long buildingId) {
         RoomMember member = findMember(memberId);
         User approvedBy = findUser(approvedById);
@@ -208,6 +214,7 @@ public class RoomMemberServiceImpl implements RoomMemberService {
 
     @Override
     @Transactional
+    /** Ban quản lý từ chối đăng ký thành viên trong phạm vi tòa nhà. */
     public RoomMemberResponse rejectMember(Long memberId, Long rejectedById, Long buildingId) {
         RoomMember member = findMember(memberId);
         User rejectedBy = findUser(rejectedById);

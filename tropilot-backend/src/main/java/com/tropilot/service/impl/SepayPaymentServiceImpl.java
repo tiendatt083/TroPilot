@@ -30,6 +30,7 @@ import java.util.regex.Pattern;
 @Service
 @Slf4j
 @RequiredArgsConstructor
+/** Tạo QR thanh toán SePay, xác thực webhook ngân hàng và cập nhật kết quả giao dịch cho hóa đơn. */
 public class SepayPaymentServiceImpl implements SepayPaymentService {
 
     private final SepayProperties sepayProperties;
@@ -42,6 +43,7 @@ public class SepayPaymentServiceImpl implements SepayPaymentService {
 
     @Override
     @Transactional
+    /** Tạo giao dịch SePay và QR cho hóa đơn nếu cấu hình thanh toán đang được bật. */
     public Optional<SepayPayment> createForInvoice(Invoice invoice) {
         if (!sepayProperties.isReady()) {
             return Optional.empty();
@@ -77,6 +79,7 @@ public class SepayPaymentServiceImpl implements SepayPaymentService {
 
     @Override
     @Transactional
+    /** Xác thực webhook SePay, đối chiếu số tiền/nội dung rồi đánh dấu hóa đơn đã thanh toán và tạo biên lai. */
     public void handleWebhook(SepayWebhookRequest request, String authorizationHeader) {
         validateWebhookSecret(authorizationHeader);
 

@@ -7,6 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
+/** Email nhận mã xác minh cho luồng quên mật khẩu. */
 public class ForgotPasswordRequest {
 
     @NotBlank(message = "Email is required")

@@ -8,8 +8,15 @@ import com.tropilot.enums.VehicleStatus;
 import org.springframework.stereotype.Component;
 
 @Component
+/**
+ * Chuyển phương tiện đăng ký của cư dân thành dữ liệu phản hồi.
+ * Mapper bổ sung phòng, tòa nhà và cờ billable để API biết phương tiện có đang được tính phí hay không.
+ */
 public class VehicleMapper {
 
+    /**
+     * Tạo VehicleResponse; phương tiện chỉ được đánh dấu tính phí khi có trạng thái ACTIVE.
+     */
     public VehicleResponse toResponse(Vehicle vehicle) {
         Room room = vehicle.getRoom();
         Building building = room.getBuilding();

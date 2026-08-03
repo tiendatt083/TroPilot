@@ -38,6 +38,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+/** Quản lý nhập và chỉnh sửa chỉ số điện nước, kiểm tra điều kiện phòng và xây dựng số liệu tổng quan. */
 public class UtilityReadingServiceImpl implements UtilityReadingService {
 
     private final UtilityReadingRepository utilityReadingRepository;
@@ -52,6 +53,7 @@ public class UtilityReadingServiceImpl implements UtilityReadingService {
 
     @Override
     @Transactional
+    /** Nhập chỉ số điện nước mới, kiểm tra phòng/tháng hợp lệ và lưu ảnh đồng hồ nếu được gửi lên. */
     public UtilityReadingResponse createReading(UtilityReadingCreateRequest request, Long createdById) {
         Room room = findRoom(request.getRoomId());
         validateRoomBelongsToBuilding(room, request.getBuildingId());
@@ -99,6 +101,7 @@ public class UtilityReadingServiceImpl implements UtilityReadingService {
 
     @Override
     @Transactional(readOnly = true)
+    /** Lấy danh sách chỉ số điện nước theo tòa nhà hoặc toàn bộ hệ thống. */
     public List<UtilityReadingResponse> getReadings(Long buildingId) {
         List<UtilityReading> readings;
 
@@ -117,6 +120,7 @@ public class UtilityReadingServiceImpl implements UtilityReadingService {
 
     @Override
     @Transactional(readOnly = true)
+    /** Tổng hợp tình trạng nhập chỉ số trong tháng: phòng đã nhập, còn thiếu và các số liệu liên quan. */
     public UtilityReadingOverviewResponse getOverview(Long buildingId, String month) {
         validateBuildingExists(buildingId);
         LocalDate readingMonth = parseMonth(month);
@@ -154,6 +158,7 @@ public class UtilityReadingServiceImpl implements UtilityReadingService {
 
     @Override
     @Transactional
+    /** Cập nhật chỉ số đã nhập, kiểm tra tính hợp lệ và lưu lý do chỉnh sửa/ảnh mới khi có. */
     public UtilityReadingResponse updateReading(Long id, UtilityReadingUpdateRequest request) {
         UtilityReading reading = findReading(id);
         Room room = findRoom(request.getRoomId());
@@ -199,6 +204,7 @@ public class UtilityReadingServiceImpl implements UtilityReadingService {
 
     @Override
     @Transactional(readOnly = true)
+    /** Chủ hộ xem lịch sử chỉ số của phòng đang được phân cho mình. */
     public List<UtilityReadingResponse> getCurrentResidentRoomReadings(Long residentHeadId) {
         RoomAssignment assignment = roomAssignmentRepository
                 .findByResidentHeadIdAndStatus(residentHeadId, RoomAssignmentStatus.ACTIVE)

@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
+/** Dữ liệu mở yêu cầu bảo trì từ thiết bị: mô tả sự cố, người được giao và ảnh tùy chọn. */
 public class MaintenanceRequestCreateRequest {
 
     @NotBlank(message = "Maintenance request title is required")

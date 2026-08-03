@@ -21,13 +21,20 @@ import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
+/**
+ * Adapter gọi Gemini API cho chatbot TroPilot. Class này chỉ lo chuẩn bị request,
+ * gọi model, thử model dự phòng và đổi lỗi ngoài hệ thống thành lỗi 503 an toàn.
+ */
 public class GeminiChatClient {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GeminiChatClient.class);
 
+    // Giới hạn độ dài câu trả lời để tránh phản hồi quá dài và chi phí không cần thiết.
     private static final int MAX_OUTPUT_TOKENS = 1500;
+    // Nhiệt độ thấp giúp câu trả lời ổn định, ít sáng tạo sai ngữ cảnh nghiệp vụ.
     private static final double TEMPERATURE = 0.3;
 
+    // Prompt hệ thống buộc AI chỉ trả lời trong phạm vi TroPilot và tôn trọng dữ liệu được cấp quyền.
     private static final String SYSTEM_INSTRUCTION = """
             You are the Tropilot Assistant for a rental property operations management system.
             Answer only questions about using Tropilot and general rental property operations covered by Tropilot,
@@ -77,10 +84,12 @@ public class GeminiChatClient {
             String message,
             String liveSystemContext
     ) {
+        // Không gọi API khi thiếu API key/model hoặc tích hợp đang tắt.
         if (!properties.isReady()) {
             throw new ServiceUnavailableException("AI assistant is not configured");
         }
 
+        // Context sống do backend tạo là nguồn dữ liệu duy nhất AI được phép dựa vào.
         String systemInstruction = SYSTEM_INSTRUCTION
                 + System.lineSeparator()
                 + "LIVE_SYSTEM_CONTEXT:"
@@ -93,6 +102,7 @@ public class GeminiChatClient {
                 new GeminiGenerationConfig(TEMPERATURE, MAX_OUTPUT_TOKENS)
         );
 
+        // Model chính được thử trước, sau đó thử từng model dự phòng nếu lỗi có thể phục hồi.
         List<String> models = resolveModels();
         ServiceUnavailableException lastFailure = null;
 
@@ -101,6 +111,7 @@ public class GeminiChatClient {
             boolean hasFallback = index < models.size() - 1;
 
             try {
+                // API key chỉ được gắn vào header khi gửi request, không ghi log key.
                 JsonNode response = geminiRestClient.post()
                         .uri("/v1beta/models/{model}:generateContent", model)
                         .header("x-goog-api-key", properties.getApiKey().trim())
@@ -148,6 +159,7 @@ public class GeminiChatClient {
     }
 
     private List<String> resolveModels() {
+        // LinkedHashSet vừa loại model trùng vừa giữ nguyên thứ tự ưu tiên cấu hình.
         Set<String> models = new LinkedHashSet<>();
         addModel(models, properties.getModel());
 
@@ -182,6 +194,7 @@ public class GeminiChatClient {
             return false;
         }
 
+        // Chỉ fallback khi model không có, bị giới hạn lượt gọi hoặc Gemini lỗi máy chủ.
         int statusCode = exception.getStatusCode().value();
         return statusCode == 404 || statusCode == 429 || statusCode >= 500;
     }
@@ -191,6 +204,7 @@ public class GeminiChatClient {
         List<ChatHistoryMessageRequest> limitedHistory = limitHistory(history);
 
         for (ChatHistoryMessageRequest historyMessage : limitedHistory) {
+            // Gemini dùng tên role "model" thay cho "assistant" của frontend.
             String geminiRole = "assistant".equals(historyMessage.getRole()) ? "model" : "user";
             contents.add(new GeminiContent(
                     List.of(new GeminiPart(historyMessage.getContent().trim())),
@@ -212,11 +226,13 @@ public class GeminiChatClient {
             return List.of();
         }
 
+        // Chỉ giữ các tin nhắn mới nhất để request nhỏ và không vượt ngữ cảnh model.
         int fromIndex = Math.max(0, history.size() - limit);
         return history.subList(fromIndex, history.size());
     }
 
     private String extractReply(JsonNode response) {
+        // Đọc đúng đường dẫn text trong JSON Gemini; response thiếu text được xem là không dùng được.
         JsonNode textNode = response == null
                 ? null
                 : response.at("/candidates/0/content/parts/0/text");
@@ -228,6 +244,7 @@ public class GeminiChatClient {
         return textNode.asText().trim();
     }
 
+    // Các record bên dưới chỉ mô tả JSON request theo đúng schema generateContent của Gemini.
     private record GeminiGenerateContentRequest(
             GeminiContent systemInstruction,
             List<GeminiContent> contents,

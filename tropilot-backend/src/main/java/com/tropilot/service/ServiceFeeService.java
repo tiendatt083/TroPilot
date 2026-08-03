@@ -6,6 +6,7 @@ import com.tropilot.dto.response.ServiceFeeResponse;
 
 import java.util.List;
 
+/** Hợp đồng quản lý khoản phí dịch vụ của từng tòa nhà, gồm bật/tắt và xóa. */
 public interface ServiceFeeService {
 
     ServiceFeeResponse createBuildingServiceFee(Long buildingId, ServiceFeeUpsertRequest request);

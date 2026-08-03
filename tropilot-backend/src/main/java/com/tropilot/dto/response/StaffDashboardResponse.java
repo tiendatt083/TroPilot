@@ -5,6 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
+/** Các số lượng công việc STAFF cần chú ý: quá hạn, bảo trì, chỉ số và thanh toán chờ. */
 public class StaffDashboardResponse {
 
     private long totalRooms;

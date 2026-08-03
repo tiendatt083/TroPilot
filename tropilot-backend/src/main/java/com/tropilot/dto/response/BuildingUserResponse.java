@@ -7,6 +7,7 @@ import java.time.LocalDate;
 
 @Getter
 @Builder
+/** Người dùng trong tòa nhà, kèm thông tin phòng và thời gian ở nếu là cư dân. */
 public class BuildingUserResponse {
 
     private Long id;

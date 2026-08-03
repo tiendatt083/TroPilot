@@ -17,6 +17,10 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+/**
+ * Lưu ảnh đính kèm cho yêu cầu và kết quả bảo trì vào uploads/maintenance.
+ * Ảnh là tùy chọn: nếu không gửi tệp, service trả về null thay vì tạo tệp rỗng.
+ */
 public class MaintenanceImageStorageService {
 
     private static final long MAX_FILE_SIZE_BYTES = 10L * 1024L * 1024L;
@@ -25,6 +29,7 @@ public class MaintenanceImageStorageService {
 
     private final UploadProperties uploadProperties;
 
+    /** Lưu ảnh JPEG/PNG hợp lệ tối đa 10 MB với tên UUID và trả về URL truy cập ảnh. */
     public String store(MultipartFile file) {
         if (file == null || file.isEmpty()) {
             return null;
@@ -56,6 +61,7 @@ public class MaintenanceImageStorageService {
                 .toUriString();
     }
 
+    /** Kiểm tra dung lượng, phần mở rộng và content type của ảnh bảo trì. */
     private void validateFile(MultipartFile file) {
         if (file.getSize() > MAX_FILE_SIZE_BYTES) {
             throw new BadRequestException("Maintenance image must not exceed 10 MB");
@@ -72,6 +78,7 @@ public class MaintenanceImageStorageService {
         }
     }
 
+    /** Tách và chuẩn hóa phần mở rộng ảnh, đồng thời chặn tên tệp không hợp lệ. */
     private String getExtension(String fileName) {
         if (fileName == null || fileName.isBlank() || !fileName.contains(".")) {
             throw new BadRequestException("Maintenance image type is not allowed");

@@ -9,8 +9,16 @@ import com.tropilot.entity.Room;
 import org.springframework.stereotype.Component;
 
 @Component
+/**
+ * Chuyển dữ liệu thiết bị và lịch sử bảo trì thiết bị thành các DTO dùng cho API.
+ * Đồng thời bổ sung tên, mã tòa nhà hoặc phòng để giao diện hiển thị được ngay.
+ */
 public class EquipmentMapper {
 
+    /**
+     * Chuyển một thiết bị sang dữ liệu phản hồi. Thiết bị dùng chung tòa nhà có thể không thuộc phòng nào,
+     * nên các trường thông tin phòng được trả về null trong trường hợp đó.
+     */
     public EquipmentResponse toResponse(Equipment equipment) {
         Building building = equipment.getBuilding();
         Room room = equipment.getRoom();
@@ -41,6 +49,9 @@ public class EquipmentMapper {
                 .build();
     }
 
+    /**
+     * Chuyển một lần bảo trì thiết bị sang dữ liệu phản hồi, kèm người thực hiện và yêu cầu bảo trì nguồn.
+     */
     public EquipmentMaintenanceHistoryResponse toHistoryResponse(EquipmentMaintenanceHistory history) {
         return EquipmentMaintenanceHistoryResponse.builder()
                 .id(history.getId())

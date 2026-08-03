@@ -39,6 +39,7 @@ import java.time.LocalDateTime;
                 columnNames = {"building_id", "fee_code"}
         )
 )
+/** Cấu hình một loại phí thuộc Building: đơn giá, cách tính, loại xe và trạng thái áp dụng. */
 public class ServiceFee {
 
     @Id

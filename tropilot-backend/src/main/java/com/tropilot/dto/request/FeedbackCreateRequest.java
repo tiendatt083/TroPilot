@@ -7,6 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
+/** Nội dung trưởng phòng gửi khi tạo một phản ánh mới. */
 public class FeedbackCreateRequest {
 
     @NotBlank(message = "Feedback type is required")

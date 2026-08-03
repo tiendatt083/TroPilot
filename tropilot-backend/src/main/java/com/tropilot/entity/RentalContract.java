@@ -32,6 +32,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 @Table(name = "rental_contracts")
+/** Hợp đồng thuê giữa Room và trưởng phòng, lưu thời hạn, cọc, trạng thái và file hiện hành. */
 public class RentalContract {
 
     @Id

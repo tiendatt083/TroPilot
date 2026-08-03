@@ -5,6 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
+/** Phòng không thể tạo hóa đơn hàng loạt, kèm mã và lời giải thích lý do. */
 public class InvoiceBulkBlockedRoomResponse {
 
     private Long roomId;

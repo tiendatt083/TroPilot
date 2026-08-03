@@ -20,6 +20,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/resident/contracts")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('RESIDENT_HEAD')")
+/**
+ * API hợp đồng dành cho trưởng phòng, chỉ làm việc với hợp đồng của phòng mình.
+ * GET /current xem hợp đồng hiện hành; PUT /{id}/confirm xác nhận;
+ * POST /{id}/report-error báo thông tin hợp đồng có sai sót để quản lý xử lý.
+ */
 public class ResidentContractController {
 
     private final RentalContractService rentalContractService;

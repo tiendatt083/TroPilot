@@ -38,6 +38,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+/** Xử lý đăng nhập, đặt lại mật khẩu và các thay đổi hồ sơ/mật khẩu của người dùng hiện tại. */
 public class AuthServiceImpl implements AuthService {
 
     private static final int RESET_CODE_EXPIRATION_MINUTES = 10;
@@ -57,6 +58,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional(readOnly = true)
+    /** Xác thực email/mật khẩu, kiểm tra trạng thái tài khoản rồi phát JWT cho phiên đăng nhập. */
     public LoginResponse login(LoginRequest request) {
         User user = userRepository.findByEmail(normalizeEmail(request.getEmail()))
                 .orElseThrow(() -> new UnauthorizedException("Invalid email or password"));
@@ -81,6 +83,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
+    /** Tạo mã đặt lại mật khẩu, vô hiệu các mã cũ và gửi mã mới qua email nếu tài khoản tồn tại. */
     public void requestPasswordResetCode(ForgotPasswordRequest request) {
         String email = normalizeEmail(request.getEmail());
         Optional<User> optionalUser = userRepository.findByEmail(email);
@@ -111,6 +114,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
+    /** Kiểm tra mã đặt lại còn hiệu lực, đổi mật khẩu và đánh dấu mã đã được dùng. */
     public void resetPasswordWithCode(ResetPasswordWithCodeRequest request) {
         String email = normalizeEmail(request.getEmail());
         User user = userRepository.findByEmail(email)
@@ -164,6 +168,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional(readOnly = true)
+    /** Trả về hồ sơ của người dùng đang đăng nhập theo id đã xác thực. */
     public UserResponse getCurrentUser(Long userId) {
         User user = findUser(userId);
         RoomAssignment activeAssignment = roomAssignmentRepository
@@ -175,6 +180,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
+    /** Cập nhật thông tin hồ sơ cá nhân, đồng thời kiểm tra email mới không bị trùng. */
     public UserResponse updateCurrentUser(Long userId, ProfileUpdateRequest request) {
         User user = findUser(userId);
         validateLoginStatus(user);
@@ -190,6 +196,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
+    /** Đổi mật khẩu lần đầu bằng mật khẩu tạm và xóa yêu cầu buộc đổi mật khẩu sau khi thành công. */
     public UserResponse changePasswordFirstTime(Long userId, ChangePasswordFirstTimeRequest request) {
         User user = findUser(userId);
 

@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 
 @Getter
 @Builder
+/** Một khoản tiền trong hóa đơn: tên phí, cách tính, số lượng, đơn giá và thành tiền. */
 public class InvoiceItemResponse {
 
     private Long id;

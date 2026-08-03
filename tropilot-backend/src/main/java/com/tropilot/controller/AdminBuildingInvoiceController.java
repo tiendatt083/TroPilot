@@ -28,6 +28,12 @@ import java.util.List;
 @RequestMapping("/api/admin/buildings/{buildingId}/invoices")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
+/**
+ * API hóa đơn của một tòa nhà, chỉ ADMIN được dùng.
+ * GET / và /{invoiceId} để xem; POST /preview để tính thử một hóa đơn trước khi lưu;
+ * POST /generate để tạo; POST /bulk-preview và /bulk-generate để xử lý nhiều phòng;
+ * DELETE /{invoiceId} để xóa hóa đơn theo quy tắc nghiệp vụ.
+ */
 public class AdminBuildingInvoiceController {
 
     private final InvoiceService invoiceService;

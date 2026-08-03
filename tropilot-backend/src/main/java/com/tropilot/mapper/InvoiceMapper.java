@@ -21,20 +21,33 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
+/**
+ * Chuyển hóa đơn và các dữ liệu liên quan thành InvoiceResponse.
+ * Mapper tổng hợp phòng, cư dân, chỉ số điện nước, các dòng phí, khiếu nại và trạng thái thanh toán SePay.
+ */
 public class InvoiceMapper {
 
     private static final DateTimeFormatter MONTH_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM");
 
     private final SepayPaymentMapper sepayPaymentMapper;
 
+    /**
+     * Chuyển hóa đơn khi chỉ có dữ liệu chỉ số điện nước; các thông tin tùy chọn khác được để trống.
+     */
     public InvoiceResponse toResponse(Invoice invoice, UtilityReading utilityReading) {
         return toResponse(invoice, utilityReading, null);
     }
 
+    /**
+     * Chuyển hóa đơn và kèm phản hồi khiếu nại hóa đơn, nếu hóa đơn đang có khiếu nại.
+     */
     public InvoiceResponse toResponse(Invoice invoice, UtilityReading utilityReading, Feedback invoiceComplaint) {
         return toResponse(invoice, utilityReading, invoiceComplaint, null);
     }
 
+    /**
+     * Tạo dữ liệu hóa đơn đầy đủ cho API từ hóa đơn và các đối tượng liên quan đã được service chuẩn bị.
+     */
     public InvoiceResponse toResponse(
             Invoice invoice,
             UtilityReading utilityReading,
@@ -77,6 +90,10 @@ public class InvoiceMapper {
                 .build();
     }
 
+    /**
+     * Lấy ngày lập hóa đơn: ưu tiên ngày được lưu riêng; nếu chưa có thì dùng ngày tạo,
+     * cuối cùng mới dùng tháng hóa đơn làm giá trị dự phòng.
+     */
     private LocalDate resolveInvoiceDate(Invoice invoice) {
         if (invoice.getInvoiceDate() != null) {
             return invoice.getInvoiceDate();
@@ -85,6 +102,7 @@ public class InvoiceMapper {
         return invoice.getCreatedAt() == null ? invoice.getMonth() : invoice.getCreatedAt().toLocalDate();
     }
 
+    /** Chuyển và sắp xếp các dòng phí theo id để thứ tự trả về luôn ổn định. */
     private List<InvoiceItemResponse> toItemResponses(List<InvoiceItem> items) {
         return items.stream()
                 .sorted(Comparator.comparing(InvoiceItem::getId, Comparator.nullsLast(Long::compareTo)))
@@ -92,6 +110,7 @@ public class InvoiceMapper {
                 .toList();
     }
 
+    /** Chuyển một dòng phí trên hóa đơn sang dữ liệu dùng để hiển thị. */
     private InvoiceItemResponse toItemResponse(InvoiceItem item) {
         ServiceFee serviceFee = item.getServiceFee();
 

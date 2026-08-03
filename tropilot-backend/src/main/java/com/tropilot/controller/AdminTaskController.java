@@ -28,6 +28,11 @@ import java.util.List;
 @RequestMapping("/api/admin/tasks")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
+/**
+ * API quản lý công việc của nhân viên.
+ * POST / tạo và phân công; GET / hoặc /{id} xem; PUT /{id} sửa nội dung/phân công;
+ * DELETE /{id} xóa nhiệm vụ khi chưa bị ràng buộc.
+ */
 public class AdminTaskController {
 
     private final TaskService taskService;

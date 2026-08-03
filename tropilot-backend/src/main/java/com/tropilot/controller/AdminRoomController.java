@@ -23,6 +23,11 @@ import java.util.List;
 @RequestMapping("/api/admin/rooms")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
+/**
+ * API quản lý phòng.
+ * POST / tạo phòng; GET / xem/lọc danh sách; GET /{id} xem chi tiết;
+ * PUT /{id} cập nhật; DELETE /{id} xóa nếu phòng không bị ràng buộc bởi dữ liệu khác.
+ */
 public class AdminRoomController {
 
     private final RoomService roomService;

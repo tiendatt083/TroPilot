@@ -35,6 +35,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+/** Phân phòng cho chủ hộ và xử lý dữ liệu liên quan khi chủ hộ rời hoặc được gỡ khỏi phòng. */
 public class HeadResidentAssignmentServiceImpl implements HeadResidentAssignmentService {
 
     private final RoomRepository roomRepository;
@@ -47,6 +48,7 @@ public class HeadResidentAssignmentServiceImpl implements HeadResidentAssignment
 
     @Override
     @Transactional
+    /** Gán một tài khoản RESIDENT_HEAD cho phòng, tạo phân phòng và hợp đồng thuê cần thiết. */
     public HeadResidentAssignmentResponse assignHeadResident(Long roomId, AssignHeadResidentRequest request) {
         Room room = findRoom(roomId);
         User residentHead = findUser(request.getResidentHeadId());
@@ -105,6 +107,7 @@ public class HeadResidentAssignmentServiceImpl implements HeadResidentAssignment
 
     @Override
     @Transactional(readOnly = true)
+    /** Trả về phân phòng hiện tại của phòng hoặc phản hồi phòng chưa được gán chủ hộ. */
     public HeadResidentAssignmentResponse getHeadResidentAssignment(Long roomId) {
         Room room = findRoom(roomId);
 
@@ -119,6 +122,7 @@ public class HeadResidentAssignmentServiceImpl implements HeadResidentAssignment
 
     @Override
     @Transactional
+    /** Kết thúc phân phòng, cập nhật các thành viên/xe liên quan và đưa phòng về trạng thái phù hợp. */
     public HeadResidentAssignmentResponse removeHeadResident(Long roomId) {
         Room room = findRoom(roomId);
         RoomAssignment assignment = roomAssignmentRepository
@@ -152,6 +156,7 @@ public class HeadResidentAssignmentServiceImpl implements HeadResidentAssignment
 
     @Override
     @Transactional(readOnly = true)
+    /** Lấy phòng đang được phân cho một chủ hộ. */
     public HeadResidentAssignmentResponse getResidentAssignedRoom(Long residentHeadId) {
         return roomAssignmentRepository
                 .findByResidentHeadIdAndStatus(residentHeadId, RoomAssignmentStatus.ACTIVE)

@@ -559,3 +559,210 @@ CREATE TABLE IF NOT EXISTS `vehicles` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 SET FOREIGN_KEY_CHECKS = 1;
+
+-- Schema changes previously stored in V2 through V12 are included below so a new database
+-- can be created entirely from this single baseline migration.
+
+-- V2: normalize runtime schema and invoice date.
+ALTER TABLE notifications
+    MODIFY target_type VARCHAR(40) NOT NULL;
+
+ALTER TABLE maintenance_requests
+    MODIFY room_id BIGINT NULL,
+    MODIFY resident_head_id BIGINT NULL;
+
+UPDATE invoices
+SET invoice_date = DATE(created_at)
+WHERE invoice_date IS NULL;
+
+ALTER TABLE invoices
+    MODIFY invoice_date DATE NOT NULL;
+
+-- V3: business uniqueness constraints.
+SET @index_exists = (
+    SELECT COUNT(*)
+    FROM information_schema.statistics
+    WHERE table_schema = DATABASE()
+      AND table_name = 'invoices'
+      AND index_name = 'uk_invoices_room_month'
+);
+SET @statement = IF(
+    @index_exists = 0,
+    'ALTER TABLE invoices ADD CONSTRAINT uk_invoices_room_month UNIQUE (room_id, invoice_month)',
+    'SELECT 1'
+);
+PREPARE migration_statement FROM @statement;
+EXECUTE migration_statement;
+DEALLOCATE PREPARE migration_statement;
+
+SET @index_exists = (
+    SELECT COUNT(*)
+    FROM information_schema.statistics
+    WHERE table_schema = DATABASE()
+      AND table_name = 'utility_readings'
+      AND index_name = 'uk_utility_readings_room_month'
+);
+SET @statement = IF(
+    @index_exists = 0,
+    'ALTER TABLE utility_readings ADD CONSTRAINT uk_utility_readings_room_month UNIQUE (room_id, reading_month)',
+    'SELECT 1'
+);
+PREPARE migration_statement FROM @statement;
+EXECUTE migration_statement;
+DEALLOCATE PREPARE migration_statement;
+
+ALTER TABLE room_assignments
+    ADD COLUMN active_room_id BIGINT
+        GENERATED ALWAYS AS (CASE WHEN status = 'ACTIVE' THEN room_id ELSE NULL END) STORED,
+    ADD COLUMN active_resident_head_id BIGINT
+        GENERATED ALWAYS AS (CASE WHEN status = 'ACTIVE' THEN resident_head_id ELSE NULL END) STORED;
+
+ALTER TABLE room_assignments
+    ADD CONSTRAINT uk_room_assignments_active_room UNIQUE (active_room_id),
+    ADD CONSTRAINT uk_room_assignments_active_resident_head UNIQUE (active_resident_head_id);
+
+ALTER TABLE service_fees
+    ADD COLUMN active_electricity_building_id BIGINT
+        GENERATED ALWAYS AS (
+            CASE WHEN is_active = 1 AND fee_type = 'ELECTRICITY' THEN building_id ELSE NULL END
+        ) STORED,
+    ADD COLUMN active_water_building_id BIGINT
+        GENERATED ALWAYS AS (
+            CASE WHEN is_active = 1 AND fee_type = 'WATER' THEN building_id ELSE NULL END
+        ) STORED;
+
+ALTER TABLE service_fees
+    ADD CONSTRAINT uk_service_fees_active_electricity UNIQUE (active_electricity_building_id),
+    ADD CONSTRAINT uk_service_fees_active_water UNIQUE (active_water_building_id);
+
+-- V4: password reset codes.
+CREATE TABLE IF NOT EXISTS `password_reset_codes` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `code_hash` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `expires_at` datetime(6) NOT NULL,
+  `used_at` datetime(6) DEFAULT NULL,
+  `attempt_count` int NOT NULL,
+  `created_at` datetime(6) NOT NULL,
+  `user_id` bigint NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_password_reset_codes_user_active` (`user_id`, `used_at`, `created_at`),
+  CONSTRAINT `fk_password_reset_codes_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- V5 and V6: link tasks to their building and optional feedback source.
+ALTER TABLE tasks
+    ADD COLUMN building_id BIGINT NULL;
+
+UPDATE tasks task_entity
+JOIN rooms room ON task_entity.room_id = room.id
+SET task_entity.building_id = room.building_id
+WHERE task_entity.building_id IS NULL;
+
+ALTER TABLE tasks
+    ADD INDEX idx_tasks_building_id (building_id),
+    ADD CONSTRAINT fk_tasks_building
+        FOREIGN KEY (building_id) REFERENCES buildings (id);
+
+ALTER TABLE feedbacks
+    MODIFY COLUMN `type` ENUM('GENERAL','MAINTENANCE','INVOICE_COMPLAINT','CONTRACT_ERROR','OTHER') NOT NULL,
+    MODIFY COLUMN `status` ENUM('PENDING','ASSIGNED','IN_PROGRESS','RESOLVED','REJECTED') NOT NULL;
+
+ALTER TABLE tasks
+    ADD COLUMN feedback_id BIGINT NULL;
+
+ALTER TABLE tasks
+    ADD INDEX idx_tasks_feedback_id (feedback_id),
+    ADD CONSTRAINT fk_tasks_feedback
+        FOREIGN KEY (feedback_id) REFERENCES feedbacks (id);
+
+-- V7: utility images are optional.
+ALTER TABLE utility_readings
+    MODIFY electricity_image_url VARCHAR(500) NULL,
+    MODIFY water_image_url VARCHAR(500) NULL;
+
+-- V8 and V9: notification metadata and legacy notification classification.
+ALTER TABLE notifications
+    ADD COLUMN source VARCHAR(30) NOT NULL DEFAULT 'MANUAL',
+    ADD COLUMN event_type VARCHAR(50) NOT NULL DEFAULT 'MANUAL',
+    ADD COLUMN action_path VARCHAR(500) NULL;
+
+UPDATE notifications
+SET source = 'SYSTEM',
+    event_type = CASE
+        WHEN title IN ('New invoice issued', 'Đã tạo hóa đơn mới') THEN 'INVOICE_ISSUED'
+        WHEN title IN ('Payment received', 'Đã nhận thanh toán', 'Thanh toán đã được xác nhận') THEN 'PAYMENT_RECEIVED'
+        WHEN title = 'Thanh toán chưa được chấp nhận' THEN 'PAYMENT_REJECTED'
+        WHEN title = 'Có thanh toán cần xác nhận' THEN 'PAYMENT_SUBMITTED'
+        WHEN title IN ('Rental contract updated', 'Đã cập nhật hợp đồng thuê') THEN 'CONTRACT_UPDATED'
+        WHEN title IN ('Có phản hồi mới', 'Có khiếu nại hóa đơn mới') THEN 'FEEDBACK_CREATED'
+        WHEN title IN ('Trạng thái phản hồi đã thay đổi', 'Yêu cầu của bạn đã được xử lý') THEN 'FEEDBACK_UPDATED'
+        WHEN title = 'Bạn có công việc mới' THEN 'TASK_ASSIGNED'
+        WHEN title = 'Nhân viên đã hoàn thành công việc' THEN 'TASK_COMPLETED'
+        WHEN title = 'Nhân viên từ chối công việc' THEN 'TASK_REJECTED'
+        WHEN title = 'Nhân viên gửi yêu cầu chi phí' THEN 'EXPENSE_REQUESTED'
+        WHEN title = 'Yêu cầu chi phí đã được duyệt' THEN 'EXPENSE_APPROVED'
+        WHEN title = 'Yêu cầu chi phí không được duyệt' THEN 'EXPENSE_REJECTED'
+        WHEN title = 'Có yêu cầu thêm thành viên' THEN 'MEMBER_REQUESTED'
+        WHEN title = 'Yêu cầu thành viên đã được duyệt' THEN 'MEMBER_APPROVED'
+        WHEN title = 'Yêu cầu thành viên bị từ chối' THEN 'MEMBER_REJECTED'
+        ELSE event_type
+    END
+WHERE source = 'MANUAL'
+  AND event_type = 'MANUAL'
+  AND title IN (
+      'New invoice issued',
+      'Đã tạo hóa đơn mới',
+      'Payment received',
+      'Đã nhận thanh toán',
+      'Thanh toán đã được xác nhận',
+      'Thanh toán chưa được chấp nhận',
+      'Có thanh toán cần xác nhận',
+      'Rental contract updated',
+      'Đã cập nhật hợp đồng thuê',
+      'Có phản hồi mới',
+      'Có khiếu nại hóa đơn mới',
+      'Trạng thái phản hồi đã thay đổi',
+      'Yêu cầu của bạn đã được xử lý',
+      'Bạn có công việc mới',
+      'Nhân viên đã hoàn thành công việc',
+      'Nhân viên từ chối công việc',
+      'Nhân viên gửi yêu cầu chi phí',
+      'Yêu cầu chi phí đã được duyệt',
+      'Yêu cầu chi phí không được duyệt',
+      'Có yêu cầu thêm thành viên',
+      'Yêu cầu thành viên đã được duyệt',
+      'Yêu cầu thành viên bị từ chối'
+  );
+
+-- V10: additional task type for shared equipment.
+ALTER TABLE `tasks`
+    MODIFY COLUMN `task_type` ENUM(
+        'METER_READING',
+        'INVOICE_CREATION',
+        'ROOM_CHECK',
+        'SHARED_EQUIPMENT_CHECK',
+        'MAINTENANCE',
+        'VEHICLE_CHECK',
+        'FEEDBACK_HANDLING',
+        'OTHER'
+    ) COLLATE utf8mb4_unicode_ci NOT NULL;
+
+-- V11: remove the retired expenses feature.
+UPDATE notifications
+SET event_type = 'MANUAL',
+    source = 'SYSTEM'
+WHERE event_type IN ('EXPENSE_REQUESTED', 'EXPENSE_APPROVED', 'EXPENSE_REJECTED');
+
+DROP TABLE IF EXISTS expenses;
+
+-- V12: final feedback statuses.
+UPDATE feedbacks
+SET status = 'IN_PROGRESS'
+WHERE status = 'ASSIGNED';
+
+UPDATE feedbacks
+SET status = 'RESOLVED'
+WHERE status = 'REJECTED';
+
+ALTER TABLE feedbacks
+    MODIFY COLUMN `status` ENUM('PENDING','IN_PROGRESS','RESOLVED') NOT NULL;

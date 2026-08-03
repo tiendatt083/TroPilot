@@ -7,6 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
+/** Thông tin đăng nhập; mật khẩu chỉ được dùng để xác thực, không trả lại trong response. */
 public class LoginRequest {
 
     @NotBlank(message = "Email is required")

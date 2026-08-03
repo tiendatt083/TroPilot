@@ -30,6 +30,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 @Table(name = "room_members")
+/** Thành viên đang/chờ ở trong Room, do trưởng phòng quản lý, với ngày vào/ra và trạng thái duyệt. */
 public class RoomMember {
 
     @Id

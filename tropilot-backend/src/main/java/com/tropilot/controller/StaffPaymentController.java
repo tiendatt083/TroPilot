@@ -16,6 +16,10 @@ import java.util.List;
 @RequestMapping("/api/staff/payments")
 @RequiredArgsConstructor
 @PreAuthorize("hasAnyRole('STAFF', 'ADMIN')")
+/**
+ * API xem các khoản thanh toán đang chờ xác nhận, dành cho STAFF và ADMIN.
+ * GET /pending có thể nhận buildingId để giới hạn danh sách cần kiểm tra.
+ */
 public class StaffPaymentController {
 
     private final PaymentService paymentService;

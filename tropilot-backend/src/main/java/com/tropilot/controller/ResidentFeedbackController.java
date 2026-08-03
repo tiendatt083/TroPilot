@@ -23,6 +23,11 @@ import java.util.List;
 @RequestMapping("/api/resident/feedbacks")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('RESIDENT_HEAD')")
+/**
+ * API phản ánh của trưởng phòng.
+ * GET / xem các phản ánh đã gửi; POST / tạo phản ánh mới và service tự gắn nó
+ * với người dùng/phòng đang đăng nhập.
+ */
 public class ResidentFeedbackController {
 
     private final FeedbackService feedbackService;

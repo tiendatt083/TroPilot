@@ -5,6 +5,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+/** Hợp đồng quản lý hợp đồng thuê: xem, tải tệp, xác nhận và báo vấn đề. */
 public interface RentalContractService {
 
     List<RentalContractResponse> getContracts(Long buildingId);

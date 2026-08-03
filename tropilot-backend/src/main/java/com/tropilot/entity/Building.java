@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 @Table(name = "buildings")
+/** Bảng tòa nhà; là cấp cha của các phòng và dữ liệu vận hành theo tòa nhà. */
 public class Building {
 
     @Id

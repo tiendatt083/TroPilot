@@ -30,6 +30,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 @Table(name = "sepay_payments")
+/** Dữ liệu QR và webhook SePay của một Invoice; mỗi hóa đơn chỉ có một bản ghi SePay. */
 public class SepayPayment {
 
     @Id

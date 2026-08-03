@@ -7,6 +7,7 @@ import com.tropilot.dto.response.FeedbackResponse;
 
 import java.util.List;
 
+/** Hợp đồng tiếp nhận, xem và phản hồi góp ý hoặc khiếu nại của cư dân. */
 public interface FeedbackService {
 
     FeedbackResponse createResidentFeedback(Long residentHeadId, FeedbackCreateRequest request);

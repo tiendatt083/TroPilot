@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 
 @Getter
 @Setter
+/** Dữ liệu sửa chỉ số điện nước; lý do sửa bắt buộc để giữ vết thay đổi. */
 public class UtilityReadingUpdateRequest {
 
     @NotNull(message = "Room is required")

@@ -16,6 +16,10 @@ import java.util.List;
 @RequestMapping("/api/admin/receipts")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
+/**
+ * API chỉ đọc các phiếu thu.
+ * GET / trả về toàn bộ phiếu thu hoặc chỉ các phiếu thuộc buildingId mà ADMIN chọn.
+ */
 public class AdminReceiptController {
 
     private final ReceiptService receiptService;

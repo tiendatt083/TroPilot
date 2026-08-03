@@ -32,6 +32,7 @@ import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
+/** Quản lý thiết bị: tạo mã, gán vị trí, kiểm tra lịch bảo trì và trả lịch sử bảo trì. */
 public class EquipmentServiceImpl implements EquipmentService {
 
     private final EquipmentRepository equipmentRepository;
@@ -44,6 +45,7 @@ public class EquipmentServiceImpl implements EquipmentService {
 
     @Override
     @Transactional
+    /** Tạo thiết bị cho tòa nhà, sinh/kiểm tra mã và xác định phòng đặt thiết bị theo phạm vi sử dụng. */
     public EquipmentResponse createEquipment(Long buildingId, EquipmentUpsertRequest request) {
         Building building = findBuilding(buildingId);
         Equipment equipment = Equipment.builder()
@@ -116,6 +118,7 @@ public class EquipmentServiceImpl implements EquipmentService {
 
     @Override
     @Transactional(readOnly = true)
+    /** Lấy thiết bị mà chủ hộ có thể xem trong phòng hoặc tòa nhà đang được phân. */
     public List<EquipmentResponse> getResidentEquipment(Long residentHeadId) {
         RoomAssignment assignment = roomAssignmentRepository
                 .findByResidentHeadIdAndStatus(residentHeadId, RoomAssignmentStatus.ACTIVE)
@@ -139,12 +142,14 @@ public class EquipmentServiceImpl implements EquipmentService {
 
     @Override
     @Transactional(readOnly = true)
+    /** Tìm chi tiết thiết bị theo id. */
     public EquipmentResponse getEquipment(Long id) {
         return equipmentMapper.toResponse(findEquipment(id));
     }
 
     @Override
     @Transactional
+    /** Cập nhật thiết bị trong đúng tòa nhà, bao gồm mã, vị trí, tình trạng và lịch bảo trì. */
     public EquipmentResponse updateEquipment(Long buildingId, Long id, EquipmentUpsertRequest request) {
         Equipment equipment = findBuildingEquipment(buildingId, id);
         applyValues(equipment, request);
@@ -153,6 +158,7 @@ public class EquipmentServiceImpl implements EquipmentService {
 
     @Override
     @Transactional
+    /** Xóa thiết bị nếu không còn dữ liệu bảo trì phụ thuộc cần được bảo toàn. */
     public EquipmentDeleteResponse deleteEquipment(Long buildingId, Long id) {
         Equipment equipment = findBuildingEquipment(buildingId, id);
 
@@ -177,6 +183,7 @@ public class EquipmentServiceImpl implements EquipmentService {
 
     @Override
     @Transactional(readOnly = true)
+    /** Lấy lịch sử các lần bảo trì của một thiết bị, mới nhất trước. */
     public List<EquipmentMaintenanceHistoryResponse> getMaintenanceHistory(Long equipmentId) {
         findEquipment(equipmentId);
         return equipmentMaintenanceHistoryRepository

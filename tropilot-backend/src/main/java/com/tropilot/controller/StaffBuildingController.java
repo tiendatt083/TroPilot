@@ -17,6 +17,10 @@ import java.util.List;
 @RequestMapping("/api/staff/buildings")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('STAFF')")
+/**
+ * API chỉ đọc tòa nhà cho STAFF.
+ * GET / xem/tìm kiếm danh sách; GET /{id} xem chi tiết tòa nhà cần xử lý.
+ */
 public class StaffBuildingController {
 
     private final BuildingService buildingService;

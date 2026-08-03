@@ -5,6 +5,7 @@ import com.tropilot.entity.User;
 
 import java.util.List;
 
+/** Hợp đồng ghi và tra cứu nhật ký hoạt động của người dùng trong hệ thống. */
 public interface ActivityLogService {
 
     void record(User user, String action, String description);

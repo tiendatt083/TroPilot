@@ -13,6 +13,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/admin/dashboard")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
+/**
+ * API dữ liệu tổng quan cho màn hình dashboard ADMIN.
+ * GET / gom các số liệu quản trị cần hiển thị thay vì frontend phải gọi nhiều API nhỏ.
+ */
 public class AdminDashboardController {
 
     private final DashboardService dashboardService;

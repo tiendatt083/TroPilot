@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
+/** Phiếu thu sinh từ hóa đơn, gồm số tiền, mã phiếu, phòng và người tạo. */
 public class ReceiptResponse {
 
     private Long id;

@@ -69,6 +69,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+/** Tính toán, xem trước, phát hành, tra cứu và xóa hóa đơn theo các quy tắc thu phí của tòa nhà. */
 public class InvoiceServiceImpl implements InvoiceService {
 
     private static final BigDecimal ONE = BigDecimal.ONE;
@@ -100,6 +101,7 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     @Override
     @Transactional(readOnly = true)
+    /** Tính thử hóa đơn cho một phòng trong tòa nhà nhưng chưa lưu vào cơ sở dữ liệu. */
     public InvoicePreviewResponse previewBuildingInvoice(Long buildingId, InvoicePreviewRequest request) {
         InvoiceCalculation calculation = calculateInvoice(
                 findRoom(request.getRoomId()),
@@ -116,6 +118,7 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     @Override
     @Transactional
+    /** Tính, tạo và lưu hóa đơn chính thức cho một phòng, sau đó tạo thông tin thanh toán nếu áp dụng. */
     public InvoiceResponse generateBuildingInvoice(Long buildingId, InvoicePreviewRequest request, Long createdById) {
         User createdBy = findUser(createdById);
         InvoiceCalculation calculation = calculateInvoice(
@@ -133,6 +136,7 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     @Override
     @Transactional(readOnly = true)
+    /** Xem trước hóa đơn hàng loạt và trả cả những phòng bị chặn cùng lý do không thể tạo. */
     public BulkInvoicePreviewResponse previewBuildingInvoices(Long buildingId, BulkInvoiceRequest request) {
         Building building = findBuilding(buildingId);
         LocalDate invoiceMonth = getInvoiceMonth(request.getInvoiceDate());
@@ -210,6 +214,7 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     @Override
     @Transactional
+    /** Phát hành hóa đơn cho nhiều phòng đủ điều kiện trong cùng một tòa nhà. */
     public List<InvoiceResponse> generateBuildingInvoices(Long buildingId, BulkInvoiceRequest request, Long createdById) {
         User createdBy = findUser(createdById);
         BulkInvoicePreviewResponse preview = previewBuildingInvoices(buildingId, request);
@@ -246,6 +251,7 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     @Override
     @Transactional
+    /** Xóa hóa đơn thuộc tòa nhà khi trạng thái cho phép, đồng thời xử lý dữ liệu thanh toán liên quan. */
     public void deleteBuildingInvoice(Long buildingId, Long invoiceId, Long deletedById) {
         User deletedBy = findUser(deletedById);
         Invoice invoice = findInvoice(invoiceId);
@@ -285,6 +291,7 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     @Override
     @Transactional(readOnly = true)
+    /** Lấy danh sách hóa đơn trong phạm vi một tòa nhà. */
     public List<InvoiceResponse> getBuildingInvoices(Long buildingId) {
         return findBuildingInvoices(buildingId)
                 .stream()
@@ -299,6 +306,7 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     @Override
     @Transactional(readOnly = true)
+    /** Lấy chi tiết hóa đơn sau khi xác nhận hóa đơn thuộc tòa nhà được yêu cầu. */
     public InvoiceResponse getBuildingInvoice(Long buildingId, Long invoiceId) {
         Invoice invoice = findInvoice(invoiceId);
         validateInvoiceBelongsToBuilding(invoice, buildingId);
@@ -312,6 +320,7 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     @Override
     @Transactional(readOnly = true)
+    /** Lấy hóa đơn mà chủ hộ có thể xem theo phân phòng hiện tại. */
     public List<InvoiceResponse> getResidentInvoices(Long residentHeadId) {
         RoomAssignment assignment = findResidentAssignment(residentHeadId);
 
@@ -328,6 +337,7 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     @Override
     @Transactional(readOnly = true)
+    /** Lấy một hóa đơn khi hóa đơn đó thực sự thuộc chủ hộ đang đăng nhập. */
     public InvoiceResponse getResidentInvoice(Long residentHeadId, Long id) {
         RoomAssignment assignment = findResidentAssignment(residentHeadId);
         Invoice invoice = findInvoice(id);

@@ -16,6 +16,11 @@ import java.util.List;
 @RequestMapping("/api/admin/buildings/{buildingId}/users")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
+/**
+ * API chỉ đọc danh sách người dùng của một tòa nhà.
+ * GET / dùng buildingId trên URL để trả về cư dân, nhân viên hoặc các tài khoản
+ * đang được liên kết với tòa nhà đó.
+ */
 public class AdminBuildingUserController {
 
     private final BuildingUserService buildingUserService;

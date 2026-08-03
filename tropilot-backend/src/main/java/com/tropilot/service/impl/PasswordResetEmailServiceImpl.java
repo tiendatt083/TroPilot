@@ -16,6 +16,7 @@ import java.time.format.DateTimeFormatter;
 
 @Service
 @Slf4j
+/** Chuẩn bị và gửi email mã đặt lại mật khẩu bằng cấu hình SMTP của ứng dụng. */
 public class PasswordResetEmailServiceImpl implements PasswordResetEmailService {
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");

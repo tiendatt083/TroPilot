@@ -23,6 +23,7 @@ import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
+/** Tổng hợp chủ hộ và thành viên phòng thành danh sách người dùng thuộc một tòa nhà. */
 public class BuildingUserServiceImpl implements BuildingUserService {
 
     private static final String ACCOUNT_RECORD_TYPE = "USER_ACCOUNT";
@@ -34,6 +35,7 @@ public class BuildingUserServiceImpl implements BuildingUserService {
 
     @Override
     @Transactional(readOnly = true)
+    /** Gộp chủ hộ và thành viên phòng của tòa nhà thành một danh sách hiển thị đã sắp xếp. */
     public List<BuildingUserResponse> getBuildingUsers(Long buildingId) {
         validateBuildingExists(buildingId);
 

@@ -9,14 +9,22 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Repository quản lý việc phân phòng cho chủ hộ.
+ * Phân phòng là liên kết giữa phòng và cư dân đại diện, có trạng thái như ACTIVE để xác định người đang ở.
+ */
 public interface RoomAssignmentRepository extends JpaRepository<RoomAssignment, Long> {
 
+    /** Kiểm tra một phòng có phân phòng ở trạng thái chỉ định hay không. */
     boolean existsByRoom_IdAndStatus(Long roomId, RoomAssignmentStatus status);
 
+    /** Kiểm tra một chủ hộ có đang có phân phòng ở trạng thái chỉ định hay không. */
     boolean existsByResidentHead_IdAndStatus(Long residentHeadId, RoomAssignmentStatus status);
 
+    /** Đếm số phân phòng theo trạng thái để dùng trong thống kê. */
     long countByStatus(RoomAssignmentStatus status);
 
+    /** Tìm phân phòng của một phòng theo trạng thái và nạp thông tin phòng/tòa nhà/chủ hộ. */
     @Query("""
             select assignment from RoomAssignment assignment
             join fetch assignment.room room
@@ -30,6 +38,7 @@ public interface RoomAssignmentRepository extends JpaRepository<RoomAssignment, 
             @Param("status") RoomAssignmentStatus status
     );
 
+    /** Tìm phân phòng của một chủ hộ theo trạng thái và nạp thông tin liên quan. */
     @Query("""
             select assignment from RoomAssignment assignment
             join fetch assignment.room room
@@ -43,6 +52,7 @@ public interface RoomAssignmentRepository extends JpaRepository<RoomAssignment, 
             @Param("status") RoomAssignmentStatus status
     );
 
+    /** Lấy các phân phòng của nhiều chủ hộ cùng lúc theo trạng thái, tránh phải truy vấn từng người. */
     @Query("""
             select assignment from RoomAssignment assignment
             join fetch assignment.room room
@@ -56,6 +66,7 @@ public interface RoomAssignmentRepository extends JpaRepository<RoomAssignment, 
             @Param("status") RoomAssignmentStatus status
     );
 
+    /** Lấy các phân phòng của một tòa nhà theo trạng thái, sắp xếp mã phòng tăng dần. */
     @Query("""
             select assignment from RoomAssignment assignment
             join fetch assignment.room room

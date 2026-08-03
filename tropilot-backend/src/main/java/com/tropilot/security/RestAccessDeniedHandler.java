@@ -15,10 +15,14 @@ import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
+/**
+ * Chuyển lỗi thiếu quyền truy cập (403 Forbidden) của Spring Security thành ApiResponse dạng JSON thống nhất.
+ */
 public class RestAccessDeniedHandler implements AccessDeniedHandler {
 
     private final ObjectMapper objectMapper;
 
+    /** Ghi HTTP 403 khi người dùng đã đăng nhập nhưng không có quyền vào tài nguyên được yêu cầu. */
     @Override
     public void handle(
             HttpServletRequest request,

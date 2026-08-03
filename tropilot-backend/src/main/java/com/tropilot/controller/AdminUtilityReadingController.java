@@ -23,6 +23,11 @@ import java.util.List;
 @RequestMapping("/api/admin/utility-readings")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
+/**
+ * API xem và chỉnh sửa chỉ số điện, nước ở cấp ADMIN.
+ * GET / xem danh sách; GET /overview xem tổng quan theo kỳ; PUT /{id} cập nhật
+ * một bản ghi và có thể gửi kèm ảnh theo dạng multipart/form-data.
+ */
 public class AdminUtilityReadingController {
 
     private final UtilityReadingService utilityReadingService;

@@ -29,6 +29,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+/** Nhận ảnh minh chứng thanh toán của cư dân và cung cấp danh sách phiếu đang chờ xác nhận. */
 public class PaymentServiceImpl implements PaymentService {
 
     private final PaymentRepository paymentRepository;
@@ -42,6 +43,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     @Transactional
+    /** Chủ hộ tải ảnh minh chứng thanh toán cho hóa đơn của phòng mình sau khi kiểm tra điều kiện nộp. */
     public PaymentResponse uploadPaymentProof(Long residentHeadId, PaymentUploadRequest request) {
         RoomAssignment assignment = findResidentAssignment(residentHeadId);
         Invoice invoice = findInvoice(request.getInvoiceId());
@@ -83,6 +85,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     @Transactional(readOnly = true)
+    /** Lấy các phiếu thanh toán chờ xác nhận trong phạm vi tòa nhà. */
     public List<PaymentResponse> getPendingPayments(Long buildingId) {
         List<Payment> payments = buildingId == null
                 ? paymentRepository.findByStatusWithDetails(PaymentStatus.PENDING)

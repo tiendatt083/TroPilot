@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+/** Kiểm tra quyền chat, tạo ngữ cảnh và gọi Gemini để nhận câu trả lời cho người dùng. */
 public class ChatServiceImpl implements ChatService {
 
     private final CurrentUserProvider currentUserProvider;
@@ -23,6 +24,7 @@ public class ChatServiceImpl implements ChatService {
     
 
     @Override
+    /** Lấy người dùng hiện tại, kiểm tra quyền chat, xây ngữ cảnh và gọi Gemini để tạo phản hồi. */
     public ChatMessageResponse reply(ChatMessageRequest request) {
         User currentUser = currentUserProvider.getCurrentUser();
         validateAccess(currentUser);

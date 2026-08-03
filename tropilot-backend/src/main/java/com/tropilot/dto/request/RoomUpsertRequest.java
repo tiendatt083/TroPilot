@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 
 @Getter
 @Setter
+/** Dữ liệu tạo/sửa phòng: tòa nhà, giá thuê, diện tích, sức chứa và trạng thái hiện tại. */
 public class RoomUpsertRequest {
 
     @NotNull(message = "Building is required")

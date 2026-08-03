@@ -19,6 +19,10 @@ import java.util.List;
 @RequestMapping("/api/resident/maintenance-requests")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('RESIDENT_HEAD')")
+/**
+ * API chỉ đọc tiến độ các yêu cầu bảo trì của phòng hiện tại.
+ * GET / dùng userId trong JWT để trả đúng các yêu cầu liên quan, không nhận roomId từ client.
+ */
 public class ResidentMaintenanceRequestController {
 
     private final MaintenanceRequestService maintenanceRequestService;

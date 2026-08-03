@@ -17,6 +17,10 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+/**
+ * Lưu tệp hợp đồng vào thư mục uploads/contracts.
+ * Chỉ nhận ảnh JPEG/PNG hoặc PDF tối đa 10 MB, đổi tên ngẫu nhiên để tránh trùng và không dùng tên tệp người dùng gửi lên.
+ */
 public class ContractFileStorageService {
 
     private static final long MAX_FILE_SIZE_BYTES = 10L * 1024L * 1024L;
@@ -29,6 +33,9 @@ public class ContractFileStorageService {
 
     private final UploadProperties uploadProperties;
 
+    /**
+     * Kiểm tra tệp, lưu nó với UUID và trả về URL công khai tương đối của tệp hợp đồng.
+     */
     public String store(MultipartFile file) {
         validateFile(file);
 
@@ -56,6 +63,7 @@ public class ContractFileStorageService {
                 .toUriString();
     }
 
+    /** Kiểm tra tệp bắt buộc phải có, không vượt 10 MB và đúng cả phần mở rộng lẫn content type được cho phép. */
     private void validateFile(MultipartFile file) {
         if (file == null || file.isEmpty()) {
             throw new BadRequestException("Contract file is required");
@@ -76,6 +84,7 @@ public class ContractFileStorageService {
         }
     }
 
+    /** Lấy phần mở rộng đã chuẩn hóa; từ chối tên tệp không có phần mở rộng hợp lệ. */
     private String getExtension(String fileName) {
         if (fileName == null || fileName.isBlank() || !fileName.contains(".")) {
             throw new BadRequestException("Contract file type is not allowed");

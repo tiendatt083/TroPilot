@@ -38,6 +38,7 @@ import java.time.LocalDateTime;
                 columnNames = {"building_id", "equipment_code"}
         )
 )
+/** Thiết bị thuộc Building và có thể gắn Room; lưu phạm vi, tình trạng, số lượng và lịch bảo trì. */
 public class Equipment {
 
     @Id
