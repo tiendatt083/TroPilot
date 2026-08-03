@@ -10,6 +10,7 @@ import { translateInterfaceText } from '../utils/interfaceTranslations.js';
 
 const HISTORY_PAGE_SIZE = 30;
 
+/** Hộp thoại đọc toàn bộ nội dung của một thông báo trong hộp thư người dùng. */
 function NotificationDetailDialog({ notification, onClose }) {
   const { t } = useTranslation();
 
@@ -49,6 +50,7 @@ function NotificationDetailDialog({ notification, onClose }) {
   );
 }
 
+/** Trang thành phần hiển thị hộp thư thông báo cho cư dân hoặc nhân viên. */
 export default function UserNotificationPage({ descriptionKey = 'resident.notifications.description' } = {}) {
   const { t } = useTranslation();
   const [notifications, setNotifications] = useState([]);

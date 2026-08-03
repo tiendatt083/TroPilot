@@ -3,6 +3,7 @@ import { Link, NavLink, Outlet, useLocation, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next';
 import PageHeader from '../components/common/PageHeader.jsx';
 
+/** Khung không gian làm việc theo tòa nhà, cung cấp các tab nghiệp vụ và vùng hiển thị trang con. */
 export default function BuildingWorkspaceLayout({
   getBuilding,
   listPath,
@@ -157,12 +158,14 @@ export default function BuildingWorkspaceLayout({
   );
 }
 
+/** Xác định nhóm tab nào đang mở dựa trên đường dẫn hiện tại. */
 function findActiveGroupId(groups, buildingPath, pathname) {
   return groups.find((group) =>
     group.items.some((tab) => isTabActive(buildingPath, tab, pathname))
   )?.id;
 }
 
+/** Kiểm tra một tab có tương ứng với trang đang xem để đánh dấu tab đó hoạt động. */
 function isTabActive(buildingPath, tab, pathname) {
   const targetPath = `${buildingPath}${tab.path}`;
 

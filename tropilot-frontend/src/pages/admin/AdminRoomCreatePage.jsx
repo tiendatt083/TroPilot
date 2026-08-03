@@ -7,6 +7,7 @@ import PageHeader from '../../components/common/PageHeader.jsx';
 import RoomForm from '../../components/RoomForm.jsx';
 import { translateInterfaceText } from '../../utils/interfaceTranslations.js';
 
+/** Trang tạo phòng mới trong một tòa nhà đã chọn. */
 export default function AdminRoomCreatePage() {
   useTranslation();
   const navigate = useNavigate();

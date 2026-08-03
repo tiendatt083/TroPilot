@@ -26,6 +26,7 @@ function statusClass(status) {
   return `status-pill room-status-${status.toLowerCase()}`;
 }
 
+/** Trang danh sách phòng nhân viên có quyền theo dõi. */
 export default function StaffRoomListPage() {
   const { t } = useTranslation();
   const [rooms, setRooms] = useState([]);

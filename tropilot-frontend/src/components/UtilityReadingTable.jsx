@@ -4,6 +4,7 @@ import { openFileUrl, resolveFileUrl } from '../utils/fileUrl.js';
 import { formatDisplayDate, formatDisplayMonth } from '../utils/dateFormat.js';
 import { formatRoomCode } from '../utils/roomDisplay.js';
 
+/** Định dạng số đồng hồ hoặc lượng tiêu thụ để hiển thị trong bảng. */
 function formatNumber(value) {
   const numberValue = Number(value);
   return Number.isFinite(numberValue)
@@ -11,6 +12,7 @@ function formatNumber(value) {
     : value;
 }
 
+/** Hiển thị các liên kết mở ảnh bằng chứng điện và nước của một bản ghi. */
 function EvidenceLinks({ reading, t }) {
   const links = [
     {
@@ -41,6 +43,7 @@ function EvidenceLinks({ reading, t }) {
   );
 }
 
+/** Một khối tóm tắt chỉ số cũ, mới và lượng dùng của một đồng hồ. */
 function MeterBlock({ label, oldValue, newValue, usage, joinText, usageLabel }) {
   return (
     <div className="utility-reading-meter-cell">
@@ -53,6 +56,7 @@ function MeterBlock({ label, oldValue, newValue, usage, joinText, usageLabel }) 
   );
 }
 
+/** Bảng lịch sử chỉ số điện nước, kèm ảnh bằng chứng và thao tác tùy màn hình. */
 export default function UtilityReadingTable({ readings, renderActions }) {
   const { t } = useTranslation();
   const hasActions = Boolean(renderActions);

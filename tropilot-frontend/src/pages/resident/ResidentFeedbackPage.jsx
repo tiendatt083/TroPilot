@@ -12,6 +12,7 @@ const emptyForm = {
   content: ''
 };
 
+/** Trang gửi và theo dõi phản hồi/khiếu nại của cư dân. */
 export default function ResidentFeedbackPage() {
   const { t } = useTranslation();
   const [form, setForm] = useState(emptyForm);

@@ -1,3 +1,4 @@
+/** Xác định trang dashboard được phép truy cập ngay sau khi đăng nhập theo vai trò. */
 export function getDashboardPath(role) {
   if (role === 'ADMIN') {
     return '/admin/dashboard';

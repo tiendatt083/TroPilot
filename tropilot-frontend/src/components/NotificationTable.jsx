@@ -4,6 +4,7 @@ import ActionDialog from './common/ActionDialog.jsx';
 import { formatDateTime } from '../utils/i18nFormat.js';
 import { translateInterfaceText } from '../utils/interfaceTranslations.js';
 
+/** Ghép một số phần tử đầu thành chuỗi và báo số lượng còn lại khi danh sách quá dài. */
 function joinLimited(items = [], limit = 2) {
   const cleanItems = items.filter(Boolean);
 
@@ -14,6 +15,7 @@ function joinLimited(items = [], limit = 2) {
   return `${cleanItems.slice(0, limit).join(', ')} +${cleanItems.length - limit}`;
 }
 
+/** Lấy nhãn tòa nhà nhận thông báo. */
 function getBuildingLabel(notification, t) {
   if (notification.allBuildings) {
     return t('tables.notifications.allBuildings');
@@ -24,6 +26,7 @@ function getBuildingLabel(notification, t) {
     : t('tables.notifications.selectedBuildings');
 }
 
+/** Tạo nhãn người nhận ngắn gọn cho cột bảng. */
 function getCompactTargetLabel(notification, t) {
   const targetCount = notification.targetUserNames?.length || 0;
 
@@ -48,6 +51,7 @@ function getCompactTargetLabel(notification, t) {
   return t('tables.notifications.targetCompact.target');
 }
 
+/** Tạo mô tả phụ ngắn gọn về phạm vi gửi thông báo. */
 function getCompactTargetDetail(notification, t) {
   const buildingLabel = getBuildingLabel(notification, t);
   const userLabel = joinLimited(notification.targetUserNames);
@@ -59,6 +63,7 @@ function getCompactTargetDetail(notification, t) {
   return buildingLabel;
 }
 
+/** Tạo nội dung đầy đủ để hiển thị khi người dùng xem chi tiết người nhận. */
 function getFullTargetTitle(notification, t) {
   return [
     getCompactTargetLabel(notification, t),
@@ -67,6 +72,7 @@ function getFullTargetTitle(notification, t) {
   ].filter(Boolean).join(' - ');
 }
 
+/** Bảng thông báo đã gửi, trình bày người nhận, tòa nhà, nội dung và các thao tác kèm theo. */
 export default function NotificationTable({
   notifications,
   onMarkRead,

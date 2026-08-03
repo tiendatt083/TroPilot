@@ -16,6 +16,7 @@ function normalizeLanguage(language) {
   return language?.startsWith('en') ? 'en' : 'vi';
 }
 
+/** Trang cài đặt giao diện như ngôn ngữ và chế độ sáng/tối. */
 export default function Settings() {
   const { t, i18n } = useTranslation();
   const { logout } = useAuth();

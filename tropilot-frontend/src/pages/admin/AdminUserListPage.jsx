@@ -23,6 +23,7 @@ function buildExportFileName() {
   return `tropilot-users-${day}-${month}-${year}.xlsx`;
 }
 
+/** Trang danh sách tài khoản hệ thống, hỗ trợ xem, tìm kiếm và xóa theo quyền. */
 export default function AdminUserListPage() {
   const { t } = useTranslation();
   const [accounts, setAccounts] = useState([]);

@@ -12,6 +12,7 @@ function activeStaff(users) {
   return users.filter((user) => user.role === 'STAFF' && user.status === 'ACTIVE');
 }
 
+/** Trang chi tiết công việc vận hành trong phạm vi một tòa nhà. */
 export default function AdminBuildingTaskDetailPage() {
   const { t } = useTranslation();
   const { taskId } = useParams();

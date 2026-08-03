@@ -19,6 +19,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
+/** Kiểm tra nội dung email đặt lại mật khẩu và bảo đảm lỗi SMTP không làm đứt luồng nghiệp vụ. */
 class PasswordResetEmailServiceImplTest {
 
     @Mock

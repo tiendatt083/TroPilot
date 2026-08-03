@@ -21,6 +21,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+/** Kiểm tra dịch vụ chat chỉ gửi ngữ cảnh hợp lệ và chặn chủ hộ chưa có phòng ACTIVE. */
 class ChatServiceImplTest {
 
     @Mock

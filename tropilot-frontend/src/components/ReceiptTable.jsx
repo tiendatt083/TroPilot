@@ -6,6 +6,7 @@ import { formatDisplayDateTime, formatDisplayMonth } from '../utils/dateFormat.j
 import { formatEnumLabel } from '../utils/i18nFormat.js';
 import { formatRoomCode } from '../utils/roomDisplay.js';
 
+/** Định dạng số tiền trên biên lai với dấu phân tách hàng nghìn. */
 function formatNumber(value) {
   const numberValue = Number(value);
   return Number.isFinite(numberValue)
@@ -13,6 +14,7 @@ function formatNumber(value) {
     : value;
 }
 
+/** Bảng biên lai thanh toán, nhận phần thao tác tùy từng màn hình sử dụng. */
 export default function ReceiptTable({ receipts, renderActions }) {
   const { t } = useTranslation();
   const hasActions = Boolean(renderActions);

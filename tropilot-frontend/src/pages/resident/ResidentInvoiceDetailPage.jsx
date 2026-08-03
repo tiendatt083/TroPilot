@@ -8,6 +8,7 @@ import ManagementPageHero from '../../components/common/ManagementPageHero.jsx';
 import PaymentProofUploadForm from '../../components/PaymentProofUploadForm.jsx';
 import useInvoicePaymentPolling from '../../hooks/useInvoicePaymentPolling.js';
 
+/** Trang xem chi tiết một hóa đơn và tải bằng chứng thanh toán nếu được phép. */
 export default function ResidentInvoiceDetailPage() {
   const { t } = useTranslation();
   const { id } = useParams();

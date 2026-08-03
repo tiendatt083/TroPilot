@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
+/** Form để cư dân tải ảnh hoặc tệp chứng minh đã thanh toán hóa đơn. */
 export default function PaymentProofUploadForm({ invoiceId, loading, onSubmit }) {
   const { t } = useTranslation();
   const fileInputRef = useRef(null);

@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+/** Kiểm tra JWT service từ chối secret bị thiếu hoặc secret mẫu không an toàn. */
 class JwtServiceTest {
 
     @Test

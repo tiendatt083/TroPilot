@@ -34,6 +34,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+/** Kiểm tra duyệt thành viên phòng thành công và chặn duyệt khi vượt sức chứa. */
 class RoomMemberServiceImplTest {
 
     @Mock

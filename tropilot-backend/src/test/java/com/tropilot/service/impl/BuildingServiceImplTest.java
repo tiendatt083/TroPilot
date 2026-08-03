@@ -27,6 +27,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+/** Kiểm tra cập nhật mã tòa nhà sẽ đồng bộ mã phòng và phát hiện mã phòng bị trùng. */
 class BuildingServiceImplTest {
 
     @Mock

@@ -5,6 +5,7 @@ import { formatDisplayDate } from '../utils/dateFormat.js';
 import LineIcon from './common/LineIcon.jsx';
 import ModalCloseButton from './common/ModalCloseButton.jsx';
 
+/** Bảng danh bạ tài khoản dành cho quản trị viên, hỗ trợ xem chi tiết và xóa tài khoản theo quyền. */
 export default function AdminAccountDirectoryTable({
   accounts,
   emptyMessage,
@@ -201,6 +202,7 @@ export default function AdminAccountDirectoryTable({
   );
 }
 
+/** Các nút xem và xóa gọn trong một ô thao tác của bảng tài khoản. */
 function IconTableActions({ account, allowDelete, deleting, onDelete, onView, t }) {
   return (
     <div className="table-actions icon-table-actions">
@@ -229,6 +231,7 @@ function IconTableActions({ account, allowDelete, deleting, onDelete, onView, t 
   );
 }
 
+/** Hiển thị thông tin phòng được gán cho tài khoản, kèm liên kết khi có thể xem chi tiết phòng. */
 function RoomCell({ account, getRoomUrl, showRoomNameSubtext = true, t }) {
   const label = formatRoom(account, t);
   const roomName = formatRoomName(account);
@@ -250,6 +253,7 @@ function RoomCell({ account, getRoomUrl, showRoomNameSubtext = true, t }) {
   );
 }
 
+/** Biểu tượng xem chi tiết tài khoản. */
 function EyeIcon() {
   return (
     <svg aria-hidden="true" viewBox="0 0 24 24">
@@ -259,6 +263,7 @@ function EyeIcon() {
   );
 }
 
+/** Biểu tượng xóa tài khoản. */
 function TrashIcon() {
   return (
     <svg aria-hidden="true" viewBox="0 0 24 24">
@@ -271,6 +276,7 @@ function TrashIcon() {
   );
 }
 
+/** Hộp thoại hiển thị đầy đủ hồ sơ, vai trò và thành viên phòng liên quan tới một tài khoản. */
 function AccountDetailModal({ account, onClose, showRoom, t }) {
   const members = account.members || [];
   const isRoomMember = account.role === 'ROOM_MEMBER';
@@ -381,6 +387,7 @@ function AccountDetailModal({ account, onClose, showRoom, t }) {
   );
 }
 
+/** Một dòng thông tin có biểu tượng trong phần chi tiết tài khoản. */
 function DetailItem({ icon, label, value }) {
   return (
     <div className="account-detail-item">
@@ -395,6 +402,7 @@ function DetailItem({ icon, label, value }) {
   );
 }
 
+/** Chuẩn hóa dữ liệu thành viên phòng thành cấu trúc hiển thị trong hộp thoại. */
 function toMemberDetailRecord(member, headResident) {
   return {
     ...member,
@@ -410,6 +418,7 @@ function toMemberDetailRecord(member, headResident) {
   };
 }
 
+/** Tạo chuỗi mô tả phòng cho tài khoản, có giá trị thay thế khi chưa được gán phòng. */
 function formatRoom(account, t) {
   const room = account.assignedRoomCode || account.roomCode || account.assignedRoomName || account.roomName;
 
@@ -420,10 +429,12 @@ function formatRoom(account, t) {
   return room;
 }
 
+/** Lấy tên phòng để hiển thị phụ bên dưới mã phòng. */
 function formatRoomName(account) {
   return account.assignedRoomName || account.roomName || '';
 }
 
+/** Đổi mã vai trò hệ thống sang nhãn đã dịch. */
 function formatRole(role, t) {
   if (role === 'STAFF') {
     return t('role.staff');
@@ -440,6 +451,7 @@ function formatRole(role, t) {
   return t('role.admin');
 }
 
+/** Đổi trạng thái hoạt động của tài khoản sang nhãn đã dịch. */
 function formatStatus(status, t) {
   if (['PENDING', 'APPROVED', 'REJECTED', 'LEFT'].includes(status)) {
     return t(`enum.memberStatus.${status}`);

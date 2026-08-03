@@ -20,10 +20,12 @@ const EMPTY_FILTERS = {
   condition: ''
 };
 
+/** Chuẩn hóa văn bản để việc tìm kiếm thiết bị không phân biệt chữ hoa thường. */
 function normalizeSearchValue(value) {
   return String(value || '').trim().toLowerCase();
 }
 
+/** Kiểm tra một thiết bị có khớp từ khóa theo tên, mã, phòng hoặc tòa nhà hay không. */
 function equipmentMatchesSearch(item, searchValue) {
   if (!searchValue) {
     return true;
@@ -42,15 +44,18 @@ function equipmentMatchesSearch(item, searchValue) {
   return searchableValues.some((value) => normalizeSearchValue(value).includes(searchValue));
 }
 
+/** Lọc và chuẩn hóa dữ liệu từ form trước khi gửi API thiết bị. */
 function toEquipmentPayload(payload) {
   const { buildingId, ...equipmentPayload } = payload;
   return equipmentPayload;
 }
 
+/** Lấy các tài khoản nhân viên đang hoạt động để chọn người phụ trách thiết bị. */
 function activeStaff(users) {
   return users.filter((user) => user.role === 'STAFF' && user.status === 'ACTIVE');
 }
 
+/** Chọn nhóm API thiết bị đúng với vai trò đang sử dụng trang. */
 function apiForRole(role) {
   if (role === 'admin') {
     return {
@@ -69,6 +74,7 @@ function apiForRole(role) {
   };
 }
 
+/** Trang quản lý thiết bị: tải danh sách, lọc, tạo/sửa/xóa và theo dõi bảo trì theo vai trò. */
 export default function BuildingEquipmentPage({ role }) {
   const { t } = useTranslation();
   const { building } = useOutletContext();

@@ -6,6 +6,7 @@ import BuildingForm from '../../components/BuildingForm.jsx';
 import PageHeader from '../../components/common/PageHeader.jsx';
 import { translateInterfaceText } from '../../utils/interfaceTranslations.js';
 
+/** Trang chỉnh sửa thông tin cơ bản của một tòa nhà. */
 export default function AdminBuildingEditPage() {
   useTranslation();
   const { id } = useParams();

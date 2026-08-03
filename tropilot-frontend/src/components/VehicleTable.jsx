@@ -4,20 +4,24 @@ import { formatDisplayDate } from '../utils/dateFormat.js';
 import { formatEnumLabel } from '../utils/i18nFormat.js';
 import { formatRoomCode } from '../utils/roomDisplay.js';
 
+/** Trả về nội dung hiển thị hoặc giá trị thay thế khi dữ liệu xe bị thiếu. */
 function displayText(value, fallback) {
   return value || fallback;
 }
 
+/** Tạo chuỗi thời gian đăng ký xe nếu xe có thời hạn sử dụng. */
 function periodText(vehicle, t) {
   const startDate = formatDisplayDate(vehicle.startDate, t('common.notSet'));
   const endDate = formatDisplayDate(vehicle.endDate, t('common.open'));
   return `${startDate} ${t('common.to')} ${endDate}`;
 }
 
+/** Hiển thị ngày đăng ký xe từ các tên trường dữ liệu có thể khác nhau. */
 function vehicleRegistrationDateText(vehicle, t) {
   return formatDisplayDate(vehicle.startDate || vehicle.createdAt, t('common.notSet'));
 }
 
+/** Tạo nhãn hãng xe hoặc giá trị thay thế. */
 function vehicleBrandText(vehicle, t) {
   if (!vehicle.brand && !vehicle.color) {
     return '';
@@ -27,10 +31,12 @@ function vehicleBrandText(vehicle, t) {
   return [brand, vehicle.color].filter(Boolean).join(', ');
 }
 
+/** Tạo thông tin thời gian cư trú liên quan tới người đứng tên xe. */
 function residentPeriodText(vehicle, t) {
   return formatDisplayDate(vehicle.startDate || vehicle.createdAt, t('common.notSet'));
 }
 
+/** Bảng danh sách xe, hỗ trợ các biến thể cột khác nhau cho quản trị và cư dân. */
 export default function VehicleTable({ vehicles, renderActions, variant = 'default' }) {
   const { t } = useTranslation();
   const hasActions = Boolean(renderActions);

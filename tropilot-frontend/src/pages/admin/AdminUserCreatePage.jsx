@@ -8,6 +8,7 @@ import AdminUserCreateForm from '../../components/AdminUserCreateForm.jsx';
 const ALLOWED_ROLES = new Set(['STAFF', 'RESIDENT_HEAD']);
 const ALLOWED_RETURN_PATHS = new Set(['/admin/users', '/admin/residents']);
 
+/** Trang riêng để quản trị viên tạo tài khoản người dùng mới. */
 export default function AdminUserCreatePage() {
   const { t } = useTranslation();
   const navigate = useNavigate();

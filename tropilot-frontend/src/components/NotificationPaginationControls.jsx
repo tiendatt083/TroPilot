@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+/** Tạo dãy số trang hợp lệ để hiển thị trong bộ điều khiển phân trang. */
 function getPageNumbers(currentPage, totalPages) {
   if (totalPages <= 7) {
     return Array.from({ length: totalPages }, (_, index) => index);
@@ -10,6 +11,7 @@ function getPageNumbers(currentPage, totalPages) {
   return Array.from({ length: 3 }, (_, index) => start + index);
 }
 
+/** Các nút chuyển trang dùng cho danh sách và lịch sử thông báo. */
 export default function NotificationPaginationControls({
   page,
   pageSize,

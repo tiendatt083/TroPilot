@@ -1,3 +1,4 @@
+/** Lưới các thẻ chỉ số tóm tắt dùng ở đầu dashboard. */
 export default function DashboardMetricGrid({ metrics }) {
   return (
     <div className="dashboard-grid dashboard-metric-grid compact-dashboard-grid">

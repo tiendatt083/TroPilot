@@ -1,3 +1,4 @@
+/** Phần đầu trang quản trị với tiêu đề, mô tả ngắn và khu vực đặt nút thao tác. */
 export default function ManagementPageHero({
   actions,
   className = '',

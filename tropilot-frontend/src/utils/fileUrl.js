@@ -1,11 +1,14 @@
 import { getStoredAuth } from './authStorage.js';
 
+/** Xây URL và mở tệp tải lên qua API có kiểm tra token đăng nhập. */
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
 
+/** Trả về URL API đầy đủ cho thuộc tính src hoặc href của tệp đã tải lên. */
 export function resolveFileUrl(fileUrl) {
   return buildProtectedFileUrl(fileUrl);
 }
 
+/** Tải tệp có kèm token rồi mở trong tab mới; dùng Blob để trình duyệt gửi được header xác thực. */
 export async function openFileUrl(fileUrl, event) {
   if (event) {
     event.preventDefault();
@@ -36,6 +39,7 @@ export async function openFileUrl(fileUrl, event) {
   }
 }
 
+/** Ghép đường dẫn tệp với endpoint /api/files của backend. */
 function buildProtectedFileUrl(fileUrl) {
   if (!fileUrl) {
     return '';
@@ -47,6 +51,7 @@ function buildProtectedFileUrl(fileUrl) {
   return `${baseUrl}/api/files${normalizedPath}`;
 }
 
+/** Chuẩn hóa URL tuyệt đối hoặc đường dẫn tương đối về đường dẫn /uploads/... */
 function normalizeUploadPath(fileUrl) {
   let pathname = fileUrl;
 

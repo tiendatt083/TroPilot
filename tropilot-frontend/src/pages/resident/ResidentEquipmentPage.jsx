@@ -6,6 +6,7 @@ import ManagementPageHero from '../../components/common/ManagementPageHero.jsx';
 
 const residentEquipmentColumns = ['code', 'name', 'installationDate', 'condition', 'maintenanceSchedule'];
 
+/** Trang liệt kê thiết bị thuộc phòng hoặc tòa nhà mà cư dân có thể theo dõi. */
 export default function ResidentEquipmentPage() {
   const { t } = useTranslation();
   const [equipment, setEquipment] = useState([]);

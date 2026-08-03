@@ -21,6 +21,7 @@ const EVENT_ICONS = {
   MANUAL: 'bell'
 };
 
+/** Danh sách hộp thư thông báo của người dùng, hỗ trợ đánh dấu đã đọc và mở nội dung. */
 export default function NotificationInboxList({
   notifications,
   onOpenNotification,

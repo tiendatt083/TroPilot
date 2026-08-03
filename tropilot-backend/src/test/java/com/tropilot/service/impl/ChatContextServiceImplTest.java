@@ -45,6 +45,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+/** Kiểm tra ngữ cảnh chatbot lấy đúng dữ liệu theo rule JSON và không lộ dữ liệu ngoài phạm vi cư dân. */
 class ChatContextServiceImplTest {
 
     @Mock

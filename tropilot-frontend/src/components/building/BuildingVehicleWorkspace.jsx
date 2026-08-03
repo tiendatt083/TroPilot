@@ -17,6 +17,7 @@ const emptyFilters = {
   status: ''
 };
 
+/** Kiểm tra xe có khớp từ khóa tìm kiếm theo biển số, chủ xe hoặc thông tin liên quan. */
 function vehicleMatchesSearch(vehicle, searchValue) {
   if (!searchValue) {
     return true;
@@ -39,6 +40,7 @@ function vehicleMatchesSearch(vehicle, searchValue) {
   return searchableValues.some((value) => normalizeSearchText(value).includes(searchValue));
 }
 
+/** Không gian danh sách xe của một tòa nhà, có lọc và các thao tác dành cho người có quyền quản lý. */
 export default function BuildingVehicleWorkspace({ getVehicles, canManage = false }) {
   const { t } = useTranslation();
   const { building } = useOutletContext();

@@ -165,6 +165,7 @@ function MonthlyCostChart({ rows, t }) {
   );
 }
 
+/** Dashboard cư dân tóm tắt phòng, hợp đồng, hóa đơn, xe và các việc cần chú ý. */
 export default function ResidentDashboardPage() {
   const { t } = useTranslation();
   const [dashboard, setDashboard] = useState(null);

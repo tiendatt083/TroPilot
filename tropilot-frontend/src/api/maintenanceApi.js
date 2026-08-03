@@ -1,11 +1,13 @@
 import apiClient from './axiosClient.js';
 
+// Request hoàn thành bảo trì có thể gửi ảnh kết quả nên cần multipart/form-data.
 const multipartConfig = {
   headers: {
     'Content-Type': 'multipart/form-data'
   }
 };
 
+/** Đưa filter tòa nhà vào query parameters nếu người dùng đã chọn tòa nhà. */
 function filterConfig(filters = {}) {
   const params = {};
 
@@ -16,6 +18,7 @@ function filterConfig(filters = {}) {
   return Object.keys(params).length ? { params } : {};
 }
 
+/** Chuyển dữ liệu hoàn thành bảo trì thành FormData, bỏ qua trường trống để backend không nhận giá trị rỗng. */
 function toFormData(payload) {
   const formData = new FormData();
 
@@ -28,6 +31,7 @@ function toFormData(payload) {
   return formData;
 }
 
+/** API yêu cầu bảo trì theo từng role: cư dân xem, admin phân công, staff bắt đầu và hoàn thành. */
 export async function getResidentMaintenanceRequests() {
   const response = await apiClient.get('/api/resident/maintenance-requests');
   return response.data;

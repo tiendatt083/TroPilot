@@ -362,6 +362,7 @@ function RecentTable({ columns, emptyText, icon, rows, title }) {
   );
 }
 
+/** Dashboard quản trị tổng hợp số liệu vận hành của toàn bộ hệ thống. */
 export default function AdminDashboardPage() {
   const { t, i18n } = useTranslation();
   const { user } = useAuth();

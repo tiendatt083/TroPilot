@@ -12,6 +12,7 @@ function canRequestCancel(vehicle) {
   return vehicle.status === 'PENDING' || vehicle.status === 'ACTIVE' || vehicle.status === 'REJECTED';
 }
 
+/** Trang đăng ký, theo dõi và gửi yêu cầu hủy xe của cư dân. */
 export default function ResidentVehiclePage() {
   const { t } = useTranslation();
   const [vehicles, setVehicles] = useState([]);

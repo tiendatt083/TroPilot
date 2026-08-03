@@ -1,3 +1,4 @@
+/** Tiêu đề trang chuẩn, có hỗ trợ nhãn phụ, mô tả và các nút hành động bên phải. */
 export default function PageHeader({ eyebrow, title, description, actions, className = '' }) {
   const classes = ['page-header', className].filter(Boolean).join(' ');
 

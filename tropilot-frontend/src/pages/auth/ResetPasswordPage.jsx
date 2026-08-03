@@ -7,6 +7,7 @@ import LineIcon from '../../components/common/LineIcon.jsx';
 import { getDashboardPath } from '../../utils/roleRoutes.js';
 import brandLogo from '../../assets/no_name_backgroud.png';
 
+/** Trang đặt mật khẩu mới bằng mã hoặc liên kết đặt lại mật khẩu đã nhận. */
 export default function ResetPasswordPage() {
   const { t } = useTranslation();
   const location = useLocation();

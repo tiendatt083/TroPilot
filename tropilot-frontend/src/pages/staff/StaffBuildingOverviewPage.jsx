@@ -204,6 +204,7 @@ function RecentListPanel({ emptyText, icon, language, rows, title }) {
   );
 }
 
+/** Trang tổng quan vận hành của một tòa nhà dành cho nhân viên. */
 export default function StaffBuildingOverviewPage() {
   const { i18n } = useTranslation();
   const language = getLanguageMode(i18n.resolvedLanguage || i18n.language);

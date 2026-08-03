@@ -33,6 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+/** Kiểm tra cư dân chỉ xem được thiết bị thuộc phòng đang được phân cho mình. */
 class EquipmentServiceImplTest {
 
     @Mock

@@ -1,6 +1,7 @@
 import { Navigate, Outlet, useOutletContext } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
+/** Chỉ cho phép cư dân đã được gán phòng truy cập các nghiệp vụ gắn với phòng. */
 export default function ResidentRoomRoute() {
   const { t } = useTranslation();
   const residentAccess = useOutletContext();

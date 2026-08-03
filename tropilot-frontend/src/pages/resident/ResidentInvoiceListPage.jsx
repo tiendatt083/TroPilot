@@ -4,6 +4,7 @@ import * as invoiceApi from '../../api/invoiceApi.js';
 import InvoiceTable from '../../components/InvoiceTable.jsx';
 import ManagementPageHero from '../../components/common/ManagementPageHero.jsx';
 
+/** Trang danh sách hóa đơn của phòng cư dân đang được gán. */
 export default function ResidentInvoiceListPage() {
   const { t } = useTranslation();
   const [invoices, setInvoices] = useState([]);

@@ -36,6 +36,7 @@ function ContractInfoItem({ icon, label, value }) {
   );
 }
 
+/** Trang hợp đồng thuê của cư dân: xem trạng thái, tệp hợp đồng và gửi báo lỗi khi cần. */
 export default function ResidentContractPage() {
   const { t } = useTranslation();
   const [contract, setContract] = useState(null);

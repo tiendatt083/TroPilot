@@ -20,6 +20,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+/** Kiểm tra interceptor chỉ bắt buộc chủ hộ có phân phòng ACTIVE trước khi truy cập API. */
 class ResidentRoomAccessInterceptorTest {
 
     @Mock

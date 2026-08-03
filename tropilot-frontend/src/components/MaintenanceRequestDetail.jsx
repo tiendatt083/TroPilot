@@ -5,6 +5,7 @@ import { formatDateTime, formatEnumLabel } from '../utils/i18nFormat.js';
 import { formatRoomLabel } from '../utils/roomDisplay.js';
 import LineIcon from './common/LineIcon.jsx';
 
+/** Chọn tông màu hiển thị theo trạng thái xử lý yêu cầu bảo trì. */
 function getStatusTone(status) {
   if (status === 'COMPLETED') {
     return 'green';
@@ -15,6 +16,7 @@ function getStatusTone(status) {
   return 'blue';
 }
 
+/** Một mục thông tin có biểu tượng trong phần chi tiết yêu cầu bảo trì. */
 function DetailItem({ icon, tone = 'blue', label, children }) {
   return (
     <div className="maintenance-detail-field">
@@ -29,6 +31,7 @@ function DetailItem({ icon, tone = 'blue', label, children }) {
   );
 }
 
+/** Hiển thị đầy đủ nội dung, trạng thái, người xử lý và kết quả của yêu cầu bảo trì. */
 export default function MaintenanceRequestDetail({ request }) {
   const { t } = useTranslation();
 

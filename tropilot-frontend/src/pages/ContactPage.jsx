@@ -37,6 +37,7 @@ function phoneHref(phoneNumber) {
   return `tel:${phoneNumber.replace(/[^\d+]/g, '')}`;
 }
 
+/** Trang hiển thị và cập nhật thông tin liên hệ của ban quản lý. */
 export default function ContactPage() {
   const { t } = useTranslation();
   const { user } = useAuth();

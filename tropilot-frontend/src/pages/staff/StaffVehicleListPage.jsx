@@ -4,6 +4,7 @@ import * as vehicleApi from '../../api/vehicleApi.js';
 import PageHeader from '../../components/common/PageHeader.jsx';
 import VehicleTable from '../../components/VehicleTable.jsx';
 
+/** Trang danh sách xe để nhân viên tra cứu hoặc hỗ trợ xử lý. */
 export default function StaffVehicleListPage() {
   const { t } = useTranslation();
   const [vehicles, setVehicles] = useState([]);

@@ -1,5 +1,6 @@
 import * as XLSX from 'xlsx';
 
+/** Đóng gói việc xuất mảng dữ liệu thành tệp Excel để các trang dùng chung một cách xuất. */
 export function exportRowsToExcel({ rows, fileName, sheetName = 'Sheet1' }) {
   const worksheet = XLSX.utils.json_to_sheet(rows);
   const workbook = XLSX.utils.book_new();

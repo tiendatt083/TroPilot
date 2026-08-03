@@ -18,6 +18,7 @@ function sortNewestFirst(feedbacks) {
   ));
 }
 
+/** Trang tổng quan phản hồi và khiếu nại từ tất cả tòa nhà. */
 export default function AdminFeedbackOverviewPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();

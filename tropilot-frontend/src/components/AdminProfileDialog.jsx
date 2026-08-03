@@ -8,6 +8,7 @@ const EMPTY_FORM = {
   phone: ''
 };
 
+/** Hộp thoại cho quản trị viên xem và cập nhật thông tin hồ sơ cá nhân. */
 export default function AdminProfileDialog({ open, onClose }) {
   const { t } = useTranslation();
   const { user, updateProfile } = useAuth();

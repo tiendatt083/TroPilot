@@ -1,5 +1,6 @@
 import apiClient from './axiosClient.js';
 
+/** API lấy số liệu dashboard riêng cho admin, staff và cư dân theo quyền đăng nhập. */
 export async function getAdminDashboard() {
   const response = await apiClient.get('/api/admin/dashboard');
   return response.data;

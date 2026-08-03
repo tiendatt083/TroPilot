@@ -1,6 +1,7 @@
 import { formatDisplayDateTime } from './dateFormat.js';
 import { localizedOption, translateInterfaceText } from './interfaceTranslations.js';
 
+/** Các nhóm nội dung phản hồi mà người dùng có thể gửi. */
 export const FEEDBACK_TYPE_OPTIONS = [
   localizedOption('GENERAL', 'General'),
   localizedOption('MAINTENANCE', 'Maintenance'),
@@ -9,16 +10,19 @@ export const FEEDBACK_TYPE_OPTIONS = [
   localizedOption('OTHER', 'Other')
 ];
 
+/** Các trạng thái xử lý phản hồi. */
 export const FEEDBACK_STATUS_OPTIONS = [
   localizedOption('PENDING', 'Pending'),
   localizedOption('IN_PROGRESS', 'In progress'),
   localizedOption('RESOLVED', 'Resolved')
 ];
 
+/** Tạo class CSS theo trạng thái phản hồi để dùng cho nhãn màu. */
 export function getFeedbackStatusClass(status) {
   return `status-pill feedback-status-${String(status || 'PENDING').toLowerCase().replaceAll('_', '-')}`;
 }
 
+/** Hiển thị thời điểm phản hồi theo định dạng chung và có bản dịch khi thiếu dữ liệu. */
 export function formatFeedbackDateTime(value) {
   if (!value) {
     return translateInterfaceText('Not provided');

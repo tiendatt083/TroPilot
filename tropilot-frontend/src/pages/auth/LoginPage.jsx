@@ -6,6 +6,7 @@ import LineIcon from '../../components/common/LineIcon.jsx';
 import { getDashboardPath } from '../../utils/roleRoutes.js';
 import brandLogo from '../../assets/no_name_backgroud.png';
 
+/** Trang đăng nhập: gửi email/mật khẩu, lưu phiên và chuyển đến dashboard theo vai trò. */
 export default function LoginPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();

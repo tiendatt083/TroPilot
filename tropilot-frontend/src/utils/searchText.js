@@ -1,3 +1,4 @@
+/** Chuẩn hóa chuỗi tìm kiếm: bỏ khoảng trắng thừa, không phân biệt hoa thường và dấu tiếng Việt. */
 export function normalizeSearchText(value) {
   return String(value || '')
     .trim()

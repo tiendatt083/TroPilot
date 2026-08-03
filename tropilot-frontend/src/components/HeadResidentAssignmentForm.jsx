@@ -10,6 +10,7 @@ const emptyForm = {
   endDate: addMonthsToDateInput(today, 6)
 };
 
+/** Form chọn và gán một cư dân làm chủ hộ của phòng. */
 export default function HeadResidentAssignmentForm({ residentHeads, loading, onSubmit }) {
   const { t } = useTranslation();
   const [form, setForm] = useState(emptyForm);

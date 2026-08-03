@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { formatDisplayDateTime } from '../utils/dateFormat.js';
 import { openFileUrl, resolveFileUrl } from '../utils/fileUrl.js';
 
+/** Hiển thị danh sách các phiên bản tệp hợp đồng đã được tải lên trước đó. */
 export default function ContractFileHistoryList({ files }) {
   const { t } = useTranslation();
   const previousFiles = Array.isArray(files) ? files : [];

@@ -20,6 +20,7 @@ const emptyForm = {
   status: 'NEW'
 };
 
+/** Form tạo hoặc cập nhật công việc, gồm loại việc, người thực hiện, phòng/tòa nhà và hạn xử lý. */
 export default function TaskForm({
   initialValues,
   rooms,

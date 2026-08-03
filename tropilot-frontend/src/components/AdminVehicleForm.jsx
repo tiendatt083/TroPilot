@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { VEHICLE_OWNER_TYPE_OPTIONS, VEHICLE_TYPE_OPTIONS } from '../utils/vehicleOptions.js';
 import { formatRoomCode } from '../utils/roomDisplay.js';
 
+/** Tạo dữ liệu mặc định của form đăng ký xe từ danh sách phòng/thành viên có thể chọn. */
 function createInitialForm(assignments) {
   const firstAssignment = assignments[0];
 
@@ -16,6 +17,7 @@ function createInitialForm(assignments) {
   };
 }
 
+/** Form để quản trị viên đăng ký xe cho một chủ hộ hoặc thành viên phòng. */
 export default function AdminVehicleForm({ assignments, loading, members, onCancel, onSubmit }) {
   const { t } = useTranslation();
   const [form, setForm] = useState(() => createInitialForm(assignments));

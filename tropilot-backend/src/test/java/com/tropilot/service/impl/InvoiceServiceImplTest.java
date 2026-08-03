@@ -59,6 +59,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+/** Kiểm tra các quy tắc tính, tạo và xóa hóa đơn: phòng trống, tiền cọc, xe, chỉ số và thanh toán. */
 class InvoiceServiceImplTest {
 
     @Mock

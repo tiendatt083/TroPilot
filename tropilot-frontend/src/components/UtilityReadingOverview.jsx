@@ -8,6 +8,7 @@ const emptyOverview = {
   emptyRooms: 0
 };
 
+/** Khung tổng quan chỉ số điện nước, gồm thống kê, biểu đồ và các cảnh báo cần xử lý. */
 export default function UtilityReadingOverview({
   month,
   overview = emptyOverview,

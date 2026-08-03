@@ -7,6 +7,7 @@ import { formatInvoiceAmount, formatInvoiceText } from '../utils/invoiceDisplay.
 import { formatRoomLabel } from '../utils/roomDisplay.js';
 import LineIcon from './common/LineIcon.jsx';
 
+/** Chọn tên ngân hàng phù hợp từ dữ liệu thanh toán để hiển thị cho người dùng. */
 function formatBankName(payment) {
   const rawCode = String(payment?.bankCode || payment?.bankName || '').trim();
   const normalized = rawCode.toUpperCase();
@@ -18,6 +19,7 @@ function formatBankName(payment) {
   return payment?.bankName || rawCode || '';
 }
 
+/** Xác định cách tính của một dòng hóa đơn, ví dụ cố định hoặc theo mức sử dụng. */
 function resolveItemCalculationType(item) {
   if (item?.calculationType) {
     return item.calculationType;
@@ -36,6 +38,7 @@ function resolveItemCalculationType(item) {
   return 'FIXED';
 }
 
+/** Gộp các trường mô tả có thể có của một dòng hóa đơn thành văn bản tìm kiếm/hiển thị. */
 function normalizeItemText(item) {
   return `${item?.itemName || ''} ${item?.note || ''}`
     .normalize('NFD')
@@ -43,6 +46,7 @@ function normalizeItemText(item) {
     .toLowerCase();
 }
 
+/** Nhận diện dòng tiền điện để hiển thị thông tin chỉ số liên quan. */
 function isElectricityItem(item) {
   const text = normalizeItemText(item);
   return text.includes('electricity')
@@ -53,6 +57,7 @@ function isElectricityItem(item) {
     || text.includes('dien co dinh');
 }
 
+/** Nhận diện dòng tiền nước để hiển thị thông tin chỉ số liên quan. */
 function isWaterItem(item) {
   const text = normalizeItemText(item);
   return text.includes('water')
@@ -62,6 +67,7 @@ function isWaterItem(item) {
     || text.includes('nuoc co dinh');
 }
 
+/** Chuẩn bị các dòng chi tiết hóa đơn để giao diện hiển thị thống nhất. */
 function buildDisplayItems(invoice) {
   const items = Array.isArray(invoice?.items) ? [...invoice.items] : [];
 
@@ -92,6 +98,7 @@ function buildDisplayItems(invoice) {
   return items;
 }
 
+/** Một ô tóm tắt nhỏ gồm biểu tượng, nhãn và giá trị ở đầu trang chi tiết hóa đơn. */
 function InvoiceSummaryItem({ icon, label, value, showIcon }) {
   return (
     <div className={showIcon ? 'invoice-summary-item invoice-summary-item-with-icon' : ''}>
@@ -108,6 +115,7 @@ function InvoiceSummaryItem({ icon, label, value, showIcon }) {
   );
 }
 
+/** Trang thành phần hiển thị đầy đủ hóa đơn, các khoản phí và thông tin thanh toán. */
 export default function InvoiceDetail({
   invoice,
   paymentUploadSlot = null,

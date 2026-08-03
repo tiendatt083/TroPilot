@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext.jsx';
 import { getRoleDisplayName } from '../utils/userDisplay.js';
 
+/** Thẻ hiển thị tài khoản đang đăng nhập và cung cấp thao tác đăng xuất trong sidebar. */
 export default function SidebarUserCard({
   interactive = false,
   onClick,

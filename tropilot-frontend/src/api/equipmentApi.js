@@ -1,11 +1,13 @@
 import apiClient from './axiosClient.js';
 
+// Cấu hình dùng cho request có ảnh đính kèm của yêu cầu bảo trì thiết bị.
 const multipartConfig = {
   headers: {
     'Content-Type': 'multipart/form-data'
   }
 };
 
+/** Chuyển các bộ lọc thiết bị có giá trị thành query parameters. */
 function filterConfig(filters = {}) {
   const params = {};
 
@@ -28,6 +30,7 @@ function filterConfig(filters = {}) {
   return Object.keys(params).length ? { params } : {};
 }
 
+/** Chuyển yêu cầu bảo trì thiết bị thành FormData để có thể kèm ảnh. */
 function toMaintenanceFormData(payload) {
   const formData = new FormData();
 
@@ -45,6 +48,7 @@ function toMaintenanceFormData(payload) {
   return formData;
 }
 
+/** API thiết bị theo role: admin CRUD, staff theo dõi/báo bảo trì, cư dân chỉ xem thiết bị được phép. */
 export async function getAdminBuildingEquipment(buildingId, filters) {
   const response = await apiClient.get(
     `/api/admin/buildings/${buildingId}/equipment`,

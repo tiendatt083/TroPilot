@@ -4,6 +4,7 @@ import { EQUIPMENT_CONDITIONS, EQUIPMENT_SCOPES } from '../utils/equipmentOption
 import { addDaysToDateInput, formatDateInputValue } from '../utils/dateFormat.js';
 import { formatRoomLabel } from '../utils/roomDisplay.js';
 
+/** Tính số ngày giữa hai mốc để kiểm tra chu kỳ bảo trì. */
 function daysBetween(startDate, endDate) {
   if (!startDate || !endDate) {
     return '';
@@ -18,6 +19,7 @@ function daysBetween(startDate, endDate) {
   return String(Math.round((end - start) / 86400000));
 }
 
+/** Tạo bộ giá trị ban đầu trống; giữ sẵn tòa nhà khi trang đã cố định tòa nhà đó. */
 function emptyValues(fixedBuilding) {
   return {
     buildingId: fixedBuilding?.id ? String(fixedBuilding.id) : '',
@@ -34,6 +36,7 @@ function emptyValues(fixedBuilding) {
   };
 }
 
+/** Chuẩn hóa tình trạng thiết bị về giá trị hợp lệ mà form và backend dùng chung. */
 function normalizeCondition(condition) {
   if (condition === 'NEEDS_MAINTENANCE') {
     return 'UNDER_MAINTENANCE';
@@ -46,6 +49,7 @@ function normalizeCondition(condition) {
   return EQUIPMENT_CONDITIONS.includes(condition) ? condition : 'GOOD';
 }
 
+/** Đổ dữ liệu của thiết bị có sẵn vào form khi người dùng chỉnh sửa. */
 function valuesFromEquipment(equipment, fixedBuilding) {
   if (!equipment) {
     return emptyValues(fixedBuilding);
@@ -68,10 +72,12 @@ function valuesFromEquipment(equipment, fixedBuilding) {
   };
 }
 
+/** Trả về ngày hợp lệ hoặc undefined để không gửi trường ngày rỗng. */
 function optionalDate(value) {
   return value || null;
 }
 
+/** Form tạo/sửa thiết bị, bao gồm vị trí, tình trạng, người phụ trách và lịch bảo trì. */
 export default function EquipmentForm({
   equipment,
   rooms,

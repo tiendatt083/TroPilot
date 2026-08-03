@@ -1,5 +1,6 @@
 import { formatDisplayDate, formatDisplayDateTime } from './dateFormat.js';
 
+/** Các hàm định dạng enum và ngày tháng có dùng hệ thống đa ngôn ngữ. */
 export function formatFallbackEnumLabel(value) {
   if (!value) {
     return '';
@@ -12,6 +13,7 @@ export function formatFallbackEnumLabel(value) {
     .join(' ');
 }
 
+/** Lấy nhãn đã dịch cho một enum; nếu thiếu bản dịch thì dùng nhãn được tạo tự động. */
 export function formatEnumLabel(t, group, value) {
   if (!value) {
     return t('common.notAvailable');
@@ -20,6 +22,7 @@ export function formatEnumLabel(t, group, value) {
   return t(`enum.${group}.${value}`, { defaultValue: formatFallbackEnumLabel(value) });
 }
 
+/** Hiển thị ngày giờ hoặc thông báo "chưa cung cấp" theo ngôn ngữ đang chọn. */
 export function formatDateTime(value, t) {
   if (!value) {
     return t('common.notProvided');
@@ -28,6 +31,7 @@ export function formatDateTime(value, t) {
   return formatDisplayDateTime(value, t('common.notProvided'));
 }
 
+/** Hiển thị ngày hoặc thông báo "chưa cung cấp" theo ngôn ngữ đang chọn. */
 export function formatDate(value, t) {
   if (!value) {
     return t('common.notProvided');

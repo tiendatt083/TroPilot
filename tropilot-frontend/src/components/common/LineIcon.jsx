@@ -1,3 +1,4 @@
+/** Kho SVG nét mảnh dùng lại trong giao diện, giúp không cần thêm nhiều thư viện biểu tượng. */
 const ICONS = {
   activity: (
     <>
@@ -313,6 +314,7 @@ const ICONS = {
   )
 };
 
+/** Vẽ một biểu tượng theo tên; không vẽ gì nếu tên biểu tượng không có trong kho. */
 export default function LineIcon({ name, className = '' }) {
   const icon = ICONS[name];
 

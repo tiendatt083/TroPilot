@@ -298,6 +298,7 @@ function RecentTable({ columns, emptyText, icon, rows, title, tone = 'primary' }
   );
 }
 
+/** Trang tổng quan chi tiết của một tòa nhà, hiển thị các số liệu vận hành chính. */
 export default function AdminBuildingDetailPage() {
   const { id } = useParams();
   const { t, i18n } = useTranslation();

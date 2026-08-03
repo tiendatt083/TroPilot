@@ -27,6 +27,7 @@ const STAFF_ACCOUNT_ITEMS = [
   { to: '/staff/settings', labelKey: 'settings.title', icon: 'settings' }
 ];
 
+/** Khung giao diện chung của khu vực nhân viên: sidebar, thông tin phiên đăng nhập và trang con. */
 export default function StaffLayout() {
   const { t } = useTranslation();
 

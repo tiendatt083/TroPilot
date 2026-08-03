@@ -9,6 +9,7 @@ import ProtectedRoute from './ProtectedRoute.jsx';
 import { residentRoutes } from './residentRoutes.jsx';
 import { staffRoutes } from './staffRoutes.jsx';
 
+/** Ghép tất cả cây route của ứng dụng và định nghĩa trang mặc định/đường dẫn không tồn tại. */
 export default function AppRoutes() {
   return (
     <BrowserRouter>

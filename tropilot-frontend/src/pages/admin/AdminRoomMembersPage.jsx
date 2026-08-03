@@ -29,6 +29,7 @@ function countText(headResident, members, room, t) {
   });
 }
 
+/** Trang quản lý chủ hộ và các thành viên đang thuộc một phòng. */
 export default function AdminRoomMembersPage() {
   const { t } = useTranslation();
   const { roomBasePath, roomId } = useRoomRouteContext('admin');

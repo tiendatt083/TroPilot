@@ -8,6 +8,7 @@ import NotificationPaginationControls from './NotificationPaginationControls.jsx
 
 const HISTORY_PAGE_SIZE = 30;
 
+/** Chuẩn hóa từ khóa để tìm nhật ký không phân biệt hoa thường và dấu tiếng Việt. */
 function normalizeSearch(value) {
   return String(value || '')
     .trim()
@@ -16,6 +17,7 @@ function normalizeSearch(value) {
     .replace(/[\u0300-\u036f]/g, '');
 }
 
+/** Trang thành phần hiển thị lịch sử hoạt động của chính người dùng đang đăng nhập. */
 export default function MyActivityLogPage() {
   const { t } = useTranslation();
   const [allLogs, setAllLogs] = useState([]);

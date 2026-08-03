@@ -23,6 +23,7 @@ const emptyForm = {
   editReason: ''
 };
 
+/** Form ghi hoặc chỉnh sửa chỉ số điện nước, kèm ảnh bằng chứng và kiểm tra dữ liệu theo phòng/kỳ ghi. */
 export default function UtilityReadingForm({
   rooms,
   readings = [],
@@ -291,6 +292,7 @@ export default function UtilityReadingForm({
   );
 }
 
+/** Nhóm trường nhập riêng cho chỉ số điện cũ, mới và ảnh bằng chứng điện. */
 function ElectricityReadingSubform({
   form,
   t,
@@ -332,6 +334,7 @@ function ElectricityReadingSubform({
   );
 }
 
+/** Nhóm trường nhập riêng cho chỉ số nước cũ, mới và ảnh bằng chứng nước. */
 function WaterReadingSubform({
   form,
   t,
@@ -373,6 +376,7 @@ function WaterReadingSubform({
   );
 }
 
+/** Khung dùng chung cho từng loại đồng hồ điện hoặc nước trong form. */
 function MeterReadingSection({
   className,
   icon,
@@ -469,6 +473,7 @@ function MeterReadingSection({
   );
 }
 
+/** Ô chọn tệp ảnh dùng làm bằng chứng cho một chỉ số đồng hồ. */
 function EvidenceUpload({ id, name, label, selectedFile, t, onImageChange }) {
   return (
     <div className="utility-reading-evidence-field">
@@ -490,6 +495,7 @@ function EvidenceUpload({ id, name, label, selectedFile, t, onImageChange }) {
   );
 }
 
+/** Hiển thị một chỉ số đồng hồ ở chế độ chỉ đọc. */
 function MeterDisplay({ label, value }) {
   return (
     <div className="utility-meter-field">
@@ -503,6 +509,7 @@ function MeterDisplay({ label, value }) {
   );
 }
 
+/** Hiển thị ảnh bằng chứng của kỳ trước để người nhập đối chiếu chỉ số. */
 function PreviousReadingEvidence({ previousReading, t }) {
   if (!previousReading) {
     return null;
@@ -558,6 +565,7 @@ function PreviousReadingEvidence({ previousReading, t }) {
   );
 }
 
+/** Tìm bản ghi gần nhất trước kỳ đang nhập của cùng một phòng. */
 function findPreviousReading(readings, roomId, readingDate, currentReadingId) {
   const selectedMonth = getMonthFromDateInput(readingDate);
 
@@ -574,10 +582,12 @@ function findPreviousReading(readings, roomId, readingDate, currentReadingId) {
   return previousReadings[0] || null;
 }
 
+/** Tạo giá trị thời gian để sắp xếp các bản ghi chỉ số. */
 function getReadingSortValue(reading) {
   return reading.readingDate || (reading.month ? `${reading.month}-01` : '');
 }
 
+/** Chuẩn hóa dữ liệu điện hoặc nước từ API về cấu trúc form đang dùng. */
 function normalizeFetchedMeter(reading, meterType) {
   if (reading.oldReading !== undefined && reading.newReading !== undefined) {
     return {
@@ -602,6 +612,7 @@ function normalizeFetchedMeter(reading, meterType) {
   };
 }
 
+/** Chuẩn hóa ngày ghi để luôn nằm trong tháng người dùng đang thao tác. */
 function normalizeReadingDate(values, selectedMonth) {
   if (values?.readingDate) {
     return values.readingDate;

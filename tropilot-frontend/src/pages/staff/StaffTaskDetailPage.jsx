@@ -5,6 +5,7 @@ import * as taskApi from '../../api/taskApi.js';
 import PageHeader from '../../components/common/PageHeader.jsx';
 import TaskDetail from '../../components/TaskDetail.jsx';
 
+/** Trang chi tiết một công việc để nhân viên bắt đầu, hoàn thành hoặc báo kết quả. */
 export default function StaffTaskDetailPage() {
   const { t } = useTranslation();
   const { id } = useParams();

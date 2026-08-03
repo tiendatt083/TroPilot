@@ -20,6 +20,7 @@ import com.tropilot.enums.UserStatus;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+/** Cung cấp dữ liệu mẫu tái sử dụng cho các bài test quy tắc nghiệp vụ của service. */
 final class BusinessRuleTestFixtures {
 
     static final Long BUILDING_ID = 1L;

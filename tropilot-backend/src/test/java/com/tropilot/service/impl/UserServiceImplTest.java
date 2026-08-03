@@ -29,6 +29,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+/** Kiểm tra quy tắc email khi tạo/xóa tài khoản và lưu vết tài khoản đã vô hiệu hóa. */
 class UserServiceImplTest {
 
     @Mock

@@ -48,6 +48,7 @@ function getTargetUserDescription(user, t) {
   return [roleLabel, roomLabel, user.email].filter(Boolean).join(' - ');
 }
 
+/** Trang tạo và xem lịch sử thông báo hướng tới cư dân trong một tòa nhà. */
 export default function AdminBuildingNotificationPage() {
   const { t } = useTranslation();
   const { building } = useOutletContext();

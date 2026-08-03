@@ -27,6 +27,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
+/** Kiểm tra nội dung email giao task và bảo đảm lỗi SMTP không làm hỏng việc tạo task. */
 class TaskEmailServiceImplTest {
 
     @Mock

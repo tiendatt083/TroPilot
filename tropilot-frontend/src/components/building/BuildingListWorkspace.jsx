@@ -12,6 +12,7 @@ import PageHeader from '../common/PageHeader.jsx';
 import { exportRowsToExcel } from '../../utils/excelExport.js';
 import { normalizeSearchText } from '../../utils/searchText.js';
 
+/** Kiểm tra tòa nhà có khớp từ khóa theo mã, tên hoặc địa chỉ hay không. */
 function buildingMatchesSearch(building, searchValue) {
   if (!searchValue) {
     return true;
@@ -24,6 +25,7 @@ function buildingMatchesSearch(building, searchValue) {
   ].some((value) => normalizeSearchText(value).includes(searchValue));
 }
 
+/** Tạo tên tệp Excel có ngày xuất để người dùng dễ phân biệt các lần tải xuống. */
 function buildExportFileName() {
   const now = new Date();
   const day = String(now.getDate()).padStart(2, '0');
@@ -33,6 +35,7 @@ function buildExportFileName() {
   return `tropilot-buildings-${day}-${month}-${year}.xlsx`;
 }
 
+/** Không gian danh sách tòa nhà: tải, tìm kiếm, xuất Excel và cho phép quản trị tạo/sửa/xóa. */
 export default function BuildingListWorkspace({
   getBuildings,
   basePath,
@@ -338,6 +341,7 @@ export default function BuildingListWorkspace({
   );
 }
 
+/** Biểu tượng xem chi tiết tòa nhà dùng trong cột thao tác. */
 function EyeIcon() {
   return (
     <svg aria-hidden="true" viewBox="0 0 24 24">
@@ -347,6 +351,7 @@ function EyeIcon() {
   );
 }
 
+/** Biểu tượng chỉnh sửa tòa nhà dùng trong cột thao tác. */
 function EditIcon() {
   return (
     <svg aria-hidden="true" viewBox="0 0 24 24">
@@ -356,6 +361,7 @@ function EditIcon() {
   );
 }
 
+/** Biểu tượng xóa tòa nhà dùng trong cột thao tác. */
 function TrashIcon() {
   return (
     <svg aria-hidden="true" viewBox="0 0 24 24">

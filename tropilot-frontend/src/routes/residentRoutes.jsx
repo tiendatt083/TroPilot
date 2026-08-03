@@ -19,6 +19,7 @@ import ResidentIndexRoute from './ResidentIndexRoute.jsx';
 import ResidentRoomRoute from './ResidentRoomRoute.jsx';
 import RoleBasedRoute from './RoleBasedRoute.jsx';
 
+/** Cây đường dẫn dành riêng cho chủ hộ/cư dân, với lớp kiểm tra quyền và phòng được gán. */
 export const residentRoutes = (
   <Route element={<RoleBasedRoute allowedRoles={['RESIDENT_HEAD']} />}>
     <Route path="/resident" element={<ResidentLayout />}>

@@ -23,10 +23,12 @@ const SUGGESTION_KEYS_BY_ROLE = {
   ]
 };
 
+/** Tạo đối tượng tin nhắn thống nhất cho giao diện trò chuyện. */
 function createMessage(id, role, content) {
   return { id, role, content };
 }
 
+/** Chuẩn hóa phản hồi từ dịch vụ chat để hiển thị an toàn và dễ đọc. */
 function normalizeChatReply(content) {
   return String(content ?? '')
     .replace(/\*\*(.*?)\*\*/gs, '$1')
@@ -38,6 +40,7 @@ function normalizeChatReply(content) {
     .trim();
 }
 
+/** Phân loại lỗi gọi chat để giao diện hiển thị đúng thông báo đa ngôn ngữ. */
 function getErrorKey(error) {
   if (error.response?.status === 403) {
     return 'chat.errors.assignmentRequired';
@@ -50,6 +53,7 @@ function getErrorKey(error) {
   return 'chat.errors.sendFailed';
 }
 
+/** Nút chat nổi: quản lý lịch sử hội thoại, gửi câu hỏi và nhận phản hồi từ backend. */
 export default function ChatWidget() {
   const { t } = useTranslation();
   const { user } = useAuth();
@@ -268,6 +272,7 @@ export default function ChatWidget() {
   );
 }
 
+/** Biểu tượng bong bóng hội thoại của nút mở chat. */
 function ChatBubbleIcon() {
   return (
     <svg viewBox="0 0 28 28" role="presentation" focusable="false">

@@ -8,6 +8,7 @@ import PageHeader from '../../components/common/PageHeader.jsx';
 import RoomForm from '../../components/RoomForm.jsx';
 import { translateInterfaceText } from '../../utils/interfaceTranslations.js';
 
+/** Trang chỉnh sửa thông tin và trạng thái của một phòng. */
 export default function AdminRoomEditPage() {
   useTranslation();
   const { roomBasePath, roomId } = useRoomRouteContext('admin');

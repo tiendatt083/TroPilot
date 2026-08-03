@@ -42,6 +42,7 @@ function taskMatchesSearch(task, searchValue) {
   return searchableValues.some((value) => normalizeSearchText(value).includes(searchValue));
 }
 
+/** Trang công việc vận hành của tòa nhà dành cho nhân viên. */
 export default function StaffBuildingTaskPage() {
   const { t } = useTranslation();
   const location = useLocation();

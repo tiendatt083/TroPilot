@@ -54,6 +54,7 @@ function buildRoomDetailPath(member) {
   return `/admin/buildings/${member.buildingId}/rooms/${member.roomId}`;
 }
 
+/** Trang duyệt hoặc từ chối các thành viên phòng đang chờ xác nhận. */
 export default function AdminPendingMembersPage() {
   const { t } = useTranslation();
   const [members, setMembers] = useState([]);

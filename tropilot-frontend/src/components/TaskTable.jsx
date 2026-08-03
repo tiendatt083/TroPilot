@@ -7,6 +7,7 @@ import LineIcon from './common/LineIcon.jsx';
 import { formatDate, formatEnumLabel } from '../utils/i18nFormat.js';
 import { formatRoomLabel } from '../utils/roomDisplay.js';
 
+/** Tạo nhãn phòng cho một hàng công việc. */
 function roomText(task, t) {
   if (!task.roomCode) {
     return task.buildingId || task.buildingCode
@@ -17,6 +18,7 @@ function roomText(task, t) {
   return formatRoomLabel(task);
 }
 
+/** Tạo nhãn tòa nhà cho một hàng công việc. */
 function buildingText(task, t) {
   if (task.buildingCode && task.buildingName) {
     return `${task.buildingCode} - ${task.buildingName}`;
@@ -25,6 +27,7 @@ function buildingText(task, t) {
   return task.buildingName || task.buildingCode || t('common.noBuilding');
 }
 
+/** Bảng danh sách công việc, hỗ trợ chọn hàng và bổ sung thao tác tùy màn hình. */
 export default function TaskTable({
   detailBasePath,
   onViewTask,

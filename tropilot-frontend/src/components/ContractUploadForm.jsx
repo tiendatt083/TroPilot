@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import LineIcon from './common/LineIcon.jsx';
 
+/** Form tải tệp hợp đồng mới hoặc thay thế tệp của hợp đồng hiện có. */
 export default function ContractUploadForm({
   loading,
   onSubmit,

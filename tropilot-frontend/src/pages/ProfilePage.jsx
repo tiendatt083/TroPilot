@@ -50,6 +50,7 @@ function getStatusLabel(t, status) {
   return status;
 }
 
+/** Trang hồ sơ cá nhân, cho phép người dùng xem và cập nhật thông tin cơ bản của mình. */
 export default function ProfilePage() {
   const { t } = useTranslation();
   const { user, updateProfile } = useAuth();

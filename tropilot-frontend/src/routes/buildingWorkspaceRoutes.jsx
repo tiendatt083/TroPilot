@@ -30,6 +30,7 @@ import StaffBuildingVehiclePage from '../pages/staff/StaffBuildingVehiclePage.js
 import StaffMaintenancePage from '../pages/staff/StaffMaintenancePage.jsx';
 import StaffRoomDetailPage from '../pages/staff/StaffRoomDetailPage.jsx';
 
+/** Các trang con của một tòa nhà dành cho quản trị viên. */
 export const adminBuildingWorkspaceRoutes = (
   <Route path="buildings/:id" element={<AdminBuildingWorkspaceLayout />}>
     <Route index element={<AdminBuildingDetailPage />} />
@@ -59,6 +60,7 @@ export const adminBuildingWorkspaceRoutes = (
   </Route>
 );
 
+/** Các trang con của một tòa nhà dành cho nhân viên; các nghiệp vụ không có quyền sẽ quay về tổng quan. */
 export const staffBuildingWorkspaceRoutes = (
   <Route path="buildings/:id" element={<StaffBuildingWorkspaceLayout />}>
     <Route index element={<StaffBuildingOverviewPage />} />
@@ -77,6 +79,7 @@ export const staffBuildingWorkspaceRoutes = (
   </Route>
 );
 
+/** Chuyển nhân viên về trang tổng quan tòa nhà khi truy cập tab không được hỗ trợ. */
 function StaffBuildingOverviewRedirect() {
   const { id } = useParams();
   return <Navigate to={`/staff/buildings/${id}`} replace />;

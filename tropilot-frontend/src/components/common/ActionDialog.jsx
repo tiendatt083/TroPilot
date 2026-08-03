@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import ModalCloseButton from './ModalCloseButton.jsx';
 
+/** Hộp thoại dùng chung cho các thao tác; đóng được bằng nút X, phím Escape hoặc bấm ra ngoài. */
 export default function ActionDialog({
   children,
   className = '',

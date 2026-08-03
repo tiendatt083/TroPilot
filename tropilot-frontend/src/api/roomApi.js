@@ -1,5 +1,6 @@
 import apiClient from './axiosClient.js';
 
+/** Chuyển bộ lọc tìm kiếm, tòa nhà và trạng thái phòng thành query parameters. */
 function filterConfig(filters = {}) {
   const params = {};
 
@@ -18,6 +19,7 @@ function filterConfig(filters = {}) {
   return Object.keys(params).length ? { params } : {};
 }
 
+/** API phòng: admin CRUD/phân chủ hộ; staff chỉ đọc danh sách, chi tiết và phân chủ hộ. */
 export async function getAdminRooms(filters) {
   const response = await apiClient.get('/api/admin/rooms', filterConfig(filters));
   return response.data;

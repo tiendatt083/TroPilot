@@ -42,6 +42,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+/** Kiểm tra phân/gỡ chủ hộ tạo và kết thúc đúng các dữ liệu phòng, hợp đồng, thành viên và xe liên quan. */
 class HeadResidentAssignmentServiceImplTest {
 
     @Mock

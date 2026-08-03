@@ -11,11 +11,13 @@ import { formatRoomCode } from '../../utils/roomDisplay.js';
 
 const MONTHS = Array.from({ length: 12 }, (_, index) => index + 1);
 
+/** Chuyển dữ liệu tài chính sang số an toàn trước khi tổng hợp. */
 function toNumber(value) {
   const numberValue = Number(value ?? 0);
   return Number.isFinite(numberValue) ? numberValue : 0;
 }
 
+/** Lấy danh sách hóa đơn từ các dạng dữ liệu trả về khác nhau của API. */
 function getInvoiceList(response) {
   if (Array.isArray(response)) {
     return response;
@@ -32,6 +34,7 @@ function getInvoiceList(response) {
   return [];
 }
 
+/** Xác định tháng lập hóa đơn để nhóm doanh thu theo tháng. */
 function getInvoiceMonth(invoice) {
   const candidates = [
     invoice?.month,
@@ -68,14 +71,17 @@ function getInvoiceMonth(invoice) {
   return null;
 }
 
+/** Kiểm tra hóa đơn đã thanh toán để chỉ tính khoản thu thực tế. */
 function isPaidInvoice(invoice) {
   return String(invoice?.status || '').toUpperCase() === 'PAID';
 }
 
+/** Tạo khóa nhận diện phòng khi gộp doanh thu từ nhiều hóa đơn. */
 function getRoomKey(invoice) {
   return invoice?.roomId || invoice?.roomCode || invoice?.roomName || invoice?.id;
 }
 
+/** Tổng hợp và sắp xếp các phòng mang lại doanh thu cao nhất. */
 function buildTopRevenueRooms(invoices) {
   const rooms = new Map();
 
@@ -96,6 +102,7 @@ function buildTopRevenueRooms(invoices) {
     .slice(0, 5);
 }
 
+/** Nhóm doanh thu theo 12 tháng của một năm để đưa vào biểu đồ. */
 function buildMonthlyRevenue(invoices, year) {
   return MONTHS.map((month) => {
     const value = invoices
@@ -113,14 +120,17 @@ function buildMonthlyRevenue(invoices, year) {
   });
 }
 
+/** Định dạng một giá trị thành phần trăm dễ đọc. */
 function formatPercent(value) {
   return `${Math.round(value)}%`;
 }
 
+/** Định dạng tiền Việt Nam đầy đủ cho bảng doanh thu. */
 function formatMoney(value) {
   return formatInvoiceAmount(value);
 }
 
+/** Định dạng số tiền rút gọn để vừa với nhãn biểu đồ. */
 function formatChartMoney(value) {
   const numberValue = toNumber(value);
 
@@ -135,6 +145,7 @@ function formatChartMoney(value) {
   return formatInvoiceAmount(numberValue);
 }
 
+/** Lấy năm và tháng hiện tại làm mốc mặc định cho phần tổng quan dòng tiền. */
 function getCurrentMonthInfo() {
   const now = new Date();
   const year = now.getFullYear();
@@ -149,6 +160,7 @@ function getCurrentMonthInfo() {
   };
 }
 
+/** Biểu đồ đường hiển thị biến động doanh thu theo tháng. */
 function CashFlowLineChart({ emptyText, rows }) {
   const width = 720;
   const height = 300;
@@ -212,6 +224,7 @@ function CashFlowLineChart({ emptyText, rows }) {
   );
 }
 
+/** Bảng phụ hiển thị các phòng có doanh thu hoặc trạng thái thanh toán cần theo dõi. */
 function CashFlowRoomTable({ emptyText, icon, rows, showStatus = false, t, title }) {
   return (
     <section className="cashflow-room-panel">
@@ -268,6 +281,7 @@ function CashFlowRoomTable({ emptyText, icon, rows, showStatus = false, t, title
   );
 }
 
+/** Không gian dòng tiền của tòa nhà: tải hóa đơn/biên lai rồi tổng hợp số liệu, biểu đồ và bảng. */
 export default function BuildingCashFlowWorkspace({ getInvoices, getReceipts }) {
   const { t } = useTranslation();
   const { building } = useOutletContext();

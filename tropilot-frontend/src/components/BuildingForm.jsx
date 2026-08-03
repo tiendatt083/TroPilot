@@ -9,6 +9,7 @@ const emptyForm = {
   description: ''
 };
 
+/** Form dùng để tạo mới hoặc cập nhật thông tin cơ bản của tòa nhà. */
 export default function BuildingForm({ initialValues, loading, submitLabel, onSubmit }) {
   const { t } = useTranslation();
   const [form, setForm] = useState(emptyForm);

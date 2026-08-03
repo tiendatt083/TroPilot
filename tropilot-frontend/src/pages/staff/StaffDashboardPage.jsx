@@ -66,6 +66,7 @@ function maintenanceTitleText(request, t) {
     || t('dashboard.ops.fallback.noDescription');
 }
 
+/** Dashboard nhân viên tổng hợp công việc, bảo trì, chỉ số và thanh toán cần theo dõi. */
 export default function StaffDashboardPage() {
   const { t, i18n } = useTranslation();
   const [dashboard, setDashboard] = useState(null);

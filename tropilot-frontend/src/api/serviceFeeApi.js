@@ -1,5 +1,6 @@
 import apiClient from './axiosClient.js';
 
+/** API khoản phí dịch vụ theo tòa nhà: admin quản lý, staff/cư dân chỉ xem theo quyền. */
 export async function getAdminBuildingServiceFees(buildingId) {
   const response = await apiClient.get(`/api/admin/buildings/${buildingId}/service-fees`);
   return response.data;

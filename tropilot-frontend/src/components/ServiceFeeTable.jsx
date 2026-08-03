@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { isServiceFeeActive } from '../utils/serviceFeeOptions.js';
 import { formatEnumLabel } from '../utils/i18nFormat.js';
 
+/** Định dạng mức phí dịch vụ để hiển thị có dấu phân tách hàng nghìn. */
 function formatNumber(value) {
   const numberValue = Number(value);
   return Number.isFinite(numberValue)
@@ -9,6 +10,7 @@ function formatNumber(value) {
     : value;
 }
 
+/** Bảng danh sách phí dịch vụ, có thể nhận các nút thao tác từ trang quản lý. */
 export default function ServiceFeeTable({
   serviceFees,
   renderActions,

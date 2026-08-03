@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import AdminUserCreateForm from './AdminUserCreateForm.jsx';
 import ActionDialog from './common/ActionDialog.jsx';
 
+/** Hộp thoại bao quanh form tạo tài khoản mới cho quản trị viên. */
 export default function AdminUserCreateDialog({
   error,
   initialRole = 'STAFF',

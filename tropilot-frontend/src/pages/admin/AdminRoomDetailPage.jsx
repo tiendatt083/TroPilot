@@ -75,6 +75,7 @@ function RoomDetailInfoItem({ icon, label, children }) {
   );
 }
 
+/** Trang chi tiết phòng, tổng hợp hợp đồng, chủ hộ, thành viên và dữ liệu vận hành. */
 export default function AdminRoomDetailPage() {
   const { t } = useTranslation();
   const { roomBasePath, roomId } = useRoomRouteContext('admin');

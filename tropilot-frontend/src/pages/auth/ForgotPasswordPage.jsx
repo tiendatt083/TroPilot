@@ -7,6 +7,7 @@ import LineIcon from '../../components/common/LineIcon.jsx';
 import { getDashboardPath } from '../../utils/roleRoutes.js';
 import brandLogo from '../../assets/no_name_backgroud.png';
 
+/** Trang gửi yêu cầu đặt lại mật khẩu thông qua địa chỉ email. */
 export default function ForgotPasswordPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();

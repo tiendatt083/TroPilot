@@ -13,10 +13,12 @@ const DEFAULT_COLUMNS = [
   'maintenanceSchedule'
 ];
 
+/** Tạo nhãn tòa nhà dễ đọc cho một thiết bị trong bảng. */
 function formatBuildingLabel(item) {
   return item.buildingName || item.buildingCode || '';
 }
 
+/** Lấy riêng mã phòng khi thiết bị được gán cho một phòng. */
 function formatRoomCodeOnly(item) {
   const roomCode = item.roomCode || '';
   const buildingCode = item.buildingCode || '';
@@ -29,6 +31,7 @@ function formatRoomCodeOnly(item) {
   return roomCode || item.roomName || formatRoomLabel(item);
 }
 
+/** Bảng thiết bị dùng chung, cho phép trang gọi chọn cột và ô thao tác cần hiển thị. */
 export default function EquipmentTable({ equipment, renderActions, visibleColumns = DEFAULT_COLUMNS }) {
   const { t } = useTranslation();
   const hasActions = Boolean(renderActions);

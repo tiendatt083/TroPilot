@@ -5,6 +5,7 @@ import { formatDisplayDate, formatDisplayMonth } from '../utils/dateFormat.js';
 import { formatEnumLabel } from '../utils/i18nFormat.js';
 import { formatRoomCode, formatRoomLabel } from '../utils/roomDisplay.js';
 
+/** Định dạng một số theo ngôn ngữ giao diện, giữ nguyên giá trị khi không hợp lệ. */
 function formatNumber(value, locale) {
   const numberValue = Number(value);
   return Number.isFinite(numberValue)
@@ -12,6 +13,7 @@ function formatNumber(value, locale) {
     : value;
 }
 
+/** Bảng danh sách hóa đơn dùng chung, có thể gắn liên kết chi tiết và các nút thao tác từ trang gọi. */
 export default function InvoiceTable({ invoices, renderActions, detailPathBase, hideSubtext = false }) {
   const { t, i18n } = useTranslation();
   const hasActions = Boolean(renderActions || detailPathBase);
@@ -81,6 +83,7 @@ export default function InvoiceTable({ invoices, renderActions, detailPathBase, 
   );
 }
 
+/** Lấy mã hóa đơn ưu tiên từ các tên trường backend có thể trả về. */
 export function formatInvoiceCode(invoice) {
   if (invoice.invoiceCode || invoice.code || invoice.invoiceNumber) {
     return invoice.invoiceCode || invoice.code || invoice.invoiceNumber;
@@ -90,11 +93,13 @@ export function formatInvoiceCode(invoice) {
   return `HD-${formatDisplayMonth(invoice.month || invoice.invoiceDate, '00/0000')}-${id}`;
 }
 
+/** Định dạng tổng tiền hóa đơn kèm đơn vị tiền tệ. */
 function formatInvoiceCurrency(value, locale, currencyLabel) {
   const formatted = formatNumber(value, locale);
   return formatted === value ? value : `${formatted} ${currencyLabel}`;
 }
 
+/** Biểu tượng xem chi tiết hóa đơn. */
 function EyeIcon() {
   return (
     <svg aria-hidden="true" viewBox="0 0 24 24">

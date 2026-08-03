@@ -8,11 +8,13 @@ const emptyOverview = {
   emptyRooms: 0
 };
 
+/** Chuyển dữ liệu thống kê sang số an toàn để dùng cho biểu đồ. */
 function toNumber(value) {
   const numberValue = Number(value ?? 0);
   return Number.isFinite(numberValue) ? numberValue : 0;
 }
 
+/** Biểu đồ tròn tổng quan tình trạng ghi chỉ số điện và nước. */
 export default function UtilityReadingStatusDonut({ overview = emptyOverview }) {
   const { i18n, t } = useTranslation();
   const overviewData = overview || emptyOverview;
@@ -40,6 +42,7 @@ export default function UtilityReadingStatusDonut({ overview = emptyOverview }) 
   );
 }
 
+/** Biểu đồ tròn cho riêng một loại đồng hồ điện hoặc nước. */
 function UtilityReadingMeterDonut({ color, locale, meter, overview, title, t }) {
   const totalRooms = getMeterNumber(overview, meter, 'totalRooms');
   const recordedRooms = getMeterNumber(overview, meter, 'recordedRooms');
@@ -74,6 +77,7 @@ function UtilityReadingMeterDonut({ color, locale, meter, overview, title, t }) 
   );
 }
 
+/** Lấy một chỉ số thống kê theo loại đồng hồ, trả về 0 khi thiếu dữ liệu. */
 function getMeterNumber(overview, meter, key) {
   const meterKey = `${meter}${key.charAt(0).toUpperCase()}${key.slice(1)}`;
 

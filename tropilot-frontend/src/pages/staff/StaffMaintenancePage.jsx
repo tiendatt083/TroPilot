@@ -65,6 +65,7 @@ function getMaintenanceRoomText(request, t) {
   return request.roomId ? formatRoomCode(request) : t('equipment.scopes.BUILDING');
 }
 
+/** Trang xử lý các yêu cầu bảo trì được giao cho nhân viên. */
 export default function StaffMaintenancePage() {
   const { t } = useTranslation();
   const location = useLocation();

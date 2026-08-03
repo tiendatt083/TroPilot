@@ -18,6 +18,7 @@ const emptyForm = {
 
 const editableRoomStatuses = new Set(['EMPTY', 'OCCUPIED']);
 
+/** Form tạo hoặc chỉnh sửa phòng, kiểm tra dữ liệu theo tòa nhà đã chọn. */
 export default function RoomForm({
   buildingOptions,
   initialValues,
@@ -240,6 +241,7 @@ export default function RoomForm({
   );
 }
 
+/** Tìm thông tin tòa nhà đang được chọn để áp dụng các quy tắc của tòa nhà đó cho form phòng. */
 function getSelectedBuilding(buildingOptions, buildingId) {
   return buildingOptions.find((building) => String(building.id) === String(buildingId));
 }

@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { getDashboardPath } from '../../utils/roleRoutes.js';
 
+/** Trang đổi mật khẩu cho người dùng đã đăng nhập, kiểm tra mật khẩu hiện tại và mật khẩu mới. */
 export default function ChangePasswordPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();

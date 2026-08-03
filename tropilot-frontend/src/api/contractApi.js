@@ -1,5 +1,6 @@
 import apiClient from './axiosClient.js';
 
+/** Chuẩn hóa filter tòa nhà cho các API hợp đồng của admin. */
 function filterConfig(filters = {}) {
   const params = {};
 
@@ -10,6 +11,7 @@ function filterConfig(filters = {}) {
   return Object.keys(params).length ? { params } : {};
 }
 
+/** API hợp đồng: admin quản lý/tải tệp, cư dân xem, xác nhận hoặc báo lỗi hợp đồng của mình. */
 export async function getAdminContracts(filters) {
   const response = await apiClient.get('/api/admin/contracts', filterConfig(filters));
   return response.data;
@@ -21,6 +23,7 @@ export async function getAdminContract(id, filters) {
 }
 
 export async function uploadAdminContract(id, file, filters) {
+  // Tệp hợp đồng phải gửi theo multipart/form-data thay vì JSON.
   const formData = new FormData();
   formData.append('file', file);
 

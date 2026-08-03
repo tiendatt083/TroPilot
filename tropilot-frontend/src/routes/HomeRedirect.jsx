@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext.jsx';
 import { getDashboardPath } from '../utils/roleRoutes.js';
 
+/** Chuyển trang gốc đến dashboard phù hợp với vai trò của người dùng đã đăng nhập. */
 export default function HomeRedirect() {
   const { t } = useTranslation();
   const { isAuthenticated, loading, user } = useAuth();

@@ -98,6 +98,7 @@ async function getInvoiceFallbackFees() {
     }));
 }
 
+/** Trang để cư dân theo dõi chi phí tòa nhà, chỉ số điện nước và các khoản liên quan. */
 export default function ResidentBuildingCostPage() {
   const { t } = useTranslation();
   const { assignment, assignmentLoading } = useOutletContext() || {};

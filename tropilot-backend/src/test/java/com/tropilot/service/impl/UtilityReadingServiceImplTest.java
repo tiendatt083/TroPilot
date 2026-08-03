@@ -41,6 +41,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+/** Kiểm tra nhập chỉ số điện nước cho phòng hợp lệ, chặn trùng tháng và tạo số liệu tổng quan. */
 class UtilityReadingServiceImplTest {
 
     @Mock

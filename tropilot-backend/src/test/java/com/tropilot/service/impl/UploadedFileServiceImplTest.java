@@ -24,6 +24,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+/** Kiểm tra quyền tải tệp của admin/cư dân và chặn đường dẫn traversal trước khi đọc tệp. */
 class UploadedFileServiceImplTest {
 
     @TempDir

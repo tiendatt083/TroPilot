@@ -1,11 +1,13 @@
 import apiClient from './axiosClient.js';
 
+// Ảnh minh chứng thanh toán được gửi bằng FormData.
 const multipartConfig = {
   headers: {
     'Content-Type': 'multipart/form-data'
   }
 };
 
+/** Chuẩn hóa filter tòa nhà khi staff/admin xem phiếu thanh toán hoặc biên lai. */
 function filterConfig(filters = {}) {
   const params = {};
 
@@ -16,6 +18,7 @@ function filterConfig(filters = {}) {
   return Object.keys(params).length ? { params } : {};
 }
 
+/** API thanh toán: cư dân tải minh chứng, staff xem phiếu chờ xác nhận, admin xem biên lai. */
 export async function uploadPaymentProof({ invoiceId, proofImage, note }) {
   const formData = new FormData();
   formData.append('invoiceId', invoiceId);

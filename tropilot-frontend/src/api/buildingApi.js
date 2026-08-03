@@ -1,9 +1,11 @@
 import apiClient from './axiosClient.js';
 
+/** Tạo cấu hình query search tùy chọn để không gửi tham số rỗng lên backend. */
 function searchConfig(search) {
   return search ? { params: { search } } : {};
 }
 
+/** API tòa nhà cho admin và staff: danh sách, chi tiết và CRUD của admin. */
 export async function getAdminBuildings(search) {
   const response = await apiClient.get('/api/admin/buildings', searchConfig(search));
   return response.data;

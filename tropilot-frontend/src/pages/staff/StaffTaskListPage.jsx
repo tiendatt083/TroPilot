@@ -5,6 +5,7 @@ import * as taskApi from '../../api/taskApi.js';
 import PageHeader from '../../components/common/PageHeader.jsx';
 import TaskTable from '../../components/TaskTable.jsx';
 
+/** Trang danh sách tất cả công việc được giao cho nhân viên. */
 export default function StaffTaskListPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();

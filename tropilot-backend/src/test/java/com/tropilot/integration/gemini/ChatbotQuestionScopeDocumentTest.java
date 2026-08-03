@@ -9,6 +9,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/** Kiểm tra tài liệu phạm vi câu hỏi chatbot có các tiêu chí chất lượng và phân quyền cần thiết. */
 class ChatbotQuestionScopeDocumentTest {
 
     private static final Path QUESTION_SCOPE_DOCUMENT =

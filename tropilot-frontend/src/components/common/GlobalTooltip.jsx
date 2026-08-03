@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
+/** Tooltip toàn cục: tự đọc nhãn của các nút, đặt vị trí phù hợp và hiển thị ngoài cây giao diện chính. */
 const TOOLTIP_OFFSET = 10;
 const CURSOR_TOOLTIP_OFFSET = 14;
 const TOOLTIP_TARGET_SELECTOR = [
@@ -12,6 +13,7 @@ const TOOLTIP_TARGET_SELECTOR = [
   '.icon-button[aria-label]'
 ].join(', ');
 
+/** Tìm phần tử cha gần nhất có thể hiển thị tooltip từ phần tử đang được trỏ tới. */
 function findTooltipTarget(target) {
   if (!(target instanceof Element)) {
     return null;
@@ -20,6 +22,7 @@ function findTooltipTarget(target) {
   return target.closest(TOOLTIP_TARGET_SELECTOR);
 }
 
+/** Lấy nội dung tooltip theo thứ tự ưu tiên từ các thuộc tính hỗ trợ. */
 function getTooltipText(element) {
   return (
     element?.getAttribute('data-tooltip')?.trim() ||
@@ -30,10 +33,12 @@ function getTooltipText(element) {
   );
 }
 
+/** Kiểm tra tooltip này có cần di chuyển theo con trỏ chuột hay không. */
 function shouldFollowCursor(element) {
   return element?.getAttribute('data-tooltip-follow') === 'true';
 }
 
+/** Tạm cất title gốc để tránh trình duyệt hiển thị tooltip mặc định trùng với tooltip của ứng dụng. */
 function suppressNativeTooltip(element) {
   if (!element?.hasAttribute('title')) {
     return;
@@ -43,6 +48,7 @@ function suppressNativeTooltip(element) {
   element.removeAttribute('title');
 }
 
+/** Trả lại title gốc khi người dùng không còn trỏ vào phần tử. */
 function restoreNativeTooltip(element) {
   if (!element?.hasAttribute('data-native-title')) {
     return;
@@ -56,6 +62,7 @@ function restoreNativeTooltip(element) {
   }
 }
 
+/** Tính vị trí tooltip: đi theo chuột hoặc ưu tiên đặt phía trên nút nếu còn chỗ. */
 function getTooltipPosition(element, text, pointerPosition = null) {
   if (shouldFollowCursor(element) && pointerPosition) {
     return {
@@ -81,6 +88,7 @@ function getTooltipPosition(element, text, pointerPosition = null) {
   };
 }
 
+/** Lắng nghe sự kiện toàn trang để hiển thị một tooltip thống nhất cho mọi nút hỗ trợ. */
 export default function GlobalTooltip() {
   const [tooltip, setTooltip] = useState(null);
 

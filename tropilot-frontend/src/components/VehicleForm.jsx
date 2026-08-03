@@ -9,6 +9,7 @@ const emptyForm = {
   licensePlate: ''
 };
 
+/** Form để cư dân đăng ký xe dưới tên chủ hộ hoặc thành viên đã được duyệt. */
 export default function VehicleForm({ approvedMembers, loading, onCancel, onSubmit }) {
   const { t } = useTranslation();
   const [form, setForm] = useState(emptyForm);

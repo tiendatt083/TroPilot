@@ -9,6 +9,7 @@ import {
 import { formatDate, formatEnumLabel } from '../utils/i18nFormat.js';
 import { formatRoomLabel } from '../utils/roomDisplay.js';
 
+/** Tạo nhãn phòng cho bản xem nhanh công việc. */
 function roomText(task, t) {
   if (!task.roomCode) {
     return task.buildingId || task.buildingCode
@@ -19,6 +20,7 @@ function roomText(task, t) {
   return formatRoomLabel(task);
 }
 
+/** Một dòng thông tin trong hộp thoại xem nhanh công việc. */
 function DetailItem({ label, value, wide = false }) {
   return (
     <div className={wide ? 'task-quick-detail-item task-quick-detail-item-wide' : 'task-quick-detail-item'}>
@@ -28,6 +30,7 @@ function DetailItem({ label, value, wide = false }) {
   );
 }
 
+/** Hộp thoại xem tóm tắt công việc mà không cần rời khỏi danh sách. */
 export default function TaskQuickViewDialog({
   error,
   loading,

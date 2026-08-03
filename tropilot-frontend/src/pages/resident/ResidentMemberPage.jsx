@@ -31,6 +31,7 @@ function createReturnRequestDraft(member) {
   };
 }
 
+/** Trang quản lý các thành viên cùng ở trong phòng của chủ hộ. */
 export default function ResidentMemberPage() {
   const { t } = useTranslation();
   const [members, setMembers] = useState([]);

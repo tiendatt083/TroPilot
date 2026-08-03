@@ -1,5 +1,6 @@
 import DashboardMetricGrid from './DashboardMetricGrid.jsx';
 
+/** Một khu vực dashboard có tiêu đề, mô tả, chỉ số và nội dung mở rộng. */
 export default function DashboardSection({ title, description, metrics, children }) {
   const classes = [
     'dashboard-section-panel',

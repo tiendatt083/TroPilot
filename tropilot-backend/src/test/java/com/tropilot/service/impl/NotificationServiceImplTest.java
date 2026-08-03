@@ -42,6 +42,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+/** Kiểm tra lọc quyền xem thông báo, chủ hộ chưa có phòng và đối tượng nhận thông báo vận hành. */
 class NotificationServiceImplTest {
 
     @Mock

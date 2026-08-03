@@ -1,5 +1,6 @@
 import EmptyState from './EmptyState.jsx';
 
+/** Chọn khóa React ổn định cho từng hàng, hỗ trợ cả tên trường lẫn hàm tự tạo khóa. */
 function getRowKey(row, index, rowKey) {
   if (typeof rowKey === 'function') {
     return rowKey(row, index);
@@ -8,6 +9,7 @@ function getRowKey(row, index, rowKey) {
   return row?.[rowKey] ?? index;
 }
 
+/** Bảng dữ liệu dùng chung: nhận cấu hình cột, dữ liệu hàng và hiển thị trạng thái rỗng khi cần. */
 export default function DataTable({
   columns = [],
   rows = [],

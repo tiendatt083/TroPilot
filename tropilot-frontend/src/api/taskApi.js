@@ -1,11 +1,13 @@
 import apiClient from './axiosClient.js';
 
+// Task hoàn thành có thể đính kèm ảnh kết quả nên dùng multipart/form-data.
 const multipartConfig = {
   headers: {
     'Content-Type': 'multipart/form-data'
   }
 };
 
+/** Chuyển dữ liệu task có thể chứa ảnh thành FormData, bỏ qua trường chưa có giá trị. */
 function toFormData(payload) {
   const formData = new FormData();
 
@@ -18,6 +20,7 @@ function toFormData(payload) {
   return formData;
 }
 
+/** Chuẩn hóa filter tòa nhà cho API task của admin. */
 function filterConfig(filters = {}) {
   const params = {};
 
@@ -28,6 +31,7 @@ function filterConfig(filters = {}) {
   return Object.keys(params).length ? { params } : {};
 }
 
+/** API công việc: admin CRUD theo tòa nhà, staff xem task được giao, bắt đầu và hoàn thành. */
 export async function createAdminTask(payload, filters) {
   const response = await apiClient.post('/api/admin/tasks', payload, filterConfig(filters));
   return response.data;

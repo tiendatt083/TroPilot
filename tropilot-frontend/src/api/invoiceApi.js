@@ -1,5 +1,6 @@
 import apiClient from './axiosClient.js';
 
+/** API hóa đơn: admin xem trước/tạo/xóa theo tòa nhà, cư dân chỉ xem hóa đơn thuộc phòng mình. */
 export async function getAdminBuildingInvoices(buildingId) {
   const response = await apiClient.get(`/api/admin/buildings/${buildingId}/invoices`);
   return response.data;

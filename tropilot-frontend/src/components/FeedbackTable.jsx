@@ -8,6 +8,7 @@ import { formatDisplayMonth } from '../utils/dateFormat.js';
 import { formatEnumLabel } from '../utils/i18nFormat.js';
 import { formatRoomLabel } from '../utils/roomDisplay.js';
 
+/** Định dạng mã hoặc số lượng phản hồi để hiển thị nhất quán trong bảng. */
 function formatNumber(value) {
   const numberValue = Number(value);
   return Number.isFinite(numberValue)
@@ -17,6 +18,7 @@ function formatNumber(value) {
 
 const DEFAULT_COLUMNS = ['title', 'type', 'resident', 'room', 'invoice', 'status', 'reply', 'created'];
 
+/** Bảng phản hồi của cư dân, hỗ trợ truyền thêm nút thao tác từ từng trang sử dụng. */
 export default function FeedbackTable({
   feedbacks,
   renderActions,

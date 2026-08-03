@@ -1,5 +1,6 @@
 import apiClient from './axiosClient.js';
 
+/** Chuẩn hóa filter tòa nhà khi quản trị viên lọc phản hồi. */
 function filterConfig(filters = {}) {
   const params = {};
 
@@ -10,6 +11,7 @@ function filterConfig(filters = {}) {
   return Object.keys(params).length ? { params } : {};
 }
 
+/** API phản hồi/khiếu nại: cư dân tạo và xem, admin lọc, trả lời hoặc cập nhật trạng thái. */
 export async function createResidentFeedback(payload) {
   const response = await apiClient.post('/api/resident/feedbacks', payload);
   return response.data;

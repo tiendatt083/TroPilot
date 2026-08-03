@@ -7,6 +7,7 @@ import { openFileUrl, resolveFileUrl } from '../utils/fileUrl.js';
 import { formatDate, formatEnumLabel } from '../utils/i18nFormat.js';
 import { formatRoomLabel } from '../utils/roomDisplay.js';
 
+/** Tạo nhãn phòng liên quan tới công việc. */
 function roomText(task, t) {
   if (!task.roomCode) {
     return task.buildingId || task.buildingCode
@@ -17,6 +18,7 @@ function roomText(task, t) {
   return formatRoomLabel(task);
 }
 
+/** Một ô thông tin có biểu tượng trong phần chi tiết công việc. */
 function DetailItem({ icon, tone = 'blue', label, children, className = '' }) {
   return (
     <div className={['task-detail-field', className].filter(Boolean).join(' ')}>
@@ -31,6 +33,7 @@ function DetailItem({ icon, tone = 'blue', label, children, className = '' }) {
   );
 }
 
+/** Hiển thị toàn bộ thông tin, hạn xử lý và kết quả của một công việc vận hành. */
 export default function TaskDetail({ task }) {
   const { t } = useTranslation();
 

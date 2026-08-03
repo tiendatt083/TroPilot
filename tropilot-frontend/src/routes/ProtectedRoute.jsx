@@ -2,6 +2,7 @@ import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext.jsx';
 
+/** Chặn người chưa đăng nhập và chuyển họ về trang đăng nhập trước khi xem nội dung bảo vệ. */
 export default function ProtectedRoute() {
   const { t } = useTranslation();
   const location = useLocation();

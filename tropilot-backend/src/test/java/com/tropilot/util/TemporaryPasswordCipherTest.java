@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+/** Kiểm tra mật khẩu tạm giải mã được với đúng secret và bị từ chối khi secret thay đổi hoặc quá ngắn. */
 class TemporaryPasswordCipherTest {
 
     private static final String SECRET = "TemporaryPasswordCipherTestSecret123456";

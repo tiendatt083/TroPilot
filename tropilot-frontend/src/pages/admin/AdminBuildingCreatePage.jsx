@@ -4,6 +4,7 @@ import * as buildingApi from '../../api/buildingApi.js';
 import BuildingForm from '../../components/BuildingForm.jsx';
 import PageHeader from '../../components/common/PageHeader.jsx';
 
+/** Trang tạo mới tòa nhà cho quản trị viên. */
 export default function AdminBuildingCreatePage() {
   const navigate = useNavigate();
   const [error, setError] = useState('');

@@ -83,6 +83,7 @@ function findPreferredFeeByType(serviceFees, feeType) {
   return matchingFees.find(isServiceFeeActive) || matchingFees[0] || null;
 }
 
+/** Trang quản lý các loại phí dịch vụ áp dụng cho một tòa nhà. */
 export default function AdminBuildingServiceFeePage() {
   const { t } = useTranslation();
   const { building } = useOutletContext();

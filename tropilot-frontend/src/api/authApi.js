@@ -1,5 +1,6 @@
 import apiClient from './axiosClient.js';
 
+/** Các API xác thực và hồ sơ: đăng nhập, lấy user hiện tại, đổi mật khẩu và quên mật khẩu. */
 export async function login(credentials) {
   const response = await apiClient.post('/api/auth/login', credentials);
   return response.data;

@@ -45,6 +45,7 @@ function getTargetUserDescription(user, t) {
   return [roleLabel, roomLabel, buildingLabel, user.email].filter(Boolean).join(' - ');
 }
 
+/** Trang quản trị tạo thông báo toàn hệ thống và theo dõi lịch sử gửi. */
 export default function AdminNotificationPage() {
   const { t } = useTranslation();
   const [form, setForm] = useState(emptyForm);

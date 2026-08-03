@@ -25,6 +25,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
+/** Kiểm tra email phát hành hóa đơn/xác nhận thanh toán và khả năng chịu lỗi SMTP. */
 class PaymentEmailServiceImplTest {
 
     @Mock

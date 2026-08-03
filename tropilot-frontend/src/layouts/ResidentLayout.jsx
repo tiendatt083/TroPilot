@@ -32,6 +32,7 @@ const RESIDENT_ACCOUNT_ITEMS = [
   { to: '/resident/settings', labelKey: 'settings.title', icon: 'settings' }
 ];
 
+/** Khung giao diện chung dành cho cư dân/chủ hộ, gồm điều hướng và vùng hiển thị trang con. */
 export default function ResidentLayout() {
   const { t } = useTranslation();
   const [assignment, setAssignment] = useState(null);

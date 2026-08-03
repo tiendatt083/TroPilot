@@ -16,6 +16,7 @@ import StaffVehicleListPage from '../pages/staff/StaffVehicleListPage.jsx';
 import RoleBasedRoute from './RoleBasedRoute.jsx';
 import { staffBuildingWorkspaceRoutes } from './buildingWorkspaceRoutes.jsx';
 
+/** Cây đường dẫn dành cho STAFF, gồm dashboard, công việc và không gian làm việc theo tòa nhà. */
 export const staffRoutes = (
   <Route element={<RoleBasedRoute allowedRoles={['STAFF']} />}>
     <Route path="/staff" element={<StaffLayout />}>

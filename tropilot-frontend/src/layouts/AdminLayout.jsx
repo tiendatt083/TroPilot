@@ -30,6 +30,7 @@ const ADMIN_NAV_ITEMS = [
   { to: '/admin/settings', labelKey: 'settings.title', icon: 'settings' }
 ];
 
+/** Khung giao diện chung của khu vực quản trị: sidebar, tiêu đề và nơi hiển thị trang con. */
 export default function AdminLayout() {
   const { t } = useTranslation();
   const [profileDialogOpen, setProfileDialogOpen] = useState(false);

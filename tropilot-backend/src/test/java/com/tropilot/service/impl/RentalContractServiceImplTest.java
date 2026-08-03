@@ -29,6 +29,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+/** Kiểm tra màn quản lý chỉ trả về hợp đồng thuê còn hiệu lực và đúng phạm vi tòa nhà. */
 class RentalContractServiceImplTest {
 
     @Mock

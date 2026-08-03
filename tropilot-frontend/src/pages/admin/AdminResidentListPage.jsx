@@ -77,6 +77,7 @@ function buildExportFileName() {
   return `tropilot-residents-${day}-${month}-${year}.xlsx`;
 }
 
+/** Trang danh sách cư dân để quản trị viên tìm kiếm và xem thông tin. */
 export default function AdminResidentListPage() {
   const { t } = useTranslation();
   const [residents, setResidents] = useState([]);

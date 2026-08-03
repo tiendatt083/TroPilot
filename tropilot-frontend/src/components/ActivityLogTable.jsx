@@ -162,6 +162,7 @@ const DESCRIPTION_PATTERNS = [
   }
 ];
 
+/** Hiển thị ngày giờ nhật ký hoặc nhãn thay thế khi bản ghi chưa có thời điểm. */
 export function formatDateTime(value, t) {
   if (!value) {
     return t('activityLogs.notAvailable');
@@ -170,6 +171,7 @@ export function formatDateTime(value, t) {
   return formatDisplayDateTime(value, t('activityLogs.notAvailable'));
 }
 
+/** Tạo nhãn dễ đọc từ mã thao tác khi chưa có bản dịch riêng. */
 function formatFallbackAction(action) {
   return String(action)
     .trim()
@@ -180,11 +182,13 @@ function formatFallbackAction(action) {
     .join(' ');
 }
 
+/** Chuẩn hóa mã thao tác để tra cứu đúng khóa dịch. */
 function normalizeActionKey(action) {
   const trimmedAction = String(action).trim();
   return ACTION_ALIASES[trimmedAction] || trimmedAction.toUpperCase().replace(/\s+/g, '_');
 }
 
+/** Đổi trạng thái hoạt động thành nhãn đa ngôn ngữ. */
 function formatActivityStatus(status, t) {
   const statusKey = String(status || '').trim().toUpperCase();
   return t(`activityLogs.statusInText.${statusKey}`, {
@@ -192,6 +196,7 @@ function formatActivityStatus(status, t) {
   });
 }
 
+/** Lấy nội dung thao tác đã dịch cho bản ghi nhật ký. */
 export function formatAction(action, t) {
   if (!action) {
     return t('activityLogs.notAvailable');
@@ -202,10 +207,12 @@ export function formatAction(action, t) {
   return t(actionKey, { defaultValue: formatFallbackAction(normalizedAction) });
 }
 
+/** Hiển thị vai trò người thực hiện ở dạng dễ đọc. */
 function formatRole(role, t) {
   return t(ROLE_LABEL_KEYS[role] || 'activityLogs.notAvailable');
 }
 
+/** Dịch hoặc giữ nguyên mô tả chi tiết của một hoạt động. */
 export function formatDescription(description, t) {
   if (!description) {
     return t('activityLogs.notAvailable');
@@ -221,6 +228,7 @@ export function formatDescription(description, t) {
   return translateInterfaceText(description);
 }
 
+/** Bảng nhật ký hoạt động; có thể ẩn cột người dùng khi chỉ xem lịch sử của một cá nhân. */
 export default function ActivityLogTable({ logs, showUser = true }) {
   const { i18n, t } = useTranslation();
   const isEnglish = i18n.resolvedLanguage?.startsWith('en') || i18n.language?.startsWith('en');

@@ -19,6 +19,7 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
+/** Kiểm tra client Gemini tạo prompt đúng và chuyển sang model dự phòng khi model chính không khả dụng. */
 class GeminiChatClientTest {
 
     @Test

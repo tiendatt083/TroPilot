@@ -60,6 +60,7 @@ function ContractInfoItem({ icon, label, value }) {
   );
 }
 
+/** Trang quản lý hợp đồng thuê thuộc một tòa nhà. */
 export default function AdminBuildingContractPage() {
   const { t } = useTranslation();
   const { building } = useOutletContext();

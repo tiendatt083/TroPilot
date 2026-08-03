@@ -1,5 +1,6 @@
 import i18n from '../i18n.js';
 
+/** Bảng đối chiếu các câu giao diện cũ để chúng vẫn đổi được Việt/Anh khi chưa đưa vào tệp i18n. */
 export const EN_TO_VI_TRANSLATIONS = {
   'Activity logs': 'Nhật ký hoạt động',
   'Active': 'Hoạt động',
@@ -900,16 +901,19 @@ export const EN_TO_VI_TRANSLATIONS = {
   'Current assigned room, building, and contract summary.': 'Tóm tắt phòng được phân, tòa nhà và hợp đồng hiện tại.'
 };
 
+/** Bảng dịch ngược được tạo từ bảng Anh - Việt, phục vụ khi người dùng chuyển sang tiếng Anh. */
 export const VI_TO_EN_TRANSLATIONS = Object.fromEntries(
   Object.entries(EN_TO_VI_TRANSLATIONS)
     .filter(([english]) => english !== 'Property Administrator')
     .map(([english, vietnamese]) => [vietnamese, english])
 );
 
+/** Kiểm tra ngôn ngữ hiện tại để chọn chiều dịch phù hợp. */
 function currentLanguageIsEnglish() {
   return (i18n.resolvedLanguage || i18n.language || '').startsWith('en');
 }
 
+/** Dịch các câu có dữ liệu động như mã hóa đơn, vì chúng không thể tra trực tiếp trong bảng cố định. */
 function translateParameterizedText(value) {
   if (currentLanguageIsEnglish()) {
     return value;
@@ -932,6 +936,7 @@ function translateParameterizedText(value) {
   return value;
 }
 
+/** Dịch một chuỗi giao diện sang ngôn ngữ hiện tại, ưu tiên bản dịch chính xác rồi đến câu có tham số. */
 export function translateInterfaceText(value) {
   if (typeof value !== 'string' || value.trim() === '') {
     return value;
@@ -945,6 +950,7 @@ export function translateInterfaceText(value) {
   return exactTranslation || translateParameterizedText(trimmed);
 }
 
+/** Tạo option có nhãn được dịch muộn, nhờ đó nhãn tự cập nhật khi người dùng đổi ngôn ngữ. */
 export function localizedOption(value, label) {
   return {
     value,

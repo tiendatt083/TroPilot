@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 
+/** Hộp thoại xác nhận dùng trước những thao tác quan trọng như xóa hoặc hủy. */
 export default function ConfirmDialog({
   open,
   title,

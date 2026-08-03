@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import LineIcon from './LineIcon.jsx';
 
+/** Màu tiêu chuẩn dùng chung cho các biểu đồ dashboard. */
 export const CHART_COLORS = {
   paid: '#18b894',
   unpaid: '#ef4444',
@@ -11,15 +12,18 @@ export const CHART_COLORS = {
   cyan: '#06b6d4'
 };
 
+/** Chuyển dữ liệu biểu đồ thành số an toàn, tránh NaN làm hỏng cách vẽ. */
 function toNumber(value) {
   const numberValue = Number(value ?? 0);
   return Number.isFinite(numberValue) ? numberValue : 0;
 }
 
+/** Lấy mã màu thực tế từ tên màu chuẩn hoặc dùng trực tiếp mã màu đã truyền vào. */
 function getColor(color) {
   return CHART_COLORS[color] || color || CHART_COLORS.info;
 }
 
+/** Tính tỷ lệ phần trăm của một giá trị trong tổng. */
 function getPercent(value, total) {
   const totalValue = toNumber(total);
 
@@ -30,6 +34,7 @@ function getPercent(value, total) {
   return Math.round((toNumber(value) / totalValue) * 100);
 }
 
+/** Định dạng giá trị hiển thị ở biểu đồ tròn, có thể dùng hàm định dạng riêng của trang. */
 function formatDonutValue(value, locale, valueFormatter) {
   if (valueFormatter) {
     return valueFormatter(value);
@@ -38,6 +43,7 @@ function formatDonutValue(value, locale, valueFormatter) {
   return toNumber(value).toLocaleString(locale, { maximumFractionDigits: 2 });
 }
 
+/** Khung chứa thống nhất cho một biểu đồ và phần tiêu đề/hành động của nó. */
 export function ChartPanel({ action, children, className = '', eyebrow, icon, title }) {
   return (
     <section className={`ops-panel shared-chart-panel ${className}`.trim()}>
@@ -60,6 +66,7 @@ export function ChartPanel({ action, children, className = '', eyebrow, icon, ti
   );
 }
 
+/** Hiển thị chú giải màu cho các nhóm dữ liệu biểu đồ. */
 export function ChartLegend({ items }) {
   return (
     <div className="shared-chart-legend">
@@ -73,6 +80,7 @@ export function ChartLegend({ items }) {
   );
 }
 
+/** Vẽ biểu đồ cột nhóm để so sánh nhiều chỉ số trên từng hàng dữ liệu. */
 export function GroupedBarChart({
   emptyText,
   rows,
@@ -126,6 +134,7 @@ export function GroupedBarChart({
   );
 }
 
+/** Vẽ biểu đồ thanh ngang, phù hợp để so sánh thứ hạng hoặc khối lượng giữa các mục. */
 export function HorizontalBarChart({ emptyText, labelKey = 'label', rows, valueFormatter = (value) => value, valueKey = 'value' }) {
   const maxValue = Math.max(...rows.map((row) => toNumber(row[valueKey])), 1);
 
@@ -158,6 +167,7 @@ export function HorizontalBarChart({ emptyText, labelKey = 'label', rows, valueF
   );
 }
 
+/** Vẽ biểu đồ tròn bằng SVG, kèm chú giải và tooltip cho từng phần dữ liệu. */
 export function DonutChart({ center, items, locale = 'vi-VN', tooltipFormatter = null, valueFormatter = null }) {
   const total = items.reduce((sum, item) => sum + toNumber(item.value), 0);
   const getTooltipText = (item) => {

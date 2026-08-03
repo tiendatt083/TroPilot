@@ -49,6 +49,7 @@ function requestMatchesSearch(request, searchValue) {
   return searchableValues.some((value) => normalizeSearchText(value).includes(searchValue));
 }
 
+/** Trang theo dõi và phân công các yêu cầu bảo trì của một tòa nhà. */
 export default function AdminBuildingMaintenancePage() {
   const { t } = useTranslation();
   const { building } = useOutletContext();

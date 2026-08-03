@@ -5,6 +5,7 @@ import * as maintenanceApi from '../../api/maintenanceApi.js';
 import MaintenanceRequestTable from '../../components/MaintenanceRequestTable.jsx';
 import ManagementPageHero from '../../components/common/ManagementPageHero.jsx';
 
+/** Trang tạo và theo dõi các yêu cầu bảo trì do cư dân gửi. */
 export default function ResidentMaintenanceListPage() {
   const { t } = useTranslation();
   const location = useLocation();

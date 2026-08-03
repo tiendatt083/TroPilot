@@ -25,10 +25,12 @@ const INVOICE_STATUS_FILTERS = [
   'REJECTED'
 ];
 
+/** Chuẩn hóa chuỗi để so sánh và tìm kiếm hóa đơn. */
 function normalize(value) {
   return String(value || '').trim().toLowerCase();
 }
 
+/** Tạo hạn thanh toán mặc định dựa trên ngày lập hóa đơn. */
 function getDefaultDueDate(invoiceDateValue) {
   if (!invoiceDateValue) {
     return '';
@@ -40,10 +42,12 @@ function getDefaultDueDate(invoiceDateValue) {
   return formatDateInputValue(dueDate);
 }
 
+/** Chỉ cho phép xóa hóa đơn khi trạng thái của nó còn phù hợp. */
 function canDeleteInvoice(invoice) {
   return ['UNPAID', 'PENDING_CONFIRMATION', 'OVERDUE', 'REJECTED'].includes(invoice?.status);
 }
 
+/** Kiểm tra hóa đơn có khớp từ khóa theo mã, phòng, trạng thái hoặc thông tin liên quan. */
 function invoiceMatchesSearch(invoice, searchValue, t) {
   if (!searchValue) {
     return true;
@@ -66,16 +70,19 @@ function invoiceMatchesSearch(invoice, searchValue, t) {
   ].some((value) => normalize(value).includes(searchValue));
 }
 
+/** Lấy thời điểm đại diện của hóa đơn để sắp xếp mới nhất trước. */
 function getInvoiceTime(invoice) {
   const dateValue = invoice.createdAt || invoice.invoiceDate || invoice.dueDate || invoice.month;
   const time = Date.parse(dateValue);
   return Number.isFinite(time) ? time : 0;
 }
 
+/** Kiểm tra hóa đơn có thuộc tháng đang được lọc hay không. */
 function invoiceBelongsToMonth(invoice, month) {
   return invoice.month === month || String(invoice.invoiceDate || '').startsWith(month);
 }
 
+/** Tạo tên tệp Excel hóa đơn kèm mã tòa nhà và ngày xuất. */
 function buildExportFileName(building) {
   const now = new Date();
   const day = String(now.getDate()).padStart(2, '0');
@@ -90,6 +97,7 @@ function buildExportFileName(building) {
   return `tropilot-${buildingCode || 'building'}-invoices-${day}-${month}-${year}.xlsx`;
 }
 
+/** Ưu tiên thông báo lỗi từ API, nếu không có thì dùng bản dịch dự phòng của giao diện. */
 function getInvoiceErrorMessage(apiError, t, fallbackKey) {
   const message = apiError.response?.data?.message || '';
   const normalized = normalize(message);
@@ -113,6 +121,7 @@ function getInvoiceErrorMessage(apiError, t, fallbackKey) {
   return message || t(fallbackKey);
 }
 
+/** Tạo dữ liệu ban đầu cho form lập hóa đơn. */
 function createInitialForm() {
   const invoiceDate = formatDateInputValue();
 
@@ -125,11 +134,13 @@ function createInitialForm() {
   };
 }
 
+/** Chuẩn hóa khoản thu thêm về số không âm trước khi xem trước hóa đơn. */
 function normalizeAdditionalCharge(value) {
   const numberValue = Number(value || 0);
   return Number.isFinite(numberValue) && numberValue > 0 ? numberValue : 0;
 }
 
+/** Cộng khoản thu thêm vào dữ liệu xem trước mà không thay đổi dữ liệu gốc từ API. */
 function applyAdditionalChargeToPreview(preview, additionalChargeAmount, additionalChargeNote = '') {
   const amount = normalizeAdditionalCharge(additionalChargeAmount);
 
@@ -160,6 +171,7 @@ function applyAdditionalChargeToPreview(preview, additionalChargeAmount, additio
   };
 }
 
+/** Tạo khóa nhận diện cho lần xem trước hóa đơn của một phòng. */
 function buildSinglePreviewKey(form) {
   return [
     form.roomId || '',
@@ -170,6 +182,7 @@ function buildSinglePreviewKey(form) {
   ].join('|');
 }
 
+/** Khung hiển thị xem trước chi tiết của một hóa đơn trước khi phát hành. */
 function PreviewPanel({ preview }) {
   const { t } = useTranslation();
 
@@ -263,6 +276,7 @@ function PreviewPanel({ preview }) {
   );
 }
 
+/** Khung tổng hợp kết quả xem trước khi tạo nhiều hóa đơn cùng lúc. */
 function BulkPreviewPanel({ preview }) {
   const { t } = useTranslation();
   const eligibleInvoices = preview?.eligibleInvoices || [];
@@ -369,6 +383,7 @@ function BulkPreviewPanel({ preview }) {
   );
 }
 
+/** Không gian lập và quản lý hóa đơn của tòa nhà: lọc, xem trước, phát hành, xuất và xóa. */
 export default function BuildingInvoiceWorkspace() {
   const { t } = useTranslation();
   const { building } = useOutletContext();
@@ -995,6 +1010,7 @@ export default function BuildingInvoiceWorkspace() {
   );
 }
 
+/** Biểu tượng thêm khoản thu hoặc tạo hóa đơn. */
 function PlusIcon() {
   return (
     <svg aria-hidden="true" viewBox="0 0 24 24">
@@ -1004,6 +1020,7 @@ function PlusIcon() {
   );
 }
 
+/** Biểu tượng xuất danh sách hóa đơn ra tệp. */
 function DownloadIcon() {
   return (
     <svg aria-hidden="true" viewBox="0 0 24 24">
@@ -1014,6 +1031,7 @@ function DownloadIcon() {
   );
 }
 
+/** Biểu tượng mở rộng phần nội dung. */
 function ArrowDownIcon() {
   return (
     <svg aria-hidden="true" viewBox="0 0 24 24">
@@ -1023,6 +1041,7 @@ function ArrowDownIcon() {
   );
 }
 
+/** Biểu tượng thu gọn phần nội dung. */
 function ArrowUpIcon() {
   return (
     <svg aria-hidden="true" viewBox="0 0 24 24">
@@ -1032,6 +1051,7 @@ function ArrowUpIcon() {
   );
 }
 
+/** Biểu tượng xem chi tiết hóa đơn. */
 function EyeIcon() {
   return (
     <svg aria-hidden="true" viewBox="0 0 24 24">
@@ -1041,6 +1061,7 @@ function EyeIcon() {
   );
 }
 
+/** Biểu tượng xóa hóa đơn. */
 function TrashIcon() {
   return (
     <svg aria-hidden="true" viewBox="0 0 24 24">

@@ -17,6 +17,7 @@ import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/** Kiểm tra mapper hóa đơn trả đúng ngày lập và tháng chỉ số điện nước đã dùng. */
 class InvoiceMapperTest {
 
     private final InvoiceMapper mapper = new InvoiceMapper(new SepayPaymentMapper());

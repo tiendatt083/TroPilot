@@ -1,3 +1,4 @@
+// Cấu trúc các nhóm tab trong không gian làm việc của một tòa nhà, dùng chung cho admin và staff.
 const BUILDING_WORKSPACE_GROUPS = [
   {
     id: 'overview',
@@ -45,8 +46,10 @@ const BUILDING_WORKSPACE_GROUPS = [
   }
 ];
 
+// Admin được thấy toàn bộ nhóm chức năng của tòa nhà.
 export const ADMIN_BUILDING_TABS = BUILDING_WORKSPACE_GROUPS;
 
+// Staff chỉ nhận các tab phục vụ vận hành; danh sách này được lọc từ cấu trúc chung để tránh khai báo lặp.
 export const STAFF_BUILDING_TABS = [
   ...filterBuildingWorkspaceGroups([
     '',
@@ -60,6 +63,7 @@ export const STAFF_BUILDING_TABS = [
   ])
 ];
 
+/** Giữ lại các nhóm/tab có đường dẫn nằm trong quyền được phép của role. */
 function filterBuildingWorkspaceGroups(allowedPaths) {
   const allowed = new Set(allowedPaths);
 

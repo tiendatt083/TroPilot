@@ -2,6 +2,7 @@ import { NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import LineIcon from './common/LineIcon.jsx';
 
+/** Một liên kết điều hướng trong sidebar, tự làm nổi bật khi đúng trang hiện tại. */
 export default function SidebarNavLink({ item }) {
   const { t } = useTranslation();
 

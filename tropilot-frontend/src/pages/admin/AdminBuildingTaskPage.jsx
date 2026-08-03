@@ -43,6 +43,7 @@ function taskMatchesSearch(task, searchValue) {
   return searchableValues.some((value) => normalizeSearchText(value).includes(searchValue));
 }
 
+/** Trang tạo, phân công và theo dõi công việc vận hành của một tòa nhà. */
 export default function AdminBuildingTaskPage() {
   const { t } = useTranslation();
   const { building } = useOutletContext();

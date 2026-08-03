@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { EN_TO_VI_TRANSLATIONS, VI_TO_EN_TRANSLATIONS } from '../utils/interfaceTranslations.js';
 
+// Các thuộc tính HTML có nội dung hiển thị cần được dịch cùng với text node.
 const TRANSLATABLE_ATTRIBUTES = ['placeholder', 'aria-label', 'title'];
 const IGNORED_TAGS = new Set(['SCRIPT', 'STYLE', 'TEXTAREA']);
 const FIXED_DISPLAY_VALUES = {
@@ -11,6 +12,7 @@ const FIXED_DISPLAY_VALUES = {
   'quản trị viên bất đọng sản': 'Admin'
 };
 
+/** Chọn từ điển dịch theo ngôn ngữ đích hiện tại. */
 function getDictionary(language) {
   return language?.startsWith('en') ? VI_TO_EN_TRANSLATIONS : EN_TO_VI_TRANSLATIONS;
 }
@@ -65,6 +67,10 @@ function getEnglishRoleCode(roleName) {
   return roleMap[roleName.trim().toLowerCase()] || roleName;
 }
 
+/**
+ * Dịch các câu được tạo động từ dữ liệu (tên phòng, người dùng, số lượng...),
+ * là những câu không thể đặt sẵn nguyên văn trong file locale JSON.
+ */
 function translateDynamicValue(trimmedValue, isEnglish) {
   if (isEnglish) {
     const deleteBuildingMatch = trimmedValue.match(/^Xóa tòa nhà (.+)\?$/i);
@@ -232,6 +238,7 @@ function translateDynamicValue(trimmedValue, isEnglish) {
   return null;
 }
 
+/** Dịch một chuỗi bằng từ điển cố định trước, sau đó thử các mẫu câu động; giữ nguyên khoảng trắng ban đầu. */
 function translateValue(value, translationContext) {
   if (!value || !value.trim()) {
     return value;
@@ -274,6 +281,7 @@ function translateElementAttributes(element, translationContext) {
   });
 }
 
+/** Duyệt cây DOM, dịch text và thuộc tính hiển thị nhưng bỏ qua script/style/textarea. */
 function translateNode(node, translationContext) {
   if (node.nodeType === Node.TEXT_NODE) {
     translateTextNode(node, translationContext);
@@ -295,6 +303,9 @@ function translateNode(node, translationContext) {
   });
 }
 
+/**
+ * Theo dõi thay đổi DOM bằng MutationObserver để nội dung mới render cũng được dịch theo ngôn ngữ đã chọn.
+ */
 export function useInterfaceTranslation() {
   const { i18n } = useTranslation();
 

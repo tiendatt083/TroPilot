@@ -9,6 +9,7 @@ const emptyForm = {
   moveInDate: ''
 };
 
+/** Form tạo hoặc cập nhật thông tin thành viên đang ở trong phòng. */
 export default function MemberForm({ className = '', initialValues, loading, submitLabel, onSubmit, onCancel }) {
   const { t } = useTranslation();
   const [form, setForm] = useState(emptyForm);

@@ -16,10 +16,12 @@ const emptyFilters = {
   status: ''
 };
 
+/** Chuyển trạng thái phòng thành class CSS để hiển thị màu nhãn tương ứng. */
 function statusClass(status) {
   return `status-pill room-status-${status.toLowerCase()}`;
 }
 
+/** Không gian quản lý phòng của một tòa nhà: hiển thị, tìm kiếm và điều hướng tới chi tiết phòng. */
 export default function BuildingRoomsWorkspace({
   getRooms,
   roomBasePath,

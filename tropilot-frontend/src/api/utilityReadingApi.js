@@ -1,5 +1,6 @@
 import apiClient from './axiosClient.js';
 
+/** Chuyển dữ liệu chỉ số và ảnh đồng hồ thành FormData để gửi được tệp lên backend. */
 function toFormData(payload) {
   const formData = new FormData();
 
@@ -12,12 +13,14 @@ function toFormData(payload) {
   return formData;
 }
 
+// Cấu hình request chứa ảnh điện/nước.
 const multipartConfig = {
   headers: {
     'Content-Type': 'multipart/form-data'
   }
 };
 
+/** Chuẩn hóa filter tòa nhà và tháng cho danh sách/tổng quan chỉ số điện nước. */
 function filterConfig(filters = {}) {
   const params = {};
 
@@ -32,6 +35,10 @@ function filterConfig(filters = {}) {
   return Object.keys(params).length > 0 ? { params } : {};
 }
 
+/**
+ * API chỉ số điện nước: staff nhập/lấy số giả lập/xem tổng quan, admin xem/chỉnh sửa,
+ * cư dân chỉ xem chỉ số của phòng hiện tại.
+ */
 export async function createUtilityReading(payload) {
   const response = await apiClient.post(
     '/api/staff/utility-readings',

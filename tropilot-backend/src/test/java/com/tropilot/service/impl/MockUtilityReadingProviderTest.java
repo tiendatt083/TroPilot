@@ -20,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+/** Kiểm tra nguồn giả lập chỉ số điện nước tạo dữ liệu hợp lệ theo kỳ trước và điều kiện phòng. */
 class MockUtilityReadingProviderTest {
 
     private static final Long ROOM_ID = 12L;

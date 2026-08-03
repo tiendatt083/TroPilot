@@ -29,6 +29,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+/** Kiểm tra quy tắc tạo/cập nhật phí, sinh mã phí và không cho trùng phí điện nước đang hoạt động. */
 class ServiceFeeServiceImplTest {
 
     @Mock

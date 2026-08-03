@@ -1,5 +1,6 @@
 import apiClient from './axiosClient.js';
 
+/** Chuẩn hóa filter tòa nhà khi admin/staff xem danh sách xe. */
 function filterConfig(filters = {}) {
   const params = {};
 
@@ -10,6 +11,7 @@ function filterConfig(filters = {}) {
   return Object.keys(params).length ? { params } : {};
 }
 
+/** API phương tiện: cư dân đăng ký/hủy yêu cầu, admin duyệt/từ chối/xóa, staff chỉ xem. */
 export async function requestResidentVehicle(payload) {
   const response = await apiClient.post('/api/resident/vehicles/request', payload);
   return response.data;

@@ -1,5 +1,6 @@
 import apiClient from './axiosClient.js';
 
+/** Chuẩn hóa filter tòa nhà cho danh sách thành viên do admin duyệt/quản lý. */
 function filterConfig(filters = {}) {
   const params = {};
 
@@ -10,6 +11,7 @@ function filterConfig(filters = {}) {
   return Object.keys(params).length ? { params } : {};
 }
 
+/** API thành viên phòng: cư dân đăng ký/chỉnh sửa, admin duyệt, từ chối và xem theo phòng/tòa nhà. */
 export async function createResidentMember(payload) {
   const response = await apiClient.post('/api/resident/members', payload);
   return response.data;

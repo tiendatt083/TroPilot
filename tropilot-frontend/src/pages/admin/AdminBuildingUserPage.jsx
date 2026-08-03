@@ -130,6 +130,7 @@ function buildExportFileName(building) {
   return `tropilot-${buildingCode || 'building'}-users-${day}-${month}-${year}.xlsx`;
 }
 
+/** Trang quản lý cư dân và thành viên phòng thuộc tòa nhà đang chọn. */
 export default function AdminBuildingUserPage() {
   const { t } = useTranslation();
   const { building } = useOutletContext();

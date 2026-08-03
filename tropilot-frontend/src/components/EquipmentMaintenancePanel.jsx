@@ -10,6 +10,7 @@ const EMPTY_REQUEST = {
   image: null
 };
 
+/** Khung hiển thị và cập nhật lịch sử bảo trì của một thiết bị. */
 export default function EquipmentMaintenancePanel({
   equipment,
   history,

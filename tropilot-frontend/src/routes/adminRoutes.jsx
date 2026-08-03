@@ -16,6 +16,7 @@ import Settings from '../pages/Settings.jsx';
 import RoleBasedRoute from './RoleBasedRoute.jsx';
 import { adminBuildingWorkspaceRoutes } from './buildingWorkspaceRoutes.jsx';
 
+/** Cây đường dẫn chỉ dành cho ADMIN, gồm dashboard, tài khoản và không gian làm việc theo tòa nhà. */
 export const adminRoutes = (
   <Route element={<RoleBasedRoute allowedRoles={['ADMIN']} />}>
     <Route path="/admin" element={<AdminLayout />}>

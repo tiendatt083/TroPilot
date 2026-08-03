@@ -20,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+/** Kiểm tra truy vấn phân phòng ACTIVE và lỗi khi chủ hộ không còn phòng hợp lệ. */
 class ResidentRoomAccessServiceImplTest {
 
     @Mock

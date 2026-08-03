@@ -5,6 +5,7 @@ import * as serviceFeeApi from '../../api/serviceFeeApi.js';
 import ServiceFeeTable from '../../components/ServiceFeeTable.jsx';
 import { isServiceFeeActive } from '../../utils/serviceFeeOptions.js';
 
+/** Trang nhân viên xem các phí dịch vụ áp dụng cho tòa nhà. */
 export default function StaffBuildingServiceFeePage() {
   const { t } = useTranslation();
   const { building } = useOutletContext();

@@ -36,6 +36,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+/** Kiểm tra luồng gửi mã, xác thực mã và đặt lại mật khẩu của AuthService. */
 class AuthServiceImplTest {
 
     @Mock

@@ -4,10 +4,12 @@ import { useTranslation } from 'react-i18next';
 import LineIcon from './common/LineIcon.jsx';
 import SidebarNavLink from './SidebarNavLink.jsx';
 
+/** Kiểm tra đường dẫn hiện tại có thuộc một mục điều hướng hay không để đánh dấu mục đang mở. */
 function matchesPath(pathname, targetPath) {
   return pathname === targetPath || pathname.startsWith(`${targetPath}/`);
 }
 
+/** Nhóm liên kết điều hướng có thể mở/thu gọn trong sidebar. */
 export default function SidebarNavGroup({ icon, labelKey, items }) {
   const { t } = useTranslation();
   const { pathname } = useLocation();

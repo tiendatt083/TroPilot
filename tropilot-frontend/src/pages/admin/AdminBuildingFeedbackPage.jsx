@@ -41,6 +41,7 @@ function toDeadlinePayload(dateValue) {
   return `${dateValue}T23:59:00`;
 }
 
+/** Trang quản trị xử lý phản hồi và khiếu nại phát sinh trong một tòa nhà. */
 export default function AdminBuildingFeedbackPage() {
   const { t } = useTranslation();
   const { building } = useOutletContext();

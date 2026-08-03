@@ -41,6 +41,7 @@ function RoomDetailInfoItem({ icon, label, children }) {
   );
 }
 
+/** Trang chi tiết một phòng để nhân viên xem cư dân, hợp đồng và vận hành liên quan. */
 export default function StaffRoomDetailPage() {
   const { t } = useTranslation();
   const { roomId } = useRoomRouteContext('staff');

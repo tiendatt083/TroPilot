@@ -1,3 +1,4 @@
+/** Danh sách checkbox dùng chung cho phép chọn nhiều mục trong một biểu mẫu. */
 export default function CheckboxList({
   ariaLabel,
   items,

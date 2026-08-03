@@ -1,7 +1,9 @@
 import LineIcon from './LineIcon.jsx';
 
+/** Số gợi ý mặc định; các props gợi ý được giữ để tương thích với nơi gọi cũ. */
 const DEFAULT_SUGGESTION_LIMIT = 8;
 
+/** Thanh tìm kiếm/lọc dùng chung; hỗ trợ form tự viết hoặc các điều khiển lọc tức thời. */
 export default function FilterBar({
   children,
   className = '',

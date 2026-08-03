@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 const ALLOWED_ROLES = new Set(['STAFF', 'RESIDENT_HEAD']);
 
+/** Tạo dữ liệu khởi đầu cho form theo vai trò tài khoản được chọn. */
 function createInitialForm(role) {
   return {
     fullName: '',
@@ -12,6 +13,7 @@ function createInitialForm(role) {
   };
 }
 
+/** Form tạo tài khoản mới, đồng thời thu thập thông tin gán phòng khi vai trò cần thiết. */
 export default function AdminUserCreateForm({
   formIdPrefix = 'adminUserCreate',
   initialRole = 'STAFF',

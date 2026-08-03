@@ -4,6 +4,7 @@ import { openFileUrl, resolveFileUrl } from '../utils/fileUrl.js';
 import { formatDateTime, formatEnumLabel } from '../utils/i18nFormat.js';
 import { formatRoomLabel } from '../utils/roomDisplay.js';
 
+/** Tạo nhãn phòng cho yêu cầu bảo trì, có thông báo thay thế khi chưa gán phòng. */
 function roomText(request, t) {
   if (!request.roomId) {
     return t('equipment.scopes.BUILDING');
@@ -12,6 +13,7 @@ function roomText(request, t) {
   return request.roomCode || formatRoomLabel(request).split(' - ')[0];
 }
 
+/** Bảng danh sách yêu cầu bảo trì; hỗ trợ chọn một yêu cầu để xem chi tiết bên cạnh. */
 export default function MaintenanceRequestTable({ requests, renderActions, onSelect, selectedId }) {
   const { t } = useTranslation();
   const hasActions = Boolean(renderActions);

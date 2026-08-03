@@ -10,6 +10,7 @@ import UtilityReadingTable from '../UtilityReadingTable.jsx';
 import { formatDisplayMonth, formatMonthInputValue } from '../../utils/dateFormat.js';
 import { formatRoomCode } from '../../utils/roomDisplay.js';
 
+/** Không gian chỉ số điện nước theo tòa nhà: chọn phòng, tải dữ liệu và hiển thị lịch sử ghi số. */
 export default function BuildingUtilityReadingWorkspace({
   getOverview,
   getReadings,
@@ -187,6 +188,7 @@ export default function BuildingUtilityReadingWorkspace({
   );
 }
 
+/** Chuyển một bản ghi chỉ số thành lựa chọn phòng dùng cho bộ lọc. */
 function toRoomOption(reading) {
   return {
     id: reading.roomId,
