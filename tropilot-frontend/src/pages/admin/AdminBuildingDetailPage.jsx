@@ -547,7 +547,7 @@ export default function AdminBuildingDetailPage() {
         {
           group: t('dashboard.ops.summaryGroups.rentals'),
           primary: t('dashboard.ops.counts.contracts', { count: formatNumber(operations.contracts.length, locale) }),
-          secondary: t('dashboard.ops.counts.occupants', { count: formatNumber(totalOccupants, locale) }),
+          secondary: t('dashboard.ops.counts.occupants', { count: formatNumber(occupants, locale) }),
           followUp: t('dashboard.ops.counts.pending', { count: formatNumber(pending, locale) })
         },
         {
