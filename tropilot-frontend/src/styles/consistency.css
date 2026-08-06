@@ -2144,8 +2144,17 @@ html[data-theme="dark"] .resident-profile-page .profile-role-pill {
   display: inline-flex;
   justify-self: end;
   align-items: center;
+  height: 30px;
   gap: 0.22rem;
   margin-left: 0;
+}
+
+.utility-reading-dialog .meter-mock-control :is(em, .utility-reading-fetch-button) {
+  box-sizing: border-box;
+  height: 30px;
+  min-height: 30px;
+  align-self: center;
+  margin: 0;
 }
 
 .utility-reading-dialog .meter-mock-control em {

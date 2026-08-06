@@ -3279,9 +3279,21 @@ html[data-theme='dark'] .task-quick-secondary-button {
 }
 
 .maintenance-table .evidence-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem 0.45rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.4rem;
+}
+
+.maintenance-table .evidence-links a {
+  display: inline-flex;
+  width: 88px;
+  max-width: 100%;
+  min-height: 32px;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem 0.5rem;
+  font-weight: var(--font-weight-regular);
+  text-transform: none;
 }
 
 .maintenance-table .maintenance-col-status .status-pill {
@@ -6477,6 +6489,13 @@ html[data-theme='dark'] .cashflow-room-table .table-subtext {
   min-width: 148px;
   justify-self: start;
   margin-top: var(--space-2);
+}
+
+/* Keep the contract submit action aligned with its full-width upload area. */
+.contract-detail-dialog .contract-upload-form > .contract-upload-submit {
+  width: 100%;
+  min-width: 0;
+  justify-self: stretch;
 }
 
 .building-form .building-form-submit {

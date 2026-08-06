@@ -272,7 +272,6 @@ export default function StaffBuildingOverviewPage() {
     const activeVehicles = countByStatus(summary.vehicles, ['ACTIVE']);
     const occupiedRooms = countByStatus(summary.rooms, ['OCCUPIED', 'RENTED']);
     const emptyRooms = countByStatus(summary.rooms, ['EMPTY', 'AVAILABLE', 'VACANT']);
-    const maintenanceRooms = countByStatus(summary.rooms, ['MAINTENANCE']);
     const openMaintenance = countByStatus(summary.maintenanceRequests, ['PENDING', 'ASSIGNED', 'IN_PROGRESS']);
     const completedMaintenance = countByStatus(summary.maintenanceRequests, ['COMPLETED']);
     const openTasks = countByStatus(summary.tasks, ['NEW', 'IN_PROGRESS', 'OVERDUE']);
@@ -286,7 +285,6 @@ export default function StaffBuildingOverviewPage() {
       attentionCount,
       completedMaintenance,
       emptyRooms,
-      maintenanceRooms,
       occupiedRooms,
       occupancyPercent,
       openMaintenance,
@@ -319,8 +317,7 @@ export default function StaffBuildingOverviewPage() {
 
   const roomStatusItems = [
     { key: 'occupied', label: copy(language, 'Đang thuê', 'Occupied'), value: dashboardData.occupiedRooms, color: CHART_COLORS.paid },
-    { key: 'empty', label: copy(language, 'Trống', 'Empty'), value: dashboardData.emptyRooms, color: CHART_COLORS.info },
-    { key: 'maintenance', label: copy(language, 'Bảo trì', 'Maintenance'), value: dashboardData.maintenanceRooms, color: CHART_COLORS.warning }
+    { key: 'empty', label: copy(language, 'Trống', 'Empty'), value: dashboardData.emptyRooms, color: CHART_COLORS.info }
   ];
 
   const workDistributionItems = [

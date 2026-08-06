@@ -2366,7 +2366,8 @@ html[data-theme="dark"] .login-page .reset-notice-icon {
   bottom: auto;
   right: 1.25rem;
   left: auto;
-  z-index: 1000;
+  /* Toasts must remain readable above modal backdrops and dialogs. */
+  z-index: 1400;
   width: min(calc(100vw - 2.5rem), 25rem);
   margin: 0 !important;
   box-shadow: 0 0.8rem 2rem rgba(15, 35, 65, 0.18);

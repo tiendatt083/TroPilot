@@ -1191,6 +1191,7 @@
       "counts": {
         "contracts": "{{count}} hợp đồng",
         "residents": "{{count}} người thuê",
+        "occupants": "{{count}} người đang ở",
         "pending": "{{count}} chờ duyệt",
         "invoices": "{{count}} hóa đơn",
         "receipts": "{{count}} biên lai",
@@ -2389,8 +2390,8 @@
     "selectTask": "Chọn một công việc để xem chi tiết.",
     "title": "Tiêu đề",
     "staffEmail": "Email nhân viên",
-    "issueImage": "Ảnh sự cố",
-    "resultImage": "Ảnh kết quả",
+    "issueImage": "ảnh sự cố",
+    "resultImage": "ảnh kết quả",
     "viewImage": "Xem ảnh",
     "noResultNote": "Chưa có ghi chú kết quả."
   },

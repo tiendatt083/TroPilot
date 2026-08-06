@@ -1191,6 +1191,7 @@
       "counts": {
         "contracts": "{{count}} contracts",
         "residents": "{{count}} residents",
+        "occupants": "{{count}} occupants",
         "pending": "{{count}} pending",
         "invoices": "{{count}} invoices",
         "receipts": "{{count}} receipts",

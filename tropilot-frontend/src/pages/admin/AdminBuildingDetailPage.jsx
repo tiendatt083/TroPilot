@@ -385,7 +385,6 @@ export default function AdminBuildingDetailPage() {
     emptyRooms,
     financeRows,
     kpis,
-    maintenanceRooms,
     monthlyRevenue,
     openMaintenanceRequests,
     openTasks,
@@ -410,7 +409,6 @@ export default function AdminBuildingDetailPage() {
   } = useMemo(() => {
     const occupied = operations.rooms.filter((room) => room.status === 'OCCUPIED').length;
     const empty = operations.rooms.filter((room) => room.status === 'EMPTY').length;
-    const maintenance = operations.rooms.filter((room) => room.status === 'MAINTENANCE').length;
     const vehicles = operations.vehicles.filter((vehicle) => vehicle.status === 'ACTIVE').length;
     const approved = operations.members.filter((member) => member.status === 'APPROVED').length;
     const pending = operations.members.filter((member) => member.status === 'PENDING').length;
@@ -449,7 +447,6 @@ export default function AdminBuildingDetailPage() {
       activeVehicles: vehicles,
       approvedMembers: approved,
       emptyRooms: empty,
-      maintenanceRooms: maintenance,
       monthlyRevenue: buildMonthlyRevenue(operations.invoices),
       openMaintenanceRequests: openMaintenance,
       openTasks: tasksOpen,
@@ -470,8 +467,7 @@ export default function AdminBuildingDetailPage() {
       validReceipts: receipts,
       roomSegments: [
         { label: statusLabel(t, 'room', 'OCCUPIED'), value: occupied, color: CHART_COLORS.paid },
-        { label: statusLabel(t, 'room', 'EMPTY'), value: empty, color: CHART_COLORS.info },
-        { label: statusLabel(t, 'room', 'MAINTENANCE'), value: maintenance, color: CHART_COLORS.warning }
+        { label: statusLabel(t, 'room', 'EMPTY'), value: empty, color: CHART_COLORS.info }
       ],
       attentionSegments: [
         { label: t('navigation.pendingMembers'), value: pending, color: CHART_COLORS.warning },
@@ -551,7 +547,7 @@ export default function AdminBuildingDetailPage() {
         {
           group: t('dashboard.ops.summaryGroups.rentals'),
           primary: t('dashboard.ops.counts.contracts', { count: formatNumber(operations.contracts.length, locale) }),
-          secondary: t('dashboard.ops.counts.residents', { count: formatNumber(approved, locale) }),
+          secondary: t('dashboard.ops.counts.occupants', { count: formatNumber(totalOccupants, locale) }),
           followUp: t('dashboard.ops.counts.pending', { count: formatNumber(pending, locale) })
         },
         {

@@ -475,8 +475,7 @@ export default function AdminDashboardPage() {
   const paymentTotal = paymentPaidValue + paymentUnpaidValue;
   const roomSegments = [
     { label: statusLabel(t, 'room', 'OCCUPIED'), value: dashboard?.occupiedRooms || 0, color: CHART_COLORS.paid },
-    { label: statusLabel(t, 'room', 'EMPTY'), value: dashboard?.emptyRooms || 0, color: CHART_COLORS.info },
-    { label: statusLabel(t, 'room', 'MAINTENANCE'), value: dashboard?.maintenanceRooms || 0, color: CHART_COLORS.warning }
+    { label: statusLabel(t, 'room', 'EMPTY'), value: dashboard?.emptyRooms || 0, color: CHART_COLORS.info }
   ];
   const feedbackSegments = [
     { label: statusLabel(t, 'feedback', 'PENDING'), value: insights.feedbacks.filter((item) => item.status === 'PENDING').length, color: CHART_COLORS.warning },
