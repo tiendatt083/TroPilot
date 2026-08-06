@@ -244,6 +244,12 @@
       "empty": "No staff match the current search.",
       "exportEmpty": "No staff to export."
     },
+    "pagination": {
+      "summary": "Showing {{from}}–{{to}} of {{total}} accounts",
+      "previous": "Previous",
+      "next": "Next",
+      "ariaLabel": "Account list pagination"
+    },
     "export": {
       "sheetName": "Staff"
     },
@@ -285,6 +291,12 @@
       "loadError": "Residents could not be loaded",
       "empty": "No head resident accounts match the current filters.",
       "exportEmpty": "No residents to export."
+    },
+    "pagination": {
+      "summary": "Showing {{from}}–{{to}} of {{total}} users",
+      "previous": "Previous",
+      "next": "Next",
+      "ariaLabel": "User list pagination"
     },
     "export": {
       "sheetName": "Residents"

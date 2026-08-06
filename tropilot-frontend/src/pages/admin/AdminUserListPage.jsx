@@ -5,10 +5,12 @@ import AdminAccountDirectoryTable from '../../components/AdminAccountDirectoryTa
 import AdminUserCreateDialog from '../../components/AdminUserCreateDialog.jsx';
 import FilterBar from '../../components/common/FilterBar.jsx';
 import ManagementPageHero from '../../components/common/ManagementPageHero.jsx';
+import NotificationPaginationControls from '../../components/NotificationPaginationControls.jsx';
 import { exportRowsToExcel } from '../../utils/excelExport.js';
 import { normalizeSearchText } from '../../utils/searchText.js';
 
 const MANAGED_ACCOUNT_ROLES = new Set(['ADMIN', 'STAFF']);
+const ACCOUNT_PAGE_SIZE = 50;
 
 function normalize(value) {
   return normalizeSearchText(value);
@@ -28,6 +30,7 @@ export default function AdminUserListPage() {
   const { t } = useTranslation();
   const [accounts, setAccounts] = useState([]);
   const [search, setSearch] = useState('');
+  const [page, setPage] = useState(0);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
@@ -63,6 +66,21 @@ export default function AdminUserListPage() {
         .some((value) => normalize(value).includes(searchValue))
     ));
   }, [accounts, search]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredAccounts.length / ACCOUNT_PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages - 1);
+  const paginatedAccounts = useMemo(() => {
+    const start = currentPage * ACCOUNT_PAGE_SIZE;
+    return filteredAccounts.slice(start, start + ACCOUNT_PAGE_SIZE);
+  }, [currentPage, filteredAccounts]);
+
+  useEffect(() => {
+    setPage(0);
+  }, [search]);
+
+  useEffect(() => {
+    setPage((current) => Math.min(current, totalPages - 1));
+  }, [totalPages]);
 
   const handleDelete = async (account) => {
     if (!window.confirm(t('accountDirectory.confirmations.delete', { name: account.fullName }))) {
@@ -190,14 +208,25 @@ export default function AdminUserListPage() {
         <div className="empty-state">{t('userManagement.messages.loading')}</div>
       ) : (
         <AdminAccountDirectoryTable
-          accounts={filteredAccounts}
+          accounts={paginatedAccounts}
           deletingId={deletingId}
           emptyMessage={t('userManagement.messages.empty')}
           nameColumnLabel={t('userManagement.columns.name')}
+          rowOffset={currentPage * ACCOUNT_PAGE_SIZE}
           showRole
           showStatus={false}
           useIconActions
           onDelete={handleDelete}
+        />
+      )}
+
+      {!loading && filteredAccounts.length > ACCOUNT_PAGE_SIZE && (
+        <NotificationPaginationControls
+          page={currentPage}
+          pageSize={ACCOUNT_PAGE_SIZE}
+          totalItems={filteredAccounts.length}
+          translationPrefix="userManagement"
+          onPageChange={setPage}
         />
       )}
 

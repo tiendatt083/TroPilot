@@ -6,6 +6,7 @@ import * as adminUserApi from '../../api/adminUserApi.js';
 import AdminAccountDirectoryTable from '../../components/AdminAccountDirectoryTable.jsx';
 import AdminUserCreateDialog from '../../components/AdminUserCreateDialog.jsx';
 import FilterBar from '../../components/common/FilterBar.jsx';
+import NotificationPaginationControls from '../../components/NotificationPaginationControls.jsx';
 import { formatDisplayDate } from '../../utils/dateFormat.js';
 import { exportRowsToExcel } from '../../utils/excelExport.js';
 import { normalizeSearchText } from '../../utils/searchText.js';
@@ -14,6 +15,7 @@ const emptyFilters = {
   search: '',
   buildingId: ''
 };
+const RESIDENT_PAGE_SIZE = 50;
 
 function normalize(value) {
   return normalizeSearchText(value);
@@ -83,6 +85,7 @@ export default function AdminResidentListPage() {
   const [residents, setResidents] = useState([]);
   const [buildings, setBuildings] = useState([]);
   const [filters, setFilters] = useState(emptyFilters);
+  const [page, setPage] = useState(0);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
@@ -127,6 +130,21 @@ export default function AdminResidentListPage() {
     () => filterResidents(residents, filters),
     [residents, filters]
   );
+
+  const totalPages = Math.max(1, Math.ceil(filteredResidents.length / RESIDENT_PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages - 1);
+  const paginatedResidents = useMemo(() => {
+    const start = currentPage * RESIDENT_PAGE_SIZE;
+    return filteredResidents.slice(start, start + RESIDENT_PAGE_SIZE);
+  }, [currentPage, filteredResidents]);
+
+  useEffect(() => {
+    setPage(0);
+  }, [filters.search, filters.buildingId]);
+
+  useEffect(() => {
+    setPage((current) => Math.min(current, totalPages - 1));
+  }, [totalPages]);
 
   const handleDelete = async (resident) => {
     if (!window.confirm(t('accountDirectory.confirmations.delete', { name: resident.fullName }))) {
@@ -284,16 +302,27 @@ export default function AdminResidentListPage() {
         <div className="empty-state">{t('residentDirectory.messages.loading')}</div>
       ) : (
         <AdminAccountDirectoryTable
-          accounts={filteredResidents}
+          accounts={paginatedResidents}
           deletingId={deletingId}
           emptyMessage={t('residentDirectory.messages.empty')}
           nameColumnLabel={t('residentDirectory.columns.fullName')}
           onDelete={handleDelete}
+          rowOffset={currentPage * RESIDENT_PAGE_SIZE}
           showMembersInline
           showRoom
           showRole
           showStatus={false}
           useIconActions
+        />
+      )}
+
+      {!loading && filteredResidents.length > RESIDENT_PAGE_SIZE && (
+        <NotificationPaginationControls
+          page={currentPage}
+          pageSize={RESIDENT_PAGE_SIZE}
+          totalItems={filteredResidents.length}
+          translationPrefix="residentDirectory"
+          onPageChange={setPage}
         />
       )}
 

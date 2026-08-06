@@ -244,6 +244,12 @@
       "empty": "Không có nhân viên nào phù hợp với tìm kiếm.",
       "exportEmpty": "Không có nhân viên để xuất."
     },
+    "pagination": {
+      "summary": "Hiển thị {{from}}–{{to}} trên {{total}} tài khoản",
+      "previous": "Trước",
+      "next": "Sau",
+      "ariaLabel": "Phân trang danh sách tài khoản"
+    },
     "export": {
       "sheetName": "Nhan vien"
     },
@@ -285,6 +291,12 @@
       "loadError": "Không thể tải danh sách cư dân",
       "empty": "Không tìm thấy tài khoản chủ hộ phù hợp.",
       "exportEmpty": "Không có khách thuê để xuất."
+    },
+    "pagination": {
+      "summary": "Hiển thị {{from}}–{{to}} trên {{total}} người dùng",
+      "previous": "Trước",
+      "next": "Sau",
+      "ariaLabel": "Phân trang danh sách người dùng"
     },
     "export": {
       "sheetName": "Khach thue"

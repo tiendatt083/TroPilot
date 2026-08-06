@@ -22,6 +22,7 @@ export default function AdminAccountDirectoryTable({
   showStatus = true,
   showTemporaryPassword = true,
   showMembersInline = false,
+  rowOffset = 0,
   useIconActions = false
 }) {
   const { t } = useTranslation();
@@ -78,7 +79,7 @@ export default function AdminAccountDirectoryTable({
 
               return (
                 <tr key={account.id}>
-                  <td className="account-sequence-cell">{index + 1}</td>
+                  <td className="account-sequence-cell">{rowOffset + index + 1}</td>
                   <td>
                     <strong>{account.fullName}</strong>
                     {!showPhoneColumn && (
