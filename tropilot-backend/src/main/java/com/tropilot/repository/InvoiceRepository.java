@@ -52,6 +52,17 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
     })
     Optional<Invoice> findFirstByRoom_IdOrderByMonthDescCreatedAtDesc(Long roomId);
 
+    /** Lấy hóa đơn mới nhất của đúng một chủ hộ, không dùng lịch sử chung của cả phòng. */
+    @EntityGraph(attributePaths = {
+            "room",
+            "room.building",
+            "residentHead",
+            "createdBy",
+            "items",
+            "items.serviceFee"
+    })
+    Optional<Invoice> findFirstByResidentHead_IdOrderByMonthDescCreatedAtDesc(Long residentHeadId);
+
     /** Lấy toàn bộ hóa đơn với dữ liệu chi tiết, sắp xếp từ tháng mới nhất. */
     @Query("""
             select distinct invoice from Invoice invoice
@@ -78,6 +89,23 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
             order by invoice.month desc, invoice.createdAt desc
             """)
     List<Invoice> findByRoomIdWithDetails(@Param("roomId") Long roomId);
+
+    /**
+     * Lấy hóa đơn của đúng chủ hộ. Dù người khác thuê lại cùng phòng,
+     * họ không được nhìn thấy hóa đơn thuộc kỳ thuê trước.
+     */
+    @Query("""
+            select distinct invoice from Invoice invoice
+            join fetch invoice.room room
+            join fetch room.building building
+            join fetch invoice.residentHead residentHead
+            join fetch invoice.createdBy createdBy
+            left join fetch invoice.items items
+            left join fetch items.serviceFee serviceFee
+            where residentHead.id = :residentHeadId
+            order by invoice.month desc, invoice.createdAt desc
+            """)
+    List<Invoice> findByResidentHeadIdWithDetails(@Param("residentHeadId") Long residentHeadId);
 
     /** Lấy các hóa đơn thuộc một tòa nhà với đầy đủ chi tiết. */
     @Query("""

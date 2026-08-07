@@ -75,6 +75,49 @@ class UtilityReadingServiceImplTest {
     private UtilityReadingServiceImpl service;
 
     @Test
+    void residentOnlySeesReadingsRecordedAfterTheirAssignmentStarted() {
+        Room room = BusinessRuleTestFixtures.room(RoomStatus.OCCUPIED);
+        User residentB = BusinessRuleTestFixtures.residentHead();
+        RoomAssignment assignment = BusinessRuleTestFixtures.activeAssignment(room, residentB);
+        assignment.setStartDate(LocalDate.of(2026, 8, 1));
+
+        UtilityReading readingFromPreviousResident = UtilityReading.builder()
+                .id(801L)
+                .room(room)
+                .month(LocalDate.of(2026, 7, 1))
+                .readingDate(LocalDate.of(2026, 7, 31))
+                .createdBy(BusinessRuleTestFixtures.admin())
+                .build();
+        UtilityReading readingForResidentB = UtilityReading.builder()
+                .id(802L)
+                .room(room)
+                .month(LocalDate.of(2026, 8, 1))
+                .readingDate(LocalDate.of(2026, 8, 31))
+                .createdBy(BusinessRuleTestFixtures.admin())
+                .build();
+        UtilityReadingResponse expected = UtilityReadingResponse.builder().id(802L).build();
+
+        when(roomAssignmentRepository.findByResidentHeadIdAndStatus(
+                residentB.getId(),
+                RoomAssignmentStatus.ACTIVE
+        )).thenReturn(Optional.of(assignment));
+        when(utilityReadingRepository.findByRoomIdWithDetails(room.getId()))
+                .thenReturn(List.of(readingFromPreviousResident, readingForResidentB));
+        when(utilityReadingRepository.findFirstByRoom_IdAndMonthBeforeOrderByMonthDescCreatedAtDesc(
+                room.getId(),
+                LocalDate.of(2026, 8, 1)
+        )).thenReturn(Optional.of(readingFromPreviousResident));
+        when(utilityReadingMapper.toResponse(readingForResidentB, readingFromPreviousResident)).thenReturn(expected);
+
+        assertThat(service.getCurrentResidentRoomReadings(residentB.getId()))
+                .extracting(UtilityReadingResponse::getId)
+                .containsExactly(802L);
+
+        // The July reading remains available to staff for meter carry-forward, not to B.
+        verify(utilityReadingMapper, never()).toResponse(readingFromPreviousResident, null);
+    }
+
+    @Test
     void createReadingRejectsEmptyRoom() {
         Room room = BusinessRuleTestFixtures.room(RoomStatus.EMPTY);
         UtilityReadingCreateRequest request = readingRequest(room.getId(), "2026-06-03");

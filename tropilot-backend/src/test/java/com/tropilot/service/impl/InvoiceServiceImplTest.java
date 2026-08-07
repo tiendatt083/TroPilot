@@ -103,6 +103,25 @@ class InvoiceServiceImplTest {
     private InvoiceServiceImpl service;
 
     @Test
+    void residentInvoiceListUsesResidentIdentityInsteadOfSharedRoomHistory() {
+        Room room = BusinessRuleTestFixtures.room(RoomStatus.OCCUPIED);
+        User residentB = BusinessRuleTestFixtures.residentHead();
+        RoomAssignment assignment = BusinessRuleTestFixtures.activeAssignment(room, residentB);
+
+        when(roomAssignmentRepository.findByResidentHeadIdAndStatus(
+                residentB.getId(),
+                RoomAssignmentStatus.ACTIVE
+        )).thenReturn(Optional.of(assignment));
+        when(invoiceRepository.findByResidentHeadIdWithDetails(residentB.getId())).thenReturn(List.of());
+
+        assertThat(service.getResidentInvoices(residentB.getId())).isEmpty();
+
+        // A previous resident's invoices for the same room must not be queried here.
+        verify(invoiceRepository).findByResidentHeadIdWithDetails(residentB.getId());
+        verify(invoiceRepository, never()).findByRoomIdWithDetails(room.getId());
+    }
+
+    @Test
     void generateInvoiceRejectsEmptyRoom() {
         Room room = BusinessRuleTestFixtures.room(RoomStatus.EMPTY);
         User admin = BusinessRuleTestFixtures.admin();

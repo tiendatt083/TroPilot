@@ -320,11 +320,14 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     @Override
     @Transactional(readOnly = true)
-    /** Lấy hóa đơn mà chủ hộ có thể xem theo phân phòng hiện tại. */
+    /**
+     * Lấy hóa đơn của chính chủ hộ đang đăng nhập. Không lọc theo roomId vì
+     * một phòng có thể có người thuê mới và hóa đơn của người thuê cũ.
+     */
     public List<InvoiceResponse> getResidentInvoices(Long residentHeadId) {
-        RoomAssignment assignment = findResidentAssignment(residentHeadId);
+        findResidentAssignment(residentHeadId);
 
-        return invoiceRepository.findByRoomIdWithDetails(assignment.getRoom().getId())
+        return invoiceRepository.findByResidentHeadIdWithDetails(residentHeadId)
                 .stream()
                 .map(invoice -> invoiceMapper.toResponse(
                         invoice,
@@ -339,11 +342,12 @@ public class InvoiceServiceImpl implements InvoiceService {
     @Transactional(readOnly = true)
     /** Lấy một hóa đơn khi hóa đơn đó thực sự thuộc chủ hộ đang đăng nhập. */
     public InvoiceResponse getResidentInvoice(Long residentHeadId, Long id) {
-        RoomAssignment assignment = findResidentAssignment(residentHeadId);
+        findResidentAssignment(residentHeadId);
         Invoice invoice = findInvoice(id);
 
-        if (!invoice.getRoom().getId().equals(assignment.getRoom().getId())) {
-            throw new ForbiddenException("Invoice does not belong to the current Head Resident room");
+        if (invoice.getResidentHead() == null
+                || !invoice.getResidentHead().getId().equals(residentHeadId)) {
+            throw new ForbiddenException("Invoice does not belong to the current Head Resident");
         }
 
         return invoiceMapper.toResponse(

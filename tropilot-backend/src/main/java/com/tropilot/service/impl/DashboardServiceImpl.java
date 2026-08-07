@@ -189,7 +189,7 @@ public class DashboardServiceImpl implements DashboardService {
                 .findFirst()
                 .map(rentalContractMapper::toResponse)
                 .orElse(null);
-        InvoiceResponse latestInvoice = findLatestInvoice(roomId);
+        InvoiceResponse latestInvoice = findLatestInvoice(residentHeadId);
         List<VehicleResponse> activeVehicles = vehicleRepository
                 .findByRoomIdAndStatusWithDetails(roomId, VehicleStatus.ACTIVE)
                 .stream()
@@ -218,8 +218,9 @@ public class DashboardServiceImpl implements DashboardService {
                 .build();
     }
 
-    private InvoiceResponse findLatestInvoice(Long roomId) {
-        return invoiceRepository.findFirstByRoom_IdOrderByMonthDescCreatedAtDesc(roomId)
+    /** Dashboard resident chỉ hiển thị hóa đơn của chính chủ hộ hiện tại. */
+    private InvoiceResponse findLatestInvoice(Long residentHeadId) {
+        return invoiceRepository.findFirstByResidentHead_IdOrderByMonthDescCreatedAtDesc(residentHeadId)
                 .map(this::toInvoiceResponse)
                 .orElse(null);
     }

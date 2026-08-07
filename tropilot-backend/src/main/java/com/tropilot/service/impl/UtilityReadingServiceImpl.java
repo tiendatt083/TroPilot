@@ -204,7 +204,10 @@ public class UtilityReadingServiceImpl implements UtilityReadingService {
 
     @Override
     @Transactional(readOnly = true)
-    /** Chủ hộ xem lịch sử chỉ số của phòng đang được phân cho mình. */
+    /**
+     * Chủ hộ chỉ xem các kỳ ghi từ lúc bắt đầu thuê. Chỉ số vẫn thuộc phòng để
+     * admin có thể dùng số cuối của kỳ cũ làm số đầu cho kỳ tiếp theo.
+     */
     public List<UtilityReadingResponse> getCurrentResidentRoomReadings(Long residentHeadId) {
         RoomAssignment assignment = roomAssignmentRepository
                 .findByResidentHeadIdAndStatus(residentHeadId, RoomAssignmentStatus.ACTIVE)
@@ -212,6 +215,9 @@ public class UtilityReadingServiceImpl implements UtilityReadingService {
 
         return utilityReadingRepository.findByRoomIdWithDetails(assignment.getRoom().getId())
                 .stream()
+                // Legacy records without a recorded date are not exposed to a new resident.
+                .filter(reading -> reading.getReadingDate() != null
+                        && !reading.getReadingDate().isBefore(assignment.getStartDate()))
                 .map(this::toResponseWithPreviousReading)
                 .toList();
     }
