@@ -30,6 +30,8 @@ export default function BuildingUtilityReadingWorkspace({
   const [saving, setSaving] = useState(false);
   const [formVersion, setFormVersion] = useState(0);
   const [formOpen, setFormOpen] = useState(false);
+  const [formEligibleRooms, setFormEligibleRooms] = useState([]);
+  const [loadingFormRooms, setLoadingFormRooms] = useState(false);
   const monthlyReadings = readings.filter((reading) => reading.month === selectedMonth);
 
   const loadData = async (month = selectedMonth) => {
@@ -63,7 +65,12 @@ export default function BuildingUtilityReadingWorkspace({
       setMessage(t('buildingUtilityReadings.created'));
       setFormVersion((current) => current + 1);
       setFormOpen(false);
-      await loadData(selectedMonth);
+      // Sau khi lưu, chuyển danh sách về đúng tháng sử dụng vừa ghi.
+      if (payload.month === selectedMonth) {
+        await loadData(payload.month);
+      } else {
+        setSelectedMonth(payload.month);
+      }
     } catch (apiError) {
       setError(apiError.response?.data?.message || t('buildingUtilityReadings.createError'));
     } finally {
@@ -121,6 +128,26 @@ export default function BuildingUtilityReadingWorkspace({
 
     setFormOpen(false);
     setEditingReading(null);
+    setFormEligibleRooms([]);
+  };
+
+  /** Tải các phòng còn thiếu chỉ số của đúng tháng sử dụng đang được chọn trong form. */
+  const handleUsageMonthChange = async (month) => {
+    if (!month) {
+      setFormEligibleRooms([]);
+      return;
+    }
+
+    setLoadingFormRooms(true);
+    try {
+      const response = await getOverview({ buildingId: building.id, month });
+      setFormEligibleRooms(response.data?.eligibleRooms || []);
+    } catch (apiError) {
+      setFormEligibleRooms([]);
+      setError(apiError.response?.data?.message || t('buildingUtilityReadings.loadError'));
+    } finally {
+      setLoadingFormRooms(false);
+    }
   };
 
   return (
@@ -133,6 +160,7 @@ export default function BuildingUtilityReadingWorkspace({
             type="button"
             onClick={() => {
               setEditingReading(null);
+              setFormEligibleRooms([]);
               setFormOpen(true);
             }}
           >
@@ -168,15 +196,16 @@ export default function BuildingUtilityReadingWorkspace({
         onClose={closeForm}
       >
         <UtilityReadingForm
-          key={editingReading?.id || `building-reading-${building.id}-${selectedMonth}-${formVersion}`}
-          rooms={editingReading ? [toRoomOption(editingReading)] : (overview?.eligibleRooms || [])}
+          key={editingReading?.id || `building-reading-${building.id}-${formVersion}`}
+          rooms={editingReading ? [toRoomOption(editingReading)] : formEligibleRooms}
           readings={readings}
           initialValues={editingReading}
-          selectedMonth={selectedMonth}
+          loadingRooms={loadingFormRooms}
           loading={saving}
           mode={editingReading ? 'edit' : 'create'}
           onFetchElectricityReading={utilityReadingApi.fetchElectricityReadingPreview}
           onFetchWaterReading={utilityReadingApi.fetchWaterReadingPreview}
+          onUsageMonthChange={handleUsageMonthChange}
           submitLabel={
             editingReading ? t('buildingUtilityReadings.saveChanges') : t('buildingUtilityReadings.recordReading')
           }

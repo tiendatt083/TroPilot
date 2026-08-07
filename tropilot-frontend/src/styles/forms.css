@@ -4654,7 +4654,7 @@ html[data-theme="dark"] .staff-maintenance-page .maintenance-card-meta {
 }
 
 .utility-reading-dialog .utility-reading-shared-form {
-  grid-template-columns: minmax(190px, 260px) minmax(135px, 155px);
+  grid-template-columns: minmax(190px, 260px) minmax(135px, 155px) minmax(135px, 155px);
   gap: 0.55rem;
   align-items: end;
 }
@@ -4663,6 +4663,7 @@ html[data-theme="dark"] .staff-maintenance-page .maintenance-card-meta {
   max-width: 260px;
 }
 
+.utility-reading-dialog .utility-reading-month-field,
 .utility-reading-dialog .utility-reading-date-field {
   max-width: 155px;
 }

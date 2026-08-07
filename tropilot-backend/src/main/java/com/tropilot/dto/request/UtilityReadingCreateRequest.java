@@ -1,6 +1,7 @@
 package com.tropilot.dto.request;
 
 import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
@@ -19,6 +20,8 @@ public class UtilityReadingCreateRequest {
 
     private Long buildingId;
 
+    // Tháng sử dụng để tạo hóa đơn, có thể khác với tháng của ngày ghi thực tế.
+    @NotBlank(message = "Usage month is required")
     @Pattern(
             regexp = "^\\d{4}-(0[1-9]|1[0-2])$",
             message = "Reading month must use YYYY-MM format"
