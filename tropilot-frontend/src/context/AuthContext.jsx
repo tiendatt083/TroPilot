@@ -5,15 +5,32 @@ import { clearStoredAuth, getStoredAuth, setStoredAuth } from '../utils/authStor
 // Context lưu trạng thái phiên đăng nhập để mọi trang có thể dùng chung token và thông tin người dùng.
 const AuthContext = createContext(null);
 
+/** Kiểm tra nhanh hạn JWT ở phía trình duyệt để không hiển thị tạm một phiên đã hết hạn. */
+function isTokenExpired(token) {
+  try {
+    const payload = token.split('.')[1];
+    const normalizedPayload = payload.replace(/-/g, '+').replace(/_/g, '/');
+    const decodedPayload = JSON.parse(window.atob(normalizedPayload));
+
+    return Boolean(decodedPayload.exp && decodedPayload.exp * 1000 <= Date.now());
+  } catch {
+    return false;
+  }
+}
+
 /**
  * Cung cấp trạng thái đăng nhập và các thao tác đăng nhập, đăng xuất, đổi mật khẩu, cập nhật hồ sơ.
  * Khi ứng dụng mở lại, provider xác thực token đã lưu với backend trước khi coi phiên còn hợp lệ.
  */
 export function AuthProvider({ children }) {
   const storedAuth = getStoredAuth();
+  const canRestoreStoredSession = Boolean(
+    storedAuth.token && storedAuth.user && !isTokenExpired(storedAuth.token)
+  );
   const [token, setToken] = useState(storedAuth.token);
   const [user, setUser] = useState(storedAuth.user);
-  const [loading, setLoading] = useState(Boolean(storedAuth.token));
+  // Đã có hồ sơ và JWT còn hạn: render ngay, đồng thời xác minh lại ở nền.
+  const [loading, setLoading] = useState(Boolean(storedAuth.token) && !canRestoreStoredSession);
 
   /** Xóa toàn bộ thông tin phiên ở bộ nhớ trình duyệt và React state. */
   const logout = useCallback(() => {
@@ -25,6 +42,12 @@ export function AuthProvider({ children }) {
   // Nếu có token cũ, tải lại thông tin user để khôi phục phiên hoặc tự đăng xuất khi token hết hạn.
   useEffect(() => {
     if (!token) {
+      setLoading(false);
+      return undefined;
+    }
+
+    if (isTokenExpired(token)) {
+      logout();
       setLoading(false);
       return undefined;
     }
