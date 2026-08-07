@@ -23,8 +23,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -65,8 +63,6 @@ public class Invoice {
 
     /** REGULAR: tiền thuê/phí tháng; FINAL_UTILITY: chốt điện nước của chủ hộ đã rời phòng. */
     @Enumerated(EnumType.STRING)
-    // Flyway stores this enum as VARCHAR to keep the schema portable and migration-friendly.
-    @JdbcTypeCode(SqlTypes.VARCHAR)
     @Column(name = "invoice_type", nullable = false, length = 30)
     @Builder.Default
     private InvoiceType invoiceType = InvoiceType.REGULAR;
