@@ -390,6 +390,7 @@ export default function AdminBuildingDetailPage() {
     openTasks,
     outstandingAmount,
     paidInvoiceAmount,
+    paidInvoices,
     paymentSegments,
     paymentTotal,
     pendingMembers,
@@ -424,9 +425,8 @@ export default function AdminBuildingDetailPage() {
       ['PENDING', 'IN_PROGRESS'].includes(feedback.status)
     ).length;
     const invoiceAmount = sumAmounts(operations.invoices, 'totalAmount');
-    const paidAmount = operations.invoices
-      .filter((invoice) => invoice.status === 'PAID')
-      .reduce((sum, invoice) => sum + toNumber(invoice.totalAmount), 0);
+    const paidInvoices = operations.invoices.filter((invoice) => invoice.status === 'PAID');
+    const paidAmount = sumAmounts(paidInvoices, 'totalAmount');
     const receiptAmount = sumAmounts(receipts, 'amount');
     const debtAmount = sumAmounts(unpaidRecords, 'totalAmount');
     const occupancyPercent = getPercent(occupied, operations.rooms.length);
@@ -439,7 +439,7 @@ export default function AdminBuildingDetailPage() {
       .map((contract) => ({ ...contract, remainingDays: getDaysUntil(contract.endDate) }))
       .filter((contract) => contract.remainingDays !== null && contract.remainingDays >= 0 && contract.remainingDays <= 30)
       .sort((left, right) => left.remainingDays - right.remainingDays || getDateTime(left.endDate) - getDateTime(right.endDate));
-    const paymentPaid = paidAmount || receiptAmount;
+    const paymentPaid = paidAmount;
     const paymentUnpaid = debtAmount;
     const paymentTotalValue = paymentPaid + paymentUnpaid;
 
@@ -452,6 +452,7 @@ export default function AdminBuildingDetailPage() {
       openTasks: tasksOpen,
       outstandingAmount: debtAmount,
       paidInvoiceAmount: paymentPaid,
+      paidInvoices,
       paymentTotal: paymentTotalValue,
       pendingMembers: pending,
       recentFeedbacks: sortRecent(operations.feedbacks).slice(0, 5),
@@ -524,9 +525,9 @@ export default function AdminBuildingDetailPage() {
         {
           icon: 'wallet',
           tone: 'success',
-          value: formatCompactCurrency(receiptAmount, locale, t),
-          label: t('dashboard.ops.labels.paid'),
-          helper: t('dashboard.ops.helpers.validReceipts', { count: formatNumber(receipts.length, locale) })
+          value: formatNumber(paidInvoices.length, locale),
+          label: t('dashboard.ops.labels.paidInvoices'),
+          helper: formatCurrency(paidAmount, locale, currencyLabel)
         },
         {
           icon: 'feedback',

@@ -1168,6 +1168,7 @@
         "emptyRooms": "Phòng trống",
         "openWork": "Việc đang mở",
         "paid": "Đã thu",
+        "paidInvoices": "Hóa đơn đã thanh toán",
         "unpaid": "Chưa thu",
         "totalInvoices": "Tổng hóa đơn"
       },

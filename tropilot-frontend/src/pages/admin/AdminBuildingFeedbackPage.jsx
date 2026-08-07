@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
 import * as feedbackApi from '../../api/feedbackApi.js';
 import * as taskApi from '../../api/taskApi.js';
 import * as adminUserApi from '../../api/adminUserApi.js';
+import FilterBar from '../../components/common/FilterBar.jsx';
 import LineIcon from '../../components/common/LineIcon.jsx';
 import {
   FEEDBACK_STATUS_OPTIONS,
@@ -12,6 +13,7 @@ import {
 } from '../../utils/feedbackOptions.js';
 import { formatEnumLabel } from '../../utils/i18nFormat.js';
 import { formatRoomLabel } from '../../utils/roomDisplay.js';
+import { normalizeSearchText } from '../../utils/searchText.js';
 
 function activeStaff(users) {
   return users.filter((user) => user.role === 'STAFF' && user.status === 'ACTIVE');
@@ -41,11 +43,30 @@ function toDeadlinePayload(dateValue) {
   return `${dateValue}T23:59:00`;
 }
 
+function feedbackMatchesSearch(feedback, searchValue) {
+  if (!searchValue) {
+    return true;
+  }
+
+  return [
+    feedback.title,
+    feedback.content,
+    feedback.reply,
+    feedback.residentHeadName,
+    feedback.residentHeadEmail,
+    feedback.roomCode,
+    feedback.roomName,
+    formatRoomLabel(feedback),
+    feedback.assignedStaffName
+  ].some((value) => normalizeSearchText(value).includes(searchValue));
+}
+
 /** Trang quản trị xử lý phản hồi và khiếu nại phát sinh trong một tòa nhà. */
 export default function AdminBuildingFeedbackPage() {
   const { t } = useTranslation();
   const { building } = useOutletContext();
   const [feedbacks, setFeedbacks] = useState([]);
+  const [filters, setFilters] = useState({ search: '', status: '' });
   const [staffUsers, setStaffUsers] = useState([]);
   const [replyMap, setReplyMap] = useState({});
   const [statusMap, setStatusMap] = useState({});
@@ -57,6 +78,17 @@ export default function AdminBuildingFeedbackPage() {
   const [processingId, setProcessingId] = useState(null);
 
   const buildingFilter = { buildingId: building.id };
+
+  const filteredFeedbacks = useMemo(() => {
+    const searchValue = normalizeSearchText(filters.search);
+
+    return feedbacks.filter((feedback) => (
+      (!filters.status || feedback.status === filters.status)
+      && feedbackMatchesSearch(feedback, searchValue)
+    ));
+  }, [feedbacks, filters]);
+
+  const clearFilters = () => setFilters({ search: '', status: '' });
 
   const loadFeedbacks = async () => {
     setError('');
@@ -485,16 +517,42 @@ export default function AdminBuildingFeedbackPage() {
         <span className="page-eyebrow">{t('workspace.feedbacks.eyebrow')}</span>
       </div>
 
+      <FilterBar
+        as="div"
+        className="feedback-filter-row"
+        searchAriaLabel={t('feedbackManagement.searchFeedbacks')}
+        searchPlaceholder={t('feedbackManagement.searchFeedbacks')}
+        searchValue={filters.search}
+        filters={[
+          {
+            name: 'status',
+            value: filters.status,
+            ariaLabel: t('feedbackManagement.filterStatus'),
+            onChange: (value) => setFilters((current) => ({ ...current, status: value })),
+            options: [
+              { value: '', label: t('feedbackManagement.allStatuses') },
+              ...FEEDBACK_STATUS_OPTIONS.map((status) => ({
+                value: status.value,
+                label: formatEnumLabel(t, 'feedbackStatus', status.value)
+              }))
+            ]
+          }
+        ]}
+        clearLabel={t('common.clear')}
+        onClear={clearFilters}
+        onSearchChange={(value) => setFilters((current) => ({ ...current, search: value }))}
+      />
+
       {message && <div className="alert success-alert">{message}</div>}
       {error && <div className="alert error-alert">{error}</div>}
 
       {loading ? (
         <div className="empty-state">{t('feedbackManagement.feedbacksLoading')}</div>
-      ) : feedbacks.length === 0 ? (
+      ) : filteredFeedbacks.length === 0 ? (
         <div className="empty-state flat-empty-state">{t('tables.feedbacks.empty')}</div>
       ) : (
         <section className="feedback-review-list" aria-label={t('navigation.feedbacks')}>
-          {feedbacks.map(renderFeedbackItem)}
+          {filteredFeedbacks.map(renderFeedbackItem)}
         </section>
       )}
       {renderActionDialog()}

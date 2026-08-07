@@ -1959,13 +1959,13 @@ html[data-theme='dark'] .invoice-summary-copy small {
   white-space: nowrap;
 }
 
-.equipment-code-cell strong,
-.equipment-assigned-cell strong {
+.equipment-code-cell strong {
   font-weight: var(--font-weight-strong);
 }
 
-.equipment-name-cell strong {
-  font-weight: 800;
+.equipment-name-cell strong,
+.equipment-assigned-cell strong {
+  font-weight: var(--font-weight-regular);
 }
 
 .equipment-assigned-cell .table-subtext {

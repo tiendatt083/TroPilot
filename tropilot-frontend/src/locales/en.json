@@ -1168,6 +1168,7 @@
         "emptyRooms": "Empty rooms",
         "openWork": "Open work",
         "paid": "Paid",
+        "paidInvoices": "Paid invoices",
         "unpaid": "Unpaid",
         "totalInvoices": "Total invoices"
       },
