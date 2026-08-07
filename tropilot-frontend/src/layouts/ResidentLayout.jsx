@@ -18,8 +18,7 @@ const RESIDENT_INFORMATION_ITEMS = [
 ];
 
 const RESIDENT_ROOM_ITEMS = [
-  // Keep invoice access visible after a tenancy ends so a former resident can pay their final bill.
-  { to: '/resident/invoices', labelKey: 'navigation.invoices', icon: 'fileText' },
+  { to: '/resident/invoices', labelKey: 'navigation.invoices', icon: 'fileText', requiresRoom: true },
   { to: '/resident/members', labelKey: 'navigation.members', icon: 'users', requiresRoom: true },
   { to: '/resident/contract', labelKey: 'navigation.contract', icon: 'lock', requiresRoom: true },
   { to: '/resident/vehicles', labelKey: 'navigation.vehicles', icon: 'car', requiresRoom: true },

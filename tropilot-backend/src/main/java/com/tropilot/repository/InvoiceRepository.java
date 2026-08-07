@@ -2,7 +2,6 @@ package com.tropilot.repository;
 
 import com.tropilot.entity.Invoice;
 import com.tropilot.enums.InvoiceStatus;
-import com.tropilot.enums.InvoiceType;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -20,18 +19,10 @@ import java.util.Optional;
 public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
 
     /** Kiểm tra một phòng đã có hóa đơn cho tháng được chọn hay chưa. */
-    boolean existsByRoom_IdAndMonthAndInvoiceType(Long roomId, LocalDate month, InvoiceType invoiceType);
+    boolean existsByRoom_IdAndMonth(Long roomId, LocalDate month);
 
     /** Kiểm tra phòng đã từng có hóa đơn gắn với chủ hộ này hay chưa. */
     boolean existsByRoom_IdAndResidentHead_Id(Long roomId, Long residentHeadId);
-
-    /** Kiểm tra trùng hóa đơn theo đúng chủ hộ, kỳ và loại hóa đơn. */
-    boolean existsByRoom_IdAndResidentHead_IdAndMonthAndInvoiceType(
-            Long roomId,
-            Long residentHeadId,
-            LocalDate month,
-            InvoiceType invoiceType
-    );
 
     /** Đếm hóa đơn theo trạng thái để dùng trong thống kê. */
     long countByStatus(InvoiceStatus status);
@@ -87,23 +78,6 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
             order by invoice.month desc, invoice.createdAt desc
             """)
     List<Invoice> findByRoomIdWithDetails(@Param("roomId") Long roomId);
-
-    /**
-     * Lấy hóa đơn thuộc chính chủ hộ, kể cả khi người này đã kết thúc phân phòng.
-     * Không truy vấn theo roomId để chủ hộ mới không thấy hóa đơn của chủ hộ cũ.
-     */
-    @Query("""
-            select distinct invoice from Invoice invoice
-            join fetch invoice.room room
-            join fetch room.building building
-            join fetch invoice.residentHead residentHead
-            join fetch invoice.createdBy createdBy
-            left join fetch invoice.items items
-            left join fetch items.serviceFee serviceFee
-            where residentHead.id = :residentHeadId
-            order by invoice.month desc, invoice.createdAt desc
-            """)
-    List<Invoice> findByResidentHeadIdWithDetails(@Param("residentHeadId") Long residentHeadId);
 
     /** Lấy các hóa đơn thuộc một tòa nhà với đầy đủ chi tiết. */
     @Query("""

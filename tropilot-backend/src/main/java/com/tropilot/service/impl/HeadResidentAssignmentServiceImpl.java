@@ -26,8 +26,6 @@ import com.tropilot.repository.UserRepository;
 import com.tropilot.repository.VehicleRepository;
 import com.tropilot.service.ActivityLogService;
 import com.tropilot.service.HeadResidentAssignmentService;
-import com.tropilot.service.InvoiceService;
-import com.tropilot.security.CurrentUserProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,8 +45,6 @@ public class HeadResidentAssignmentServiceImpl implements HeadResidentAssignment
     private final RoomMemberRepository roomMemberRepository;
     private final VehicleRepository vehicleRepository;
     private final ActivityLogService activityLogService;
-    private final InvoiceService invoiceService;
-    private final CurrentUserProvider currentUserProvider;
 
     @Override
     @Transactional
@@ -154,17 +150,6 @@ public class HeadResidentAssignmentServiceImpl implements HeadResidentAssignment
         room.setStatus(RoomStatus.EMPTY);
         roomRepository.save(room);
         roomAssignmentRepository.save(assignment);
-
-        // Rent and recurring fees are charged at the start of a month. Consumption is charged
-        // one month later, therefore ending at the beginning of August settles July utilities
-        // only. Missing readings deliberately do not block contract termination or create a
-        // guessed amount; the invoice service simply returns no final invoice in that case.
-        invoiceService.createFinalUtilityInvoice(
-                room.getId(),
-                assignment.getResidentHead().getId(),
-                removalDate.minusMonths(1).withDayOfMonth(1),
-                currentUserProvider.getCurrentUser().getId()
-        );
 
         return toUnassignedResponse(room);
     }

@@ -127,8 +127,6 @@ class UtilityReadingServiceImplTest {
         when(userRepository.findById(admin.getId())).thenReturn(Optional.of(admin));
         when(utilityReadingRepository.existsByRoom_IdAndMonth(room.getId(), LocalDate.of(2026, 6, 1)))
                 .thenReturn(false);
-        when(roomAssignmentRepository.findByRoomIdAndStatus(room.getId(), RoomAssignmentStatus.ACTIVE))
-                .thenReturn(Optional.of(BusinessRuleTestFixtures.activeAssignment(room, BusinessRuleTestFixtures.residentHead())));
         when(utilityReadingRepository.save(any(UtilityReading.class))).thenAnswer(invocation -> {
             UtilityReading reading = invocation.getArgument(0);
             reading.setId(800L);
@@ -150,7 +148,6 @@ class UtilityReadingServiceImplTest {
         assertThat(savedReading.getReadingDate()).isEqualTo(LocalDate.of(2026, 6, 3));
         assertThat(savedReading.getNewElectricity()).isEqualByComparingTo("120");
         assertThat(savedReading.getNewWater()).isEqualByComparingTo("12");
-        assertThat(savedReading.getResidentHead().getId()).isEqualTo(BusinessRuleTestFixtures.RESIDENT_ID);
         assertThat(savedReading.getElectricityImageUrl()).isNull();
         assertThat(savedReading.getWaterImageUrl()).isNull();
         verify(imageStorageService, never()).store(any(), any());
@@ -195,24 +192,6 @@ class UtilityReadingServiceImplTest {
         assertThat(response.getEligibleRooms())
                 .extracting(RoomResponse::getId)
                 .containsExactly(eligibleRoom.getId());
-    }
-
-    @Test
-    void currentResidentReadingsAreLoadedByRecordedResidentInsteadOfSharedRoomHistory() {
-        Room room = BusinessRuleTestFixtures.room(RoomStatus.OCCUPIED);
-        User residentHead = BusinessRuleTestFixtures.residentHead();
-        RoomAssignment assignment = BusinessRuleTestFixtures.activeAssignment(room, residentHead);
-
-        when(roomAssignmentRepository.findByResidentHeadIdAndStatus(
-                residentHead.getId(), RoomAssignmentStatus.ACTIVE
-        )).thenReturn(Optional.of(assignment));
-        when(utilityReadingRepository.findByResidentHeadIdWithDetails(residentHead.getId()))
-                .thenReturn(List.of());
-
-        assertThat(service.getCurrentResidentRoomReadings(residentHead.getId())).isEmpty();
-
-        verify(utilityReadingRepository).findByResidentHeadIdWithDetails(residentHead.getId());
-        verify(utilityReadingRepository, never()).findByRoomIdWithDetails(room.getId());
     }
 
     private UtilityReadingCreateRequest readingRequest(Long roomId, String readingDate) {

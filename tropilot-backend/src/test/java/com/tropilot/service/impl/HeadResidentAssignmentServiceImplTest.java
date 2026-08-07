@@ -23,8 +23,6 @@ import com.tropilot.repository.RoomRepository;
 import com.tropilot.repository.UserRepository;
 import com.tropilot.repository.VehicleRepository;
 import com.tropilot.service.ActivityLogService;
-import com.tropilot.service.InvoiceService;
-import com.tropilot.security.CurrentUserProvider;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -67,12 +65,6 @@ class HeadResidentAssignmentServiceImplTest {
 
     @Mock
     private ActivityLogService activityLogService;
-
-    @Mock
-    private InvoiceService invoiceService;
-
-    @Mock
-    private CurrentUserProvider currentUserProvider;
 
     @InjectMocks
     private HeadResidentAssignmentServiceImpl service;
@@ -173,7 +165,6 @@ class HeadResidentAssignmentServiceImplTest {
                 .thenReturn(List.of(approvedMember, pendingMember));
         when(vehicleRepository.findByRoomIdWithDetails(room.getId()))
                 .thenReturn(List.of(activeVehicle, pendingVehicle));
-        when(currentUserProvider.getCurrentUser()).thenReturn(BusinessRuleTestFixtures.admin());
 
         HeadResidentAssignmentResponse response = service.removeHeadResident(room.getId());
 
@@ -191,12 +182,6 @@ class HeadResidentAssignmentServiceImplTest {
         verify(rentalContractRepository).save(contract);
         verify(roomMemberRepository).saveAll(List.of(approvedMember, pendingMember));
         verify(vehicleRepository).deleteAll(List.of(activeVehicle, pendingVehicle));
-        verify(invoiceService).createFinalUtilityInvoice(
-                room.getId(),
-                residentHead.getId(),
-                LocalDate.now().minusMonths(1).withDayOfMonth(1),
-                BusinessRuleTestFixtures.admin().getId()
-        );
     }
 
     private AssignHeadResidentRequest assignmentRequest(Long residentHeadId, LocalDate startDate, LocalDate endDate) {

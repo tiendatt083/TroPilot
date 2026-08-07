@@ -1,7 +1,6 @@
 package com.tropilot.entity;
 
 import com.tropilot.enums.InvoiceStatus;
-import com.tropilot.enums.InvoiceType;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -39,8 +38,8 @@ import java.util.List;
 @Table(
         name = "invoices",
         uniqueConstraints = @UniqueConstraint(
-                name = "uk_invoices_room_resident_month_type",
-                columnNames = {"room_id", "resident_head_id", "invoice_month", "invoice_type"}
+                name = "uk_invoices_room_month",
+                columnNames = {"room_id", "invoice_month"}
         )
 )
 /** Hóa đơn của một phòng/trưởng phòng theo kỳ, gồm các InvoiceItem và người tạo. */
@@ -60,12 +59,6 @@ public class Invoice {
 
     @Column(name = "invoice_month", nullable = false)
     private LocalDate month;
-
-    /** REGULAR: tiền thuê/phí tháng; FINAL_UTILITY: chốt điện nước của chủ hộ đã rời phòng. */
-    @Enumerated(EnumType.STRING)
-    @Column(name = "invoice_type", nullable = false, length = 30)
-    @Builder.Default
-    private InvoiceType invoiceType = InvoiceType.REGULAR;
 
     @Column(name = "invoice_date", nullable = false)
     private LocalDate invoiceDate;

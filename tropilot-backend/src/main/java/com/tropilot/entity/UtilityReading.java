@@ -46,15 +46,6 @@ public class UtilityReading {
     @JoinColumn(name = "room_id", nullable = false)
     private Room room;
 
-    /**
-     * Chủ hộ đang chịu trách nhiệm cho chỉ số này tại thời điểm nhân viên ghi số.
-     * Không suy luận từ chủ hộ hiện tại của phòng vì phòng có thể đã được bàn giao
-     * cho một người khác sau khi chỉ số được lưu.
-     */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "resident_head_id")
-    private User residentHead;
-
     @Column(name = "reading_month", nullable = false)
     private LocalDate month;
 

@@ -7,8 +7,6 @@ import com.tropilot.dto.response.InvoicePreviewResponse;
 import com.tropilot.dto.response.InvoiceResponse;
 
 import java.util.List;
-import java.time.LocalDate;
-import java.util.Optional;
 
 /** Hợp đồng xem trước, tạo, tra cứu và xóa hóa đơn theo tòa nhà hoặc chủ hộ. */
 public interface InvoiceService {
@@ -30,15 +28,4 @@ public interface InvoiceService {
     List<InvoiceResponse> getResidentInvoices(Long residentHeadId);
 
     InvoiceResponse getResidentInvoice(Long residentHeadId, Long id);
-
-    /**
-     * Tạo hóa đơn chốt chỉ gồm điện/nước của tháng trước cho chủ hộ vừa kết thúc thuê.
-     * Không tạo bản ghi khi chưa có chỉ số hợp lệ hoặc đã có hóa đơn tính kỳ đó.
-     */
-    Optional<InvoiceResponse> createFinalUtilityInvoice(
-            Long roomId,
-            Long residentHeadId,
-            LocalDate utilityMonth,
-            Long createdById
-    );
 }

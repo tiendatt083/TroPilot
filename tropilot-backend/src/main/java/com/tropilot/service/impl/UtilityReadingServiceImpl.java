@@ -73,15 +73,8 @@ public class UtilityReadingServiceImpl implements UtilityReadingService {
             throw new BadRequestException("Utility reading already exists for this room and month");
         }
 
-        // Persist the responsible tenant at record time. Later room reassignment must not
-        // make this tenant's consumption visible to the next Head Resident.
-        RoomAssignment activeAssignment = roomAssignmentRepository
-                .findByRoomIdAndStatus(room.getId(), RoomAssignmentStatus.ACTIVE)
-                .orElseThrow(() -> new BadRequestException("Occupied room must have an active Head Resident"));
-
         UtilityReading reading = UtilityReading.builder()
                 .room(room)
-                .residentHead(activeAssignment.getResidentHead())
                 .month(month)
                 .readingDate(readingDate)
                 .oldElectricity(request.getOldElectricity())
@@ -217,9 +210,7 @@ public class UtilityReadingServiceImpl implements UtilityReadingService {
                 .findByResidentHeadIdAndStatus(residentHeadId, RoomAssignmentStatus.ACTIVE)
                 .orElseThrow(() -> new BadRequestException("Head Resident must have an active room"));
 
-        // The room may have historical readings from earlier tenants. Querying by the
-        // recorded owner also handles handovers that happen within the same calendar month.
-        return utilityReadingRepository.findByResidentHeadIdWithDetails(residentHeadId)
+        return utilityReadingRepository.findByRoomIdWithDetails(assignment.getRoom().getId())
                 .stream()
                 .map(this::toResponseWithPreviousReading)
                 .toList();

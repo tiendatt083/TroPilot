@@ -113,18 +113,4 @@ public interface UtilityReadingRepository extends JpaRepository<UtilityReading, 
             order by reading.month desc, reading.createdAt desc
             """)
     List<UtilityReading> findByRoomIdWithDetails(@Param("roomId") Long roomId);
-
-    /**
-     * Lịch sử chỉ số thuộc đúng chủ hộ. Không dựa vào phòng hiện tại, vì một phòng
-     * có thể đã được bàn giao cho một chủ hộ khác sau khi chỉ số được ghi.
-     */
-    @Query("""
-            select reading from UtilityReading reading
-            join fetch reading.room room
-            join fetch room.building building
-            join fetch reading.createdBy createdBy
-            where reading.residentHead.id = :residentHeadId
-            order by reading.month desc, reading.createdAt desc
-            """)
-    List<UtilityReading> findByResidentHeadIdWithDetails(@Param("residentHeadId") Long residentHeadId);
 }
