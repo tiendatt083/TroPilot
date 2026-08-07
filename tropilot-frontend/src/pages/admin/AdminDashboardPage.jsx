@@ -175,15 +175,6 @@ function getStatusClass(prefix, status) {
   return `status-pill ${prefix}-${String(status || '').toLowerCase().replaceAll('_', '-')}`;
 }
 
-function formatLongDate(value = new Date(), locale = 'vi-VN') {
-  return new Intl.DateTimeFormat(locale, {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric'
-  }).format(value);
-}
-
 function buildMonthlyRevenue(invoices) {
   const monthKeys = getLastMonthKeys(6);
   const rows = monthKeys.map((month) => ({ month, paid: 0, unpaid: 0 }));
@@ -444,7 +435,8 @@ export default function AdminDashboardPage() {
     };
   }, [t]);
 
-  const todayText = formatLongDate(new Date(), locale);
+  // Đồng bộ ngày trên tiêu đề dashboard với định dạng hiển thị chung toàn hệ thống.
+  const todayText = formatDisplayDate(new Date());
   const monthlyRevenue = useMemo(() => buildMonthlyRevenue(insights.invoices), [insights.invoices]);
   const expiringContracts = useMemo(
     () => insights.contracts
