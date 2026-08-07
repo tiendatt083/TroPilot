@@ -417,7 +417,9 @@ export default function BuildingInvoiceWorkspace() {
   const invoicedRoomIdsForMonth = useMemo(() => {
     return new Set(
       invoices
-        .filter((invoice) => invoice.month === invoiceMonth)
+        // API returns a full ISO date (for example 2026-08-01), while the form uses YYYY-MM.
+        // Reuse the common month comparison so rooms already invoiced for this month are hidden.
+        .filter((invoice) => invoiceBelongsToMonth(invoice, invoiceMonth))
         .map((invoice) => invoice.roomId)
     );
   }, [invoices, invoiceMonth]);
