@@ -21,6 +21,7 @@ export default function AdminAccountDirectoryTable({
   showRoomNameSubtext = true,
   showStatus = true,
   showTemporaryPassword = true,
+  showCreatedAt = true,
   showMembersInline = false,
   rowOffset = 0,
   useIconActions = false
@@ -195,6 +196,7 @@ export default function AdminAccountDirectoryTable({
         <AccountDetailModal
           account={selectedAccount}
           onClose={() => setSelectedAccount(null)}
+          showCreatedAt={showCreatedAt}
           showRoom={showRoom}
           t={t}
         />
@@ -278,7 +280,7 @@ function TrashIcon() {
 }
 
 /** Hộp thoại hiển thị đầy đủ hồ sơ, vai trò và thành viên phòng liên quan tới một tài khoản. */
-function AccountDetailModal({ account, onClose, showRoom, t }) {
+function AccountDetailModal({ account, onClose, showCreatedAt, showRoom, t }) {
   const members = account.members || [];
   const isRoomMember = account.role === 'ROOM_MEMBER';
 
@@ -334,11 +336,13 @@ function AccountDetailModal({ account, onClose, showRoom, t }) {
               />
             </>
           )}
-          <DetailItem
-            icon="calendar"
-            label={t('accountDirectory.detail.createdAt')}
-            value={formatDisplayDate(account.createdAt, t('common.notAvailable'))}
-          />
+          {showCreatedAt && (
+            <DetailItem
+              icon="calendar"
+              label={t('accountDirectory.detail.createdAt')}
+              value={formatDisplayDate(account.createdAt, t('common.notAvailable'))}
+            />
+          )}
           {!isRoomMember && (
             <DetailItem
               icon="lock"

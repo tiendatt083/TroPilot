@@ -13,8 +13,7 @@ import { formatRoomCode, formatRoomLabel } from '../../utils/roomDisplay.js';
 import { normalizeSearchText } from '../../utils/searchText.js';
 
 const emptyFilters = {
-  search: '',
-  roomId: ''
+  search: ''
 };
 
 const today = formatDateInputValue();
@@ -77,29 +76,7 @@ function createResidentHouseholds(users) {
 function filterHouseholds(households, filters) {
   const searchValue = normalizeSearchValue(filters.search);
 
-  return households.filter((residentHead) => (
-    recordMatchesSearch(residentHead, searchValue)
-    && (!filters.roomId || String(residentHead.roomId || '') === filters.roomId)
-  ));
-}
-
-function createRoomOptions(households) {
-  const rooms = new Map();
-
-  households.forEach((residentHead) => {
-    if (!residentHead.roomId || rooms.has(residentHead.roomId)) {
-      return;
-    }
-
-    rooms.set(residentHead.roomId, {
-      id: residentHead.roomId,
-      label: residentHead.roomName
-        ? `${formatRoomCode(residentHead)} - ${residentHead.roomName}`
-        : formatRoomCode(residentHead)
-    });
-  });
-
-  return Array.from(rooms.values()).sort((firstRoom, secondRoom) => firstRoom.label.localeCompare(secondRoom.label));
+  return households.filter((residentHead) => recordMatchesSearch(residentHead, searchValue));
 }
 
 function getAvailableResidentHeads(users) {
@@ -183,8 +160,6 @@ export default function AdminBuildingUserPage() {
     () => filterHouseholds(households, filters),
     [households, filters]
   );
-  const roomOptions = useMemo(() => createRoomOptions(households), [households]);
-
   const handleClearFilters = () => {
     setFilters(emptyFilters);
   };
@@ -340,21 +315,6 @@ export default function AdminBuildingUserPage() {
             (residentHead) => residentHead.members?.map((member) => member.fullName).join(', ')
           ]}
           suggestionItems={households}
-          filters={[
-            {
-              name: 'roomId',
-              value: filters.roomId,
-              ariaLabel: t('buildingUsers.filters.roomAria'),
-              onChange: (value) => setFilters((current) => ({ ...current, roomId: value })),
-              options: [
-                { value: '', label: t('buildingUsers.filters.allRooms') },
-                ...roomOptions.map((room) => ({
-                  value: String(room.id),
-                  label: room.label
-                }))
-              ]
-            }
-          ]}
           clearLabel={t('common.clear')}
           onClear={handleClearFilters}
           onSearchChange={(value) => setFilters((current) => ({ ...current, search: value }))}
@@ -379,6 +339,7 @@ export default function AdminBuildingUserPage() {
           showRoomNameSubtext={false}
           showStatus={false}
           showTemporaryPassword={false}
+          showCreatedAt={false}
           useIconActions
         />
       )}
