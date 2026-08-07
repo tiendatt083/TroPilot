@@ -173,16 +173,16 @@ export default function NotificationTable({
         {selectedNotification && (
           <div className="notification-detail-view">
             <div className="notification-detail-meta">
+              <div className="notification-created-meta">
+                <span>{t('tables.common.created')}</span>
+                <strong>{formatDateTime(selectedNotification.createdAt, t)}</strong>
+              </div>
               {showTarget && (
-                <div>
+                <div className="notification-target-meta">
                   <span>{t('tables.common.target')}</span>
                   <strong>{getFullTargetTitle(selectedNotification, t)}</strong>
                 </div>
               )}
-              <div>
-                <span>{t('tables.common.created')}</span>
-                <strong>{formatDateTime(selectedNotification.createdAt, t)}</strong>
-              </div>
             </div>
 
             <div className="notification-detail-content">
