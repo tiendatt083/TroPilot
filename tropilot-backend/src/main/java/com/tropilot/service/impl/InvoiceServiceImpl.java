@@ -23,6 +23,7 @@ import com.tropilot.enums.CalculationType;
 import com.tropilot.enums.FeedbackType;
 import com.tropilot.enums.FeeType;
 import com.tropilot.enums.InvoiceStatus;
+import com.tropilot.enums.InvoiceType;
 import com.tropilot.enums.PaymentStatus;
 import com.tropilot.enums.ReceiptStatus;
 import com.tropilot.enums.RentalStatus;
@@ -64,6 +65,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -168,7 +170,8 @@ public class InvoiceServiceImpl implements InvoiceService {
                 continue;
             }
 
-            if (invoiceRepository.existsByRoom_IdAndMonth(room.getId(), invoiceMonth)) {
+            if (invoiceRepository.existsByRoom_IdAndMonthAndInvoiceType(
+                    room.getId(), invoiceMonth, InvoiceType.REGULAR)) {
                 blockedRooms.add(toBlockedRoom(room, BLOCKED_ALREADY_INVOICED, "Invoice already exists for this room and month"));
                 continue;
             }
@@ -322,9 +325,10 @@ public class InvoiceServiceImpl implements InvoiceService {
     @Transactional(readOnly = true)
     /** Lấy hóa đơn mà chủ hộ có thể xem theo phân phòng hiện tại. */
     public List<InvoiceResponse> getResidentInvoices(Long residentHeadId) {
-        RoomAssignment assignment = findResidentAssignment(residentHeadId);
-
-        return invoiceRepository.findByRoomIdWithDetails(assignment.getRoom().getId())
+        // Ownership is the invoice's residentHead, not the room currently assigned to that user.
+        // This keeps former tenants able to settle their own invoices while hiding prior invoices
+        // from a new tenant who later occupies the same room.
+        return invoiceRepository.findByResidentHeadIdWithDetails(residentHeadId)
                 .stream()
                 .map(invoice -> invoiceMapper.toResponse(
                         invoice,
@@ -339,11 +343,10 @@ public class InvoiceServiceImpl implements InvoiceService {
     @Transactional(readOnly = true)
     /** Lấy một hóa đơn khi hóa đơn đó thực sự thuộc chủ hộ đang đăng nhập. */
     public InvoiceResponse getResidentInvoice(Long residentHeadId, Long id) {
-        RoomAssignment assignment = findResidentAssignment(residentHeadId);
         Invoice invoice = findInvoice(id);
 
-        if (!invoice.getRoom().getId().equals(assignment.getRoom().getId())) {
-            throw new ForbiddenException("Invoice does not belong to the current Head Resident room");
+        if (!invoice.getResidentHead().getId().equals(residentHeadId)) {
+            throw new ForbiddenException("Invoice does not belong to the current Head Resident");
         }
 
         return invoiceMapper.toResponse(
@@ -367,7 +370,8 @@ public class InvoiceServiceImpl implements InvoiceService {
         validateRoomBelongsToBuilding(room, buildingId);
         validateRoomCanReceiveInvoice(room);
 
-        if (validateDuplicate && invoiceRepository.existsByRoom_IdAndMonth(room.getId(), invoiceMonth)) {
+        if (validateDuplicate && invoiceRepository.existsByRoom_IdAndMonthAndInvoiceType(
+                room.getId(), invoiceMonth, InvoiceType.REGULAR)) {
             throw new BadRequestException("Invoice already exists for this room and month");
         }
 
@@ -450,6 +454,7 @@ public class InvoiceServiceImpl implements InvoiceService {
                 .residentHead(calculation.assignment().getResidentHead())
                 .invoiceDate(calculation.invoiceDate())
                 .month(calculation.invoiceMonth())
+                .invoiceType(InvoiceType.REGULAR)
                 .dueDate(calculation.dueDate())
                 .status(InvoiceStatus.UNPAID)
                 .createdBy(createdBy)
@@ -469,6 +474,83 @@ public class InvoiceServiceImpl implements InvoiceService {
         SepayPayment sepayPayment = sepayPaymentService.createForInvoice(savedInvoice).orElse(null);
         paymentEmailService.sendInvoiceIssuedEmail(savedInvoice, sepayPayment);
         return invoiceMapper.toResponse(savedInvoice, calculation.utilityReading(), findInvoiceComplaint(savedInvoice), sepayPayment);
+    }
+
+    @Override
+    @Transactional
+    /**
+     * Chốt riêng tiền điện/nước tháng trước khi một chủ hộ kết thúc thuê.
+     * Hóa đơn này tuyệt đối không thêm tiền phòng, tiền cọc hay phí dịch vụ cố định.
+     * Nếu chưa có chỉ số để tính chính xác, việc kết thúc thuê vẫn thành công và không
+     * tạo hóa đơn giả với số tiền suy đoán.
+     */
+    public Optional<InvoiceResponse> createFinalUtilityInvoice(
+            Long roomId,
+            Long residentHeadId,
+            LocalDate utilityMonth,
+            Long createdById
+    ) {
+        LocalDate normalizedUtilityMonth = YearMonth.from(utilityMonth).atDay(1);
+        Room room = findRoom(roomId);
+        User residentHead = findUser(residentHeadId);
+        User createdBy = findUser(createdById);
+
+        if (invoiceRepository.existsByRoom_IdAndResidentHead_IdAndMonthAndInvoiceType(
+                roomId, residentHeadId, normalizedUtilityMonth, InvoiceType.FINAL_UTILITY)) {
+            return Optional.empty();
+        }
+
+        // A regular invoice dated in the following month already contains this previous-month
+        // utility usage, so creating a second final bill would charge the former tenant twice.
+        if (invoiceRepository.existsByRoom_IdAndResidentHead_IdAndMonthAndInvoiceType(
+                roomId, residentHeadId, normalizedUtilityMonth.plusMonths(1), InvoiceType.REGULAR)) {
+            return Optional.empty();
+        }
+
+        UtilityReading utilityReading = utilityReadingRepository
+                .findByRoomIdAndMonthWithDetails(roomId, normalizedUtilityMonth)
+                .orElse(null);
+        if (utilityReading == null) {
+            return Optional.empty();
+        }
+
+        List<ServiceFee> activeFees = serviceFeeRepository
+                .findByBuilding_IdAndIsActiveTrueOrderByCreatedAtDesc(room.getBuilding().getId());
+        if (!hasUsageBasedUtilityFee(activeFees)) {
+            return Optional.empty();
+        }
+
+        Invoice finalInvoice = Invoice.builder()
+                .room(room)
+                .residentHead(residentHead)
+                .invoiceDate(LocalDate.now())
+                .month(normalizedUtilityMonth)
+                .invoiceType(InvoiceType.FINAL_UTILITY)
+                .dueDate(LocalDate.now().plusDays(7))
+                .status(InvoiceStatus.UNPAID)
+                .createdBy(createdBy)
+                .totalAmount(BigDecimal.ZERO)
+                .build();
+
+        // Utility is priced from the recorded consumption only; no room rent/service/deposit is added.
+        addUtilityItem(finalInvoice, activeFees, utilityReading, FeeType.ELECTRICITY, ONE);
+        addUtilityItem(finalInvoice, activeFees, utilityReading, FeeType.WATER, ONE);
+        finalInvoice.setTotalAmount(finalInvoice.getItems().stream()
+                .map(InvoiceItem::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
+
+        Invoice savedInvoice = invoiceRepository.save(finalInvoice);
+        activityLogService.record(
+                createdBy,
+                "FINAL_UTILITY_INVOICE_GENERATED",
+                "Generated final utility invoice for former Head Resident " + residentHead.getEmail()
+                        + ", room " + room.getRoomCode()
+                        + ", utility month " + normalizedUtilityMonth.format(MONTH_FORMATTER)
+        );
+
+        SepayPayment sepayPayment = sepayPaymentService.createForInvoice(savedInvoice).orElse(null);
+        paymentEmailService.sendInvoiceIssuedEmail(savedInvoice, sepayPayment);
+        return Optional.of(invoiceMapper.toResponse(savedInvoice, utilityReading, null, sepayPayment));
     }
 
     private InvoicePreviewResponse toPreviewResponse(InvoiceCalculation calculation) {
@@ -776,19 +858,18 @@ public class InvoiceServiceImpl implements InvoiceService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
-    private RoomAssignment findResidentAssignment(Long residentHeadId) {
-        return roomAssignmentRepository
-                .findByResidentHeadIdAndStatus(residentHeadId, RoomAssignmentStatus.ACTIVE)
-                .orElseThrow(() -> new BadRequestException("Head Resident must have an active room"));
-    }
-
     private UtilityReading findUtilityReadingForInvoice(Invoice invoice) {
         if (!invoiceUsesUsageBasedUtility(invoice)) {
             return null;
         }
 
         return utilityReadingRepository
-                .findByRoomIdAndMonthWithDetails(invoice.getRoom().getId(), invoice.getMonth().minusMonths(1))
+                .findByRoomIdAndMonthWithDetails(
+                        invoice.getRoom().getId(),
+                        invoice.getInvoiceType() == InvoiceType.FINAL_UTILITY
+                                ? invoice.getMonth()
+                                : invoice.getMonth().minusMonths(1)
+                )
                 .orElse(null);
     }
 

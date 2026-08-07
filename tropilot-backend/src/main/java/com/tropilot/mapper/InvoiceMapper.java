@@ -76,6 +76,7 @@ public class InvoiceMapper {
                 .totalAmount(invoice.getTotalAmount())
                 .dueDate(invoice.getDueDate())
                 .status(invoice.getStatus())
+                .invoiceType(invoice.getInvoiceType())
                 .hasInvoiceComplaint(invoiceComplaint != null)
                 .invoiceComplaintStatus(invoiceComplaint == null ? null : invoiceComplaint.getStatus().name())
                 .sepayPayment(sepayPaymentMapper.toResponse(sepayPayment))

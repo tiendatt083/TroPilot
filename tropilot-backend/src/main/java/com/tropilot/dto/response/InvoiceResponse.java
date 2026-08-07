@@ -1,6 +1,7 @@
 package com.tropilot.dto.response;
 
 import com.tropilot.enums.InvoiceStatus;
+import com.tropilot.enums.InvoiceType;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -30,6 +31,7 @@ public class InvoiceResponse {
     private BigDecimal totalAmount;
     private LocalDate dueDate;
     private InvoiceStatus status;
+    private InvoiceType invoiceType;
     private boolean hasInvoiceComplaint;
     private String invoiceComplaintStatus;
     private SepayPaymentResponse sepayPayment;

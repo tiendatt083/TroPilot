@@ -12,6 +12,7 @@ import com.tropilot.entity.UtilityReading;
 import com.tropilot.enums.CalculationType;
 import com.tropilot.enums.FeeType;
 import com.tropilot.enums.InvoiceStatus;
+import com.tropilot.enums.InvoiceType;
 import com.tropilot.enums.PaymentStatus;
 import com.tropilot.enums.ReceiptStatus;
 import com.tropilot.enums.RentalStatus;
@@ -135,7 +136,8 @@ class InvoiceServiceImplTest {
         when(userRepository.findById(admin.getId())).thenReturn(Optional.of(admin));
         when(roomRepository.findById(room.getId())).thenReturn(Optional.of(room));
         when(buildingRepository.existsById(room.getBuilding().getId())).thenReturn(true);
-        when(invoiceRepository.existsByRoom_IdAndMonth(room.getId(), LocalDate.of(2026, 6, 1))).thenReturn(false);
+        when(invoiceRepository.existsByRoom_IdAndMonthAndInvoiceType(
+                room.getId(), LocalDate.of(2026, 6, 1), InvoiceType.REGULAR)).thenReturn(false);
         when(roomAssignmentRepository.findByRoomIdAndStatus(room.getId(), RoomAssignmentStatus.ACTIVE))
                 .thenReturn(Optional.of(assignment));
         when(invoiceRepository.existsByRoom_IdAndResidentHead_Id(room.getId(), residentHead.getId()))
@@ -200,7 +202,8 @@ class InvoiceServiceImplTest {
         when(userRepository.findById(admin.getId())).thenReturn(Optional.of(admin));
         when(roomRepository.findById(room.getId())).thenReturn(Optional.of(room));
         when(buildingRepository.existsById(room.getBuilding().getId())).thenReturn(true);
-        when(invoiceRepository.existsByRoom_IdAndMonth(room.getId(), LocalDate.of(2026, 6, 1))).thenReturn(false);
+        when(invoiceRepository.existsByRoom_IdAndMonthAndInvoiceType(
+                room.getId(), LocalDate.of(2026, 6, 1), InvoiceType.REGULAR)).thenReturn(false);
         when(roomAssignmentRepository.findByRoomIdAndStatus(room.getId(), RoomAssignmentStatus.ACTIVE))
                 .thenReturn(Optional.of(assignment));
         when(invoiceRepository.existsByRoom_IdAndResidentHead_Id(room.getId(), residentHead.getId()))
@@ -276,7 +279,8 @@ class InvoiceServiceImplTest {
         when(userRepository.findById(admin.getId())).thenReturn(Optional.of(admin));
         when(roomRepository.findById(room.getId())).thenReturn(Optional.of(room));
         when(buildingRepository.existsById(room.getBuilding().getId())).thenReturn(true);
-        when(invoiceRepository.existsByRoom_IdAndMonth(room.getId(), LocalDate.of(2026, 6, 1))).thenReturn(false);
+        when(invoiceRepository.existsByRoom_IdAndMonthAndInvoiceType(
+                room.getId(), LocalDate.of(2026, 6, 1), InvoiceType.REGULAR)).thenReturn(false);
         when(roomAssignmentRepository.findByRoomIdAndStatus(room.getId(), RoomAssignmentStatus.ACTIVE))
                 .thenReturn(Optional.of(assignment));
         when(invoiceRepository.existsByRoom_IdAndResidentHead_Id(room.getId(), residentHead.getId()))
@@ -353,7 +357,8 @@ class InvoiceServiceImplTest {
         when(userRepository.findById(admin.getId())).thenReturn(Optional.of(admin));
         when(roomRepository.findById(room.getId())).thenReturn(Optional.of(room));
         when(buildingRepository.existsById(room.getBuilding().getId())).thenReturn(true);
-        when(invoiceRepository.existsByRoom_IdAndMonth(room.getId(), LocalDate.of(2026, 6, 1))).thenReturn(false);
+        when(invoiceRepository.existsByRoom_IdAndMonthAndInvoiceType(
+                room.getId(), LocalDate.of(2026, 6, 1), InvoiceType.REGULAR)).thenReturn(false);
         when(roomAssignmentRepository.findByRoomIdAndStatus(room.getId(), RoomAssignmentStatus.ACTIVE))
                 .thenReturn(Optional.of(assignment));
         when(invoiceRepository.existsByRoom_IdAndResidentHead_Id(room.getId(), residentHead.getId()))
@@ -449,6 +454,37 @@ class InvoiceServiceImplTest {
                 .hasMessageContaining("Only unpaid");
 
         verify(invoiceRepository, never()).delete(any());
+    }
+
+    @Test
+    void formerResidentCanListOnlyInvoicesOwnedByThatResident() {
+        Room room = BusinessRuleTestFixtures.room(RoomStatus.EMPTY);
+        User formerResident = BusinessRuleTestFixtures.residentHead();
+        User admin = BusinessRuleTestFixtures.admin();
+        Invoice finalUtilityInvoice = BusinessRuleTestFixtures.invoice(
+                room,
+                formerResident,
+                admin,
+                InvoiceStatus.UNPAID
+        );
+        finalUtilityInvoice.setInvoiceType(InvoiceType.FINAL_UTILITY);
+        InvoiceResponse response = InvoiceResponse.builder().id(finalUtilityInvoice.getId()).build();
+
+        when(invoiceRepository.findByResidentHeadIdWithDetails(formerResident.getId()))
+                .thenReturn(List.of(finalUtilityInvoice));
+        when(feedbackRepository.findFirstByInvoice_IdAndTypeOrderByCreatedAtDesc(
+                finalUtilityInvoice.getId(),
+                com.tropilot.enums.FeedbackType.INVOICE_COMPLAINT
+        )).thenReturn(Optional.empty());
+        when(sepayPaymentService.findByInvoiceId(finalUtilityInvoice.getId())).thenReturn(Optional.empty());
+        when(invoiceMapper.toResponse(finalUtilityInvoice, null, null, null)).thenReturn(response);
+
+        assertThat(service.getResidentInvoices(formerResident.getId()))
+                .extracting(InvoiceResponse::getId)
+                .containsExactly(finalUtilityInvoice.getId());
+
+        verify(invoiceRepository).findByResidentHeadIdWithDetails(formerResident.getId());
+        verify(roomAssignmentRepository, never()).findByResidentHeadIdAndStatus(any(), any());
     }
 
     private InvoicePreviewRequest invoiceRequest(Long roomId) {

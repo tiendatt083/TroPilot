@@ -28,12 +28,13 @@ export const residentRoutes = (
       <Route path="contact" element={<ContactPage />} />
       <Route path="settings" element={<Settings />} />
       <Route path="activity-logs" element={<ResidentActivityLogPage />} />
+      {/* Former residents may only access and settle invoices that belong to their own account. */}
+      <Route path="invoices" element={<ResidentInvoiceListPage />} />
+      <Route path="invoices/:id" element={<ResidentInvoiceDetailPage />} />
       <Route element={<ResidentRoomRoute />}>
         <Route path="dashboard" element={<ResidentDashboardPage />} />
         <Route path="notifications" element={<ResidentNotificationPage />} />
         <Route path="feedbacks" element={<ResidentFeedbackPage />} />
-        <Route path="invoices" element={<ResidentInvoiceListPage />} />
-        <Route path="invoices/:id" element={<ResidentInvoiceDetailPage />} />
         <Route path="members" element={<ResidentMemberPage />} />
         <Route path="maintenance" element={<ResidentMaintenanceListPage />} />
         <Route path="contract" element={<ResidentContractPage />} />
