@@ -21,8 +21,6 @@ public class UtilityReadingUpdateRequest {
 
     private Long buildingId;
 
-    // Khi sửa bản ghi vẫn phải giữ tháng sử dụng rõ ràng, không suy ra từ ngày ghi.
-    @NotBlank(message = "Usage month is required")
     @Pattern(
             regexp = "^\\d{4}-(0[1-9]|1[0-2])$",
             message = "Reading month must use YYYY-MM format"

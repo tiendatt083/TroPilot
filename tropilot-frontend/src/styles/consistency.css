@@ -2034,7 +2034,7 @@ html[data-theme="dark"] .resident-profile-page .profile-role-pill {
 
 .utility-reading-dialog .utility-reading-shared-form {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 155px 172px;
+  grid-template-columns: minmax(0, 1fr) 172px;
   align-items: end;
   justify-content: start;
   gap: 0.58rem;
@@ -2042,7 +2042,6 @@ html[data-theme="dark"] .resident-profile-page .profile-role-pill {
 }
 
 .utility-reading-dialog .utility-reading-room-field,
-.utility-reading-dialog .utility-reading-month-field,
 .utility-reading-dialog .utility-reading-date-field {
   max-width: none;
 }

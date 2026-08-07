@@ -60,9 +60,7 @@ public class UtilityReadingServiceImpl implements UtilityReadingService {
         validateRoomCanReceiveUtilityReading(room);
         User createdBy = findUser(createdById);
         LocalDate readingDate = parseReadingDate(request.getReadingDate(), request.getMonth());
-        // Tháng sử dụng do người vận hành chọn, không suy ra từ ngày ghi thực tế.
-        // Ví dụ: chỉ số tháng 07 có thể được ghi vào ngày 02/08.
-        LocalDate month = parseMonth(request.getMonth());
+        LocalDate month = readingDate.withDayOfMonth(1);
 
         validateReadings(
                 request.getOldElectricity(),
@@ -168,8 +166,7 @@ public class UtilityReadingServiceImpl implements UtilityReadingService {
         validateRoomBelongsToBuilding(room, request.getBuildingId());
         validateRoomCanReceiveUtilityReading(room);
         LocalDate readingDate = parseReadingDate(request.getReadingDate(), request.getMonth());
-        // Giữ nguyên quy tắc này khi sửa để hóa đơn luôn tra cứu theo tháng sử dụng.
-        LocalDate month = parseMonth(request.getMonth());
+        LocalDate month = readingDate.withDayOfMonth(1);
 
         validateReadings(
                 request.getOldElectricity(),

@@ -2481,8 +2481,6 @@
       "waterFetchError": "Water reading could not be fetched",
       "electricityIncrease": "Electricity",
       "waterIncrease": "Water",
-      "usageMonth": "Usage month",
-      "selectUsageMonthFirst": "Select the usage month first",
       "readingDateShort": "Date",
       "editReasonShort": "Reason",
       "allowedImageTypes": "Allowed image types: jpg, jpeg, png. Maximum size: 10 MB.",

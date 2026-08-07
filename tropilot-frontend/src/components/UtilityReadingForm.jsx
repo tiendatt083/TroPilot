@@ -3,7 +3,9 @@ import { useTranslation } from 'react-i18next';
 import {
   formatDateInputValue,
   formatDisplayDate,
-  formatDisplayMonth
+  formatDisplayMonth,
+  getMonthDateRange,
+  getMonthFromDateInput
 } from '../utils/dateFormat.js';
 import { openFileUrl, resolveFileUrl } from '../utils/fileUrl.js';
 import { formatNumber } from '../utils/numberFormat.js';
@@ -26,14 +28,13 @@ export default function UtilityReadingForm({
   rooms,
   readings = [],
   initialValues,
-  loadingRooms = false,
+  selectedMonth,
   loading,
   mode = 'create',
   submitLabel,
   onFetchReadings,
   onFetchElectricityReading,
   onFetchWaterReading,
-  onUsageMonthChange,
   onSubmit,
   onCancel
 }) {
@@ -45,14 +46,13 @@ export default function UtilityReadingForm({
   const [fetchError, setFetchError] = useState('');
 
   useEffect(() => {
-    const readingDate = normalizeReadingDate(initialValues);
+    const readingDate = normalizeReadingDate(initialValues, selectedMonth);
 
     setForm({
       ...emptyForm,
       ...initialValues,
       roomId: initialValues?.roomId || '',
-      // month tách biệt với readingDate: đây là tháng dùng để lập hóa đơn.
-      month: initialValues?.month || '',
+      month: initialValues?.month || getMonthFromDateInput(readingDate),
       readingDate,
       oldElectricity: initialValues?.oldElectricity ?? 0,
       newElectricity: initialValues?.newElectricity ?? 0,
@@ -63,30 +63,25 @@ export default function UtilityReadingForm({
     setElectricityImage(null);
     setWaterImage(null);
     setFetchError('');
-  }, [initialValues]);
+  }, [initialValues, selectedMonth]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
 
-    if (name === 'roomId' || name === 'readingDate' || name === 'month') {
+    if (name === 'roomId' || name === 'readingDate') {
       setFetchError('');
     }
 
     setForm((current) => ({
       ...current,
       [name]: value,
-      // Đổi tháng sử dụng có thể làm thay đổi danh sách phòng chưa ghi chỉ số.
-      ...(name === 'month' && !editing ? { roomId: '' } : {})
+      ...(name === 'readingDate' ? { month: getMonthFromDateInput(value) } : {})
     }));
-
-    if (name === 'month' && !editing) {
-      onUsageMonthChange?.(value);
-    }
   };
 
   const previousReading = useMemo(
-    () => findPreviousReading(readings, form.roomId, form.month, initialValues?.id),
-    [readings, form.roomId, form.month, initialValues?.id]
+    () => findPreviousReading(readings, form.roomId, form.readingDate, initialValues?.id),
+    [readings, form.roomId, form.readingDate, initialValues?.id]
   );
 
   const editing = mode === 'edit';
@@ -180,8 +175,7 @@ export default function UtilityReadingForm({
 
     onSubmit({
       roomId: form.roomId,
-      // Gửi cả hai giá trị: month dùng tính hóa đơn, readingDate là ngày ghi thực tế để đối chiếu.
-      month: form.month,
+      month: getMonthFromDateInput(form.readingDate),
       readingDate: form.readingDate,
       oldElectricity: form.oldElectricity,
       newElectricity: form.newElectricity,
@@ -193,8 +187,8 @@ export default function UtilityReadingForm({
     });
   };
 
-  const usageMonthRequired = !editing && !form.month;
-  const noEligibleRooms = !editing && form.month && rooms.length === 0;
+  const noEligibleRooms = !editing && rooms.length === 0;
+  const readingDateRange = getMonthDateRange(selectedMonth);
 
   return (
     <form className="panel-form utility-reading-entry-form" onSubmit={handleSubmit}>
@@ -207,12 +201,10 @@ export default function UtilityReadingForm({
             value={form.roomId}
             onChange={handleChange}
             required
-            disabled={editing || usageMonthRequired || noEligibleRooms || loadingRooms}
+            disabled={editing || noEligibleRooms}
           >
             <option value="">
-              {usageMonthRequired
-                ? t('forms.utilityReading.selectUsageMonthFirst')
-                : noEligibleRooms
+              {noEligibleRooms
                 ? t('buildingUtilityReadings.noEligibleRooms')
                 : t('forms.utilityReading.selectRoom')}
             </option>
@@ -224,18 +216,6 @@ export default function UtilityReadingForm({
           </select>
         </div>
 
-        <div className="utility-reading-month-field">
-          <label htmlFor="month">{t('forms.utilityReading.usageMonth')}</label>
-          <input
-            id="month"
-            name="month"
-            type="month"
-            value={form.month}
-            onChange={handleChange}
-            required
-          />
-        </div>
-
         <div className="utility-reading-date-field">
           <label htmlFor="readingDate">{t('forms.utilityReading.readingDateShort')}</label>
           <input
@@ -245,6 +225,8 @@ export default function UtilityReadingForm({
             lang="en-GB"
             value={form.readingDate}
             onChange={handleChange}
+            min={readingDateRange.min}
+            max={readingDateRange.max}
             required
           />
         </div>
@@ -302,7 +284,7 @@ export default function UtilityReadingForm({
             {t('common.cancel')}
           </button>
         )}
-        <button type="submit" disabled={loading || usageMonthRequired || noEligibleRooms || loadingRooms}>
+        <button type="submit" disabled={loading || noEligibleRooms}>
           {loading ? t('common.saving') : submitLabel}
         </button>
       </div>
@@ -584,7 +566,8 @@ function PreviousReadingEvidence({ previousReading, t }) {
 }
 
 /** Tìm bản ghi gần nhất trước kỳ đang nhập của cùng một phòng. */
-function findPreviousReading(readings, roomId, selectedMonth, currentReadingId) {
+function findPreviousReading(readings, roomId, readingDate, currentReadingId) {
+  const selectedMonth = getMonthFromDateInput(readingDate);
 
   if (!roomId || !selectedMonth) {
     return null;
@@ -629,14 +612,19 @@ function normalizeFetchedMeter(reading, meterType) {
   };
 }
 
-/** Chuẩn hóa ngày ghi thực tế; ngày này không bị ràng buộc với tháng sử dụng. */
-function normalizeReadingDate(values) {
+/** Chuẩn hóa ngày ghi để luôn nằm trong tháng người dùng đang thao tác. */
+function normalizeReadingDate(values, selectedMonth) {
   if (values?.readingDate) {
     return values.readingDate;
   }
 
   if (values?.month) {
     return `${values.month}-01`;
+  }
+
+  if (selectedMonth) {
+    const today = formatDateInputValue();
+    return today.startsWith(selectedMonth) ? today : `${selectedMonth}-01`;
   }
 
   return formatDateInputValue();

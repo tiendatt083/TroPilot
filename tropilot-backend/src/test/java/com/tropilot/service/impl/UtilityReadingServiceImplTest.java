@@ -113,21 +113,19 @@ class UtilityReadingServiceImplTest {
     void createReadingSavesValidReadingForOccupiedRoom() {
         Room room = BusinessRuleTestFixtures.room(RoomStatus.OCCUPIED);
         User admin = BusinessRuleTestFixtures.admin();
-        // Kỳ sử dụng tháng 07 có thể được ghi sau khi tháng 07 đã kết thúc.
-        UtilityReadingCreateRequest request = readingRequest(room.getId(), "2026-08-02");
-        request.setMonth("2026-07");
+        UtilityReadingCreateRequest request = readingRequest(room.getId(), "2026-06-03");
         UtilityReadingResponse mappedResponse = UtilityReadingResponse.builder()
                 .id(800L)
                 .roomId(room.getId())
-                .month("2026-07")
-                .readingDate("2026-08-02")
+                .month("2026-06")
+                .readingDate("2026-06-03")
                 .build();
 
         when(roomRepository.findById(room.getId())).thenReturn(Optional.of(room));
         when(roomAssignmentRepository.existsByRoom_IdAndStatus(room.getId(), RoomAssignmentStatus.ACTIVE))
                 .thenReturn(true);
         when(userRepository.findById(admin.getId())).thenReturn(Optional.of(admin));
-        when(utilityReadingRepository.existsByRoom_IdAndMonth(room.getId(), LocalDate.of(2026, 7, 1)))
+        when(utilityReadingRepository.existsByRoom_IdAndMonth(room.getId(), LocalDate.of(2026, 6, 1)))
                 .thenReturn(false);
         when(utilityReadingRepository.save(any(UtilityReading.class))).thenAnswer(invocation -> {
             UtilityReading reading = invocation.getArgument(0);
@@ -136,7 +134,7 @@ class UtilityReadingServiceImplTest {
         });
         when(utilityReadingRepository.findFirstByRoom_IdAndMonthBeforeOrderByMonthDescCreatedAtDesc(
                 room.getId(),
-                LocalDate.of(2026, 7, 1)
+                LocalDate.of(2026, 6, 1)
         )).thenReturn(Optional.empty());
         when(utilityReadingMapper.toResponse(any(UtilityReading.class), isNull())).thenReturn(mappedResponse);
 
@@ -146,8 +144,8 @@ class UtilityReadingServiceImplTest {
         ArgumentCaptor<UtilityReading> readingCaptor = ArgumentCaptor.forClass(UtilityReading.class);
         verify(utilityReadingRepository).save(readingCaptor.capture());
         UtilityReading savedReading = readingCaptor.getValue();
-        assertThat(savedReading.getMonth()).isEqualTo(LocalDate.of(2026, 7, 1));
-        assertThat(savedReading.getReadingDate()).isEqualTo(LocalDate.of(2026, 8, 2));
+        assertThat(savedReading.getMonth()).isEqualTo(LocalDate.of(2026, 6, 1));
+        assertThat(savedReading.getReadingDate()).isEqualTo(LocalDate.of(2026, 6, 3));
         assertThat(savedReading.getNewElectricity()).isEqualByComparingTo("120");
         assertThat(savedReading.getNewWater()).isEqualByComparingTo("12");
         assertThat(savedReading.getElectricityImageUrl()).isNull();
@@ -199,7 +197,6 @@ class UtilityReadingServiceImplTest {
     private UtilityReadingCreateRequest readingRequest(Long roomId, String readingDate) {
         UtilityReadingCreateRequest request = new UtilityReadingCreateRequest();
         request.setRoomId(roomId);
-        request.setMonth(readingDate.substring(0, 7));
         request.setReadingDate(readingDate);
         request.setOldElectricity(new BigDecimal("100"));
         request.setNewElectricity(new BigDecimal("120"));
