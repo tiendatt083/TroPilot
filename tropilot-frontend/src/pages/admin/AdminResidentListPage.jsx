@@ -312,6 +312,7 @@ export default function AdminResidentListPage() {
           showRoom
           showRole
           showStatus={false}
+          showCreatedAt={false}
           useIconActions
         />
       )}
